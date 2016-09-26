@@ -1,0 +1,83 @@
+﻿0.4.4 优化了判断切片是否可见的算法，使用经纬度判断法(isTileVisible2)取代了老式的计算方法(isTileVisible)
+
+0.4.5 继续优化isTileVisible算法，许多参数从函数外面传递进来，比如geoExtent和projViewMatrix，循环传递使用，减少了生成这两个变量所调用函数的次数；引入了World.Globe，将一些处理逻辑放到了Globe中，比如讲renderer中的updateGlobe方法迁移到Globe中的refresh方法，尽量只对二次开发人员暴露World.Globe的接口，更合理一些，从而将版本从0.4.4升级到0.4.5
+
+0.4.6 不再通过ajax获取vertexShader和fragmentShader的文本内容，而是将其以字符串的形式直接放入到World.js文件中(World.ShaderContent)，从而减少了对于其他GLSL文件的依赖，并因此将World.js的版本升级到0.4.6
+
+0.4.7 新增了World.TiledLayer类型，取消掉了World.NokiaTile等类型，图层都继承自World.TiledLayer，并重写其中的getImageUrl方法，所有的切片都放到World.TiledLayer中进行管理，结构化明确，更加面向对象，因此将版本升级到0.4.7
+
+0.5.0 从0.4.7直接升级到0.5.0,在TiledLayer的基础上又增加了SubTiledLayer类，并在此基础上优化了诸多算法，包括通过添加isvisible判断是否渲染，完善了camera的getCurrentGeoExtent算法，结构更合理，访问速度更快，故升级到0.5.0
+
+0.5.1 优化了各种TiledLayer的getImageUrl的算法
+
+0.5.2  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
+       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+       通过执行以上命令消除了两个切片之间的白线问题
+
+0.5.3 从0.5.2升级到0.5.3:globe中增加了calculateCameraMoveInfo方法，在大比例尺下移动视图也比较正常
+
+0.5.4 升级到0.5.4：在World.Object3D的destroy方法中释放了显卡中的各种buffer和texture资源
+
+0.5.5 在render方法中计算了viewMatrix并赋值给camera作为其中的一个属性，这样就只调用一次getViweMatrix方法，不用在draw(camera)中再多次计算
+
+0.5.6 在创建level为1的subTiledLayer的时候就全部创建其下的四个切片，并且从不删除该subTiledLayer;将自动更新时间设置为750毫秒
+
+0.5.7 添加了World.BingTiledLayer，支持微软Bing地图渲染（有三种风格:a、r、h）
+
+0.5.8 添加了World.SosoTiledLayer，支持soso地图
+
+0.5.9 添加了World.TiandituTiledLayer，支持天地图
+
+0.6.0 通过添加代理页proxy.jsp可以加载ArcGIS的切片地图，包括ArcGISOnline以及捷泰地图，或其他ArcGIS Server发布的地图服务
+
+0.6.1 通过代理方式支持高德地图
+
+0.6.2 用bind方式代替闭包实现World.TextureMaterial.prototype.setImageUrl中handleLoadedTexture操作texture
+
+0.6.3 在Matrix和Object3D中加入对worldScale和localScale的支持
+
+0.6.4 在Matrix和Object3D中加入对localRotateByVector的支持
+
+0.6.5 修复了在层级比较大的情况下切片不能完全正常匹配的问题，解决办法是取消掉了对切片范围的一像素扩容
+
+0.6.6 将World.Scene继承自World.Object3DComponents,减少冗余代码，结构也更合理，也因此调整了World.js中各代码块的位置
+
+0.6.7 在拖动鼠标时，鼠标拖动点与经纬度进行了绑定，实现定点拖动
+
+0.6.8 将CanvasEventHandler.js中的事件代码移植到World.Event中，以后在html页面中只需要引入World.js一个js文件即可
+
+0.6.9 修改了camera中的isLonVisible方法，将其精简完善，从而解决了在伦敦中央经线附近在14级时一片漆黑的问题
+
+0.7.0 修改了无法删除canvas的onMouseMove事件的问题
+
+0.7.1 修改了将视图缩放到中国区域范围的时候，camera.getGeoExtent()获取的经纬度不准确的问题，原因是在计算由于地球自身视线遮挡的经度范围时，只是简单的在中心经度上加减偏移量，对于如果中心点的纬度为0时是正确的，只要中心点纬度不为0，这种简单的加减经度偏移量是不准确的
+
+0.7.2 完善了各种坐标系之间坐标的换算
+
+0.7.3 基本完成camera.getExtentInfo的编写,准备用其替换camera.getGeoExtent方法，并添加了camera.isGeoVisibleInCanvas方法
+
+0.7.4 继续晚上camera.getExtentInfo方法，在沿着经线上下偏移纬度时不准确，比如65+40=105>90，导致其超出[-90,90]的范围，现在会确保其范围是正确的，但是有可能把范围算大了
+
+0.7.5 完成camera.getExtentInfo方法的重写，并对老旧代码删除，用新代码替换老代码
+
+0.7.6 以前为了优化效率，在很多地方设置了SubTiledLayer的isvisible和Tile的isvisible都为false，但是体验效果却不好，经常会拿level1来作为保底图层；现在只要camera变化了就将所有SubTiledLayer和Tile的isvisible都设置为true，体验效果好，只有在camera位置没有发生变化，且level最大的那级图层的所有切片都已加载的情况下（即SubTiledLayer.checkIfLoaded为true）时才会将无需显示的那些SubTiledLayer的isvisible属性置为false
+
+0.7.7 将MAX_LEVEL、CURRENT_LEVEL、BELOW_LEVEL、OLD_POSITION属性从World中迁移如World.Globe中，更合理
+
+0.7.8 完善了onMouseMove事件代码，提供与Google New Map一样的体验
+
+0.7.9 修改完善了getPickDirectionByNDC方法，ndcZ传入0.1而非0.5,0.5在某些情况下会导致计算的w为0
+
+0.8.0 将ndcZ最终改为0.499,没发现问题；并且在camera.isTileVisible方法内通过判断切片斜对角线的长度是否均小于0.1来决定不可见或可见，这对于倾斜视角下很有用，会剔除掉那些面积很小的切片，直接用面积比较不如用斜对角线长度比较实用，并因此在任意时刻都渲染全部的切片，去掉了checkIfLoaded的优化代码
+
+0.8.1 打算重写算法，添加了两个重要的方法camera.getVisibleTilesByLevel和getTileVisibleInfo，直接从第level级获取可见的切片，无需从第0级依次遍历
+
+0.8.2 重写了算法，不再根据经纬度依次从第1级开始判断，直接通过camera.getVisibleTilesByLevel获取第level级别的可见切片，即使缩放到20级，内存也在170M左右，而且很流畅，删除了以前的老代码，实现重大升级
+
+0.8.3 加入World.Elevation代码，用于请求高程数据，开始改造Object3D和Tile的相关方法，使其能根据传入的vertice等信息动态更改buffer
+
+0.8.4 实现最最基础的三维地形图
+
+0.8.5 上一版本的World.Elevation.getElevationByCache有问题，现在已修改完善，正确计算切片高程的起点索引值
+
+0.8.8 重写了Tile.handleTile方法，将老的方法命名为handTile2，但没有删除，新的handleTile方法从左上角至右下角遍历，并且多个三角形公用同一个顶点

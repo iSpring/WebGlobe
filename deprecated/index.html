@@ -1,0 +1,86 @@
+﻿<!doctype html>
+<html style="width:100%;height:100%;">
+  <head>
+    <title>WebGlobe</title>
+    <meta http-equiv="Content-Type" content="text/html"/>
+    <meta name="charset" content="utf-8"/>
+    <style type="text/css">
+      *{
+        margin:0;
+        padding:0;
+      }
+    </style>
+    <script type="text/javascript" src="Globe.js"></script>
+    <script type="text/javascript">
+      var canvas,globe;
+
+      function startWebGL(){
+        globe = new World.Globe(canvas);
+        var mapSelector = document.getElementById("mapSelector");
+        mapSelector.onchange = changeTiledLayer;
+        changeTiledLayer();
+      }
+
+      function changeTiledLayer(){
+        var mapSelector = document.getElementById("mapSelector");
+        mapSelector.blur();
+        var newTiledLayer = null;
+        var args = null;
+        if(mapSelector.value == "google"){
+          newTiledLayer = new World.GoogleTiledLayer();
+        }else if(mapSelector.value == "osm"){
+          newTiledLayer = new World.OsmTiledLayer();
+        }else if(mapSelector.value == "nokia"){
+          newTiledLayer = new World.NokiaTiledLayer();
+        }else if(mapSelector.value == "bing"){
+          newTiledLayer = new World.BingTiledLayer();
+        }else if(mapSelector.value == "arcgisonline"){
+          args = {url:"http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer"};
+          newTiledLayer = new World.ArcGISTiledLayer(args);
+        }else if(mapSelector.value == "tianditu"){
+          newTiledLayer = new World.TiandituTiledLayer();
+        }else if(mapSelector.value == "soso"){
+          newTiledLayer = new World.SosoTiledLayer();
+        }else if(mapSelector.value == "gistech"){
+          args = {url:"http://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineCommunity/MapServer"};
+          newTiledLayer = new World.ArcGISTiledLayer(args);
+        }else if(mapSelector.value == "autonavi"){
+          newTiledLayer = new World.AutonaviTiledLayer();
+        }else if(mapSelector.value == "blend"){
+          newTiledLayer = new World.BlendTiledLayer();
+        }else if(mapSelector.value == "test"){
+          newTiledLayer = new World.TestTiledLayer();
+        }
+
+        if(newTiledLayer){
+          globe.setTiledLayer(newTiledLayer);
+        }
+      }
+
+      function initAll(){
+        canvas = document.getElementById("canvasId");
+        startWebGL();
+      }
+
+      window.onload = initAll;
+    </script>
+  </head>
+  <body onselectstart = "return false;" style="position:relative;width:100%;height:100%;overflow:hidden;cursor:default;">
+    <select id="mapSelector" style="position:absolute;top:20px;right:20px;">
+      <option value="bing">Bing Map</option>
+      <option value="nokia">Nokia Map</option>
+      <option value="osm">OpenStreetMap</option>
+      <option value="soso">SOSO地图</option>
+      <option value="tianditu">天地图</option>
+      <!-- <option value="google">Google Map</option> -->
+      <!-- <option value="blend">Blend Map</option> -->
+      <!-- <option value="arcgisonline">ArcGIS Online</option> -->
+      <!-- <option value="gistech">捷泰地图</option> -->
+      <!-- <option value="autonavi">高德地图</option> -->
+    </select>
+    <canvas id="canvasId" width="1000" height="1000" style="cursor:default;"></canvas>
+    <a href="http://weibo.com/iispring" target="_blank" style="position:absolute;right:0px;bottom:0px;">
+      <img src="images/iSpring.png" />
+    </a>
+  </body>
+</html>
