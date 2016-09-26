@@ -3,4 +3,6 @@
 
 **如果觉得不错，欢迎Star和Fork！**
 
+Demo: https://ispring.github.io/WebGlobe/index.html
+
  ![这里写图片描述](https://github.com/iSpring/WebGlobe/blob/master/screenshot.png)
