@@ -2,7 +2,7 @@ define(["world/Kernel", "world/Utils", "world/Math"], function(Kernel, Utils, Ma
   var Elevation = {
     //sampleserver4.arcgisonline.com
     //23.21.85.73
-    elevationUrl: "http://sampleserver4.arcgisonline.com/ArcGIS/rest/services/Elevation/ESRI_Elevation_World/MapServer/exts/ElevationsSOE/ElevationLayers/1/GetElevationData",
+    elevationUrl: "//sampleserver4.arcgisonline.com/ArcGIS/rest/services/Elevation/ESRI_Elevation_World/MapServer/exts/ElevationsSOE/ElevationLayers/1/GetElevationData",
     elevations: {}, //缓存的高程数据
     factor: 1 //高程缩放因子
   };

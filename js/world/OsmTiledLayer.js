@@ -10,7 +10,7 @@ define(["world/TiledLayer"], function(TiledLayer) {
     var sum = level + row + column;
     var idx = sum % 3;
     var server = ["a","b","c"][idx];
-    var url = "http://"+server+".tile.openstreetmap.org/"+level+"/"+column+"/"+row+".png";
+    var url = "//"+server+".tile.openstreetmap.org/"+level+"/"+column+"/"+row+".png";
     return url;
   };
   return OsmTiledLayer;

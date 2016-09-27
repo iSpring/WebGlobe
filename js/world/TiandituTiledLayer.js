@@ -9,7 +9,7 @@ define(["world/TiledLayer"], function(TiledLayer) {
     var url = "";
     var sum = level + row + column;
     var serverIdx = sum % 8;
-    url = "http://t" + serverIdx + ".tianditu.com/DataServer?T=vec_w&x=" + column + "&y=" + row + "&l=" + level;
+    url = "//t" + serverIdx + ".tianditu.com/DataServer?T=vec_w&x=" + column + "&y=" + row + "&l=" + level;
     return url;
   };
   return TiandituTiledLayer;
