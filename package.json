@@ -1,0 +1,30 @@
+{
+  "name": "webglobe",
+  "version": "1.0.0",
+  "description": "A WebGL virtual globe and map engine.",
+  "main": "require.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iSpring/WebGlobe.git"
+  },
+  "keywords": [
+    "WebGL",
+    "Map",
+    "Globe",
+    "3D",
+    "HTML5"
+  ],
+  "author": "iSpring",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/iSpring/WebGlobe/issues"
+  },
+  "homepage": "https://github.com/iSpring/WebGlobe#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "requirejs": "^2.3.2"
+  }
+}

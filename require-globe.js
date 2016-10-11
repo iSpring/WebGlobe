@@ -1,0 +1,1 @@
+﻿require(["world/Globe"]);
