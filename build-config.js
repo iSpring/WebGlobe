@@ -1,8 +1,8 @@
-﻿{
-    baseUrl: ".",
-    paths: {
-        world: "js/world"
+﻿({
+    "baseUrl": ".",
+    "paths": {
+        "world": "js/world"
     },
-    name: "require-globe",
-    out: "buildOutput/main.js"
-}
+    "name": "main",
+    "out": "buildOutput/main.js"
+})
