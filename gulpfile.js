@@ -27,7 +27,8 @@ gulp.task("build", ["clear"], function(cb){
   console.log("execute build task");
   //return gulp.src("js/**/*.js").pipe(concat("world.js")).pipe(gulp.dest("build"));
   //r.js.cmd -o build-config.js
-  exec("node node_modules/requirejs/bin/r.js -o build-config.js", function(err, stdout, stderr){
+  var p = path.join(__dirname, "node_modules/requirejs/bin/r.js");
+  exec("node " + p + " -o build-config.js", function(err, stdout, stderr){
     if(stdout){
       console.log(stdout);
     }
