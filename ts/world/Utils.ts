@@ -8,15 +8,15 @@ const Utils = {
     LESS:"LESS",
     LEQUAL:"LEQUAL",
 
-    isBool:function(v: any){
+    isBool(v: any): boolean{
         return typeof v == "boolean";
     },
 
-    isNumber:function(v: any){
+    isNumber(v: any): boolean{
         return typeof v == "number";
     },
 
-    isInteger:function(v: any){
+    isInteger(v: any): boolean{
         var isInt = false;
         var isNum = this.isNumber(v);
         if(isNum){
@@ -35,7 +35,7 @@ const Utils = {
         return isInt;
     },
 
-    judgeNumberBoundary:function(num: number, operator: any, boundry: number){
+    judgeNumberBoundary(num: number, operator: any, boundry: number): boolean{
         if(operator != this.GREATER && operator != this.GEQUAL && operator != this.LESS && operator != this.LEQUAL){
             throw "operator is invalid";
         }
@@ -55,74 +55,73 @@ const Utils = {
         return b;
     },
 
-    isPositive:function(v: number){
+    isPositive(v: number): boolean{
         return this.judgeNumberBoundary(v,this.GREATER,0);
     },
 
-    isNegative:function(v: number){
+    isNegative(v: number): boolean{
         return this.judgeNumberBoundary(v,this.LESS,0);
     },
 
-    isNonNegative:function(v: number){
+    isNonNegative(v: number): boolean{
         return this.judgeNumberBoundary(v,this.GEQUAL,0);
     },
 
-    isNonPositive:function(v: number){
+    isNonPositive(v: number): boolean{
         return this.judgeNumberBoundary(v,this.LEQUAL,0);
     },
 
-    isPositiveInteger:function(v: number){
+    isPositiveInteger(v: number): boolean{
         return this.isPositive(v) && this.isInteger(v);
     },
 
-    isNonNegativeInteger:function(v: number){
+    isNonNegativeInteger(v: number): boolean{
         return this.isNonNegative(v) && this.isInteger;
     },
 
-    isString:function(v: any){
+    isString(v: any): boolean{
         return typeof v === "string";
     },
 
-    isArray:function(v: any){
+    isArray(v: any): boolean{
         return Object.prototype.toString.call(v) === '[object Array]';
     },
 
-    isFunction:function(v: any){
+    isFunction(v: any): boolean{
         return typeof v === "function";
     },
 
-    isNull:function(v:any){
+    isNull(v:any): boolean{
         return v === null;
     },
 
-    isUndefined:function(v:any){
+    isUndefined(v:any): boolean{
         return typeof v === "undefined";
     },
 
-    isNullOrUndefined:function(v:any){
+    isNullOrUndefined(v:any): boolean{
         return this.isNull(v)||this.isUndefined(v);
     },
 
-    isJsonObject:function(v:any){
+    isJsonObject(v:any): boolean{
         return typeof v === "object" && !this.isNull(v) && !this.isArray(v);
     },
 
-    isDom:function(v:any){
+    isDom(v:any): boolean{
         return v instanceof HTMLElement;
     },
 
-    forEach:function(arr: Array<any>, func: ArrayVoidCallbackFunction){
+    forEach(arr: Array<any>, func: ArrayVoidCallbackFunction): void{
         if(this.isFunction(Array.prototype.forEach)){
             arr.forEach(func);
-        }
-        else{
+        }else{
             for(var i=0;i<arr.length;i++){
                 func(arr[i],i,arr);
             }
         }
     },
 
-    filter:function(arr: Array<any>, func: ArrayBooleanCallbackFunction){
+    filter(arr: Array<any>, func: ArrayBooleanCallbackFunction): any[]{
         var result: Array<any> = [];
         if(this.isFunction(Array.prototype.filter)){
             result = arr.filter(func);
@@ -137,7 +136,7 @@ const Utils = {
         return result;
     },
 
-    map:function(arr: Array<any>, func: ArrayAnyCallbackFunction){
+    map(arr: Array<any>, func: ArrayAnyCallbackFunction): any[]{
         var result:any[] = [];
         if(this.isFunction(Array.prototype.map)){
             result = arr.map(func);
@@ -150,7 +149,7 @@ const Utils = {
         return result;
     },
 
-    some:function(arr: Array<any>, func: ArrayBooleanCallbackFunction){
+    some(arr: Array<any>, func: ArrayBooleanCallbackFunction): boolean{
         if(this.isFunction(Array.prototype.some)){
             return arr.some(func);
         }
@@ -164,7 +163,7 @@ const Utils = {
         }
     },
 
-    every:function(arr: Array<any>, func: ArrayBooleanCallbackFunction){
+    every(arr: Array<any>, func: ArrayBooleanCallbackFunction): boolean{
         if(this.isFunction(Array.prototype.every)){
             return arr.every(func);
         }
@@ -179,7 +178,7 @@ const Utils = {
     },
 
     //过滤掉数组中重复的元素
-    filterRepeatArray:function(arr: Array<any>){
+    filterRepeatArray(arr: Array<any>): number[]{
         var cloneArray = this.map(arr,function(item: any){
             return item;
         });
