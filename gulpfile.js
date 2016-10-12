@@ -2,6 +2,7 @@
 var path = require("path");
 var fs = require("fs");
 var rmdir = require("rmdir");
+var ts = require("gulp-typescript");
 var exec = require('child_process').exec;
 
 gulp.task("default", ["build"]);
@@ -24,7 +25,6 @@ gulp.task("clear", function(cb){
 });
 
 gulp.task("build", ["clear"], function(cb){
-  console.log("execute build task");
   //return gulp.src("js/**/*.js").pipe(concat("world.js")).pipe(gulp.dest("build"));
   //r.js.cmd -o build-config.js
   var p = path.join(__dirname, "node_modules/requirejs/bin/r.js");
@@ -37,4 +37,8 @@ gulp.task("build", ["clear"], function(cb){
     }
     cb(err);
   });
+});
+
+gulp.task("tsc", function(){
+  gulp.src("ts/**/*.ts");
 });
