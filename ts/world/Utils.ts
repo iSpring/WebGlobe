@@ -1,18 +1,22 @@
+type ArrayVoidCallbackFunction = (value: any, index: number, arr: Array<any>) => void;
+type ArrayBooleanCallbackFunction = (value: any, index: number, arr: any[]) => boolean;
+type ArrayAnyCallbackFunction = (value: any, index: number, arr: any[]) => any;
+
 const utils = {
     GREATER:"GREATER",
     GEQUAL:"GEQUAL",
     LESS:"LESS",
     LEQUAL:"LEQUAL",
 
-    isBool:function(v){
+    isBool:function(v: any){
         return typeof v == "boolean";
     },
 
-    isNumber:function(v){
+    isNumber:function(v: any){
         return typeof v == "number";
     },
 
-    isInteger:function(v){
+    isInteger:function(v: any){
         var isInt = false;
         var isNum = this.isNumber(v);
         if(isNum){
@@ -31,17 +35,11 @@ const utils = {
         return isInt;
     },
 
-    judgeNumberBoundary:function(num,operator,boundry){
-        if(!this.isNumber(num)){
-            throw "num is not number";
-        }
+    judgeNumberBoundary:function(num: number, operator: any, boundry: number){
         if(operator != this.GREATER && operator != this.GEQUAL && operator != this.LESS && operator != this.LEQUAL){
             throw "operator is invalid";
         }
-        if(!this.isNumber(boundry)){
-            throw "boundry is not number";
-        }
-        var b;
+        var b:boolean;
         if(operator == this.GREATER){
             b = num > boundry;
         }
@@ -57,69 +55,63 @@ const utils = {
         return b;
     },
 
-    isPositive:function(v){
+    isPositive:function(v: number){
         return this.judgeNumberBoundary(v,this.GREATER,0);
     },
 
-    isNegative:function(v){
+    isNegative:function(v: number){
         return this.judgeNumberBoundary(v,this.LESS,0);
     },
 
-    isNonNegative:function(v){
+    isNonNegative:function(v: number){
         return this.judgeNumberBoundary(v,this.GEQUAL,0);
     },
 
-    isNonPositive:function(v){
+    isNonPositive:function(v: number){
         return this.judgeNumberBoundary(v,this.LEQUAL,0);
     },
 
-    isPositiveInteger:function(v){
+    isPositiveInteger:function(v: number){
         return this.isPositive(v) && this.isInteger(v);
     },
 
-    isNonNegativeInteger:function(v){
+    isNonNegativeInteger:function(v: number){
         return this.isNonNegative(v) && this.isInteger;
     },
 
-    isString:function(v){
-        return typeof v == "string";
+    isString:function(v: any){
+        return typeof v === "string";
     },
 
-    isArray:function(v){
+    isArray:function(v: any){
         return Object.prototype.toString.call(v) === '[object Array]';
     },
 
-    isFunction:function(v){
-        return typeof v == "function";
+    isFunction:function(v: any){
+        return typeof v === "function";
     },
 
-    isNull:function(v){
+    isNull:function(v:any){
         return v === null;
     },
 
-    isUndefined:function(v){
-        return typeof v == "undefined";
+    isUndefined:function(v:any){
+        return typeof v === "undefined";
     },
 
-    isNullOrUndefined:function(v){
+    isNullOrUndefined:function(v:any){
         return this.isNull(v)||this.isUndefined(v);
     },
 
-    isJsonObject:function(v){
-        return typeof v == "object" && !this.isNull(v) && !this.isArray(v);
+    isJsonObject:function(v:any){
+        return typeof v === "object" && !this.isNull(v) && !this.isArray(v);
     },
 
-    isDom:function(v){
+    isDom:function(v:any){
         return v instanceof HTMLElement;
     },
 
-    forEach:function(arr,func){
-        if(!(this.isArray(arr))){
-            throw "invalid arr";
-        }
-        if(!(this.isFunction(func))){
-            throw "invalid func";
-        }
+    forEach:function(arr: Array<any>, func: ArrayVoidCallbackFunction){
         if(this.isFunction(Array.prototype.forEach)){
             arr.forEach(func);
         }
@@ -130,14 +122,8 @@ const utils = {
         }
     },
 
-    filter:function(arr,func){
-        if(!(this.isArray(arr))){
-            throw "invalid arr";
-        }
-        if(!(this.isFunction(func))){
-            throw "invalid func";
-        }
-        var result = [];
+    filter:function(arr: Array<any>, func: ArrayBooleanCallbackFunction){
+        var result: Array<any> = [];
         if(this.isFunction(Array.prototype.filter)){
             result = arr.filter(func);
         }
@@ -151,14 +137,8 @@ const utils = {
         return result;
     },
 
-    map:function(arr,func){
-        if(!(this.isArray(arr))){
-            throw "invalid arr";
-        }
-        if(!(this.isFunction(func))){
-            throw "invalid func";
-        }
-        var result = [];
+    map:function(arr: Array<any>, func: ArrayAnyCallbackFunction){
+        var result:any[] = [];
         if(this.isFunction(Array.prototype.map)){
             result = arr.map(func);
         }
@@ -170,13 +150,7 @@ const utils = {
         return result;
     },
 
-    some:function(arr,func){
-        if(!(this.isArray(arr))){
-            throw "invalid arr";
-        }
-        if(!(this.isFunction(func))){
-            throw "invalid func";
-        }
+    some:function(arr: Array<any>, func: ArrayBooleanCallbackFunction){
         if(this.isFunction(Array.prototype.some)){
             return arr.some(func);
         }
@@ -190,13 +164,7 @@ const utils = {
         }
     },
 
-    every:function(arr,func){
-        if(!(this.isArray(arr))){
-            throw "invalid arr";
-        }
-        if(!(this.isFunction(func))){
-            throw "invalid func";
-        }
+    every:function(arr: Array<any>, func: ArrayBooleanCallbackFunction){
         if(this.isFunction(Array.prototype.every)){
             return arr.every(func);
         }
@@ -211,17 +179,14 @@ const utils = {
     },
 
     //过滤掉数组中重复的元素
-    filterRepeatArray:function(arr){
-        if(!this.isArray(arr)){
-            throw "invalid arr: not Array";
-        }
-        var cloneArray = this.map(arr,function(item){
+    filterRepeatArray:function(arr: Array<any>){
+        var cloneArray = this.map(arr,function(item: any){
             return item;
         });
-        var simplifyArray = [];
+        var simplifyArray: Array<any> = [];
         while(cloneArray.length > 0){
             var e = cloneArray[0];
-            var exist = this.some(simplifyArray,function(item){
+            var exist = this.some(simplifyArray,function(item: any){
                 return e.equals(item);
             });
             if(!exist){
@@ -233,4 +198,4 @@ const utils = {
     }
 };
 
-export default utils;
+export = utils;

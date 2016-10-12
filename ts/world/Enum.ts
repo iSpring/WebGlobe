@@ -11,4 +11,4 @@ enum Enum {
     TERRAIN_TILE
 }
 
-export default Enum;
+export = Enum;

@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "module": "amd",
+        "target": "es5",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "preserveConstEnums": true
+    },
+    "include": [
+        "ts/**/*.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "ts/world/Math.ts"
+    ]
+}

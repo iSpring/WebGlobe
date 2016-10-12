@@ -26,12 +26,6 @@ const math = {
      * @returns {number} 整数的十进制数据
      */
     numerationSystemTo10(numSys: number, strNum: string) : number{
-        if(!Utils.isPositiveInteger(numSys)){
-            throw "invalid numSys";
-        }
-        if(!Utils.isString(strNum)){
-            throw "invalid strNum";
-        }
         var sum = 0;
         for(var i=0;i<strNum.length;i++){
             var level = strNum.length-1-i;
@@ -47,13 +41,7 @@ const math = {
      * @param num 要转换的十进制数字
      * @returns {string} 字符串形式的其他进制的数据
      */
-    numerationSystemFrom10 : function(numSys,num){
-        if(!Utils.isPositiveInteger(numSys)){
-            throw "invalid numSys";
-        }
-        if(!Utils.isInteger(num)){
-            throw "invalid num";
-        }
+    numerationSystemFrom10 : function(numSys: number, num: number){
         var tempResultArray = [];
         var quotient = Math.floor(num/numSys);
         var remainder = num%numSys;
@@ -76,16 +64,7 @@ const math = {
      * @param strNumFrom
      * @returns {string}
      */
-    numerationSystemChange: function(numSysFrom,numSysTo,strNumFrom){
-        if(!Utils.isPositiveInteger(numSysFrom)){
-            throw "invalid numSysFrom";
-        }
-        if(!Utils.isPositiveInteger(numSysTo)){
-            throw "invalid numSysTo";
-        }
-        if(!Utils.isString(strNumFrom)){
-            throw "invalid strNumFrom";
-        }
+    numerationSystemChange: function(numSysFrom: number,numSysTo:number,strNumFrom:string){
         var temp10 = this.numerationSystemTo10(numSysFrom,strNumFrom);
         var strResult = this.numerationSystemFrom10(numSysTo,temp10);
         return strResult;
