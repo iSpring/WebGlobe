@@ -1,6 +1,12 @@
-import Utils from "./Utils";
+import Kernel = require('./Kernel');
+import Utils = require('./Utils');
+import Vertice = require('./Vertice');
+import Vector = require('./Vector');
+import Line = require('./Line');
+import Plan = require('./Plan');
+import TileGrid = require('./TileGrid');
 
-const math = {
+const MathUtils = {
     ONE_RADIAN_EQUAL_DEGREE:57.29577951308232,//180/Math.PI
     ONE_DEGREE_EQUAL_RADIAN:0.017453292519943295,//Math.PI/180
     LEFT_TOP:"LEFT_TOP",
@@ -73,21 +79,12 @@ const math = {
     /**
      * 计算三角形的面积
      */
-    getTriangleArea : function(v1,v2,v3){
-        if(!(v1 instanceof World.Vertice)){
-            throw "invalid v1";
-        }
-        if(!(v2 instanceof World.Vertice)){
-            throw "invalid v2";
-        }
-        if(!(v3 instanceof World.Vertice)){
-            throw "invalid v3";
-        }
+    getTriangleArea(v1: Vertice, v2: Vertice, v3: Vertice){
         var v1Copy = v1.getCopy();
         var v2Copy = v2.getCopy();
         var v3Copy = v3.getCopy();
         var direction = v3Copy.minus(v2Copy);
-        var line = new World.Line(v2Copy,direction);
+        var line = new Line(v2Copy,direction);
         var h = this.getLengthFromVerticeToLine(v1Copy,line);
         var w = this.getLengthFromVerticeToVertice(v2Copy,v3Copy);
         var area = 0.5*w*h;
@@ -100,13 +97,7 @@ const math = {
      * @param vertice2
      * @return {Number}
      */
-    getLengthFromVerticeToVertice : function(vertice1,vertice2){
-        if(!(vertice1 instanceof World.Vertice)){
-            throw "invalid vertice1";
-        }
-        if(!(vertice2 instanceof World.Vertice)){
-            throw "invalid vertice2";
-        }
+    getLengthFromVerticeToVertice(vertice1: Vertice, vertice2: Vertice){
         var vertice1Copy = vertice1.getCopy();
         var vertice2Copy = vertice2.getCopy();
         var length2 = Math.pow(vertice1Copy.x-vertice2Copy.x,2) + Math.pow(vertice1Copy.y-vertice2Copy.y,2) + Math.pow(vertice1Copy.z-vertice2Copy.z,2);
@@ -121,13 +112,7 @@ const math = {
      * @param line 直线
      * @return {Number}
      */
-    getLengthFromVerticeToLine : function(vertice,line){
-        if(!(vertice instanceof World.Vertice)){
-            throw "invalid vertice";
-        }
-        if(!(line instanceof World.Line)){
-            throw "invalid line";
-        }
+    getLengthFromVerticeToLine : function(vertice: Vertice, line: Line){
         var verticeCopy = vertice.getCopy();
         var lineCopy = line.getCopy();
         var x0 = verticeCopy.x;
@@ -155,13 +140,7 @@ const math = {
      * @param plan 平面，包含A、B、C、D四个参数信息
      * @return {Number}
      */
-    getLengthFromVerticeToPlan : function(vertice,plan){
-        if(!(vertice instanceof World.Vertice)){
-            throw "invalid vertice";
-        }
-        if(!(plan instanceof World.Plan)){
-            throw "invalid plan";
-        }
+    getLengthFromVerticeToPlan(vertice: Vertice, plan: Plan){
         var verticeCopy = vertice.getCopy();
         var planCopy = plan.getCopy();
         var x = verticeCopy.x;
@@ -184,19 +163,13 @@ const math = {
      * @param plan
      * @return {World.Vertice}
      */
-    getVerticeVerticalIntersectPointWidthPlan : function(vertice,plan){
-        if(!(vertice instanceof World.Vertice)){
-            throw "invalid vertice";
-        }
-        if(!(plan instanceof World.Plan)){
-            throw "invalid plan";
-        }
+    getVerticeVerticalIntersectPointWidthPlan(vertice: Vertice, plan: Plan){
         var verticeCopy = vertice.getCopy();
         var planCopy = plan.getCopy();
         var x0 = verticeCopy.x;
         var y0 = verticeCopy.y;
         var z0 = verticeCopy.z;
-        var normalVector = new World.Vector(planCopy.A,planCopy.B,planCopy.C);
+        var normalVector = new Vector(planCopy.A,planCopy.B,planCopy.C);
         normalVector.normalize();
         var a = normalVector.x;
         var b = normalVector.y;
@@ -206,17 +179,11 @@ const math = {
         var x = k*a+x0;
         var y = k*b+y0;
         var z = k*c+z0;
-        var intersectVertice = new World.Vertice(x,y,z);
+        var intersectVertice = new Vertice(x,y,z);
         return intersectVertice;
     },
 
-    getIntersectPointByLineAdPlan : function(line,plan){
-        if(!(line instanceof World.Line)){
-            throw "invalid line";
-        }
-        if(!(plan instanceof World.Plan)){
-            throw "invalid plan";
-        }
+    getIntersectPointByLineAdPlan(line: Line, plan: Plan){
         var lineCopy = line.getCopy();
         var planCopy = plan.getCopy();
         lineCopy.vector.normalize();
@@ -234,7 +201,7 @@ const math = {
         var x = k*a+x0;
         var y = k*b+y0;
         var z = k*c+z0;
-        var intersectVertice = new World.Vertice(x,y,z);
+        var intersectVertice = new Vertice(x,y,z);
         return intersectVertice;
     },
 
@@ -244,16 +211,13 @@ const math = {
      * @param line 与地球求交的直线
      * @return {Array}
      */
-    getLineIntersectPointWithEarth : function(line){
-        if(!(line instanceof World.Line)){
-            throw "invalid line";
-        }
+    getLineIntersectPointWithEarth(line: Line): number[]{
         var result = [];
         var lineCopy = line.getCopy();
         var vertice = lineCopy.vertice;
         var direction = lineCopy.vector;
         direction.normalize();
-        var r = World.EARTH_RADIUS;
+        var r = Kernel.EARTH_RADIUS;
         var a = direction.x;
         var b = direction.y;
         var c = direction.z;
@@ -285,7 +249,7 @@ const math = {
                 var x = k*a+x0;
                 var y = k*b+y0;
                 var z = k*c+z0;
-                var p = new World.Vertice(x,y,z);
+                var p = new Vertice(x,y,z);
                 result.push(p);
             }
             else if(delta > 0){
@@ -294,14 +258,14 @@ const math = {
                 var x1 = k1*a+x0;
                 var y1 = k1*b+y0;
                 var z1 = k1*c+z0;
-                var p1 = new World.Vertice(x1,y1,z1);
+                var p1 = new Vertice(x1,y1,z1);
                 result.push(p1);
 
                 var k2 = (-2*t-sqrtDelta)/(2*A);
                 var x2 = k2*a+x0;
                 var y2 = k2*b+y0;
                 var z2 = k2*c+z0;
-                var p2 = new World.Vertice(x2,y2,z2);
+                var p2 = new Vertice(x2,y2,z2);
                 result.push(p2);
             }
         }
@@ -315,13 +279,7 @@ const math = {
      * @param direction 向量V
      * @return {Object} World.Plan 返回平面表达式中Ax+By+Cz+D=0的A、B、C、D的信息
      */
-    getCrossPlaneByLine : function(vertice,direction){
-        if(!(vertice instanceof World.Vertice)){
-            throw "invalid vertice";
-        }
-        if(!(direction instanceof World.Vector)){
-            throw "invalid direction";
-        }
+    getCrossPlaneByLine(vertice: Vertice, direction: Vector): Plan{
         var verticeCopy = vertice.getCopy();
         var directionCopy = direction.getCopy();
         directionCopy.normalize();
@@ -332,34 +290,34 @@ const math = {
         var y0 = verticeCopy.y;
         var z0 = verticeCopy.z;
         var d = -(a*x0+b*y0+c*z0);
-        var plan = new World.Plan(a,b,c,d);
+        var plan = new Plan(a,b,c,d);
         return plan;
     },
 
     ///////////////////////////////////////////////////////////////////////////////////////////
     //点变换: Canvas->NDC
-    convertPointFromCanvasToNDC : function(canvasX,canvasY){
+    convertPointFromCanvasToNDC(canvasX: number, canvasY: number): number[]{
         if(!(Utils.isNumber(canvasX))){
             throw "invalid canvasX";
         }
         if(!(Utils.isNumber(canvasY))){
             throw "invalid canvasY";
         }
-        var ndcX = 2 * canvasX / World.canvas.width - 1;
-        var ndcY = 1 - 2 * canvasY / World.canvas.height;
+        var ndcX = 2 * canvasX / Kernel.canvas.width - 1;
+        var ndcY = 1 - 2 * canvasY / Kernel.canvas.height;
         return [ndcX,ndcY];
     },
 
     //点变换: NDC->Canvas
-    convertPointFromNdcToCanvas : function(ndcX,ndcY){
+    convertPointFromNdcToCanvas(ndcX: number, ndcY: number): number[]{
         if(!(Utils.isNumber(ndcX))){
             throw "invalid ndcX";
         }
         if(!(Utils.isNumber(ndcY))){
             throw "invalid ndcY";
         }
-        var canvasX = (1 + ndcX) * World.canvas.width / 2.0;
-        var canvasY = (1 - ndcY) * World.canvas.height / 2.0;
+        var canvasX = (1 + ndcX) * Kernel.canvas.width / 2.0;
+        var canvasY = (1 - ndcY) * Kernel.canvas.height / 2.0;
         return [canvasX,canvasY];
     },
 
@@ -368,10 +326,7 @@ const math = {
      * @param level
      * @return {*}
      */
-    getLengthFromCamera2EarthSurface : function(level){
-        if(!(World.Utils.isNonNegativeInteger(level))){
-            throw "invalid level";
-        }
+    getLengthFromCamera2EarthSurface(level: number): number{
         return 7820683/Math.pow(2,level);
     },
 
@@ -381,14 +336,14 @@ const math = {
      * @r optional 可选的地球半径
      * @p 笛卡尔坐标系中的坐标
      */
-    geographicToCartesianCoord : function(lon,lat,r){
-        if(!(Utils.isNumber(lon) && lon >= -(180+0.001) && lon <= (180+0.001))){
+    geographicToCartesianCoord(lon:number, lat: number, r: number): Vertice{
+        if(!(lon >= -(180+0.001) && lon <= (180+0.001))){
             throw "invalid lon";
         }
-        if(!(Utils.isNumber(lat) && lat >= -(90+0.001) && lat <= (90+0.001))){
+        if(!(lat >= -(90+0.001) && lat <= (90+0.001))){
             throw "invalid lat";
         }
-        r = r||World.EARTH_RADIUS;
+        r = r||Kernel.EARTH_RADIUS;
         var radianLon = this.degreeToRadian(lon);
         var radianLat = this.degreeToRadian(lat);
         var sin1 = Math.sin(radianLon);
@@ -398,7 +353,7 @@ const math = {
         var x = r*sin1*cos2;
         var y = r*sin2;
         var z = r*cos1*cos2;
-        return new World.Vertice(x,y,z);
+        return new Vertice(x,y,z);
     },
 
     /**
@@ -406,15 +361,12 @@ const math = {
      * @param vertice
      * @return {Array}
      */
-    cartesianCoordToGeographic : function(vertice){
-        if(!(vertice instanceof World.Vertice)){
-            throw "invalid vertice";
-        }
+    cartesianCoordToGeographic(vertice: Vertice): number[]{
         var verticeCopy = vertice.getCopy();
         var x = verticeCopy.x;
         var y = verticeCopy.y;
         var z = verticeCopy.z;
-        var sin2 = y/World.EARTH_RADIUS;
+        var sin2 = y/Kernel.EARTH_RADIUS;
         if(sin2 > 1){
             sin2 = 2;
         }
@@ -423,14 +375,14 @@ const math = {
         }
         var radianLat = Math.asin(sin2);
         var cos2 = Math.cos(radianLat);
-        var sin1 = x / (World.EARTH_RADIUS * cos2);
+        var sin1 = x / (Kernel.EARTH_RADIUS * cos2);
         if(sin1 > 1){
             sin1 = 1;
         }
         else if(sin1 < -1){
             sin1 = -1;
         }
-        var cos1 = z / (World.EARTH_RADIUS * cos2);
+        var cos1 = z / (Kernel.EARTH_RADIUS * cos2);
         if(cos1 > 1){
             cos1 = 1;
         }
@@ -454,9 +406,9 @@ const math = {
                 radianLog = -radianLog - Math.PI;
             }
         }
-        var degreeLat = math.radianToDegree(radianLat);
-        var degreeLog = math.radianToDegree(radianLog);
-        return [degreeLog,degreeLat];
+        var degreeLat = this.radianToDegree(radianLat);
+        var degreeLog = this.radianToDegree(radianLog);
+        return [degreeLog, degreeLat];
     },
 
     /**
@@ -467,16 +419,7 @@ const math = {
      * @param position tile在父tile中的位置
      * @return {Object}
      */
-    getTileGridByParent : function(parentLevel,parentRow,parentColumn,position){
-        if(!Utils.isNonNegativeInteger(parentLevel)){
-            throw "invalid parentLevel";
-        }
-        if(!Utils.isNonNegativeInteger(parentRow)){
-            throw "invalid parentRow";
-        }
-        if(!Utils.isNonNegativeInteger(parentColumn)){
-            throw "invalid parentColumn";
-        }
+    getTileGridByParent(parentLevel: number, parentRow: number, parentColumn: number, position: number): TileGrid{
         var level = parentLevel + 1;
         var row = -1;
         var column = -1;
@@ -499,20 +442,11 @@ const math = {
         else{
             throw "invalid position";
         }
-        return new World.TileGrid(level,row,column);
+        return new TileGrid(level,row,column);
     },
 
     //返回切片在直接付切片中的位置
-    getTilePositionOfParent : function(level,row,column,/*optional*/ parent){
-        if(!World.Utils.isNonNegativeInteger(level)){
-            throw "invalid level";
-        }
-        if(!World.Utils.isNonNegativeInteger(row)){
-            throw "invalid row";
-        }
-        if(!World.Utils.isNonNegativeInteger(column)){
-            throw "invalid column";
-        }
+    getTilePositionOfParent(level: number, row: number, column: number, parent?: TileGrid): any{
         var position = "UNKNOWN";
         parent = parent||this.getTileGridAncestor(level-1,level,row,column);
         var ltTileGrid = this.getTileGridByParent(parent.level,parent.row,parent.column,this.LEFT_TOP);
@@ -542,19 +476,9 @@ const math = {
     },
 
     //获取在某一level周边position的切片
-    getTileGridByBrother : function(brotherLevel,brotherRow,brotherColumn,position,options){
-        if(!(World.Utils.isNonNegativeInteger(brotherLevel))){
-            throw "invalid brotherLevel";
-        }
-        if(!(World.Utils.isNonNegativeInteger(brotherRow))){
-            throw "invalid brotherRow";
-        }
-        if(!(World.Utils.isNonNegativeInteger(brotherColumn))){
-            throw "invalid brotherColumn";
-        }
-
+    getTileGridByBrother(brotherLevel: number, brotherRow: number, brotherColumn: number, position: number, options: any){
         options = options||{};
-        var result = new World.TileGrid(brotherLevel,brotherRow,brotherColumn);
+        var result = new TileGrid(brotherLevel,brotherRow,brotherColumn);
 
         //TODO maxSize可优化 该level下row/column的最大数量
         if(position == this.LEFT){
@@ -607,19 +531,7 @@ const math = {
      * @param column 当前切片column
      * @returns {null}
      */
-    getTileGridAncestor : function(ancestorLevel,level,row,column){
-        if(!Utils.isNonNegativeInteger(ancestorLevel)){
-            throw "invalid ancestorLevel";
-        }
-        if(!Utils.isNonNegativeInteger(level)){
-            throw "invalid level";
-        }
-        if(!Utils.isNonNegativeInteger(row)){
-            throw "invalid row";
-        }
-        if(!Utils.isNonNegativeInteger(column)){
-            throw "invalid column";
-        }
+    getTileGridAncestor(ancestorLevel: number, level: number, row: number, column: number): TileGrid{
         var result = null;
         if(ancestorLevel < level){
             var deltaLevel = level - ancestorLevel;
@@ -627,33 +539,30 @@ const math = {
             var a = Math.pow(2,deltaLevel);
             var ancestorRow = Math.floor(row/a);
             var ancestorColumn = Math.floor(column/a);
-            result = new World.TileGrid(ancestorLevel,ancestorRow,ancestorColumn);
+            result = new TileGrid(ancestorLevel,ancestorRow,ancestorColumn);
         }
         else if(ancestorLevel == level){
-            result = new World.TileGrid(level,row,column);
+            result = new TileGrid(level,row,column);
         }
         return result;
     },
 
-    getTileGridByGeo : function(lon,lat,level){
-        if(!(World.Utils.isNumber(lon) && lon >= -180 && lon <= 180)){
+    getTileGridByGeo(lon: number, lat: number, level: number): TileGrid{
+        if(!(lon >= -180 && lon <= 180)){
             throw "invalid lon";
         }
-        if(!(World.Utils.isNumber(lat) && lat >= -90 && lat <= 90)){
+        if(!(lat >= -90 && lat <= 90)){
             throw "invalid lat";
-        }
-        if(!World.Utils.isNonNegativeInteger(level)){
-            throw "invalid level";
         }
         var coordWebMercator = this.degreeGeographicToWebMercator(lon,lat);
         var x = coordWebMercator[0];
         var y = coordWebMercator[1];
-        var horX = x + World.MAX_PROJECTED_COORD;
-        var verY = World.MAX_PROJECTED_COORD - y;
-        var size = World.MAX_PROJECTED_COORD / Math.pow(2,level-1);
+        var horX = x + Kernel.MAX_PROJECTED_COORD;
+        var verY = Kernel.MAX_PROJECTED_COORD - y;
+        var size = Kernel.MAX_PROJECTED_COORD / Math.pow(2,level-1);
         var row = Math.floor(verY / size);
         var column = Math.floor(horX / size);
-        return new World.TileGrid(level,row,column);
+        return new TileGrid(level,row,column);
     },
 
     /**
@@ -661,11 +570,8 @@ const math = {
      * @param degree
      * @return {*}
      */
-    degreeToRadian : function(degree){
-        if(!(World.Utils.isNumber(degree))){
-            throw "invalid degree";
-        }
-        return degree*this.ONE_DEGREE_EQUAL_RADIAN;
+    degreeToRadian(degree: number){
+        return degree * this.ONE_DEGREE_EQUAL_RADIAN;
     },
 
     /**
@@ -673,11 +579,8 @@ const math = {
      * @param radian
      * @return {*}
      */
-    radianToDegree : function(radian){
-        if(!(Utils.isNumber(radian))){
-            throw "invalid radian";
-        }
-        return radian*this.ONE_RADIAN_EQUAL_DEGREE;
+    radianToDegree(radian: number){
+        return radian * this.ONE_RADIAN_EQUAL_DEGREE;
     },
 
     /**
@@ -685,11 +588,8 @@ const math = {
      * @param x 投影坐标x
      * @return {Number} 返回的经度信息以弧度表示
      */
-    webMercatorXToRadianLog : function(x){
-        if(!(Utils.isNumber(x))){
-            throw "invalid x";
-        }
-        return x / World.EARTH_RADIUS;
+    webMercatorXToRadianLog(x: number){
+        return x / Kernel.EARTH_RADIUS;
     },
 
     /**
@@ -697,10 +597,7 @@ const math = {
      * @param x 投影坐标x
      * @return {*} 返回的经度信息以角度表示
      */
-    webMercatorXToDegreeLog : function(x){
-        if(!(Utils.isNumber(x))){
-            throw "invalid x";
-        }
+    webMercatorXToDegreeLog(x: number): number{
         var radianLog = this.webMercatorXToRadianLog(x);
         return this.radianToDegree(radianLog);
     },
@@ -710,11 +607,11 @@ const math = {
      * @param y 投影坐标y
      * @return {Number} 返回的纬度信息以弧度表示
      */
-    webMercatorYToRadianLat : function(y){
+    webMercatorYToRadianLat(y: number): number{
         if(!(Utils.isNumber(y))){
             throw "invalid y";
         }
-        var a = y / World.EARTH_RADIUS;
+        var a = y / Kernel.EARTH_RADIUS;
         var b = Math.pow(Math.E,a);
         var c = Math.atan(b);
         var radianLat = 2*c - Math.PI/2;
@@ -726,10 +623,7 @@ const math = {
      * @param y 投影坐标y
      * @return {*} 返回的纬度信息以角度表示
      */
-    webMercatorYToDegreeLat : function(y){
-        if(!(Utils.isNumber(y))){
-            throw "invalid y";
-        }
+    webMercatorYToDegreeLat(y: number): number{
         var radianLat = this.webMercatorYToRadianLat(y);
         return this.radianToDegree(radianLat);
     },
@@ -740,7 +634,7 @@ const math = {
      * @param y 投影坐标y
      * @return {Array} 返回的经纬度信息以弧度表示
      */
-    webMercatorToRadianGeographic : function(x,y){
+    webMercatorToRadianGeographic(x: number, y: number): number[]{
         var radianLog = this.webMercatorXToRadianLog(x);
         var radianLat = this.webMercatorYToRadianLat(y);
         return [radianLog,radianLat];
@@ -752,7 +646,7 @@ const math = {
      * @param y 投影坐标y
      * @return {Array} 返回的经纬度信息以角度表示
      */
-    webMercatorToDegreeGeographic : function(x,y){
+    webMercatorToDegreeGeographic(x: number, y: number): number[]{
         var degreeLog = this.webMercatorXToDegreeLog(x);
         var degreeLat = this.webMercatorYToDegreeLat(y);
         return [degreeLog,degreeLat];
@@ -763,11 +657,11 @@ const math = {
      * @param radianLog 以弧度表示的经度
      * @return {*} 投影坐标x
      */
-    radianLogToWebMercatorX : function(radianLog){
+    radianLogToWebMercatorX(radianLog: number): number{
         if(!(Utils.isNumber(radianLog) && radianLog <= (Math.PI+0.001) && radianLog >= -(Math.PI+0.001))){
             throw "invalid radianLog";
         }
-        return World.EARTH_RADIUS * radianLog;
+        return Kernel.EARTH_RADIUS * radianLog;
     },
 
     /**
@@ -775,7 +669,7 @@ const math = {
      * @param degreeLog 以角度表示的经度
      * @return {*} 投影坐标x
      */
-    degreeLogToWebMercatorX : function(degreeLog){
+    degreeLogToWebMercatorX(degreeLog: number): number{
         if(!(Utils.isNumber(degreeLog) && degreeLog <= (180+0.001) && degreeLog >= -(180+0.001))){
             throw "invalid degreeLog";
         }
@@ -788,14 +682,14 @@ const math = {
      * @param radianLat 以弧度表示的纬度
      * @return {Number} 投影坐标y
      */
-    radianLatToWebMercatorY : function(radianLat){
-        if(!(Utils.isNumber(radianLat) && radianLat <= (Math.PI/2+0.001) && radianLat >= -(Math.PI/2+0.001))){
+    radianLatToWebMercatorY(radianLat: number): number{
+        if(!(radianLat <= (Math.PI/2+0.001) && radianLat >= -(Math.PI/2+0.001))){
             throw "invalid radianLat";
         }
         var a = Math.PI/4 + radianLat/2;
         var b = Math.tan(a);
         var c = Math.log(b);
-        var y = World.EARTH_RADIUS * c;
+        var y = Kernel.EARTH_RADIUS * c;
         return y;
     },
 
@@ -804,8 +698,8 @@ const math = {
      * @param degreeLat 以角度表示的纬度
      * @return {Number} 投影坐标y
      */
-    degreeLatToWebMercatorY : function(degreeLat){
-        if(!(Utils.isNumber(degreeLat) && degreeLat <= (90+0.001) && degreeLat >= -(90+0.001))){
+    degreeLatToWebMercatorY(degreeLat: number): number{
+        if(!(degreeLat <= (90+0.001) && degreeLat >= -(90+0.001))){
             throw "invalid degreeLat";
         }
         var radianLat = this.degreeToRadian(degreeLat);
@@ -818,7 +712,7 @@ const math = {
      * @param radianLat 以弧度表示的纬度
      * @return {Array}  投影坐标x、y
      */
-    radianGeographicToWebMercator : function(radianLog,radianLat){
+    radianGeographicToWebMercator(radianLog: number, radianLat: number): number[]{
         var x = this.radianLogToWebMercatorX(radianLog);
         var y = this.radianLatToWebMercatorY(radianLat);
         return [x,y];
@@ -830,24 +724,15 @@ const math = {
      * @param degreeLat 以角度表示的纬度
      * @return {Array}
      */
-    degreeGeographicToWebMercator : function(degreeLog,degreeLat){
+    degreeGeographicToWebMercator(degreeLog: number, degreeLat: number): number[]{
         var x = this.degreeLogToWebMercatorX(degreeLog);
         var y = this.degreeLatToWebMercatorY(degreeLat);
         return [x,y];
     },
 
     //根据切片的level、row、column计算该切片所覆盖的投影区域的范围
-    getTileWebMercatorEnvelopeByGrid : function(level,row,column){
-        if(!(Utils.isNonNegativeInteger(level))){
-            throw "invalid level";
-        }
-        if(!(Utils.isNonNegativeInteger(row))){
-            throw "invalid row";
-        }
-        if(!(Utils.isNonNegativeInteger(column))){
-            throw "invalid column";
-        }
-        var k = World.MAX_PROJECTED_COORD;
+    getTileWebMercatorEnvelopeByGrid(level: number, row: number, column: number): Object{
+        var k = Kernel.MAX_PROJECTED_COORD;
         var size = 2*k / Math.pow(2,level);
         var minX = -k + column * size;
         var maxX = minX + size;
@@ -863,16 +748,7 @@ const math = {
     },
 
     //根据切片的level、row、column计算该切片所覆盖的经纬度区域的范围,以经纬度表示返回结果
-    getTileGeographicEnvelopByGrid : function(level,row,column){
-        if(!(Utils.isNonNegativeInteger(level))){
-            throw "invalid level";
-        }
-        if(!(Utils.isNonNegativeInteger(row))){
-            throw "invalid row";
-        }
-        if(!(Utils.isNonNegativeInteger(column))){
-            throw "invalid column";
-        }
+    getTileGeographicEnvelopByGrid(level: number, row: number, column: number): Object{
         var Eproj = this.getTileWebMercatorEnvelopeByGrid(level,row,column);
         var pMin = this.webMercatorToDegreeGeographic(Eproj.minX,Eproj.minY);
         var pMax = this.webMercatorToDegreeGeographic(Eproj.maxX,Eproj.maxY);
@@ -886,16 +762,7 @@ const math = {
     },
 
     //根据切片的level、row、column计算该切片所覆盖的笛卡尔空间直角坐标系的范围,以x、y、z表示返回结果
-    getTileCartesianEnvelopByGrid : function(level,row,column){
-        if(!(Utils.isNonNegativeInteger(level))){
-            throw "invalid level";
-        }
-        if(!(Utils.isNonNegativeInteger(row))){
-            throw "invalid row";
-        }
-        if(!(Utils.isNonNegativeInteger(column))){
-            throw "invalid column";
-        }
+    getTileCartesianEnvelopByGrid(level: number, row: number, column: number): Object{
         var Egeo = this.getTileGeographicEnvelopByGrid(level,row,column);
         var minLon = Egeo.minLon;
         var minLat = Egeo.minLat;
@@ -925,16 +792,7 @@ const math = {
      * @param column
      * @return {Array}
      */
-    getGeographicTileCenter : function(level,row,column){
-        if(!(Utils.isNonNegativeInteger(level))){
-            throw "invalid level";
-        }
-        if(!(Utils.isNonNegativeInteger(row))){
-            throw "invalid row";
-        }
-        if(!(Utils.isNonNegativeInteger(column))){
-            throw "invalid column";
-        }
+    getGeographicTileCenter(level: number, row: number, column: number): number[]{
         var Egeo = this.getTileGeographicEnvelopByGrid(level,row,column);
         var minLon = Egeo.minLon;
         var minLat = Egeo.minLat;
@@ -946,16 +804,7 @@ const math = {
         return lonlatTileCenter;
     },
 
-    getCartesianTileCenter : function(level,row,column){
-        if(!(Utils.isNonNegativeInteger(level))){
-            throw "invalid level";
-        }
-        if(!(Utils.isNonNegativeInteger(row))){
-            throw "invalid row";
-        }
-        if(!(Utils.isNonNegativeInteger(column))){
-            throw "invalid column";
-        }
+    getCartesianTileCenter(level: number, row: number, column: number): Vertice{
         var lonLat = this.getGeographicTileCenter(level,row,column);
         var vertice = this.geographicToCartesianCoord(lonLat[0],lonLat[1]);
         return vertice;
@@ -967,13 +816,7 @@ const math = {
      * @param ind 传入的顶点的索引数组 array
      * @return {Array} 返回每个顶点的平均法向量的数组
      */
-    calculateNormals : function(vs, ind){
-        if(!Utils.isArray(vs)){
-            throw "invalid vs";
-        }
-        if(!Utils.isArray(ind)){
-            throw "invalid ind";
-        }
+    calculateNormals(vs: number[], ind: number[]): number[]{
         var x=0;
         var y=1;
         var z=2;
@@ -1032,3 +875,5 @@ const math = {
     }
 
 };
+
+export = MathUtils;

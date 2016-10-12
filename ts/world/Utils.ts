@@ -2,7 +2,7 @@ type ArrayVoidCallbackFunction = (value: any, index: number, arr: Array<any>) =>
 type ArrayBooleanCallbackFunction = (value: any, index: number, arr: any[]) => boolean;
 type ArrayAnyCallbackFunction = (value: any, index: number, arr: any[]) => any;
 
-const utils = {
+const Utils = {
     GREATER:"GREATER",
     GEQUAL:"GEQUAL",
     LESS:"LESS",
@@ -198,4 +198,4 @@ const utils = {
     }
 };
 
-export = utils;
+export = Utils;
