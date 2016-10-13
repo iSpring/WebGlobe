@@ -17,7 +17,7 @@ class Object3D {
     material: TextureMaterial;
     visible: boolean;
 
-    constructor(args: any) {
+    constructor(args?: any) {
         this.id = ++Kernel.idCounter;
         this.matrix = new Matrix();
         this.parent = null;

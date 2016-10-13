@@ -335,14 +335,13 @@ const MathUtils = {
      * @r optional 可选的地球半径
      * @p 笛卡尔坐标系中的坐标
      */
-    geographicToCartesianCoord(lon:number, lat: number, r: number): Vertice{
+    geographicToCartesianCoord(lon:number, lat: number, r: number = Kernel.EARTH_RADIUS): Vertice{
         if(!(lon >= -(180+0.001) && lon <= (180+0.001))){
             throw "invalid lon";
         }
         if(!(lat >= -(90+0.001) && lat <= (90+0.001))){
             throw "invalid lat";
         }
-        r = r||Kernel.EARTH_RADIUS;
         var radianLon = this.degreeToRadian(lon);
         var radianLat = this.degreeToRadian(lat);
         var sin1 = Math.sin(radianLon);
