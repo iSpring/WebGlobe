@@ -575,7 +575,7 @@ const MathUtils = {
     },
 
     //根据切片的level、row、column计算该切片所覆盖的投影区域的范围
-    getTileWebMercatorEnvelopeByGrid(level: number, row: number, column: number): Object{
+    getTileWebMercatorEnvelopeByGrid(level: number, row: number, column: number): any{
         var k = Kernel.MAX_PROJECTED_COORD;
         var size = 2*k / Math.pow(2,level);
         var minX = -k + column * size;

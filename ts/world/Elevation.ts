@@ -1,33 +1,37 @@
-define(["world/Kernel", "world/Utils", "world/Math"], function(Kernel, Utils, MathUtils) {
-  var Elevation = {
-    //sampleserver4.arcgisonline.com
-    //23.21.85.73
-    elevationUrl: "//sampleserver4.arcgisonline.com/ArcGIS/rest/services/Elevation/ESRI_Elevation_World/MapServer/exts/ElevationsSOE/ElevationLayers/1/GetElevationData",
-    elevations: {}, //缓存的高程数据
-    factor: 1 //高程缩放因子
-  };
+import Kernel = require('./Kernel');
+import Utils = require('./Utils');
+import MathUtils = require('./Math');
+import TileGrid = require('./TileGrid');
+
+const Elevation = {
+  //sampleserver4.arcgisonline.com
+  //23.21.85.73
+  elevationUrl: "//sampleserver4.arcgisonline.com/ArcGIS/rest/services/Elevation/ESRI_Elevation_World/MapServer/exts/ElevationsSOE/ElevationLayers/1/GetElevationData",
+  elevations: {}, //缓存的高程数据
+  factor: 1, //高程缩放因子
+
   //根据level获取包含level高程信息的ancestorElevationLevel
-  Elevation.getAncestorElevationLevel = function(level) {
-    if (!Utils.isNonNegativeInteger(level)) {
+  getAncestorElevationLevel(level: number) {
+    if (!(level >= 0)) {
       throw "invalid level";
     }
     var a = Math.floor((level - 1 - Kernel.ELEVATION_LEVEL) / 3);
     var ancestor = Kernel.ELEVATION_LEVEL + 3 * a;
     return ancestor;
-  };
+  },
 
   /**
-   * 根据传入的extent以及行列数请求高程数据，返回(segment+1) * (segment+1)个数据，且乘积不能超过10000
-   * 也就是说如果传递的是一个正方形的extent，那么segment最大取99，此处设置的segment是80
-   */
-  Elevation.requestElevationsByTileGrid = function(level, row, column) {
-    if (!Utils.isNonNegativeInteger(level)) {
+ * 根据传入的extent以及行列数请求高程数据，返回(segment+1) * (segment+1)个数据，且乘积不能超过10000
+ * 也就是说如果传递的是一个正方形的extent，那么segment最大取99，此处设置的segment是80
+ */
+  requestElevationsByTileGrid(level: number, row: number, column: number) {
+    if (!(level >= 0)) {
       throw "invalid level";
     }
-    if (!Utils.isNonNegativeInteger(row)) {
+    if (!(row >= 0)) {
       throw "invalid row";
     }
-    if (!Utils.isNonNegativeInteger(column)) {
+    if (!(column >= 0)) {
       throw "invalid column";
     }
     var segment = 80;
@@ -39,10 +43,10 @@ define(["world/Kernel", "world/Utils", "world/Math"], function(Kernel, Utils, Ma
     }
     this.elevations[name] = null;
     var Eproj = MathUtils.getTileWebMercatorEnvelopeByGrid(level, row, column);
-    var minX = Eproj.minX;
-    var minY = Eproj.minY;
-    var maxX = Eproj.maxX;
-    var maxY = Eproj.maxY;
+    var minX: number = Eproj.minX;
+    var minY: number = Eproj.minY;
+    var maxX: number = Eproj.maxX;
+    var maxY: number = Eproj.maxY;
     var gridWidth = (maxX - minX) / segment;
     var gridHeight = (maxY - minY) / segment;
     var a = gridWidth / 2;
@@ -70,7 +74,7 @@ define(["world/Kernel", "world/Utils", "world/Math"], function(Kernel, Utils, Ma
           if (this.factor == 1) {
             this.elevations[name] = result.data;
           } else {
-            this.elevations[name] = Utils.map(this.elevations, function(item) {
+            this.elevations[name] = Utils.map(this.elevations, function (item: number) {
               return item * this.factor;
             }.bind(this));
           }
@@ -82,22 +86,21 @@ define(["world/Kernel", "world/Utils", "world/Math"], function(Kernel, Utils, Ma
     xhr.onreadystatechange = callback.bind(this);
     xhr.open("GET", "proxy.jsp?" + this.elevationUrl + "?" + args, true);
     xhr.send();
-  };
-
+  },
 
   //无论怎样都尽量返回高程值，如果存在精确的高程，就获取精确高程；如果精确高程不存在，就返回上一个高程级别的估算高程
   //有可能
-  Elevation.getElevation = function(level, row, column) {
-    if (!Utils.isNonNegativeInteger(level)) {
+  getElevation(level: number, row: number, column: number): any {
+    if (!(level >= 0)) {
       throw "invalid level";
     }
-    if (!Utils.isNonNegativeInteger(row)) {
+    if (!(row >= 0)) {
       throw "invalid row";
     }
-    if (!Utils.isNonNegativeInteger(column)) {
+    if (!(column >= 0)) {
       throw "invalid column";
     }
-    var result = null;
+    var result: any = null;
     var exactResult = this.getExactElevation(level, row, column);
     if (exactResult) {
       //获取到准确高程
@@ -107,23 +110,23 @@ define(["world/Kernel", "world/Utils", "world/Math"], function(Kernel, Utils, Ma
       result = this.getLinearElevation(level, row, column);
     }
     return result;
-  };
+  },
 
   //把>=8级的任意一个切片的tileGrid传进去，返回其高程值，该高程值是经过过滤了的，就是从大切片数据中抽吸出了其自身的高程信息
   //获取准确高程
-  Elevation.getExactElevation = function(level, row, column) {
-    if (!Utils.isNonNegativeInteger(level)) {
+  getExactElevation(level: number, row: number, column: number): any {
+    if (!(level >= 0)) {
       throw "invalid level";
     }
-    if (!Utils.isNonNegativeInteger(row)) {
+    if (!(row >= 0)) {
       throw "invalid row";
     }
-    if (!Utils.isNonNegativeInteger(column)) {
+    if (!(column >= 0)) {
       throw "invalid column";
     }
-    var result = null;
+    var result: any = null;
     var elevationLevel = this.getAncestorElevationLevel(level);
-    var elevationTileGrid = MathUtils.getTileGridAncestor(elevationLevel, level, row, column);
+    var elevationTileGrid = TileGrid.getTileGridAncestor(elevationLevel, level, row, column);
     var elevationTileName = elevationTileGrid.level + "_" + elevationTileGrid.row + "_" + elevationTileGrid.column;
     var ancestorElevations = this.elevations[elevationTileName];
     if (ancestorElevations instanceof Array && ancestorElevations.length > 0) {
@@ -135,7 +138,7 @@ define(["world/Kernel", "world/Utils", "world/Math"], function(Kernel, Utils, Ma
           column: elevationTileGrid.column
         }; //与level在同级别下但是在Tile7左上角的那个TileGrid
         while (ltTileGridLevel.level != level) {
-          ltTileGridLevel = MathUtils.getTileGridByParent(ltTileGridLevel.level, ltTileGridLevel.row, ltTileGridLevel.column, MathUtils.LEFT_TOP);
+          ltTileGridLevel = TileGrid.getTileGridByParent(ltTileGridLevel.level, ltTileGridLevel.row, ltTileGridLevel.column, MathUtils.LEFT_TOP);
         }
         if (ltTileGridLevel.level == level) {
           //bigRow表示在level等级下当前grid距离左上角的grid的行数
@@ -167,23 +170,23 @@ define(["world/Kernel", "world/Utils", "world/Math"], function(Kernel, Utils, Ma
       }
     }
     return result;
-  };
+  },
 
   //获取线性插值的高程，比如要找E12的估算高程，那么就先找到E10的精确高程，E10的精确高程是从E7中提取的
   //即E7(81*81)->E10(11*11)->插值计算E11、E12、E13
-  Elevation.getLinearElevation = function(level, row, column) {
-    if (!Utils.isNonNegativeInteger(level)) {
+  getLinearElevation(level: number, row: number, column: number): any {
+    if (!(level >= 0)) {
       throw "invalid level";
     }
-    if (!Utils.isNonNegativeInteger(row)) {
+    if (!(row >= 0)) {
       throw "invalid row";
     }
-    if (!Utils.isNonNegativeInteger(column)) {
+    if (!(column >= 0)) {
       throw "invalid column";
     }
-    var result = null;
+    var result: any = null;
     var elevationLevel = this.getAncestorElevationLevel(level);
-    var elevationTileGrid = MathUtils.getTileGridAncestor(elevationLevel, level, row, column);
+    var elevationTileGrid = TileGrid.getTileGridAncestor(elevationLevel, level, row, column);
     var exactAncestorElevations = this.getExactElevation(elevationTileGrid.level, elevationTileGrid.row, elevationTileGrid.column);
     var deltaLevel = level - elevationLevel;
     if (exactAncestorElevations) {
@@ -200,27 +203,27 @@ define(["world/Kernel", "world/Utils", "world/Math"], function(Kernel, Utils, Ma
       }
     }
     return result;
-  };
+  },
 
   //从直接父节点的高程数据中获取不是很准确的高程数据，比如T11从E10的高程中(10+1)*(10+1)中获取不是很准确的高程
   //通过线性插值的方式获取高程，不精确
-  Elevation.getLinearElevationFromParent = function(parentElevations, level, row, column) {
-    if (!(Utils.isArray(parentElevations) && parentElevations.length > 0)) {
+  getLinearElevationFromParent(parentElevations: number[], level: number, row: number, column: number) {
+    if (!(parentElevations.length > 0)) {
       throw "invalid parentElevations";
     }
-    if (!Utils.isNonNegativeInteger(level)) {
+    if (!(level >= 0)) {
       throw "invalid level";
     }
-    if (!Utils.isNonNegativeInteger(row)) {
+    if (!(row >= 0)) {
       throw "invalid row";
     }
-    if (!Utils.isNonNegativeInteger(column)) {
+    if (!(column >= 0)) {
       throw "invalid column";
     }
     //position为切片在直接父切片中的位置
-    var position = MathUtils.getTilePositionOfParent(level, row, column);
+    var position = TileGrid.getTilePositionOfParent(level, row, column);
     //先从parent中获取6个半行的数据
-    var elevatios6_6 = [];
+    var elevatios6_6:number[] = [];
     var startIndex = 0;
     if (position == MathUtils.LEFT_TOP) {
       startIndex = 0;
@@ -231,7 +234,7 @@ define(["world/Kernel", "world/Utils", "world/Math"], function(Kernel, Utils, Ma
     } else if (position == MathUtils.RIGHT_BOTTOM) {
       startIndex = 60;
     }
-    var i,j,idx;
+    var i:number, j:number, idx:number;
     for (i = 0; i <= 5; i++) {
       idx = startIndex;
       for (j = 0; j <= 5; j++) {
@@ -244,9 +247,9 @@ define(["world/Kernel", "world/Utils", "world/Math"], function(Kernel, Utils, Ma
     }
     //此时elevatios6_6表示的(5+1)*(5+1)的高程数据信息
 
-    var eleExact,eleExactTop,eleLinear,eleExactLeft;
+    var eleExact: number, eleExactTop: number, eleLinear:number, eleExactLeft: number;
     //下面通过对每一行上的6个点数字两两取平均变成11个点数据
-    var elevations6_11 = [];
+    var elevations6_11:number[] = [];
     for (i = 0; i <= 5; i++) {
       for (j = 0; j <= 5; j++) {
         idx = 6 * i + j;
@@ -262,7 +265,7 @@ define(["world/Kernel", "world/Utils", "world/Math"], function(Kernel, Utils, Ma
     //此时elevations6_11表示的是(5+1)*(10+1)的高程数据信息，对每行进行了线性插值
 
     //下面要对每列进行线性插值，使得每列上的6个点数字两两取平均变成11个点数据
-    var elevations11_11 = [];
+    var elevations11_11:number[] = [];
     for (i = 0; i <= 5; i++) {
       for (j = 0; j <= 10; j++) {
         idx = 11 * i + j;
@@ -278,26 +281,27 @@ define(["world/Kernel", "world/Utils", "world/Math"], function(Kernel, Utils, Ma
     //此时elevations11_11表示的是(10+1)*(10+1)的高程数据信息
 
     return elevations11_11;
-  };
+  },
 
   //从相隔两级的高程中获取线性插值数据，比如从T10上面获取T12的高程数据
   //parent2Elevations是(10+1)*(10+1)的高程数据
   //level、row、column是子孙切片的信息
-  Elevation.getLinearElevationFromParent2 = function(parent2Elevations, level, row, column) {
-    var parentTileGrid = MathUtils.getTileGridAncestor(level - 1, level, row, column);
+  getLinearElevationFromParent2(parent2Elevations: number[], level: number, row: number, column: number) {
+    var parentTileGrid = TileGrid.getTileGridAncestor(level - 1, level, row, column);
     var parentElevations = this.getLinearElevationFromParent(parent2Elevations, parentTileGrid.level, parentTileGrid.row, parentTileGrid.column);
     var elevations = this.getLinearElevationFromParent(parentElevations, level, row, column);
     return elevations;
-  };
+  },
 
   //从相隔三级的高程中获取线性插值数据，比如从T10上面获取T13的高程数据
   //parent3Elevations是(10+1)*(10+1)的高程数据
   //level、row、column是重孙切片的信息
-  Elevation.getLinearElevationFromParent3 = function(parent3Elevations, level, row, column) {
-    var parentTileGrid = MathUtils.getTileGridAncestor(level - 1, level, row, column);
+  getLinearElevationFromParent3(parent3Elevations: number[], level: number, row: number, column: number) {
+    var parentTileGrid = TileGrid.getTileGridAncestor(level - 1, level, row, column);
     var parentElevations = this.getLinearElevationFromParent2(parent3Elevations, parentTileGrid.level, parentTileGrid.row, parentTileGrid.column);
     var elevations = this.getLinearElevationFromParent(parentElevations, level, row, column);
     return elevations;
-  };
-  return Elevation;
-});
+  }
+};
+
+export = Elevation;
