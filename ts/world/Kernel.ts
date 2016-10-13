@@ -1,5 +1,7 @@
+import {WebGLRenderingContextExtension} from './Definitions';
+
 const kernel = {
-    gl: <WebGLRenderingContext>null,
+    gl: <WebGLRenderingContextExtension>null,
     canvas: <HTMLCanvasElement> null,
     renderer: <any>null,
     globe: <any>null,

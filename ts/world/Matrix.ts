@@ -283,7 +283,7 @@ class Matrix{
     }
 
     getPosition(): Vertice{
-        return new Vertice(this.elements[12], this.elements[13], this.elements[14]);
+        return this.getColumnTrans();
     }
 
     worldTranslate(x: number, y: number, z: number) {
