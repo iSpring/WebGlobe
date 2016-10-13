@@ -507,6 +507,7 @@ define(["world/Kernel", "world/Utils", "world/Math", "world/Vertice", "world/Vec
       //循环向下处理至不可见
       var bottomLoopTime = 0; //向下循环的次数
       var bottomRow = centerGrid.row;
+      var grid;
       while (bottomLoopTime < LOOP_LIMIT) {
         bottomLoopTime++;
         grid = MathUtils.getTileGridByBrother(level, bottomRow, centerGrid.column, MathUtils.BOTTOM, mathOptions);
