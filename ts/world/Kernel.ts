@@ -1,6 +1,6 @@
 const kernel = {
-    gl: <any>null,
-    canvas: <any>null,
+    gl: <WebGLRenderingContext>null,
+    canvas: <HTMLCanvasElement> null,
     renderer: <any>null,
     globe: <any>null,
     idCounter: 0, //Object3D对象的唯一标识
