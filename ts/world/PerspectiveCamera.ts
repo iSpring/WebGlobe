@@ -638,5 +638,6 @@ class PerspectiveCamera extends Object3D{
       result.lat = lonlat[1];
       return result;
     }
-  
-};
+}
+
+export = PerspectiveCamera;
