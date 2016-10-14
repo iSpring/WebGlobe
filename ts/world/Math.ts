@@ -592,7 +592,7 @@ const MathUtils = {
     },
 
     //根据切片的level、row、column计算该切片所覆盖的经纬度区域的范围,以经纬度表示返回结果
-    getTileGeographicEnvelopByGrid(level: number, row: number, column: number): Object{
+    getTileGeographicEnvelopByGrid(level: number, row: number, column: number): any{
         var Eproj = this.getTileWebMercatorEnvelopeByGrid(level,row,column);
         var pMin = this.webMercatorToDegreeGeographic(Eproj.minX,Eproj.minY);
         var pMax = this.webMercatorToDegreeGeographic(Eproj.maxX,Eproj.maxY);
