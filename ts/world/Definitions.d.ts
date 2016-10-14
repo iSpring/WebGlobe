@@ -1,9 +1,10 @@
 interface WebGLProgramExtension extends WebGLProgram{
-    uMVMatrix: number[];
-    uPMatrix: number[];
+    uMVMatrix: WebGLUniformLocation;
+    uPMatrix: WebGLUniformLocation;
+    uSampler: WebGLUniformLocation;
+    uOffScreen: WebGLUniformLocation;
     aVertexPosition: number;
     aTextureCoord: number;
-    uSampler: number;
 }
 
 export interface WebGLRenderingContextExtension extends WebGLRenderingContext{

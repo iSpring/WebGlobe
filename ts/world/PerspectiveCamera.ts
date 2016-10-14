@@ -10,6 +10,7 @@ import Object3D = require('./Object3D');
 
 class PerspectiveCamera extends Object3D{
   pitch: number;
+  viewMatrix: Matrix;
   projMatrix: Matrix;
   Enum: any = {
     EARTH_FULL_OVERSPREAD_SCREEN: "EARTH_FULL_OVERSPREAD_SCREEN", //Canvas内全部被地球充满
