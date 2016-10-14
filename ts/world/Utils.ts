@@ -178,7 +178,7 @@ const Utils = {
     },
 
     //过滤掉数组中重复的元素
-    filterRepeatArray(arr: Array<any>): number[]{
+    filterRepeatArray(arr: Array<any>): any[]{
         var cloneArray = this.map(arr,function(item: any){
             return item;
         });
