@@ -216,21 +216,21 @@ class Object3D {
 
     getXAxisDirection(): Vector {
         var columnX = this.matrix.getColumnX(); //Vertice
-        var directionX = columnX.getVector(); //Vector
+        var directionX = Vector.verticeAsVector(columnX); //Vector
         directionX.normalize();
         return directionX;
     }
 
     getYAxisDirection(): Vector {
         var columnY = this.matrix.getColumnY();
-        var directionY = columnY.getVector();
+        var directionY = Vector.verticeAsVector(columnY);
         directionY.normalize();
         return directionY;
     }
 
     getZAxisDirection(): Vector {
         var columnZ = this.matrix.getColumnZ();
-        var directionZ = columnZ.getVector();
+        var directionZ = Vector.verticeAsVector(columnZ);
         directionZ.normalize();
         return directionZ;
     }

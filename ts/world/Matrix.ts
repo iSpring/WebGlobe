@@ -410,7 +410,7 @@ class Matrix{
     localRotateX(radian: number): void {
       var transVertice = this.getColumnTrans();
       this.setColumnTrans(0, 0, 0);
-      var columnX = this.getColumnX().getVector();
+      var columnX = Vector.verticeAsVector(this.getColumnX());
       this.worldRotateByVector(radian, columnX);
       this.setColumnTrans(transVertice.x, transVertice.y, transVertice.z);
     }
@@ -418,7 +418,7 @@ class Matrix{
     localRotateY(radian: number): void {
       var transVertice = this.getColumnTrans();
       this.setColumnTrans(0, 0, 0);
-      var columnY = this.getColumnY().getVector();
+      var columnY = Vector.verticeAsVector(this.getColumnY());
       this.worldRotateByVector(radian, columnY);
       this.setColumnTrans(transVertice.x, transVertice.y, transVertice.z);
     }
@@ -426,7 +426,7 @@ class Matrix{
     localRotateZ(radian: number): void {
       var transVertice = this.getColumnTrans();
       this.setColumnTrans(0, 0, 0);
-      var columnZ = this.getColumnZ().getVector();
+      var columnZ = Vector.verticeAsVector(this.getColumnZ());
       this.worldRotateByVector(radian, columnZ);
       this.setColumnTrans(transVertice.x, transVertice.y, transVertice.z);
     }

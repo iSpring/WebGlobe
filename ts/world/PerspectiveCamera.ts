@@ -191,7 +191,7 @@ class PerspectiveCamera extends Object3D{
       var verticeInCamera = vectorInCameraCopy.getVertice();
       var verticeInWorld = this.convertVerticeFromCameraToWorld(verticeInCamera, viewMatrix);
       var originInWorld = this.getPosition();
-      var vectorInWorld = verticeInWorld.minus(originInWorld);
+      var vectorInWorld = Vector.verticeMinusVertice(verticeInWorld, originInWorld);
       vectorInWorld.normalize();
       return vectorInWorld;
     }
@@ -217,7 +217,7 @@ class PerspectiveCamera extends Object3D{
       var verticeInNDC = new Vertice(ndcX, ndcY, 0.499);
       var verticeInWorld = this.convertVerticeFromNdcToWorld(verticeInNDC);
       var cameraPositon = this.getPosition(); //摄像机的世界坐标
-      var pickDirection = verticeInWorld.minus(cameraPositon);
+      var pickDirection = Vector.verticeMinusVertice(verticeInWorld, cameraPositon);
       pickDirection.normalize();
       return pickDirection;
     }
@@ -291,7 +291,7 @@ class PerspectiveCamera extends Object3D{
         var deltaLength = length2SurfaceNow - length2Surface;
         var dir = this.getLightDirection();
         dir.setLength(deltaLength);
-        var pNew = pOld.plus(dir);
+        var pNew = Vector.verticePlusVector(pOld, dir);
         this.setPosition(pNew.x, pNew.y, pNew.z);
       }
       Kernel.globe.CURRENT_LEVEL = level;
@@ -306,7 +306,7 @@ class PerspectiveCamera extends Object3D{
       options = options || {};
       var threshold = typeof options.threshold == "number" ? Math.abs(options.threshold) : 1;
       var cameraP = this.getPosition();
-      var dir = verticeInWorld.minus(cameraP);
+      var dir = Vector.verticeMinusVertice(verticeInWorld, cameraP);
       var line = new Line(cameraP, dir);
       var pickResult = this.getPickCartesianCoordInEarthByLine(line);
       if (pickResult.length > 0) {

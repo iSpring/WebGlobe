@@ -3,6 +3,18 @@ import Vertice = require('./Vertice');
 class Vector{
     constructor(public x = 0, public y = 0, public z = 0){}
 
+    static verticeAsVector(vertice: Vertice): Vector{
+      return new Vector(vertice.x, vertice.y, vertice.z);
+    }
+
+    static verticeMinusVertice(endVertice: Vertice, startVertice: Vertice): Vector{
+      return new Vector(endVertice.x - startVertice.x, endVertice.y - startVertice.y, endVertice.z - startVertice.z);
+    }
+
+    static verticePlusVector(vertice: Vertice, vector: Vector): Vertice{
+      return new Vertice(vertice.x + vector.x, vertice.y + vector.y, vertice.z + vector.z);
+    }
+
     getVertice(): Vertice {
       return new Vertice(this.x, this.y, this.z);
     }
