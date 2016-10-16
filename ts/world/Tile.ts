@@ -6,9 +6,9 @@ import MathUtils = require('./Math');
 import TileMaterial = require('./TileMaterial');
 
 class Tile extends Object3D {
-  level: 0;
-  row: 0;
-  column: 0;
+  level: number = 0;
+  row: number = 0;
+  column: number = 0;
   url: string;
   subTiledLayer: any;
   //type如果是GLOBE_TILE，表示其buffer已经设置为一般形式
@@ -24,7 +24,7 @@ class Tile extends Object3D {
   minY: number = null;
   maxX: number = null;
   maxY: number = null;
-  segment: number;
+  segment: number = 1;
   elevationInfo: any = null;
 
   //args中包含level、row、column、url即可
@@ -45,6 +45,7 @@ class Tile extends Object3D {
     this.level = args.level;
     this.row = args.row;
     this.column = args.column;
+    this.url = args.url;
     this.elevationLevel = Elevation.getAncestorElevationLevel(this.level);
     //经纬度范围
     var Egeo = MathUtils.getTileGeographicEnvelopByGrid(this.level, this.row, this.column);
