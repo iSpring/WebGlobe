@@ -572,11 +572,11 @@ class PerspectiveCamera extends Object3D{
         result.visibleCount++;
       }
 
-      var ndcs = [result.lb.verticeInNDC, result.lt.verticeInNDC, result.rt.verticeInNDC, result.rb.verticeInNDC];
+      var ndcs:Vertice[] = [result.lb.verticeInNDC, result.lt.verticeInNDC, result.rt.verticeInNDC, result.rb.verticeInNDC];
       //计算方向
-      var vector03 = ndcs[3].minus(ndcs[0]);
+      var vector03 = Vector.verticeMinusVertice(ndcs[3], ndcs[0]);
       vector03.z = 0;
-      var vector01 = ndcs[1].minus(ndcs[0]);
+      var vector01 = Vector.verticeMinusVertice(ndcs[1], ndcs[0]);
       vector01.z = 0;
       var cross = vector03.cross(vector01);
       result.clockwise = cross.z > 0;

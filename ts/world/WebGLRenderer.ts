@@ -27,11 +27,11 @@ class WebGLRenderer {
       try {
         var contextList = ["webgl", "experimental-webgl", "webkit-3d", "moz-webgl"];
         for (var i = 0; i < contextList.length; i++) {
-          var g = canvas.getContext(contextList[i], {
+          gl = canvas.getContext(contextList[i], {
             antialias: true
-          });
-          if (g) {
-            Kernel.gl = g as WebGLRenderingContextExtension;
+          }) as WebGLRenderingContextExtension;
+          if (gl) {
+            Kernel.gl = gl;
             Kernel.canvas = canvas;
             break;
           }
