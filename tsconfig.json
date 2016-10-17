@@ -10,7 +10,6 @@
         "ts/**/*.ts"
     ],
     "exclude": [
-        "node_modules",
-        "ts/world/Math.ts"
+        "node_modules"
     ]
 }

@@ -5,40 +5,50 @@ var rmdir = require("rmdir");
 var ts = require("gulp-typescript");
 var exec = require('child_process').exec;
 
-gulp.task("default", ["build"]);
-
-gulp.task("clear", function(cb){
+gulp.task("clear", function (cb) {
   var p = path.join(__dirname, "buildOutput");
-  if(fs.existsSync(p)){
-    rmdir(p, function(err, dirs, files){
-      if(dirs){
+  if (fs.existsSync(p)) {
+    rmdir(p, function (err, dirs, files) {
+      if (dirs) {
         console.log(dirs);
       }
-      if(files){
+      if (files) {
         console.log(files);
       }
       cb(err);
     });
-  }else{
+  } else {
     cb();
   }
 });
 
-gulp.task("build", ["clear"], function(cb){
+gulp.task("buildjs", ["clear"], function (cb) {
   //return gulp.src("js/**/*.js").pipe(concat("world.js")).pipe(gulp.dest("build"));
   //r.js.cmd -o build-config.js
   var p = path.join(__dirname, "node_modules/requirejs/bin/r.js");
-  exec("node " + p + " -o amd-build-config.js", function(err, stdout, stderr){
-    if(stdout){
+  exec("node " + p + " -o amd-build-config.js", function (err, stdout, stderr) {
+    if (stdout) {
       console.log(stdout);
     }
-    if(stderr){
+    if (stderr) {
       console.log(stderr);
     }
     cb(err);
   });
 });
 
-gulp.task("tsc", function(){
-  gulp.src("ts/**/*.ts");
+gulp.task("buildts", ["clear"], function () {
+  var tsResult = gulp.src("ts/**/*.ts").pipe(ts({
+    "module": "amd",
+    "target": "es5",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "out": "buildOutput/ts-bundle.js"
+  }));
+  return tsResult.js.pipe(gulp.dest("."));
 });
+
+gulp.task("build", ["buildjs", "buildts"]);
+
+gulp.task("default", ["build"]);
