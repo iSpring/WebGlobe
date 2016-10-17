@@ -28,7 +28,7 @@ gulp.task("build", ["clear"], function(cb){
   //return gulp.src("js/**/*.js").pipe(concat("world.js")).pipe(gulp.dest("build"));
   //r.js.cmd -o build-config.js
   var p = path.join(__dirname, "node_modules/requirejs/bin/r.js");
-  exec("node " + p + " -o build-config.js", function(err, stdout, stderr){
+  exec("node " + p + " -o amd-build-config.js", function(err, stdout, stderr){
     if(stdout){
       console.log(stdout);
     }

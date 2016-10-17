@@ -4,5 +4,5 @@
         "world": "js/world"
     },
     "name": "main",
-    "out": "buildOutput/main.js"
+    "out": "buildOutput/amd-bundle.js"
 })
