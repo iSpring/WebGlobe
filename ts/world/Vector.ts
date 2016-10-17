@@ -95,9 +95,6 @@ class Vector{
      * @return {World.Vector}
      */
     cross(other: Vector): Vector {
-      if (!(other instanceof Vector)) {
-        throw "invalid other";
-      }
       var x = this.y * other.z - this.z * other.y;
       var y = this.z * other.x - this.x * other.z;
       var z = this.x * other.y - this.y * other.x;
