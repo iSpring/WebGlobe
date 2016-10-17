@@ -29,7 +29,8 @@ class Tile extends Object3D {
 
   //args中包含level、row、column、url即可
   constructor(args: any) {
-    super(args);
+    super(null);
+    this.createVerticeData(args);
   }
 
   createVerticeData(args: any) {
