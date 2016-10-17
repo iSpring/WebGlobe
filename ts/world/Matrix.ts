@@ -160,7 +160,10 @@ class Matrix{
       var D = l * s - o * p;
       var E = n * s - o * r;
       var q = A * E - B * D + t * C + u * z - v * y + w * x;
-      if (!q) return null;
+      if (!q) {
+        console.log("can't get inverse matrix");
+        return null
+      };
       q = 1 / q;
       b[0] = (h * E - i * D + j * C) * q;
       b[1] = (-d * E + e * D - g * C) * q;

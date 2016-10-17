@@ -48,10 +48,12 @@ class PerspectiveCamera extends Object3D{
 
       //by comparision with matrixProjection.exe and glMatrix,
       //the 11th element is always -1
-      this.projMatrix.setElements(mat[0], mat[1], mat[2], mat[3],
+      this.projMatrix.setElements(
+        mat[0], mat[1], mat[2], mat[3],
         mat[4], mat[5], mat[6], mat[7],
         mat[8], mat[9], mat[10], mat[11],
-        mat[12], mat[13], mat[14], mat[15]);
+        mat[12], mat[13], mat[14], mat[15]
+      );
     }
 
     getLightDirection(): Vector {
@@ -125,11 +127,10 @@ class PerspectiveCamera extends Object3D{
       this.setFar(far);
     }
 
-    lookAt(targetPnt: Vertice, upDirection: Vector = new Vector(0, 1, 0)): void {
+    lookAt(targetPnt: Vertice, upDirection?: Vector): void {
       var targetPntCopy = targetPnt.getCopy();
-      var upDirectionCopy = upDirection.getCopy();
       var position = this.getPosition();
-      this.look(position, targetPntCopy, upDirectionCopy);
+      this.look(position, targetPntCopy, upDirection);
     }
 
     //点变换: World->NDC
