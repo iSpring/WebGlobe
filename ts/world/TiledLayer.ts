@@ -5,7 +5,7 @@ import SubTiledLayer = require('./SubTiledLayer');
 class TiledLayer extends Object3DComponents {
   //重写
   add(subTiledLayer: SubTiledLayer) {
-    Object3DComponents.prototype.add.apply(this, arguments);
+    super.add(subTiledLayer);
     subTiledLayer.tiledLayer = this;
   }
 

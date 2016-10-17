@@ -222,7 +222,7 @@ class Tile extends Object3D {
 
   //重写Object3D的destroy方法
   destroy() {
-    Object3D.prototype.destroy.apply(this, arguments);
+    super.destroy();
     this.subTiledLayer = null;
   }
 }

@@ -28,7 +28,7 @@ class SubTiledLayer extends Object3DComponents {
     } else {
       Kernel.gl.disable(Kernel.gl.DEPTH_TEST);
     }
-    Object3DComponents.prototype.draw.apply(this, arguments);
+    super.draw(camera);
   }
 
   //重写Object3DComponents的add方法
@@ -50,7 +50,7 @@ class SubTiledLayer extends Object3DComponents {
 
   //重写Object3DComponents的destroy方法
   destroy() {
-    Object3DComponents.prototype.destroy.apply(this, arguments);
+    super.destroy();
     this.tiledLayer = null;
   }
 
