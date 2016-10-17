@@ -3,6 +3,7 @@ var path = require("path");
 var fs = require("fs");
 var rmdir = require("rmdir");
 var ts = require("gulp-typescript");
+var uglify = require("gulp-uglify");
 var exec = require('child_process').exec;
 
 gulp.task("clear", function (cb) {
@@ -46,7 +47,7 @@ gulp.task("buildts", ["clear"], function () {
     "preserveConstEnums": true,
     "out": "buildOutput/ts-bundle.js"
   }));
-  return tsResult.js.pipe(gulp.dest("."));
+  return tsResult.js.pipe(uglify()).pipe(gulp.dest("."));
 });
 
 gulp.task("build", ["buildjs", "buildts"]);

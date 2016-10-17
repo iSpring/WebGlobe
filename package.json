@@ -25,7 +25,9 @@
   "homepage": "https://github.com/iSpring/WebGlobe#readme",
   "devDependencies": {
     "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.0",
     "gulp-typescript": "^3.0.2",
+    "gulp-uglify": "^2.0.0",
     "requirejs": "^2.3.2",
     "rmdir": "^1.2.0",
     "typescript": "^2.0.3"
