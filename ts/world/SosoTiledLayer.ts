@@ -1,3 +1,4 @@
+///<amd-module name="world/SosoTiledLayer"/>
 import TiledLayer = require('./TiledLayer');
 
 class SosoTiledLayer extends TiledLayer {

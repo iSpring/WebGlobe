@@ -1,3 +1,4 @@
+///<amd-module name="world/TextureMaterial"/>
 import Kernel = require('./Kernel');
 
 class TextureMaterial {

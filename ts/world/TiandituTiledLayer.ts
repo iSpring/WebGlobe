@@ -1,3 +1,4 @@
+///<amd-module name="world/TiandituTiledLayer"/>
 import TiledLayer = require('./TiledLayer');
 
 class TiandituTiledLayer extends TiledLayer {

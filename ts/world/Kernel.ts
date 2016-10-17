@@ -1,6 +1,7 @@
+///<amd-module name="world/Kernel"/>
 import {WebGLRenderingContextExtension} from './Definitions';
 
-const kernel = {
+const Kernel = {
     gl: <WebGLRenderingContextExtension>null,
     canvas: <HTMLCanvasElement> null,
     renderer: <any>null,
@@ -16,4 +17,4 @@ const kernel = {
     proxy: ""
 };
 
-export = kernel;
+export = Kernel;

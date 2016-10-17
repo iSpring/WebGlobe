@@ -1,3 +1,4 @@
+///<amd-module name="world/Matrix"/>
 import Vertice = require('./Vertice');
 import Vector = require('./Vector');
 

@@ -1,3 +1,4 @@
+///<amd-module name="world/Tile"/>
 import Kernel = require('./Kernel');
 import Object3D = require('./Object3D');
 import Enum = require('./Enum');

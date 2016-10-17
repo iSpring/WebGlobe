@@ -1,3 +1,4 @@
+///<amd-module name="world/TiledLayer"/>
 import Object3DComponents = require('./Object3DComponents');
 import SubTiledLayer = require('./SubTiledLayer');
 

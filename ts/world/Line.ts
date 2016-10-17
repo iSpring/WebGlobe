@@ -1,3 +1,4 @@
+///<amd-module name="world/Line"/>
 import Vertice = require('./Vertice');
 import Vector = require('./Vector');
 

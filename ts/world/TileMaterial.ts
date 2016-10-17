@@ -1,3 +1,4 @@
+///<amd-module name="world/TileMaterial"/>
 import TextureMaterial= require('./TextureMaterial');
 import ImageUtils = require('./Image');
 

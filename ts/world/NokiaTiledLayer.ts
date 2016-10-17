@@ -1,3 +1,4 @@
+///<amd-module name="world/NokiaTiledLayer"/>
 import TiledLayer = require('./TiledLayer');
 
 class NokiaTiledLayer extends TiledLayer{

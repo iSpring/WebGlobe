@@ -1,3 +1,4 @@
+///<amd-module name="world/BlendTiledLayer"/>
 import TiledLayer = require("./TiledLayer");
 import NokiaTiledLayer = require("./NokiaTiledLayer");
 import GoogleTiledLayer = require("./GoogleTiledLayer");

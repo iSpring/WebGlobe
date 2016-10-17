@@ -1,3 +1,4 @@
+///<amd-module name="world/TileGrid"/>
 import Kernel = require('./Kernel');
 import Utils = require('./Utils');
 import MathUtils = require('./Math');

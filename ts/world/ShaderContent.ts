@@ -1,4 +1,4 @@
-
+///<amd-module name="world/ShaderContent"/>
 export = {
   SIMPLE_SHADER: {
     VS_CONTENT: "attribute vec3 aVertexPosition;\nattribute vec2 aTextureCoord;\nvarying vec2 vTextureCoord;\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nvoid main()\n{\ngl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition,1.0);\nvTextureCoord = aTextureCoord;\n}",

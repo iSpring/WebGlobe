@@ -1,3 +1,4 @@
+///<amd-module name="world/PerspectiveCamera"/>
 import Kernel = require('./Kernel');
 import MathUtils = require('./Math');
 import Vertice = require('./Vertice');

@@ -1,3 +1,4 @@
+///<amd-module name="world/Object3D"/>
 import Kernel = require('./Kernel');
 import Matrix = require('./Matrix');
 import Vertice = require('./Vertice');

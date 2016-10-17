@@ -1,3 +1,4 @@
+///<amd-module name="world/AutonaviTiledLayer"/>
 import Kernel = require('./Kernel');
 import TiledLayer = require('./TiledLayer');
 

@@ -1,3 +1,4 @@
+///<amd-module name="world/Enum"/>
 enum Enum {
     UNKNOWN,
     FULL_IN,

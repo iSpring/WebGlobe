@@ -1,3 +1,4 @@
+///<amd-module name="world/Event"/>
 import Kernel = require("./Kernel");
 import MathUtils = require("./Math");
 import Vector = require("./Vector");

@@ -1,3 +1,4 @@
+///<amd-module name="world/Vector"/>
 import Vertice = require('./Vertice');
 
 class Vector{

@@ -1,3 +1,4 @@
+///<amd-module name="world/GoogleTiledLayer"/>
 import TiledLayer = require('./TiledLayer');
 
 class GoogleTiledLayer extends TiledLayer{

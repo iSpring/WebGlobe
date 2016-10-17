@@ -1,3 +1,4 @@
+///<amd-module name="world/BingTiledLayer"/>
 import MathUtils = require('./Math');
 import TiledLayer = require('./TiledLayer');
 

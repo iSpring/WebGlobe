@@ -1,3 +1,4 @@
+///<amd-module name="world/ArcGISTiledLayer"/>
 import Kernel = require("./Kernel");
 import TiledLayer = require("./TiledLayer");
 

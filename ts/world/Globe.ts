@@ -1,3 +1,4 @@
+///<amd-module name="world/Globe"/>
 import Kernel = require("./Kernel");
 import Utils = require("./Utils");
 import ShaderContent = require("./ShaderContent");
