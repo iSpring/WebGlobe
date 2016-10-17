@@ -12,7 +12,7 @@ const Kernel = {
     MAX_PROJECTED_COORD: 20037508.3427892,
     ELEVATION_LEVEL: 7, //开始获取高程数据
     TERRAIN_LEVEL: 10, //开始显示三维地形
-    TERRAIN_ENABLED: true, //是否启用三维地形
+    TERRAIN_ENABLED: false, //是否启用三维地形
     TERRAIN_PITCH: 80, //开始显示三维地形的pich
     proxy: ""
 };
