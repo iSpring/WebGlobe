@@ -4,7 +4,7 @@ import Vertice = require('./Vertice');
 class Vector{
     constructor(public x = 0, public y = 0, public z = 0){}
 
-    static verticeAsVector(vertice: Vertice): Vector{
+    static fromVertice(vertice: Vertice): Vector{
       return new Vector(vertice.x, vertice.y, vertice.z);
     }
 

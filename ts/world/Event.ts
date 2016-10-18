@@ -97,10 +97,10 @@ const EventModule = {
       return;
     }
     var p1 = MathUtils.geographicToCartesianCoord(oldLon, oldLat);    
-    var v1 = Vector.verticeAsVector(p1);
+    var v1 = Vector.fromVertice(p1);
     v1.normalize();
     var p2 = MathUtils.geographicToCartesianCoord(newLon, newLat);
-    var v2 = Vector.verticeAsVector(p2);
+    var v2 = Vector.fromVertice(p2);
     v2.normalize();
     var rotateVector = v1.cross(v2);
     var rotateRadian = -Math.acos(v1.dot(v2));
@@ -190,7 +190,7 @@ const EventModule = {
         mat.setColumnTrans(pIntersect.x, pIntersect.y, pIntersect.z);
         var DELTA_RADIAN = MathUtils.degreeToRadian(DELTA_PITCH);
         mat.localRotateX(DELTA_RADIAN);
-        var dirZ = Vector.verticeAsVector(mat.getColumnZ());
+        var dirZ = Vector.fromVertice(mat.getColumnZ());
         dirZ.setLength(legnth2Intersect);
         var pNew = Vector.verticePlusVector(pIntersect, dirZ);
         camera.look(pNew, pIntersect);
