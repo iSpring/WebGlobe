@@ -83,3 +83,5 @@
 0.0.8.8 重写了Tile.handleTile方法，将老的方法命名为handTile2，但没有删除，新的handleTile方法从左上角至右下角遍历，并且多个三角形公用同一个顶点
 
 0.1.0 将Globe.js拆分成多个AMD模块，AMD代码放在js目录下；并将AMD代码用TypeScript重新实现，放到ts目录下，并对原有AMD的代码进行微调：解除了Vertice与Vector之间的相互引用，解除了Math与TileGrid之间的相互引用；通过gulp分别实现了对AMD和TypeScript代码进行编译压缩，通过requirejs均可加载相应bundle代码
+
+0.1.1 在js和ts中均修复了在两极地区抖动的问题：world/Event#moveGeo()
