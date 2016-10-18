@@ -226,7 +226,7 @@ class Matrix{
       return true;
     }
 
-    copy(): Matrix {
+    clone(): Matrix {
       return new Matrix(
           this.elements[0], this.elements[4], this.elements[8], this.elements[12],
           this.elements[1], this.elements[5], this.elements[9], this.elements[13],

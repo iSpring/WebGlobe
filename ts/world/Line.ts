@@ -7,23 +7,23 @@ class Line{
     public vector: Vector;
 
     constructor(position: Vertice, direction: Vector){
-        this.vertice = position.getCopy();
-        this.vector = direction.getCopy();
+        this.vertice = position.clone();
+        this.vector = direction.clone();
         this.vector.normalize();
     }
 
     setVertice(position: Vertice): Line {
-        this.vertice = position.getCopy();
+        this.vertice = position.clone();
         return this;
     }
     
     setVector(direction: Vector): Line {
-        this.vector = direction.getCopy();
+        this.vector = direction.clone();
         this.vector.normalize();
         return this;
     }
 
-    getCopy(): Line {
+    clone(): Line {
         var lineCopy = new Line(this.vertice, this.vector);
         return lineCopy;
     }

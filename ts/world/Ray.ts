@@ -12,23 +12,23 @@ class Ray{
      * @constructor
      */
     constructor(position: Vertice, direction: Vector){
-        this.vertice = position.getCopy();
-        this.vector = direction.getCopy();
+        this.vertice = position.clone();
+        this.vector = direction.clone();
         this.vector.normalize();
     }
 
     setVertice(position: Vertice): Ray {
-        this.vertice = position.getCopy();
+        this.vertice = position.clone();
         return this;
     }
 
     setVector(direction: Vector): Ray {
-        this.vector = direction.getCopy();
+        this.vector = direction.clone();
         this.vector.normalize();
         return this;
     }
 
-    getCopy(): Ray {
+    clone(): Ray {
         var rayCopy = new Ray(this.vertice, this.vector);
         return rayCopy;
     }

@@ -80,9 +80,9 @@ const MathUtils = {
      * 计算三角形的面积
      */
     getTriangleArea(v1: Vertice, v2: Vertice, v3: Vertice){
-        var v1Copy = v1.getCopy();
-        var v2Copy = v2.getCopy();
-        var v3Copy = v3.getCopy();
+        var v1Copy = v1.clone();
+        var v2Copy = v2.clone();
+        var v3Copy = v3.clone();
         var direction = Vector.verticeMinusVertice(v3Copy, v2Copy);
         var line = new Line(v2Copy,direction);
         var h = this.getLengthFromVerticeToLine(v1Copy,line);
@@ -98,8 +98,8 @@ const MathUtils = {
      * @return {Number}
      */
     getLengthFromVerticeToVertice(vertice1: Vertice, vertice2: Vertice){
-        var vertice1Copy = vertice1.getCopy();
-        var vertice2Copy = vertice2.getCopy();
+        var vertice1Copy = vertice1.clone();
+        var vertice2Copy = vertice2.clone();
         var length2 = Math.pow(vertice1Copy.x-vertice2Copy.x,2) + Math.pow(vertice1Copy.y-vertice2Copy.y,2) + Math.pow(vertice1Copy.z-vertice2Copy.z,2);
         var length = Math.sqrt(length2);
         return length;
@@ -113,8 +113,8 @@ const MathUtils = {
      * @return {Number}
      */
     getLengthFromVerticeToLine : function(vertice: Vertice, line: Line){
-        var verticeCopy = vertice.getCopy();
-        var lineCopy = line.getCopy();
+        var verticeCopy = vertice.clone();
+        var lineCopy = line.clone();
         var x0 = verticeCopy.x;
         var y0 = verticeCopy.y;
         var z0 = verticeCopy.z;
@@ -141,8 +141,8 @@ const MathUtils = {
      * @return {Number}
      */
     getLengthFromVerticeToPlan(vertice: Vertice, plan: Plan){
-        var verticeCopy = vertice.getCopy();
-        var planCopy = plan.getCopy();
+        var verticeCopy = vertice.clone();
+        var planCopy = plan.clone();
         var x = verticeCopy.x;
         var y = verticeCopy.y;
         var z = verticeCopy.z;
@@ -164,8 +164,8 @@ const MathUtils = {
      * @return {World.Vertice}
      */
     getVerticeVerticalIntersectPointWidthPlan(vertice: Vertice, plan: Plan){
-        var verticeCopy = vertice.getCopy();
-        var planCopy = plan.getCopy();
+        var verticeCopy = vertice.clone();
+        var planCopy = plan.clone();
         var x0 = verticeCopy.x;
         var y0 = verticeCopy.y;
         var z0 = verticeCopy.z;
@@ -184,8 +184,8 @@ const MathUtils = {
     },
 
     getIntersectPointByLineAdPlan(line: Line, plan: Plan){
-        var lineCopy = line.getCopy();
-        var planCopy = plan.getCopy();
+        var lineCopy = line.clone();
+        var planCopy = plan.clone();
         lineCopy.vector.normalize();
         var A = planCopy.A;
         var B = planCopy.B;
@@ -213,7 +213,7 @@ const MathUtils = {
      */
     getLineIntersectPointWithEarth(line: Line): Vertice[]{
         var result:Vertice[] = [];
-        var lineCopy = line.getCopy();
+        var lineCopy = line.clone();
         var vertice = lineCopy.vertice;
         var direction = lineCopy.vector;
         direction.normalize();
@@ -280,8 +280,8 @@ const MathUtils = {
      * @return {Object} World.Plan 返回平面表达式中Ax+By+Cz+D=0的A、B、C、D的信息
      */
     getCrossPlaneByLine(vertice: Vertice, direction: Vector): Plan{
-        var verticeCopy = vertice.getCopy();
-        var directionCopy = direction.getCopy();
+        var verticeCopy = vertice.clone();
+        var directionCopy = direction.clone();
         directionCopy.normalize();
         var a = directionCopy.x;
         var b = directionCopy.y;
@@ -361,7 +361,7 @@ const MathUtils = {
      * @return {Array}
      */
     cartesianCoordToGeographic(vertice: Vertice): number[]{
-        var verticeCopy = vertice.getCopy();
+        var verticeCopy = vertice.clone();
         var x = verticeCopy.x;
         var y = verticeCopy.y;
         var z = verticeCopy.z;

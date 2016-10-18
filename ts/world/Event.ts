@@ -186,7 +186,7 @@ const EventModule = {
         var pIntersect = pickResult[0];
         var pCamera = camera.getPosition();
         var legnth2Intersect = MathUtils.getLengthFromVerticeToVertice(pCamera, pIntersect);
-        var mat = camera.matrix.copy();
+        var mat = camera.matrix.clone();
         mat.setColumnTrans(pIntersect.x, pIntersect.y, pIntersect.z);
         var DELTA_RADIAN = MathUtils.degreeToRadian(DELTA_PITCH);
         mat.localRotateX(DELTA_RADIAN);

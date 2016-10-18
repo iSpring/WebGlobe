@@ -25,7 +25,7 @@ class Vertice{
       return [this.x, this.y, this.z];
     }
 
-    getCopy(): Vertice {
+    clone(): Vertice {
       return new Vertice(this.x, this.y, this.z);
     }
 

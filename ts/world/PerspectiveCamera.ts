@@ -104,9 +104,9 @@ class PerspectiveCamera extends Object3D{
     }
 
     look(cameraPnt: Vertice, targetPnt: Vertice, upDirection: Vector = new Vector(0, 1, 0)): void {
-      var cameraPntCopy = cameraPnt.getCopy();
-      var targetPntCopy = targetPnt.getCopy();
-      var up = upDirection.getCopy();
+      var cameraPntCopy = cameraPnt.clone();
+      var targetPntCopy = targetPnt.clone();
+      var up = upDirection.clone();
       var transX = cameraPntCopy.x;
       var transY = cameraPntCopy.y;
       var transZ = cameraPntCopy.z;
@@ -128,7 +128,7 @@ class PerspectiveCamera extends Object3D{
     }
 
     lookAt(targetPnt: Vertice, upDirection?: Vector): void {
-      var targetPntCopy = targetPnt.getCopy();
+      var targetPntCopy = targetPnt.clone();
       var position = this.getPosition();
       this.look(position, targetPntCopy, upDirection);
     }
@@ -173,7 +173,7 @@ class PerspectiveCamera extends Object3D{
       if (!(viewMatrix instanceof Matrix)) {
         viewMatrix = this.getViewMatrix();
       }
-      var verticeInCameraCopy = verticeInCamera.getCopy();
+      var verticeInCameraCopy = verticeInCamera.clone();
       var inverseMatrix = viewMatrix.getInverseMatrix();
       var column = [verticeInCameraCopy.x, verticeInCameraCopy.y, verticeInCameraCopy.z, 1];
       var column2 = inverseMatrix.multiplyColumn(column);
@@ -189,7 +189,7 @@ class PerspectiveCamera extends Object3D{
       if (!(viewMatrix instanceof Matrix)) {
         viewMatrix = this.getViewMatrix();
       }
-      var vectorInCameraCopy = vectorInCamera.getCopy();
+      var vectorInCameraCopy = vectorInCamera.clone();
       var verticeInCamera = vectorInCameraCopy.getVertice();
       var verticeInWorld = this.convertVerticeFromCameraToWorld(verticeInCamera, viewMatrix);
       var originInWorld = this.getPosition();
