@@ -2,6 +2,7 @@
 import Kernel = require("./Kernel");
 import MathUtils = require("./Math");
 import Vector = require("./Vector");
+import PerspectiveCamera = require("./PerspectiveCamera");
 
 type MouseMoveListener = (e: MouseEvent) => {};
 
@@ -47,16 +48,6 @@ const EventModule = {
     }
   },
 
-  moveGeo(oldLon: number, oldLat: number, newLon: number, newLat: number) {
-    var camera = Kernel.globe.camera;
-    var deltaLonRadian = -MathUtils.degreeToRadian(newLon - oldLon); //旋转的经度
-    var deltaLatRadian = MathUtils.degreeToRadian(newLat - oldLat); //旋转的纬度
-    camera.worldRotateY(deltaLonRadian);
-    var lightDir = camera.getLightDirection();
-    var plumbVector = this.getPlumbVector(lightDir);
-    camera.worldRotateByVector(deltaLatRadian, plumbVector);
-  },
-
   onMouseDown(event: MouseEvent) {
     if (Kernel.globe) {
       this.bMouseDown = true;
@@ -99,6 +90,22 @@ const EventModule = {
         this.canvas.style.cursor = "default";
       }
     }
+  },
+
+  moveGeo(oldLon: number, oldLat: number, newLon: number, newLat: number) {
+    if(oldLon === newLon && oldLat === newLat){
+      return;
+    }
+    var p1 = MathUtils.geographicToCartesianCoord(oldLon, oldLat);    
+    var v1 = Vector.verticeAsVector(p1);
+    v1.normalize();
+    var p2 = MathUtils.geographicToCartesianCoord(newLon, newLat);
+    var v2 = Vector.verticeAsVector(p2);
+    v2.normalize();
+    var rotateVector = v1.cross(v2);
+    var rotateRadian = -Math.acos(v1.dot(v2));
+    var camera: PerspectiveCamera = Kernel.globe.camera;
+    camera.worldRotateByVector(rotateRadian, rotateVector);
   },
 
   onMouseUp() {
@@ -183,9 +190,9 @@ const EventModule = {
         mat.setColumnTrans(pIntersect.x, pIntersect.y, pIntersect.z);
         var DELTA_RADIAN = MathUtils.degreeToRadian(DELTA_PITCH);
         mat.localRotateX(DELTA_RADIAN);
-        var dirZ = mat.getColumnZ().getVector();
+        var dirZ = Vector.verticeAsVector(mat.getColumnZ());
         dirZ.setLength(legnth2Intersect);
-        var pNew = pIntersect.plus(dirZ);
+        var pNew = Vector.verticePlusVector(pIntersect, dirZ);
         camera.look(pNew, pIntersect);
         camera.pitch -= DELTA_PITCH;
         globe.refresh();
@@ -193,19 +200,8 @@ const EventModule = {
         alert("视线与地球无交点");
       }
     }
-  },
-
-  getPlumbVector(direction: Vector) {
-    if (!(direction instanceof Vector)) {
-      throw "invalid direction: not World.Vector";
-    }
-    var dir = direction.getCopy();
-    dir.y = 0;
-    dir.normalize();
-    var plumbVector = new Vector(-dir.z, 0, dir.x);
-    plumbVector.normalize();
-    return plumbVector;
   }
+
 };
 
 export = EventModule;

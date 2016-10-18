@@ -45,13 +45,19 @@ define(["world/Kernel", "world/Math", "world/Vector"], function(Kernel, MathUtil
     },
 
     moveGeo: function(oldLon, oldLat, newLon, newLat) {
+      if(oldLon === newLon && oldLat === newLat){
+        return;
+      }
+      var p1 = MathUtils.geographicToCartesianCoord(oldLon, oldLat);    
+      var v1 = p1.getVector();
+      v1.normalize();
+      var p2 = MathUtils.geographicToCartesianCoord(newLon, newLat);
+      var v2 = p2.getVector();
+      v2.normalize();
+      var rotateVector = v1.cross(v2);
+      var rotateRadian = -Math.acos(v1.dot(v2));
       var camera = Kernel.globe.camera;
-      var deltaLonRadian = -MathUtils.degreeToRadian(newLon - oldLon); //旋转的经度
-      var deltaLatRadian = MathUtils.degreeToRadian(newLat - oldLat); //旋转的纬度
-      camera.worldRotateY(deltaLonRadian);
-      var lightDir = camera.getLightDirection();
-      var plumbVector = this.getPlumbVector(lightDir);
-      camera.worldRotateByVector(deltaLatRadian, plumbVector);
+      camera.worldRotateByVector(rotateRadian, rotateVector);
     },
 
     onMouseDown: function(event) {
@@ -190,18 +196,6 @@ define(["world/Kernel", "world/Math", "world/Vector"], function(Kernel, MathUtil
           alert("视线与地球无交点");
         }
       }
-    },
-
-    getPlumbVector: function(direction) {
-      if (!(direction instanceof Vector)) {
-        throw "invalid direction: not World.Vector";
-      }
-      var dir = direction.getCopy();
-      dir.y = 0;
-      dir.normalize();
-      var plumbVector = new Vector(-dir.z, 0, dir.x);
-      plumbVector.normalize();
-      return plumbVector;
     }
   };
   return EventModule;
