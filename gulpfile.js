@@ -23,7 +23,7 @@ gulp.task("clear", function (cb) {
   }
 });
 
-gulp.task("buildjs", ["clear"], function (cb) {
+gulp.task("bundlejs", ["clear"], function (cb) {
   //return gulp.src("js/**/*.js").pipe(concat("world.js")).pipe(gulp.dest("build"));
   //r.js.cmd -o build-config.js
   var p = path.join(__dirname, "node_modules/requirejs/bin/r.js");
@@ -38,7 +38,19 @@ gulp.task("buildjs", ["clear"], function (cb) {
   });
 });
 
-gulp.task("buildts", ["clear"], function () {
+gulp.task("compilets", ["clear"], function(){
+  var tsResult = gulp.src("ts/**/*.ts").pipe(ts({
+    "module": "amd",
+    "target": "es5",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true
+    //"outDir": "buildOutput/amd"
+  }));
+  return tsResult.js.pipe(gulp.dest("buildOutput/amd"));
+});
+
+gulp.task("bundlets", ["clear"], function () {
   var tsResult = gulp.src("ts/**/*.ts").pipe(ts({
     "module": "amd",
     "target": "es5",
@@ -50,6 +62,6 @@ gulp.task("buildts", ["clear"], function () {
   return tsResult.js.pipe(uglify()).pipe(gulp.dest("."));
 });
 
-gulp.task("build", ["buildjs", "buildts"]);
+gulp.task("build", ["bundlejs", "compilets", "bundlets"]);
 
 gulp.task("default", ["build"]);
