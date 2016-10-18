@@ -4,7 +4,7 @@ var fs = require("fs");
 var rmdir = require("rmdir");
 var ts = require("gulp-typescript");
 var uglify = require("gulp-uglify");
-var exec = require('child_process').exec;
+//var exec = require('child_process').exec;
 
 gulp.task("clear", function (cb) {
   var p = path.join(__dirname, "buildOutput");
@@ -38,7 +38,7 @@ gulp.task("clear", function (cb) {
 });*/
 
 gulp.task("compilets", ["clear"], function(){
-  var tsResult = gulp.src("ts/**/*.ts").pipe(ts({
+  var tsResult = gulp.src("src/**/*.ts").pipe(ts({
     "module": "amd",
     "target": "es5",
     "noImplicitAny": true,
@@ -50,13 +50,13 @@ gulp.task("compilets", ["clear"], function(){
 });
 
 gulp.task("bundlets", ["clear"], function () {
-  var tsResult = gulp.src("ts/**/*.ts").pipe(ts({
+  var tsResult = gulp.src("src/**/*.ts").pipe(ts({
     "module": "amd",
     "target": "es5",
     "noImplicitAny": true,
     "removeComments": true,
     "preserveConstEnums": true,
-    "out": "buildOutput/ts-bundle.js"
+    "out": "buildOutput/bundle.js"
   }));
   return tsResult.js.pipe(uglify()).pipe(gulp.dest("."));
 });
