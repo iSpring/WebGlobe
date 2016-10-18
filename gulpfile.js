@@ -37,7 +37,7 @@ gulp.task("clear", function (cb) {
   });
 });*/
 
-gulp.task("compilets", ["clear"], function(){
+gulp.task("compile", ["clear"], function(){
   var tsResult = gulp.src("src/**/*.ts").pipe(ts({
     "module": "amd",
     "target": "es5",
@@ -49,7 +49,7 @@ gulp.task("compilets", ["clear"], function(){
   return tsResult.js.pipe(gulp.dest("buildOutput/amd"));
 });
 
-gulp.task("bundlets", ["clear"], function () {
+gulp.task("bundle", ["clear"], function () {
   var tsResult = gulp.src("src/**/*.ts").pipe(ts({
     "module": "amd",
     "target": "es5",
@@ -61,6 +61,6 @@ gulp.task("bundlets", ["clear"], function () {
   return tsResult.js.pipe(uglify()).pipe(gulp.dest("."));
 });
 
-gulp.task("build", ["compilets", "bundlets"]);
+gulp.task("build", ["compile", "bundle"]);
 
 gulp.task("default", ["build"]);
