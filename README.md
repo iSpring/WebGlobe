@@ -1,3 +1,12 @@
+ <p align="center">
+  <a target="_blank" href="https://ispring.github.io/WebGlobe/index.html">
+    <img src="https://github.com/iSpring/WebGlobe/blob/master/screenshot.png">
+  </a>
+  <p align="center">A WebGL virtual globe and map engine</p>
+</p>
+ 
+
+ 
 # WebGlobe
 基于HTML5原生WebGL实现的轻量级Google Earth三维地图引擎，支持诺基亚地图、微软Bing地图、腾讯地图、天地图、OpenStreetMap等。
 
@@ -9,4 +18,4 @@
 
 Demo: https://ispring.github.io/WebGlobe/index.html
 
- ![这里写图片描述](https://github.com/iSpring/WebGlobe/blob/master/screenshot.png)
+
