@@ -190,7 +190,7 @@ const EventModule = {
         mat.setColumnTrans(pIntersect.x, pIntersect.y, pIntersect.z);
         var DELTA_RADIAN = MathUtils.degreeToRadian(DELTA_PITCH);
         mat.localRotateX(DELTA_RADIAN);
-        var dirZ = Vector.fromVertice(mat.getColumnZ());
+        var dirZ = mat.getColumnZ();
         dirZ.setLength(legnth2Intersect);
         var pNew = Vector.verticePlusVector(pIntersect, dirZ);
         camera.look(pNew, pIntersect);
