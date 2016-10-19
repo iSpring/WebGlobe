@@ -48,8 +48,8 @@ class Matrix{
       this.elements[2] = z;
     }
 
-    getColumnX(): Vertice {
-      return new Vertice(this.elements[0], this.elements[1], this.elements[2]);
+    getColumnX(): Vector {
+      return new Vector(this.elements[0], this.elements[1], this.elements[2]);
     }
 
     setColumnY(x: number, y: number, z: number) {
@@ -58,8 +58,8 @@ class Matrix{
       this.elements[6] = z;
     }
 
-    getColumnY(): Vertice {
-      return new Vertice(this.elements[4], this.elements[5], this.elements[6]);
+    getColumnY(): Vector {
+      return new Vector(this.elements[4], this.elements[5], this.elements[6]);
     }
 
     setColumnZ(x: number, y: number, z: number) {
@@ -68,8 +68,8 @@ class Matrix{
       this.elements[10] = z;
     }
 
-    getColumnZ(): Vertice {
-      return new Vertice(this.elements[8], this.elements[9], this.elements[10]);
+    getColumnZ(): Vector {
+      return new Vector(this.elements[8], this.elements[9], this.elements[10]);
     }
 
     setColumnTrans(x: number, y: number, z: number) {
@@ -414,7 +414,7 @@ class Matrix{
     localRotateX(radian: number): void {
       var transVertice = this.getColumnTrans();
       this.setColumnTrans(0, 0, 0);
-      var columnX = Vector.fromVertice(this.getColumnX());
+      var columnX = this.getColumnX();
       this.worldRotateByVector(radian, columnX);
       this.setColumnTrans(transVertice.x, transVertice.y, transVertice.z);
     }
@@ -422,7 +422,7 @@ class Matrix{
     localRotateY(radian: number): void {
       var transVertice = this.getColumnTrans();
       this.setColumnTrans(0, 0, 0);
-      var columnY = Vector.fromVertice(this.getColumnY());
+      var columnY = this.getColumnY();
       this.worldRotateByVector(radian, columnY);
       this.setColumnTrans(transVertice.x, transVertice.y, transVertice.z);
     }
@@ -430,7 +430,7 @@ class Matrix{
     localRotateZ(radian: number): void {
       var transVertice = this.getColumnTrans();
       this.setColumnTrans(0, 0, 0);
-      var columnZ = Vector.fromVertice(this.getColumnZ());
+      var columnZ = this.getColumnZ();
       this.worldRotateByVector(radian, columnZ);
       this.setColumnTrans(transVertice.x, transVertice.y, transVertice.z);
     }

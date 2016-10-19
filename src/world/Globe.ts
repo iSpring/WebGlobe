@@ -2,7 +2,7 @@
 import Kernel = require("./Kernel");
 import Utils = require("./Utils");
 import ShaderContent = require("./ShaderContent");
-import WebGLRenderer = require("./WebGLRenderer");
+import Renderer = require("./Renderer");
 import PerspectiveCamera = require("./PerspectiveCamera");
 import Scene = require("./Scene");
 import TiledLayer = require("./TiledLayer");
@@ -16,7 +16,7 @@ class Globe {
   CURRENT_LEVEL: number = -1; //当前渲染等级
   REFRESH_INTERVAL: number = 300; //Globe自动刷新时间间隔，以毫秒为单位
   idTimeOut: any = null; //refresh自定刷新的timeOut的handle
-  renderer: WebGLRenderer = null;
+  renderer: Renderer = null;
   scene: Scene = null;
   camera: PerspectiveCamera = null;
   tiledLayer: TiledLayer = null;
@@ -27,7 +27,7 @@ class Globe {
 
     var vs_content = ShaderContent.SIMPLE_SHADER.VS_CONTENT;
     var fs_content = ShaderContent.SIMPLE_SHADER.FS_CONTENT;
-    this.renderer = Kernel.renderer = new WebGLRenderer(canvas, vs_content, fs_content);
+    this.renderer = Kernel.renderer = new Renderer(canvas, vs_content, fs_content);
     this.scene = new Scene();
     var radio = canvas.width / canvas.height;
     this.camera = new PerspectiveCamera(30, radio, 1.0, 20000000.0);
@@ -81,20 +81,28 @@ class Globe {
   }
 
   setLevel(level: number) {
-    if (!Utils.isInteger(level)) {
-      throw "invalid level";
+    if (!Utils.isNonNegativeInteger(level)) {
+      throw "invalid level:" + level;
     }
-    if (level < 0) {
-      return;
-    }
+    
     level = level > this.MAX_LEVEL ? this.MAX_LEVEL : level; //超过最大的渲染级别就不渲染
     if (level != this.CURRENT_LEVEL) {
       if (this.camera instanceof PerspectiveCamera) {
         //要先执行camera.setLevel,然后再刷新
-        this.camera.setLevel(level);
+        this.camera.setLevel(level);        
         this.refresh();
       }
     }
+  }
+
+  isAnimating(): boolean{
+    return this.camera.isAnimating();
+  }
+
+  animateToLevel(level: number){
+    if(!this.isAnimating()){
+      this.camera.animateToLevel(level);
+    }    
   }
 
   /**

@@ -21,7 +21,7 @@ class SubTiledLayer extends Object3DComponents {
 
   //重写draw方法
   draw(camera: any) {
-    if (this.level >= Kernel.TERRAIN_LEVEL && Kernel.globe && Kernel.globe.pitch <= Kernel.TERRAIN_PITCH) {
+    if (this.level >= Kernel.TERRAIN_LEVEL && Kernel.globe && Kernel.globe.camera.pitch <= Kernel.TERRAIN_PITCH) {
       Kernel.gl.clear(Kernel.gl.DEPTH_BUFFER_BIT);
       Kernel.gl.clearDepth(1);
       Kernel.gl.enable(Kernel.gl.DEPTH_TEST);
