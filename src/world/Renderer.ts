@@ -5,7 +5,7 @@ import Scene = require("./Scene");
 import PerspectiveCamera = require("./PerspectiveCamera");
 import {WebGLRenderingContextExtension, WebGLProgramExtension} from "./Definitions";
 
-class WebGLRenderer {
+class Renderer {
   scene: Scene = null;
   camera: PerspectiveCamera = null;
   bAutoRefresh: boolean = false;
@@ -145,7 +145,7 @@ class WebGLRenderer {
   }
 
   tick() {
-    if (Kernel.renderer instanceof WebGLRenderer) {
+    if (Kernel.renderer instanceof Renderer) {
       if (Kernel.renderer.scene && Kernel.renderer.camera) {
         Kernel.renderer.render(Kernel.renderer.scene, Kernel.renderer.camera);
       }
@@ -164,4 +164,4 @@ class WebGLRenderer {
   }
 }
 
-export = WebGLRenderer;
+export = Renderer;
