@@ -81,20 +81,28 @@ class Globe {
   }
 
   setLevel(level: number) {
-    if (!Utils.isInteger(level)) {
-      throw "invalid level";
+    if (!Utils.isNonNegativeInteger(level)) {
+      throw "invalid level:" + level;
     }
-    if (level < 0) {
-      return;
-    }
+    
     level = level > this.MAX_LEVEL ? this.MAX_LEVEL : level; //超过最大的渲染级别就不渲染
     if (level != this.CURRENT_LEVEL) {
       if (this.camera instanceof PerspectiveCamera) {
         //要先执行camera.setLevel,然后再刷新
-        this.camera.setLevel(level);
+        this.camera.setLevel(level);        
         this.refresh();
       }
     }
+  }
+
+  isAnimating(): boolean{
+    return this.camera.isAnimating();
+  }
+
+  animateToLevel(level: number){
+    if(!this.isAnimating()){
+      this.camera.animateToLevel(level);
+    }    
   }
 
   /**

@@ -155,7 +155,10 @@ const EventModule = {
       deltaLevel = -parseInt(<any>(delta / 3));
     }
     var newLevel = globe.CURRENT_LEVEL + deltaLevel;
-    globe.setLevel(newLevel);
+    if(newLevel >= 0){
+      //globe.setLevel(newLevel);
+      globe.animateToLevel(newLevel);
+    }    
   },
 
   onKeyDown(event: KeyboardEvent) {
