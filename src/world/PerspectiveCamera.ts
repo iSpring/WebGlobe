@@ -301,7 +301,6 @@ class PerspectiveCamera extends Object3D {
     var deltaY = (newPosition.y - oldPosition.y) / count;
     var deltaZ = (newPosition.z - oldPosition.z) / count;
     var start:number = -1;
-    console.time("animating");
     var callback = (timestap: number) => {
       if(start < 0){
         start = timestap;
@@ -311,7 +310,6 @@ class PerspectiveCamera extends Object3D {
         this.matrix = newMat;
         this.animating = false;   
         cb();
-        console.timeEnd("animating");    
       }else{
         var p = this.getPosition();
         this.setPosition(p.x + deltaX, p.y + deltaY, p.z + deltaZ);

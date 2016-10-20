@@ -1,18 +1,24 @@
 ///<amd-module name="world/TiledLayer"/>
+import Kernel = require('./Kernel');
 import Object3DComponents = require('./Object3DComponents');
 import SubTiledLayer = require('./SubTiledLayer');
 
-class TiledLayer extends Object3DComponents {
+abstract class TiledLayer extends Object3DComponents {
   //重写
   add(subTiledLayer: SubTiledLayer) {
     super.add(subTiledLayer);
     subTiledLayer.tiledLayer = this;
   }
 
-  //根据切片的层级以及行列号获取图片的url,抽象方法，供子类实现
-  getImageUrl(level: number, row: number, column: number) {
-    return "";
+  protected wrapUrlWithProxy(url: string): string{
+    if(Kernel.proxy){
+      return Kernel.proxy + "?" + url;
+    }
+    return url;
   }
+
+  //根据切片的层级以及行列号获取图片的url,抽象方法，供子类实现
+  abstract getImageUrl(level: number, row: number, column: number): string
 
   //根据传入的level更新SubTiledLayer的数量
   updateSubLayerCount(level: number) {
