@@ -29,7 +29,7 @@ Demo: https://ispring.github.io/WebGlobe/index.html
     - clear用于清除编译打包的结果
     - compile用于将TypeScript版本的模块编译成JavaScript版本的AMD模块
     - bundle用于将TypeScript版本的模块打包成一个JavaScript压缩文件
-    - build用于执行以上所有的task，且是默认的task
+    - build用于执行以上所有的task，且是默认的task
     
  6. 通过index-src.html可以加载AMD格式的源码，方便调试；通过index-bundle.html可以加载打打包压缩后的JavaScript文件，减少了文件体积和网络请求数量，用于生产环境。
 
