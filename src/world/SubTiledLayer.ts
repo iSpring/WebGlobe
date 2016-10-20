@@ -40,13 +40,13 @@ class SubTiledLayer extends Object3DComponents {
   }
 
   //调用其父的getImageUrl
-  getImageUrl(level: number, row: number, column: number) {
-    var url = "";
-    if (this.tiledLayer) {
-      url = this.tiledLayer.getImageUrl(level, row, column);
-    }
-    return url;
-  }
+  // getImageUrl(level: number, row: number, column: number) {
+  //   var url = "";
+  //   if (this.tiledLayer) {
+  //     url = this.tiledLayer.getImageUrl(level, row, column);
+  //   }
+  //   return url;
+  // }
 
   //重写Object3DComponents的destroy方法
   destroy() {

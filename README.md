@@ -31,7 +31,7 @@ Demo: https://ispring.github.io/WebGlobe/index.html
     - bundle用于将TypeScript版本的模块打包成一个JavaScript压缩文件
     - build用于执行以上所有的task
     
- 6. 通过index-src.html可以加载AMD格式的源码，方便调试；通过index-bundle.html可以加载打打包压缩后的JavaScript文件，减少了网络请求数量，减少了文件体积，用于生产环境。
+ 6. 通过index-src.html可以加载AMD格式的源码，方便调试；通过index-bundle.html可以加载打打包压缩后的JavaScript文件，减少了文件体积和网络请求数量，用于生产环境。
 
 
 

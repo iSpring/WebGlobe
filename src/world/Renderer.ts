@@ -1,4 +1,4 @@
-///<amd-module name="world/WebGLRenderer"/>
+///<amd-module name="world/Renderer"/>
 import Kernel = require("./Kernel");
 import EventUtils = require("./Event");
 import Scene = require("./Scene");
