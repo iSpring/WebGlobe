@@ -1,6 +1,6 @@
-///<amd-module name="world/TiledLayer"/>
-import Kernel = require('./Kernel');
-import Object3DComponents = require('./Object3DComponents');
+///<amd-module name="world/layers/TiledLayer"/>
+import Kernel = require('../Kernel');
+import Object3DComponents = require('../Object3DComponents');
 import SubTiledLayer = require('./SubTiledLayer');
 
 abstract class TiledLayer extends Object3DComponents {

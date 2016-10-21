@@ -1,8 +1,8 @@
 ///<amd-module name="world/Object3D"/>
 import Kernel = require('./Kernel');
-import Matrix = require('./Matrix');
-import Vertice = require('./Vertice');
-import Vector = require('./Vector');
+import Matrix = require('./math/Matrix');
+import Vertice = require('./math/Vertice');
+import Vector = require('./math/Vector');
 import TextureMaterial = require('./TextureMaterial');
 
 class Object3D {

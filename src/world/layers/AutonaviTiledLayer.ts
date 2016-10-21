@@ -1,5 +1,5 @@
-///<amd-module name="world/AutonaviTiledLayer"/>
-import Kernel = require('./Kernel');
+///<amd-module name="world/layers/AutonaviTiledLayer"/>
+import Kernel = require('../Kernel');
 import TiledLayer = require('./TiledLayer');
 
 class AutonaviTiledLayer extends TiledLayer{

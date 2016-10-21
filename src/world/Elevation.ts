@@ -1,7 +1,7 @@
 ///<amd-module name="world/Elevation"/>
 import Kernel = require('./Kernel');
 import Utils = require('./Utils');
-import MathUtils = require('./Math');
+import MathUtils = require('./math/Math');
 import TileGrid = require('./TileGrid');
 
 const Elevation = {

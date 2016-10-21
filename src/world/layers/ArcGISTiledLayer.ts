@@ -1,5 +1,5 @@
-///<amd-module name="world/ArcGISTiledLayer"/>
-import Kernel = require("./Kernel");
+///<amd-module name="world/layers/ArcGISTiledLayer"/>
+import Kernel = require("../Kernel");
 import TiledLayer = require("./TiledLayer");
 
 class ArcGISTiledLayer extends TiledLayer{

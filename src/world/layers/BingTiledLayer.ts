@@ -1,5 +1,5 @@
-///<amd-module name="world/BingTiledLayer"/>
-import MathUtils = require('./Math');
+///<amd-module name="world/layers/BingTiledLayer"/>
+import MathUtils = require('../math/Math');
 import TiledLayer = require('./TiledLayer');
 
 //Bing地图

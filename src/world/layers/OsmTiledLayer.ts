@@ -1,4 +1,4 @@
-///<amd-module name="world/OsmTiledLayer"/>
+///<amd-module name="world/layers/OsmTiledLayer"/>
 import TiledLayer = require('./TiledLayer');
 
 class OsmTiledLayer extends TiledLayer {

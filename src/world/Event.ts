@@ -1,7 +1,7 @@
 ///<amd-module name="world/Event"/>
 import Kernel = require("./Kernel");
-import MathUtils = require("./Math");
-import Vector = require("./Vector");
+import MathUtils = require("./math/Math");
+import Vector = require("./math/Vector");
 import PerspectiveCamera = require("./PerspectiveCamera");
 
 type MouseMoveListener = (e: MouseEvent) => {};
@@ -96,7 +96,7 @@ const EventModule = {
     if(oldLon === newLon && oldLat === newLat){
       return;
     }
-    var p1 = MathUtils.geographicToCartesianCoord(oldLon, oldLat);    
+    var p1 = MathUtils.geographicToCartesianCoord(oldLon, oldLat);
     var v1 = Vector.fromVertice(p1);
     v1.normalize();
     var p2 = MathUtils.geographicToCartesianCoord(newLon, newLat);
@@ -158,7 +158,7 @@ const EventModule = {
     if(newLevel >= 0){
       //globe.setLevel(newLevel);
       globe.animateToLevel(newLevel);
-    }    
+    }
   },
 
   onKeyDown(event: KeyboardEvent) {

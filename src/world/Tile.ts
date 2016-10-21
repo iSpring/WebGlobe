@@ -3,7 +3,7 @@ import Kernel = require('./Kernel');
 import Object3D = require('./Object3D');
 import Enum = require('./Enum');
 import Elevation = require('./Elevation');
-import MathUtils = require('./Math');
+import MathUtils = require('./math/Math');
 import TileMaterial = require('./TileMaterial');
 
 class Tile extends Object3D {

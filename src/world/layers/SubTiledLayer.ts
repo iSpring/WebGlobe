@@ -1,11 +1,11 @@
-///<amd-module name="world/SubTiledLayer"/>
-import Kernel = require('./Kernel');
-import Utils = require('./Utils');
-import MathUtils = require('./Math');
-import TileGrid = require('./TileGrid');
-import Object3DComponents = require('./Object3DComponents');
-import Tile = require('./Tile');
-import Elevation = require('./Elevation');
+///<amd-module name="world/layers/SubTiledLayer"/>
+import Kernel = require('../Kernel');
+import Utils = require('../Utils');
+import MathUtils = require('../math/Math');
+import TileGrid = require('../TileGrid');
+import Object3DComponents = require('../Object3DComponents');
+import Tile = require('../Tile');
+import Elevation = require('../Elevation');
 
 class SubTiledLayer extends Object3DComponents {
   level: number = -1;

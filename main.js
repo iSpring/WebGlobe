@@ -1,5 +1,6 @@
 ﻿window.onload = function() {
-  require(["world/Globe", "world/BingTiledLayer", "world/NokiaTiledLayer", "world/OsmTiledLayer", "world/SosoTiledLayer", "world/TiandituTiledLayer", "world/GoogleTiledLayer"],
+  require(["world/Globe", "world/layers/BingTiledLayer", "world/layers/NokiaTiledLayer", "world/layers/OsmTiledLayer",
+  "world/layers/SosoTiledLayer", "world/layers/TiandituTiledLayer", "world/layers/GoogleTiledLayer"],
     function(Globe, BingTiledLayer, NokiaTiledLayer, OsmTiledLayer, SosoTiledLayer, TiandituTiledLayer, GoogleTiledLayer) {
 
       function startWebGL() {
@@ -41,7 +42,7 @@
         }
       }
 
-      
+
       startWebGL();
     });
 };

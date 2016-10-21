@@ -1,6 +1,6 @@
-///<amd-module name="world/Math"/>
-import Kernel = require('./Kernel');
-import Utils = require('./Utils');
+///<amd-module name="world/math/Math"/>
+import Kernel = require('../Kernel');
+import Utils = require('../Utils');
 import Vertice = require('./Vertice');
 import Vector = require('./Vector');
 import Line = require('./Line');

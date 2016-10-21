@@ -1,7 +1,7 @@
 ///<amd-module name="world/Object3DComponents"/>
 import Kernel = require('./Kernel');
-import Vector = require('./Vector');
-import Matrix = require('./Matrix');
+import Vector = require('./math/Vector');
+import Matrix = require('./math/Matrix');
 import Object3D = require('./Object3D');
 import PerspectiveCamera = require('./PerspectiveCamera');
 

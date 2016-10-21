@@ -1,13 +1,13 @@
 ///<amd-module name="world/PerspectiveCamera"/>
 import Kernel = require('./Kernel');
 import Utils = require('./Utils');
-import MathUtils = require('./Math');
-import Vertice = require('./Vertice');
-import Vector = require('./Vector');
-import Line = require('./Line');
-import Plan = require('./Plan');
+import MathUtils = require('./math/Math');
+import Vertice = require('./math/Vertice');
+import Vector = require('./math/Vector');
+import Line = require('./math/Line');
+import Plan = require('./math/Plan');
 import TileGrid = require('./TileGrid');
-import Matrix = require('./Matrix');
+import Matrix = require('./math/Matrix');
 import Object3D = require('./Object3D');
 import Globe = require('./Globe');//just used for TypeScript validate type
 
@@ -308,7 +308,7 @@ class PerspectiveCamera extends Object3D {
       var a = timestap - start;
       if(a >= span){
         this.matrix = newMat;
-        this.animating = false;   
+        this.animating = false;
         cb();
       }else{
         var p = this.getPosition();
@@ -365,7 +365,7 @@ class PerspectiveCamera extends Object3D {
       dir.setLength(deltaLength);
       var pNew = Vector.verticePlusVector(pOld, dir);
       this.setPosition(pNew.x, pNew.y, pNew.z);
-    }    
+    }
   }
 
   //判断世界坐标系中的点是否在Canvas中可见
