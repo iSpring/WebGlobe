@@ -25,6 +25,10 @@ const MathUtils = {
         return Math.abs(value) < 0.000001;
     },
 
+    isPowerOfTwo(value: number) {
+        return ( value & ( value - 1 ) ) === 0 && value !== 0;
+    },
+
     /**
      * 将其他进制的数字转换为10进制
      * @param numSys 要准换的进制
