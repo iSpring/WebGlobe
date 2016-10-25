@@ -22,7 +22,7 @@ class PerspectiveCamera extends Object3D {
   private animating: boolean = false;
 
   constructor(public fov = 90, public aspect = 1, public near = 1, public far = 1) {
-    super(null);
+    super();
     this.pitch = 90;
     this.projMatrix = new Matrix();
     this.setPerspectiveMatrix(this.fov, this.aspect, this.near, this.far);

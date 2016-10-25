@@ -3,6 +3,8 @@
 import Kernel = require("../Kernel");
 import Geometry = require("../geometries/Geometry");
 import Material = require("../materials/Material");
+import Program = require("../Program");
+import PerspectiveCamera = require("../PerspectiveCamera");
 
 interface GraphicOptions{
     geometry: Geometry;
@@ -11,7 +13,7 @@ interface GraphicOptions{
     visible?: boolean;
 }
 
-class Graphic{
+abstract class Graphic{
     id:number;
     ready: boolean = false;
     visible: boolean = true;
@@ -30,27 +32,18 @@ class Graphic{
         return this.material.getType();
     }
 
-    //need to be override
-    createProgram(): any{
-        return null;
+    isDrawable(): boolean{
+        if(!this.visible || !this.material.isReady() || !this.ready){
+            return false;
+        }
+        return true;
     }
 
-    // onBeforeDraw(){}
-
-    // _draw(program, camera, scene){
-    //     if(!program || !this.visible || !this.isReady || !this.material.isReady){
-    //         return;
-    //     }
-
-    //     this.onBeforeDraw(program, camera, scene);
-    //     this.draw(program, camera, scene);
-    //     this.onAfterDraw(program, camera, scene);
-    // }
+    //need to be override
+    abstract createProgram(): Program
 
     // //need to be override
-    // draw(){}
-
-    // onAfterDraw(){}
+    abstract draw(program: Program, camera: PerspectiveCamera)
 
     destroy(){
         this.parent = null;

@@ -1,9 +1,11 @@
 ﻿///<amd-module name="world/graphics/MeshGraphic"/>
 
 import Kernel = require("../Kernel");
+import Program = require("../Program");
 import Graphic = require("./Graphic");
 import Geometry = require("../geometries/Geometry");
 import MeshTextureMaterial = require("../materials/MeshTextureMaterial");
+import PerspectiveCamera = require("../PerspectiveCamera");
 
 const vs =
     `
@@ -40,11 +42,15 @@ class MeshGraphic extends Graphic {
         this.ready = true;
     }
 
+    createProgram(): Program{
+        return new Program(this.getProgramType(), vs, fs);
+    }
+
     _init4TextureMaterial() {
         this.geometry.calculateUVBO();
     }
 
-    _drawTextureMaterial(program) {
+    _drawTextureMaterial(program: any) {
         //set aUV
         var locUV = program.getAttribLocation('aUV');
         program.enableVertexAttribArray('aUV');
@@ -59,46 +65,32 @@ class MeshGraphic extends Graphic {
         Kernel.gl.uniform1i(locSampler, 0);
     }
 
-    // createProgram(scene) {
-    //     var program = null;
-    //     var programType = this.getProgramType(scene);
-    //     var args = {
-    //         type: programType,
-    //         definesObject: null,
-    //         vsSource: vs,
-    //         fsSource: fs
-    //     };
-    //     program = new world.Program(args);
+    draw(program: Program, camera: PerspectiveCamera) {
+        //aPosition
+        var locPosition = program.getAttribLocation('aPosition');
+        program.enableVertexAttribArray('aPosition');
+        this.geometry.vbo.bind();
+        Kernel.gl.vertexAttribPointer(locPosition, 3, Kernel.gl.FLOAT, false, 0, 0);
 
-    //     return program;
-    // }
+        //uPMVMatrix
+        var pmvMatrix = camera.projViewMatrix.multiplyMatrix(this.geometry.matrix);
+        var locPMVMatrix = program.getUniformLocation('uPMVMatrix');
+        Kernel.gl.uniformMatrix4fv(locPMVMatrix, false, pmvMatrix.elements);
 
-    // draw(program, camera, scene) {
-    //     //aPosition
-    //     var locPosition = program.getAttribLocation('aPosition');
-    //     program.enableVertexAttribArray('aPosition');
-    //     this.geometry.vbo.bind();
-    //     Kernel.gl.vertexAttribPointer(locPosition, 3, Kernel.gl.FLOAT, false, 0, 0);
+        this._drawTextureMaterial(program);
 
-    //     //uPMVMatrix
-    //     var pmvMatrix = camera.projViewMatrix.multiplyMatrix(this.geometry.matrix);
-    //     var locPMVMatrix = program.getUniformLocation('uPMVMatrix');
-    //     Kernel.gl.uniformMatrix4fv(locPMVMatrix, false, pmvMatrix.elements);
+        //设置索引，但不用往shader中赋值
+        this.geometry.ibo.bind();
 
-    //     this._drawTextureMaterial(program);
+        //绘图
+        var count = this.geometry.triangles.length * 3;
+        Kernel.gl.drawElements(Kernel.gl.TRIANGLES, count, Kernel.gl.UNSIGNED_SHORT, 0);
 
-    //     //设置索引，但不用往shader中赋值
-    //     this.geometry.ibo.bind();
-
-    //     //绘图
-    //     var count = this.geometry.triangles.length * 3;
-    //     Kernel.gl.drawElements(Kernel.gl.TRIANGLES, count, Kernel.gl.UNSIGNED_SHORT, 0);
-
-    //     //释放当前绑定对象
-    //     Kernel.gl.bindBuffer(Kernel.gl.ARRAY_BUFFER, null);
-    //     Kernel.gl.bindBuffer(Kernel.gl.ELEMENT_ARRAY_BUFFER, null);
-    //     Kernel.gl.bindTexture(Kernel.gl.TEXTURE_2D, null);
-    // }
+        //释放当前绑定对象
+        Kernel.gl.bindBuffer(Kernel.gl.ARRAY_BUFFER, null);
+        Kernel.gl.bindBuffer(Kernel.gl.ELEMENT_ARRAY_BUFFER, null);
+        Kernel.gl.bindTexture(Kernel.gl.TEXTURE_2D, null);
+    }
 }
 
 export = MeshGraphic;

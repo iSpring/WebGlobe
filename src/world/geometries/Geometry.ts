@@ -2,18 +2,20 @@
 import Kernel = require("../Kernel");
 import Vertice = require("./Vertice");
 import Triangle = require("./Triangle");
+import Object3D = require("../Object3D");
 import VertexBufferObject = require("../VertexBufferObject");
 
-class Geometry {
+class Geometry extends Object3D {
 	vertices: Vertice[];
 	triangles: Triangle[];
-	vbo: any;
-	ibo: any;
-	nbo: any;
-	uvbo: any;
-	cbo: any;
+	vbo: VertexBufferObject;
+	ibo: VertexBufferObject;
+	nbo: VertexBufferObject;
+	uvbo: VertexBufferObject;
+	cbo: VertexBufferObject;
 
 	constructor() {
+		super();
 		this.buildTriangles();
 	}
 
@@ -129,19 +131,19 @@ class Geometry {
 
 	destroy() {
 		if (this.vbo) {
-			Kernel.gl.deleteBuffer(this.vbo);
+			this.vbo.destroy();
 		}
 		if (this.ibo) {
-			Kernel.gl.deleteBuffer(this.ibo);
+			this.ibo.destroy();
 		}
 		if (this.nbo) {
-			Kernel.gl.deleteBuffer(this.nbo);
+			this.nbo.destroy();
 		}
 		if (this.cbo) {
-			Kernel.gl.deleteBuffer(this.cbo);
+			this.cbo.destroy();
 		}
 		if (this.uvbo) {
-			Kernel.gl.deleteBuffer(this.uvbo);
+			this.uvbo.destroy();
 		}
 
 		this.vbo = null;
@@ -153,9 +155,5 @@ class Geometry {
 		this.triangles = [];
 	}
 }
-
-//world.geometries._Geometry.prototype = new world._Object3D();
-
-//world.geometries._Geometry.prototype.constructor = world.geometries._Geometry;
 
 export = Geometry;

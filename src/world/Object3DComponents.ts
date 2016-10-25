@@ -3,9 +3,10 @@ import Kernel = require('./Kernel');
 import Vector = require('./math/Vector');
 import Matrix = require('./math/Matrix');
 import Object3D = require('./Object3D');
+import Graphic = require('./graphics/Graphic');
 import PerspectiveCamera = require('./PerspectiveCamera');
 
-type ChildType = Object3D | Object3DComponents;
+// type ChildType = Object3D | Object3DComponents;
 
 //三维对象集合
 class Object3DComponents {
@@ -13,7 +14,7 @@ class Object3DComponents {
   matrix: Matrix;
   visible: boolean;
   parent: any;
-  children: ChildType[];
+  children: Graphic[];
 
   constructor() {
     this.id = ++Kernel.idCounter;
@@ -23,7 +24,7 @@ class Object3DComponents {
     this.children = [];
   }
 
-  add(obj: ChildType) {
+  add(obj: Graphic) {
     if (this.findObjById(obj.id) !== null) {
       console.debug("obj已经存在于Object3DComponents中，无法将其再次加入！");
       return;
@@ -33,7 +34,7 @@ class Object3DComponents {
     }
   }
 
-  remove(obj: ChildType) {
+  remove(obj: Graphic) {
     if (obj) {
       var result = this.findObjById(obj.id);
       if (result === null) {
