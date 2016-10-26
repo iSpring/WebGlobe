@@ -7,6 +7,7 @@ import Geometry = require("./Geometry");
 class Box extends Geometry {
 	constructor(public length: number, public width: number, public height: number) {
 		super();
+		this.buildTriangles();
 	}
 
 	buildTriangles() {
@@ -22,9 +23,9 @@ class Box extends Geometry {
 					/ |		/ |
 					F1----F3  |
 					| B2- |--B4
-						|/	  | /
-						F2----F4
-			 */
+					|/	  | /
+					F2----F4
+		*/
 
 		//前面四个顶点
 		var vF1 = [-halfLength, halfHeight, halfWidth]; //前面左上角点 F1,索引0

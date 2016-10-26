@@ -14,11 +14,6 @@ class Geometry extends Object3D {
 	uvbo: VertexBufferObject;
 	cbo: VertexBufferObject;
 
-	constructor() {
-		super();
-		this.buildTriangles();
-	}
-
 	//set vertices and triangles
 	buildTriangles(){
 		this.vertices = [];

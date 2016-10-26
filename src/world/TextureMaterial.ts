@@ -24,14 +24,14 @@ class TextureMaterial {
             this.image = image;
             this.onLoad();
         }
-    };
-    
+    }
+
     setImageUrl(url: string): void {
         this.image = new Image();
         this.image.crossOrigin = 'anonymous'; //很重要，因为图片是跨域获得的，所以一定要加上此句代码
         this.image.onload = this.onLoad.bind(this);
         this.image.src = url;
-    };
+    }
 
     //图片加载完成时触发
     onLoad(): void {
