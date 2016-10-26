@@ -38,16 +38,12 @@ class MeshGraphic extends Graphic {
         super(geometry, material);
         this.geometry.calculateVBO();
         this.geometry.calculateIBO();
-        this._init4TextureMaterial();
+        this.geometry.calculateUVBO();
         this.ready = true;
     }
 
     createProgram(): Program{
         return new Program(this.getProgramType(), vs, fs);
-    }
-
-    _init4TextureMaterial() {
-        this.geometry.calculateUVBO();
     }
 
     _drawTextureMaterial(program: any) {

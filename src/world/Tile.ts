@@ -1,17 +1,19 @@
 ///<amd-module name="world/Tile"/>
 import Kernel = require('./Kernel');
-import Object3D = require('./Object3D');
 import Enum = require('./Enum');
 import Elevation = require('./Elevation');
 import MathUtils = require('./math/Math');
+import MeshGraphic = require('./graphics/MeshGraphic');
 import TileMaterial = require('./TileMaterial');
+import Geometry = require("./geometries/Geometry");
 
-class Tile extends Object3D {
-  level: number = 0;
-  row: number = 0;
-  column: number = 0;
-  url: string;
-  subTiledLayer: any;
+class TileGeometry extends Geometry{
+  buildTriangles(){
+
+  }
+}
+
+class TileInfo{
   //type如果是GLOBE_TILE，表示其buffer已经设置为一般形式
   //type如果是TERRAIN_TILE，表示其buffer已经设置为高程形式
   //type如果是UNKNOWN，表示buffer没设置
@@ -28,19 +30,7 @@ class Tile extends Object3D {
   segment: number = 1;
   elevationInfo: any = null;
 
-  //args中包含level、row、column、url即可
-  constructor(args: any) {
-    super(null);
-    this.createVerticeData(args);
-  }
-
-  createVerticeData(args: any) {
-    if (!args) {
-      return;
-    }
-    this.setTileInfo(args);
-    this.checkTerrain();
-  }
+  constructor(public level: number, public row: number, public column: number, public url: string){}
 
   // 根据传入的切片的层级以及行列号信息设置切片的经纬度范围 以及设置其纹理
   setTileInfo(args: any) {
@@ -68,6 +58,31 @@ class Tile extends Object3D {
     };
     this.material = new TileMaterial(matArgs);
   }
+}
+
+class Tile extends MeshGraphic {
+  subTiledLayer: any;
+
+
+  //args中包含level、row、column、url即可
+  constructor(public geometry: Geometry, public material: MeshTextureMaterial) {
+    super(geometry, material);
+    // this.createVerticeData(args);
+  }
+
+  static getTile(){
+
+  }
+
+  createVerticeData(args: any) {
+    if (!args) {
+      return;
+    }
+    this.setTileInfo(args);
+    this.checkTerrain();
+  }
+
+
 
   /**
      * 判断是否满足现实Terrain的条件，若满足则转换为三维地形

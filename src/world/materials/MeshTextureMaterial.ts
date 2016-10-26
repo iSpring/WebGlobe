@@ -16,8 +16,6 @@ class MeshTextureMaterial extends Material {
             this.setImage(args.image);
         } else if (typeof args.url === "string") {
             this.setImageUrl(args.url);
-        } else {
-            throw 'Invalid parameter';
         }
     }
 
@@ -39,6 +37,7 @@ class MeshTextureMaterial extends Material {
     setImageUrl(url: string) {
         this.image = new Image();
         this.image.crossOrigin = 'anonymous';//很重要，因为图片是跨域获得的，所以一定要加上此句代码
+        this.ready = false;
         this.image.onload = this._onLoad.bind(this);
         this.image.src = url;
     }
