@@ -1,13 +1,13 @@
 ///<amd-module name="world/Globe"/>
 import Kernel = require("./Kernel");
 import Utils = require("./Utils");
-import ShaderContent = require("./ShaderContent");
+// import ShaderContent = require("./ShaderContent");
 import Renderer = require("./Renderer");
 import PerspectiveCamera = require("./PerspectiveCamera");
 import Scene = require("./Scene");
 import TiledLayer = require("./layers/TiledLayer");
 import SubTiledLayer = require("./layers/SubTiledLayer");
-import Tile = require("./Tile");
+import Tile = require("./graphics/Tile");
 import ImageUtils = require("./Image");
 import EventUtils = require("./Event");
 
@@ -25,9 +25,9 @@ class Globe {
     args = args || {};
     Kernel.globe = this;
 
-    var vs_content = ShaderContent.SIMPLE_SHADER.VS_CONTENT;
-    var fs_content = ShaderContent.SIMPLE_SHADER.FS_CONTENT;
-    this.renderer = Kernel.renderer = new Renderer(canvas, vs_content, fs_content);
+    // var vs_content = ShaderContent.SIMPLE_SHADER.VS_CONTENT;
+    // var fs_content = ShaderContent.SIMPLE_SHADER.FS_CONTENT;
+    this.renderer = Kernel.renderer = new Renderer(canvas);
     this.scene = new Scene();
     var radio = canvas.width / canvas.height;
     this.camera = new PerspectiveCamera(30, radio, 1.0, 20000000.0);
@@ -72,7 +72,7 @@ class Globe {
           url: ""
         };
         args.url = this.tiledLayer.getImageUrl(args.level, args.row, args.column);
-        var tile = new Tile(args);
+        var tile = Tile.getTile(args.level, args.row, args.column, args.url);
         subLayer1.add(tile);
       }
     }

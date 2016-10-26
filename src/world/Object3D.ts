@@ -3,7 +3,6 @@ import Kernel = require('./Kernel');
 import Matrix = require('./math/Matrix');
 import Vertice = require('./math/Vertice');
 import Vector = require('./math/Vector');
-import TextureMaterial = require('./TextureMaterial');
 
 class Object3D {
     matrix: Matrix;

@@ -15,6 +15,7 @@ class MeshTextureMaterial extends Material {
 
     constructor(imageOrUrl?: ImageType) {
         super();
+        this.texture = Kernel.gl.createTexture();
         if(imageOrUrl){
             this.setImageOrUrl(imageOrUrl);
         }
@@ -73,7 +74,7 @@ class MeshTextureMaterial extends Material {
 
         Kernel.gl.texImage2D(Kernel.gl.TEXTURE_2D, 0, Kernel.gl.RGBA, Kernel.gl.RGBA, Kernel.gl.UNSIGNED_BYTE, this.image);
 
-        var isMipMap = this.image.width === this.image.height && MathUtils.isPowerOfTwo(this.image.width);
+        var isMipMap = false;//this.image.width === this.image.height && MathUtils.isPowerOfTwo(this.image.width);
 
         if (isMipMap) {
             //使用MipMap

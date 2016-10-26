@@ -1,10 +1,10 @@
-///<amd-module name="world/Tile"/>
+///<amd-module name="world/graphics/Tile"/>
 import Kernel = require('../Kernel');
 import Enum = require('../Enum');
 import Elevation = require('../Elevation');
 import MathUtils = require('../math/Math');
 import MeshGraphic = require('../graphics/MeshGraphic');
-import MeshTextureMaterial = require('../materials/MeshTextureMaterial');
+import TileMaterial = require('../materials/TileMaterial');
 import TileGeometry = require("../geometries/TileGeometry");
 import Vertice = require("../geometries/Vertice");
 import Triangle = require("../geometries/Triangle");
@@ -26,14 +26,13 @@ class TileInfo {
   segment: number = 1;
   elevationInfo: any = null;
   geometry: TileGeometry;
-  material: MeshTextureMaterial;
+  material: TileMaterial;
   visible: boolean;
 
   constructor(public level: number, public row: number, public column: number, public url: string) {
     this._setTileInfo();
     this._checkTerrain();
-    this._createGeometry();
-    this._createMaterial();
+    this.material = new TileMaterial(this.level, this.url);
   }
 
   // 根据传入的切片的层级以及行列号信息设置切片的经纬度范围 以及设置其纹理
@@ -54,18 +53,6 @@ class TileInfo {
     this.minY = minCoord[1];
     this.maxX = maxCoord[0];
     this.maxY = maxCoord[1];
-  }
-
-  _createGeometry() {
-    this.geometry = null;
-  }
-
-  _createMaterial() {
-    var matArgs = {
-      level: this.level,
-      url: this.url
-    };
-    this.material = new MeshTextureMaterial(matArgs);
   }
 
   /**
@@ -213,7 +200,7 @@ class TileInfo {
 class Tile extends MeshGraphic {
   subTiledLayer: any;
 
-  constructor(public geometry: TileGeometry, public material: MeshTextureMaterial, public tileInfo: TileInfo) {
+  constructor(public geometry: TileGeometry, public material: TileMaterial, public tileInfo: TileInfo) {
     super(geometry, material);
   }
 

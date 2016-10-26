@@ -23,7 +23,7 @@ const ProgramUtils = {
 
 		if(!program){
 			program = graphic.createProgram();
-			this.programs.push(program);
+			programs.push(program);
 		}
 
 		return program;

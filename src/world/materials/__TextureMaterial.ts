@@ -1,5 +1,5 @@
-///<amd-module name="world/TextureMaterial"/>
-import Kernel = require('./Kernel');
+///<amd-module name="world/materials/TextureMaterial"/>
+import Kernel = require('../Kernel');
 
 class TextureMaterial {
     texture: WebGLTexture = null;

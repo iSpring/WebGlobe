@@ -140,7 +140,7 @@ class SubTiledLayer extends GraphicGroup {
       var i:number, name:any;
       for (i = 0; i < tiles.length; i++) {
         var tile = <Tile>tiles[i];
-        var tileGrid = TileGrid.getTileGridAncestor(this.elevationLevel, tile.level, tile.row, tile.column);
+        var tileGrid = TileGrid.getTileGridAncestor(this.elevationLevel, tile.tileInfo.level, tile.tileInfo.row, tile.tileInfo.column);
         name = tileGrid.level + "_" + tileGrid.row + "_" + tileGrid.column;
         if (result.indexOf(name) < 0) {
           result.push(name);
@@ -165,7 +165,7 @@ class SubTiledLayer extends GraphicGroup {
     for (var i = 0; i < this.children.length; i++) {
       var tile = <Tile>this.children[i];
       if (tile) {
-        var isTileLoaded = tile.material.loaded;
+        var isTileLoaded = tile.material.isReady();
         if (!isTileLoaded) {
           return false;
         }

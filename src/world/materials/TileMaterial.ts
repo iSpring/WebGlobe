@@ -1,4 +1,4 @@
-///<amd-module name="world/TileMaterial"/>
+///<amd-module name="world/materials/TileMaterial"/>
 import MeshTextureMaterial= require('./MeshTextureMaterial');
 import ImageUtils = require('../Image');
 

@@ -1,8 +1,8 @@
 ///<amd-module name="world/Scene"/>
-import Object3DComponents = require('./Object3DComponents');
+import GraphicGroup = require('./GraphicGroup');
 import TiledLayer = require("./layers/TiledLayer");
 
-class Scene extends Object3DComponents{
+class Scene extends GraphicGroup{
     tiledLayer: TiledLayer;
 }
 

@@ -1,4 +1,4 @@
-﻿///<amd-module name="world/geometries/Box"/>
+﻿///<amd-module name="world/geometries/TileGeometry"/>
 
 import Vertice = require("./Vertice");
 import Triangle = require("./Triangle");

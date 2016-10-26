@@ -1,9 +1,9 @@
 ///<amd-module name="world/layers/TiledLayer"/>
 import Kernel = require('../Kernel');
-import Object3DComponents = require('../Object3DComponents');
+import GraphicGroup = require('../GraphicGroup');
 import SubTiledLayer = require('./SubTiledLayer');
 
-abstract class TiledLayer extends Object3DComponents {
+abstract class TiledLayer extends GraphicGroup {
   //重写
   add(subTiledLayer: SubTiledLayer) {
     super.add(subTiledLayer);

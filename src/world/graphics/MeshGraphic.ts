@@ -8,29 +8,29 @@ import MeshTextureMaterial = require("../materials/MeshTextureMaterial");
 import PerspectiveCamera = require("../PerspectiveCamera");
 
 const vs =
-    `
-'attribute vec3 aPosition;',
-'attribute vec2 aUV;',
-'varying vec2 vUV;',
-'uniform mat4 uPMVMatrix;',
+`
+attribute vec3 aPosition;
+attribute vec2 aUV;
+varying vec2 vUV;
+uniform mat4 uPMVMatrix;
 
-'void main()',
-'{',
-	'gl_Position = uPMVMatrix * vec4(aPosition,1.0);',
-	'vUV = aUV;',
-'}'
+void main()
+{
+	gl_Position = uPMVMatrix * vec4(aPosition,1.0);
+	vUV = aUV;
+}
 `;
 
 const fs =
-    `
-'precision mediump float;',
-	'varying vec2 vUV;',
-	'uniform sampler2D uSampler;',
+`
+precision mediump float;
+varying vec2 vUV;
+uniform sampler2D uSampler;
 
-	'void main()',
-	'{',
-		'gl_FragColor = texture2D(uSampler, vec2(vUV.s, vUV.t));',
-	'}'
+void main()
+{
+	gl_FragColor = texture2D(uSampler, vec2(vUV.s, vUV.t));
+}
 `;
 
 class MeshGraphic extends Graphic {
