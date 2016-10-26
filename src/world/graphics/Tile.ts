@@ -183,7 +183,7 @@ class TileInfo {
         var v3: Vertice = verticeArray[idx3];
         var triangle1 = new Triangle(v0, v1, v2);
         var triangle2 = new Triangle(v2, v3, v0);
-        triangleArray.concat(triangle1, triangle2);
+        triangleArray.push(triangle1, triangle2);
       }
     }
 
