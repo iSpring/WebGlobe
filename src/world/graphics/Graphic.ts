@@ -51,7 +51,7 @@ abstract class Graphic{
         }
     }
 
-    abstract onDraw(camera: PerspectiveCamera)
+    abstract onDraw(camera: PerspectiveCamera):void
 
     destroy(){
         this.parent = null;

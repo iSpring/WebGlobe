@@ -15,6 +15,7 @@ class PerspectiveCamera extends Object3D {
   pitch: number;
   viewMatrix: Matrix;
   projMatrix: Matrix;
+  projViewMatrix: Matrix;
   Enum: any = {
     EARTH_FULL_OVERSPREAD_SCREEN: "EARTH_FULL_OVERSPREAD_SCREEN", //Canvas内全部被地球充满
     EARTH_NOT_FULL_OVERSPREAD_SCREEN: "EARTH_NOT_FULL_OVERSPREAD_SCREEN" //Canvas没有全部被地球充满

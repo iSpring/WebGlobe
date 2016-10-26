@@ -25,7 +25,7 @@ class Program{
 	updateActiveAttribInfos(){
 		var count = Kernel.gl.getProgramParameter(this.program, Kernel.gl.ACTIVE_ATTRIBUTES);
 
-		for(var i = 0, activeInfo; i < count; i++){
+		for(var i = 0, activeInfo: any; i < count; i++){
 			activeInfo = Kernel.gl.getActiveAttrib(this.program, i);
 			activeInfo.loc = Kernel.gl.getAttribLocation(this.program, activeInfo.name);
 			activeInfo.isAttribute = true;
@@ -36,7 +36,7 @@ class Program{
 	updateActiveUniformInfos(){
 		var count = Kernel.gl.getProgramParameter(this.program, Kernel.gl.ACTIVE_UNIFORMS);
 
-		for(var i = 0, activeInfo; i < count; i++){
+		for(var i = 0, activeInfo: any; i < count; i++){
 			activeInfo = Kernel.gl.getActiveUniform(this.program, i);
 			activeInfo.loc = Kernel.gl.getUniformLocation(this.program, activeInfo.name);
 			activeInfo.isAttribute = false;
@@ -44,7 +44,7 @@ class Program{
 		}
 	}
 
-	getLocation(name){
+	getLocation(name: string){
 		//loc = gl.getAttribLocation(this.program, name);
 		//loc = gl.getUniformLocation(this.program, name);
 		var loc = -1;
@@ -55,7 +55,7 @@ class Program{
 		return loc;
 	}
 
-	getAttribLocation(name){
+	getAttribLocation(name: string){
 		var loc = -1;
 		var activeInfo = this.activeInfosObject[name];
 		if(activeInfo && activeInfo.isAttribute){
@@ -65,8 +65,8 @@ class Program{
 	}
 
 	//return WebGLUniformLocation, not a number
-	getUniformLocation(name){
-		var loc = null;
+	getUniformLocation(name: string){
+		var loc: WebGLUniformLocation;
 		var activeInfo = this.activeInfosObject[name];
 		if(activeInfo && !activeInfo.isAttribute){
 			loc = activeInfo.loc;
@@ -87,8 +87,8 @@ class Program{
 
 	//Return the uniform value at the passed location in the passed program.
 	//The type returned is dependent on the uniform type.
-	getUniform(name){
-		var result = null;
+	getUniform(name:string){
+		var result: any;
 		var loc = this.getUniformLocation(name);
 		if(loc){
 			result = Kernel.gl.getUniform(this.program, loc);
@@ -96,7 +96,7 @@ class Program{
 		return result;
 	}
 
-	enableVertexAttribArray(name){
+	enableVertexAttribArray(name:string){
 		var activeInfo = this.activeInfosObject[name];
 		if(activeInfo && activeInfo.isAttribute && activeInfo.isEnabled !== true){
 			var loc = activeInfo.loc;
@@ -105,7 +105,7 @@ class Program{
 		}
 	}
 
-	disableVertexAttribArray(name){
+	disableVertexAttribArray(name:string){
 		var activeInfo = this.activeInfosObject[name];
 		if(activeInfo && activeInfo.isAttribute && activeInfo.isEnabled !== false){
 			var loc = activeInfo.loc;
@@ -144,7 +144,7 @@ class Program{
 		this.ready = true;
 	}
 
-	_getShader(shaderType, shaderText){
+	_getShader(shaderType:number, shaderText:string){
 		var shader = Kernel.gl.createShader(shaderType);
 		Kernel.gl.shaderSource(shader, shaderText);
 		Kernel.gl.compileShader(shader);
