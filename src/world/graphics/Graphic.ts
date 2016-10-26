@@ -16,7 +16,6 @@ interface GraphicOptions{
 
 abstract class Graphic{
     id:number;
-    ready: boolean = false;
     visible: boolean = true;
     parent: any;
     program: Program;
@@ -37,11 +36,12 @@ abstract class Graphic{
         return this.material.getType();
     }
 
+    isReady(): boolean{
+        return this.geometry && this.material && this.material.isReady();
+    }
+
     isDrawable(): boolean{
-        if(!this.visible || !this.material.isReady() || !this.ready){
-            return false;
-        }
-        return true;
+        return this.visible &&  this.isReady();
     }
 
     draw(camera: PerspectiveCamera){
@@ -60,7 +60,6 @@ abstract class Graphic{
         this.material.destroy();
         this.geometry = null;
         this.material = null;
-        this.ready = false;
     }
 }
 
