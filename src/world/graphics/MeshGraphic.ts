@@ -65,19 +65,19 @@ class MeshGraphic extends Graphic {
         Kernel.gl.uniform1i(locSampler, 0);
     }
 
-    draw(program: Program, camera: PerspectiveCamera) {
+    onDraw(camera: PerspectiveCamera) {
         //aPosition
-        var locPosition = program.getAttribLocation('aPosition');
-        program.enableVertexAttribArray('aPosition');
+        var locPosition = this.program.getAttribLocation('aPosition');
+        this.program.enableVertexAttribArray('aPosition');
         this.geometry.vbo.bind();
         Kernel.gl.vertexAttribPointer(locPosition, 3, Kernel.gl.FLOAT, false, 0, 0);
 
         //uPMVMatrix
         var pmvMatrix = camera.projViewMatrix.multiplyMatrix(this.geometry.matrix);
-        var locPMVMatrix = program.getUniformLocation('uPMVMatrix');
+        var locPMVMatrix = this.program.getUniformLocation('uPMVMatrix');
         Kernel.gl.uniformMatrix4fv(locPMVMatrix, false, pmvMatrix.elements);
 
-        this._drawTextureMaterial(program);
+        this._drawTextureMaterial(this.program);
 
         //设置索引，但不用往shader中赋值
         this.geometry.ibo.bind();

@@ -4,6 +4,7 @@ import Kernel = require("../Kernel");
 import Geometry = require("../geometries/Geometry");
 import Material = require("../materials/Material");
 import Program = require("../Program");
+import ProgramUtils = require("../ProgramUtils");
 import PerspectiveCamera = require("../PerspectiveCamera");
 
 interface GraphicOptions{
@@ -18,15 +19,19 @@ abstract class Graphic{
     ready: boolean = false;
     visible: boolean = true;
     parent: any;
+    program: Program;
 
     constructor(public geometry: Geometry, public material: Material){
         this.id = ++Kernel.idCounter;
         this.parent = null;
+        this.program = ProgramUtils.getProgram(this);
     }
 
     setVisible(visible: boolean){
         this.visible = visible;
     }
+
+    abstract createProgram(): Program
 
     getProgramType() {
         return this.material.getType();
@@ -39,11 +44,14 @@ abstract class Graphic{
         return true;
     }
 
-    //need to be override
-    abstract createProgram(): Program
+    draw(camera: PerspectiveCamera){
+        if(this.isDrawable()){
+            this.program.use();
+            this.onDraw(camera);
+        }
+    }
 
-    // //need to be override
-    abstract draw(program: Program, camera: PerspectiveCamera)
+    abstract onDraw(camera: PerspectiveCamera)
 
     destroy(){
         this.parent = null;
