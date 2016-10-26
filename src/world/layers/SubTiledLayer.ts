@@ -3,11 +3,11 @@ import Kernel = require('../Kernel');
 import Utils = require('../Utils');
 import MathUtils = require('../math/Math');
 import TileGrid = require('../TileGrid');
-import Object3DComponents = require('../Object3DComponents');
-import Tile = require('../Tile');
+import GraphicGroup = require('../GraphicGroup');
+import Tile = require('../graphics/Tile');
 import Elevation = require('../Elevation');
 
-class SubTiledLayer extends Object3DComponents {
+class SubTiledLayer extends GraphicGroup {
   level: number = -1;
   //该级要请求的高程数据的层级，7[8,9,10];10[11,12,13];13[14,15,16];16[17,18,19]
   elevationLevel = -1;
@@ -33,20 +33,11 @@ class SubTiledLayer extends Object3DComponents {
 
   //重写Object3DComponents的add方法
   add(tile: Tile) {
-    if (tile.level === this.level) {
+    if (tile.tileInfo.level === this.level) {
       super.add(tile);
       tile.subTiledLayer = this;
     }
   }
-
-  //调用其父的getImageUrl
-  // getImageUrl(level: number, row: number, column: number) {
-  //   var url = "";
-  //   if (this.tiledLayer) {
-  //     url = this.tiledLayer.getImageUrl(level, row, column);
-  //   }
-  //   return url;
-  // }
 
   //重写Object3DComponents的destroy方法
   destroy() {
@@ -59,7 +50,7 @@ class SubTiledLayer extends Object3DComponents {
     var length = this.children.length;
     for (var i = 0; i < length; i++) {
       var tile = <Tile>this.children[i];
-      if (tile.level === level && tile.row === row && tile.column === column) {
+      if (tile.tileInfo.level === level && tile.tileInfo.row === row && tile.tileInfo.column === column) {
         return tile;
       }
     }
@@ -91,7 +82,7 @@ class SubTiledLayer extends Object3DComponents {
     var i:number, tile:Tile;
     for (i = 0; i < this.children.length; i++) {
       tile = <Tile>this.children[i];
-      var checkResult = checkTileExist(visibleTileGrids, tile.level, tile.row, tile.column);
+      var checkResult = checkTileExist(visibleTileGrids, tile.tileInfo.level, tile.tileInfo.row, tile.tileInfo.column);
       var isExist = checkResult.isExist;
       if (isExist) {
         visibleTileGrids.splice(checkResult.index, 1); //已处理
@@ -121,7 +112,7 @@ class SubTiledLayer extends Object3DComponents {
           url: ""
         };
         args.url = this.tiledLayer.getImageUrl(args.level, args.row, args.column);
-        tile = new Tile(args);
+        tile = Tile.getTile(args.level, args.row, args.column, args.url);
         this.add(tile);
       }
     }
@@ -129,15 +120,15 @@ class SubTiledLayer extends Object3DComponents {
 
   //如果bForce为true，则表示强制显示为三维，不考虑level
   checkTerrain(bForce:boolean = false) {
-    var globe = Kernel.globe;
-    var show3d = bForce === true ? true : this.level >= Kernel.TERRAIN_LEVEL;
-    if (show3d && globe && globe.camera && globe.camera.pitch < Kernel.TERRAIN_PITCH) {
-      var tiles = this.children;
-      for (var i = 0; i < tiles.length; i++) {
-        var tile = <Tile>tiles[i];
-        tile.checkTerrain(bForce);
-      }
-    }
+    // var globe = Kernel.globe;
+    // var show3d = bForce === true ? true : this.level >= Kernel.TERRAIN_LEVEL;
+    // if (show3d && globe && globe.camera && globe.camera.pitch < Kernel.TERRAIN_PITCH) {
+    //   var tiles = this.children;
+    //   for (var i = 0; i < tiles.length; i++) {
+    //     var tile = <Tile>tiles[i];
+    //     tile.checkTerrain(bForce);
+    //   }
+    // }
   }
 
   //根据当前子图层下的tiles获取其对应的祖先高程切片的TileGrid //getAncestorElevationTileGrids

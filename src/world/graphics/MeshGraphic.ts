@@ -39,7 +39,14 @@ class MeshGraphic extends Graphic {
         this.geometry.calculateVBO();
         this.geometry.calculateIBO();
         this.geometry.calculateUVBO();
-        this.ready = true;
+    }
+
+    isGeometryReady():boolean{
+        return !!this.geometry.vbo && !!this.geometry.ibo && !!this.geometry.uvbo;
+    }
+
+    isReady():boolean{
+        return this.isGeometryReady() && super.isReady();
     }
 
     createProgram(): Program{

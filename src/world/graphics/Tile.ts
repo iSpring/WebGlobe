@@ -5,19 +5,9 @@ import Elevation = require('../Elevation');
 import MathUtils = require('../math/Math');
 import MeshGraphic = require('../graphics/MeshGraphic');
 import MeshTextureMaterial = require('../materials/MeshTextureMaterial');
-import Geometry = require("../geometries/Geometry");
+import TileGeometry = require("../geometries/TileGeometry");
 import Vertice = require("../geometries/Vertice");
 import Triangle = require("../geometries/Triangle");
-
-class TileGeometry extends Geometry {
-  constructor(public vertices: Vertice[], public triangles: Triangle[]) {
-    super();
-  }
-
-  // buildTriangles() {
-
-  // }
-}
 
 class TileInfo {
   //type如果是GLOBE_TILE，表示其buffer已经设置为一般形式
