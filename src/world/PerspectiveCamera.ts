@@ -9,9 +9,9 @@ import Plan = require('./math/Plan');
 import TileGrid = require('./TileGrid');
 import Matrix = require('./math/Matrix');
 import Object3D = require('./Object3D');
-import Globe = require('./Globe');//just used for TypeScript validate type
 
 class PerspectiveCamera extends Object3D {
+  private animationDuration = 600;//层级变化的动画周期是600毫秒
   pitch: number;
   viewMatrix: Matrix;
   projMatrix: Matrix;
@@ -284,7 +284,7 @@ class PerspectiveCamera extends Object3D {
   animateToLevel(level: number): void {
     var newMat = this._animateToLevel(level);
     this._animateToMatrix(newMat, () => {
-      (Kernel.globe as Globe).CURRENT_LEVEL = level;
+      Kernel.globe.CURRENT_LEVEL = level;
     });
   }
 
@@ -295,7 +295,7 @@ class PerspectiveCamera extends Object3D {
     this.animating = true;
     var oldPosition = this.getPosition();
     var newPosition = newMat.getPosition();
-    var span = 1000;
+    var span = this.animationDuration;
     var singleSpan = 1000 / 60;
     var count = Math.floor(span / singleSpan);
     var deltaX = (newPosition.x - oldPosition.x) / count;

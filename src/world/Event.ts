@@ -154,8 +154,8 @@ const EventModule = {
     }
     var newLevel = globe.CURRENT_LEVEL + deltaLevel;
     if(newLevel >= 0){
-      globe.setLevel(newLevel);
-      //globe.animateToLevel(newLevel);
+      //globe.setLevel(newLevel);
+      globe.animateToLevel(newLevel);
     }
   },
 
