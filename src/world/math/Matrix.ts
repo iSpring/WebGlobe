@@ -132,21 +132,21 @@ class Matrix{
       var result: Matrix = new Matrix();
       var b = result.elements;
       var c = a[0],
-        d = a[1],
-        e = a[2],
-        g = a[3],
-        f = a[4],
-        h = a[5],
-        i = a[6],
-        j = a[7],
-        k = a[8],
-        l = a[9],
-        n = a[10],
-        o = a[11],
-        m = a[12],
-        p = a[13],
-        r = a[14],
-        s = a[15];
+          d = a[1],
+          e = a[2],
+          g = a[3],
+          f = a[4],
+          h = a[5],
+          i = a[6],
+          j = a[7],
+          k = a[8],
+          l = a[9],
+          n = a[10],
+          o = a[11],
+          m = a[12],
+          p = a[13],
+          r = a[14],
+          s = a[15];
       var A = c * h - d * f;
       var B = c * i - e * f;
       var t = c * j - g * f;
@@ -163,7 +163,7 @@ class Matrix{
       if (!q) {
         console.log("can't get inverse matrix");
         return null
-      };
+      }
       q = 1 / q;
       b[0] = (h * E - i * D + j * C) * q;
       b[1] = (-d * E + e * D - g * C) * q;
@@ -273,6 +273,12 @@ class Matrix{
       var m31 = values1[2] * values2[0] + values1[6] * values2[1] + values1[10] * values2[2] + values1[14] * values2[3];
       var m41 = values1[3] * values2[0] + values1[7] * values2[1] + values1[11] * values2[2] + values1[15] * values2[3];
       return [m11, m21, m31, m41];
+    }
+
+    hasNaN():boolean{
+      return this.elements.some(function(v){
+        return isNaN(v);
+      });
     }
 
     divide(a: number) {

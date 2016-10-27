@@ -21,13 +21,16 @@ class GraphicGroup{
         g.parent = this;
     }
 
-    remove(g: Drawable){
+    remove(g: Drawable): boolean{
+        var result = false;
         var findResult = this.findGraphicById(g.id);
         if(findResult){
             g.destroy();
             this.children.splice(findResult.index, 1);
             g = null;
+            result = true;
         }
+        return result;
     }
 
     clear(){

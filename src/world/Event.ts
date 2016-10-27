@@ -56,7 +56,7 @@ const EventModule = {
       var pickResult = Kernel.globe.camera.getPickCartesianCoordInEarthByCanvas(this.previousX, this.previousY);
       if (pickResult.length > 0) {
         this.dragGeo = MathUtils.cartesianCoordToGeographic(pickResult[0]);
-        console.log("单击点三维坐标:(" + pickResult[0].x + "," + pickResult[0].y + "," + pickResult[0].z + ");经纬度坐标:[" + this.dragGeo[0] + "," + this.dragGeo[1] + "]");
+        //console.log("单击点三维坐标:(" + pickResult[0].x + "," + pickResult[0].y + "," + pickResult[0].z + ");经纬度坐标:[" + this.dragGeo[0] + "," + this.dragGeo[1] + "]");
       }
       this.canvas.addEventListener("mousemove", this.onMouseMoveListener, false);
     }
@@ -98,12 +98,10 @@ const EventModule = {
     }
     var p1 = MathUtils.geographicToCartesianCoord(oldLon, oldLat);
     var v1 = Vector.fromVertice(p1);
-    v1.normalize();
     var p2 = MathUtils.geographicToCartesianCoord(newLon, newLat);
     var v2 = Vector.fromVertice(p2);
-    v2.normalize();
     var rotateVector = v1.cross(v2);
-    var rotateRadian = -Math.acos(v1.dot(v2));
+    var rotateRadian = -Vector.getRadianOfTwoVectors(v1, v2);
     var camera: PerspectiveCamera = Kernel.globe.camera;
     camera.worldRotateByVector(rotateRadian, rotateVector);
   },
@@ -156,8 +154,8 @@ const EventModule = {
     }
     var newLevel = globe.CURRENT_LEVEL + deltaLevel;
     if(newLevel >= 0){
-      //globe.setLevel(newLevel);
-      globe.animateToLevel(newLevel);
+      globe.setLevel(newLevel);
+      //globe.animateToLevel(newLevel);
     }
   },
 

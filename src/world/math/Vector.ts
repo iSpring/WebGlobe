@@ -16,6 +16,21 @@ class Vector{
       return new Vertice(vertice.x + vector.x, vertice.y + vector.y, vertice.z + vector.z);
     }
 
+    static getRadianOfTwoVectors(vector1: Vector, vector2: Vector): number{
+      var v1 = vector1.clone().normalize();
+      var v2 = vector2.clone().normalize();
+      var dotValue = v1.dot(v2);
+      //dotValue的值应该在[-1,1],但是由于JavaScript精度问题，导致计算的值有可能超出该范围，例如1.0000000000000002
+      if(dotValue < -1){
+        dotValue = -1;
+      }
+      if(dotValue > 1){
+        dotValue = 1;
+      }
+      var radian = Math.acos(dotValue);
+      return radian;
+    }
+
     getVertice(): Vertice {
       return new Vertice(this.x, this.y, this.z);
     }
