@@ -74,52 +74,27 @@ class MeshTextureMaterial extends Material {
 
         Kernel.gl.texImage2D(Kernel.gl.TEXTURE_2D, 0, Kernel.gl.RGBA, Kernel.gl.RGBA, Kernel.gl.UNSIGNED_BYTE, this.image);
 
-        // var isMipMap = this.image.width === this.image.height && MathUtils.isPowerOfTwo(this.image.width);
+        var isMipMap = this.image.width === this.image.height && MathUtils.isPowerOfTwo(this.image.width);
 
-        // if (isMipMap) {
-        //     //使用MipMap
-        //     Kernel.gl.texParameteri(Kernel.gl.TEXTURE_2D, Kernel.gl.TEXTURE_MIN_FILTER, Kernel.gl.LINEAR_MIPMAP_NEAREST);
-        //     Kernel.gl.texParameteri(Kernel.gl.TEXTURE_2D, Kernel.gl.TEXTURE_MAG_FILTER, Kernel.gl.LINEAR_MIPMAP_NEAREST);//LINEAR_MIPMAP_LINEAR
-            
-        //     Kernel.gl.texParameteri(Kernel.gl.TEXTURE_2D, Kernel.gl.TEXTURE_WRAP_S, Kernel.gl.CLAMP_TO_EDGE);
-        //     Kernel.gl.texParameteri(Kernel.gl.TEXTURE_2D, Kernel.gl.TEXTURE_WRAP_T, Kernel.gl.CLAMP_TO_EDGE);
-            
-        //     Kernel.gl.generateMipmap(Kernel.gl.TEXTURE_2D);
-        // } else {
-        //     Kernel.gl.texParameteri(Kernel.gl.TEXTURE_2D, Kernel.gl.TEXTURE_MIN_FILTER, Kernel.gl.LINEAR);//gl.NEAREST
-        //     Kernel.gl.texParameteri(Kernel.gl.TEXTURE_2D, Kernel.gl.TEXTURE_MAG_FILTER, Kernel.gl.LINEAR);//gl.NEAREST
+        if (isMipMap) {
+            //使用MipMap
+            Kernel.gl.texParameteri(Kernel.gl.TEXTURE_2D, Kernel.gl.TEXTURE_MIN_FILTER, Kernel.gl.LINEAR_MIPMAP_NEAREST);
+            Kernel.gl.texParameteri(Kernel.gl.TEXTURE_2D, Kernel.gl.TEXTURE_MAG_FILTER, Kernel.gl.LINEAR); //LINEAR_MIPMAP_NEAREST LINEAR_MIPMAP_LINEAR
+            Kernel.gl.texParameteri(Kernel.gl.TEXTURE_2D, Kernel.gl.TEXTURE_WRAP_S, Kernel.gl.CLAMP_TO_EDGE);
+            Kernel.gl.texParameteri(Kernel.gl.TEXTURE_2D, Kernel.gl.TEXTURE_WRAP_T, Kernel.gl.CLAMP_TO_EDGE);
+            Kernel.gl.generateMipmap(Kernel.gl.TEXTURE_2D);
+        } else {
+            Kernel.gl.texParameteri(Kernel.gl.TEXTURE_2D, Kernel.gl.TEXTURE_MIN_FILTER, Kernel.gl.LINEAR);//gl.NEAREST
+            Kernel.gl.texParameteri(Kernel.gl.TEXTURE_2D, Kernel.gl.TEXTURE_MAG_FILTER, Kernel.gl.LINEAR);//gl.NEAREST
 
-        //     Kernel.gl.texParameteri(Kernel.gl.TEXTURE_2D, Kernel.gl.TEXTURE_WRAP_S, Kernel.gl.CLAMP_TO_EDGE);
-        //     Kernel.gl.texParameteri(Kernel.gl.TEXTURE_2D, Kernel.gl.TEXTURE_WRAP_T, Kernel.gl.CLAMP_TO_EDGE);
-        // }
-
-        //使用MipMap
-        Kernel.gl.texParameteri(Kernel.gl.TEXTURE_2D, Kernel.gl.TEXTURE_MIN_FILTER, Kernel.gl.LINEAR_MIPMAP_NEAREST);
-        Kernel.gl.texParameteri(Kernel.gl.TEXTURE_2D, Kernel.gl.TEXTURE_MAG_FILTER, Kernel.gl.LINEAR); //LINEAR_MIPMAP_NEAREST LINEAR_MIPMAP_LINEAR
-        Kernel.gl.texParameteri(Kernel.gl.TEXTURE_2D, Kernel.gl.TEXTURE_WRAP_S, Kernel.gl.CLAMP_TO_EDGE);
-        Kernel.gl.texParameteri(Kernel.gl.TEXTURE_2D, Kernel.gl.TEXTURE_WRAP_T, Kernel.gl.CLAMP_TO_EDGE);
-        Kernel.gl.generateMipmap(Kernel.gl.TEXTURE_2D);
+            Kernel.gl.texParameteri(Kernel.gl.TEXTURE_2D, Kernel.gl.TEXTURE_WRAP_S, Kernel.gl.CLAMP_TO_EDGE);
+            Kernel.gl.texParameteri(Kernel.gl.TEXTURE_2D, Kernel.gl.TEXTURE_WRAP_T, Kernel.gl.CLAMP_TO_EDGE);
+        }
 
         Kernel.gl.bindTexture(Kernel.gl.TEXTURE_2D, null);
 
         this.ready = true;
     }
-
-    // test(){
-    //     Kernel.gl.bindTexture(Kernel.gl.TEXTURE_2D, this.texture);
-    //     Kernel.gl.pixelStorei(Kernel.gl.UNPACK_FLIP_Y_WEBGL, +true);
-
-    //     Kernel.gl.texImage2D(Kernel.gl.TEXTURE_2D, 0, Kernel.gl.RGBA, Kernel.gl.RGBA, Kernel.gl.UNSIGNED_BYTE, this.image);
-    //     //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    //     //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    //     //使用MipMap
-    //     Kernel.gl.texParameteri(Kernel.gl.TEXTURE_2D, Kernel.gl.TEXTURE_MIN_FILTER, Kernel.gl.LINEAR_MIPMAP_NEAREST);
-    //     Kernel.gl.texParameteri(Kernel.gl.TEXTURE_2D, Kernel.gl.TEXTURE_MAG_FILTER, Kernel.gl.LINEAR); //LINEAR_MIPMAP_NEAREST LINEAR_MIPMAP_LINEAR
-    //     Kernel.gl.texParameteri(Kernel.gl.TEXTURE_2D, Kernel.gl.TEXTURE_WRAP_S, Kernel.gl.CLAMP_TO_EDGE);
-    //     Kernel.gl.texParameteri(Kernel.gl.TEXTURE_2D, Kernel.gl.TEXTURE_WRAP_T, Kernel.gl.CLAMP_TO_EDGE);
-    //     Kernel.gl.generateMipmap(Kernel.gl.TEXTURE_2D);
-    //     Kernel.gl.bindTexture(Kernel.gl.TEXTURE_2D, null);
-    // }
 
     //释放显卡中的texture资源
     destroy() {
