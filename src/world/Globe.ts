@@ -12,7 +12,7 @@ import ImageUtils = require("./Image");
 import EventUtils = require("./Event");
 
 class Globe {
-  MAX_LEVEL: number = 15;//最大的渲染级别15
+  MAX_LEVEL: number = 14;//最大的渲染级别14
   CURRENT_LEVEL: number = -1; //当前渲染等级
   REFRESH_INTERVAL: number = 300; //Globe自动刷新时间间隔，以毫秒为单位
   idTimeOut: any = null; //refresh自定刷新的timeOut的handle
