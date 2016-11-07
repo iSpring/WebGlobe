@@ -89,3 +89,5 @@
 0.2 将World.js中的许多类的设计理念，包括Program、GraphicGroup、Graphic、Geometry、Material、VertexBufferObject等，现在SubTiledLayer和TiledLayer都继承自GraphicGroup，并且让Tile继承自于Graphic
 
 0.2.1 修复了在leve 15及以上的情况下，拖动地图导致地图空白的问题，见issue#9
+
+0.2.2 删除高程相关代码

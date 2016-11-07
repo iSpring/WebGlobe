@@ -5,29 +5,26 @@ import MathUtils = require('../math/Math');
 import TileGrid = require('../TileGrid');
 import GraphicGroup = require('../GraphicGroup');
 import Tile = require('../graphics/Tile');
-import Elevation = require('../Elevation');
 
 class SubTiledLayer extends GraphicGroup {
   level: number = -1;
-  //该级要请求的高程数据的层级，7[8,9,10];10[11,12,13];13[14,15,16];16[17,18,19]
-  elevationLevel = -1;
   tiledLayer: any = null;
 
   constructor(args: any) {
     super();
     this.level = args.level;
-    this.elevationLevel = Elevation.getAncestorElevationLevel(this.level);
   }
 
   //重写draw方法
   draw(camera: any) {
-    if (this.level >= Kernel.TERRAIN_LEVEL && Kernel.globe && Kernel.globe.camera.pitch <= Kernel.TERRAIN_PITCH) {
+    /*if (this.level >= Kernel.TERRAIN_LEVEL && Kernel.globe && Kernel.globe.camera.pitch <= Kernel.TERRAIN_PITCH) {
       Kernel.gl.clear(Kernel.gl.DEPTH_BUFFER_BIT);
       Kernel.gl.clearDepth(1);
       Kernel.gl.enable(Kernel.gl.DEPTH_TEST);
     } else {
       Kernel.gl.disable(Kernel.gl.DEPTH_TEST);
-    }
+    }*/
+    Kernel.gl.disable(Kernel.gl.DEPTH_TEST);
     super.draw(camera);
   }
 
@@ -114,49 +111,6 @@ class SubTiledLayer extends GraphicGroup {
         args.url = this.tiledLayer.getImageUrl(args.level, args.row, args.column);
         tile = Tile.getTile(args.level, args.row, args.column, args.url);
         this.add(tile);
-      }
-    }
-  }
-
-  //如果bForce为true，则表示强制显示为三维，不考虑level
-  checkTerrain(bForce:boolean = false) {
-    // var globe = Kernel.globe;
-    // var show3d = bForce === true ? true : this.level >= Kernel.TERRAIN_LEVEL;
-    // if (show3d && globe && globe.camera && globe.camera.pitch < Kernel.TERRAIN_PITCH) {
-    //   var tiles = this.children;
-    //   for (var i = 0; i < tiles.length; i++) {
-    //     var tile = <Tile>tiles[i];
-    //     tile.checkTerrain(bForce);
-    //   }
-    // }
-  }
-
-  //根据当前子图层下的tiles获取其对应的祖先高程切片的TileGrid //getAncestorElevationTileGrids
-  //7 8 9 10; 10 11 12 13; 13 14 15 16; 16 17 18 19;
-  requestElevations() {
-    var result:any[] = [];
-    if (this.level > Kernel.ELEVATION_LEVEL) {
-      var tiles = this.children;
-      var i:number, name:any;
-      for (i = 0; i < tiles.length; i++) {
-        var tile = <Tile>tiles[i];
-        var tileGrid = TileGrid.getTileGridAncestor(this.elevationLevel, tile.tileInfo.level, tile.tileInfo.row, tile.tileInfo.column);
-        name = tileGrid.level + "_" + tileGrid.row + "_" + tileGrid.column;
-        if (result.indexOf(name) < 0) {
-          result.push(name);
-        }
-      }
-      for (i = 0; i < result.length; i++) {
-        name = result[i];
-        var a = name.split('_');
-        var eleLevel = parseInt(a[0]);
-        var eleRow = parseInt(a[1]);
-        var eleColumn = parseInt(a[2]);
-        //只要elevations中有属性name，那么就表示该高程已经请求过或正在请求，这样就不要重新请求了
-        //只有在完全没请求过的情况下去请求高程数据
-        if (!Elevation.elevations.hasOwnProperty(name)) {
-          Elevation.requestElevationsByTileGrid(eleLevel, eleRow, eleColumn);
-        }
       }
     }
   }
