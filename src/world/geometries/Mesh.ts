@@ -1,11 +1,11 @@
-﻿///<amd-module name="world/geometries/Geometry"/>
+﻿///<amd-module name="world/geometries/Mesh"/>
 import Kernel = require("../Kernel");
 import Vertice = require("./Vertice");
 import Triangle = require("./Triangle");
 import Object3D = require("../Object3D");
 import VertexBufferObject = require("../VertexBufferObject");
 
-class Geometry extends Object3D {
+class Mesh extends Object3D {
 	vertices: Vertice[];
 	triangles: Triangle[];
 	vbo: VertexBufferObject;
@@ -151,4 +151,4 @@ class Geometry extends Object3D {
 	}
 }
 
-export = Geometry;
+export = Mesh;

@@ -2,9 +2,9 @@
 
 import Vertice = require("./Vertice");
 import Triangle = require("./Triangle");
-import Geometry = require("./Geometry");
+import Mesh = require("./Mesh");
 
-class TileGeometry extends Geometry {
+class TileGeometry extends Mesh {
   constructor(public vertices: Vertice[], public triangles: Triangle[]) {
     super();
   }
