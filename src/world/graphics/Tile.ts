@@ -5,7 +5,7 @@ import MathUtils = require('../math/Math');
 import MeshGraphic = require('../graphics/MeshGraphic');
 import TileMaterial = require('../materials/TileMaterial');
 import TileGeometry = require("../geometries/TileGeometry");
-import Vertice = require("../geometries/Vertice");
+import Vertice = require("../geometries/MeshVertice");
 import Triangle = require("../geometries/Triangle");
 
 class TileInfo {

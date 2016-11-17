@@ -1,6 +1,6 @@
 ﻿///<amd-module name="world/geometries/Mesh"/>
 import Kernel = require("../Kernel");
-import Vertice = require("./Vertice");
+import Vertice = require("./MeshVertice");
 import Triangle = require("./Triangle");
 import Object3D = require("../Object3D");
 import VertexBufferObject = require("../VertexBufferObject");

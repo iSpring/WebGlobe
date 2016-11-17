@@ -1,6 +1,6 @@
 ﻿///<amd-module name="world/geometries/TileGeometry"/>
 
-import Vertice = require("./Vertice");
+import Vertice = require("./MeshVertice");
 import Triangle = require("./Triangle");
 import Mesh = require("./Mesh");
 
