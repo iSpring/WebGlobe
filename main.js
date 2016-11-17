@@ -1,7 +1,9 @@
 ﻿window.onload = function() {
   require(["world/Globe", "world/layers/BingTiledLayer", "world/layers/NokiaTiledLayer", "world/layers/OsmTiledLayer",
-  "world/layers/SosoTiledLayer", "world/layers/TiandituTiledLayer", "world/layers/GoogleTiledLayer"],
-    function(Globe, BingTiledLayer, NokiaTiledLayer, OsmTiledLayer, SosoTiledLayer, TiandituTiledLayer, GoogleTiledLayer) {
+  "world/layers/SosoTiledLayer", "world/layers/TiandituTiledLayer", "world/layers/GoogleTiledLayer",
+  "world/layers/PoiLayer"],
+    function(Globe, BingTiledLayer, NokiaTiledLayer, OsmTiledLayer, SosoTiledLayer, TiandituTiledLayer, GoogleTiledLayer,
+    PoiLayer) {
 
       function startWebGL() {
         var canvas = document.getElementById("canvasId");
@@ -9,6 +11,9 @@
         var mapSelector = document.getElementById("mapSelector");
         mapSelector.onchange = changeTiledLayer;
         changeTiledLayer();
+
+        var poiLayer = new PoiLayer();
+        window.globe.scene.add(poiLayer);
       }
 
       function changeTiledLayer() {
