@@ -3,7 +3,7 @@
 import Kernel = require("../Kernel");
 import Program = require("../Program");
 import Graphic = require("./Graphic");
-import Geometry = require("../geometries/Geometry");
+import Mesh = require("../geometries/Mesh");
 import MeshTextureMaterial = require("../materials/MeshTextureMaterial");
 import PerspectiveCamera = require("../PerspectiveCamera");
 
@@ -34,7 +34,7 @@ void main()
 `;
 
 class MeshGraphic extends Graphic {
-    constructor(public geometry: Geometry, public material: MeshTextureMaterial){
+    constructor(public geometry: Mesh, public material: MeshTextureMaterial){
         super(geometry, material);
         this.geometry.calculateVBO();
         this.geometry.calculateIBO();

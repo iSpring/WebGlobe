@@ -91,3 +91,5 @@
 0.2.1 修复了在leve 15及以上的情况下，拖动地图导致地图空白的问题，见issue#9
 
 0.2.2 删除高程相关代码
+
+0.2.3 将world/geometries/Geomtry重命名为world/geometries/Mesh，并在package.json中添加了多个npm scripts，对应gulp中定义的tasks
