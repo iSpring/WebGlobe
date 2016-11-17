@@ -94,7 +94,7 @@ class SubTiledLayer extends GraphicGroup {
       var b = this.remove(tilesNeedDelete[0]);
       tilesNeedDelete.splice(0, 1);
       if (!b) {
-        console.debug("LINE:2191,subTiledLayer.remove(tilesNeedDelete[0])失败");
+        console.debug("subTiledLayer.remove(tilesNeedDelete[0])失败");
       }
     }
 
