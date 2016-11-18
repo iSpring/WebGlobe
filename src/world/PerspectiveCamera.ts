@@ -30,28 +30,29 @@ class PerspectiveCamera extends Object3D {
   }
 
   setPerspectiveMatrix(fov: number = 90, aspect: number = 1, near: number = 1, far: number = 1): void {
+    //https://github.com/toji/gl-matrix/blob/master/src/gl-matrix/mat4.js#L1788
     this.fov = fov;
     this.aspect = aspect;
     this.near = near;
     this.far = far;
-    var mat = [1, 0, 0, 0,
+    var mat = [
+      1, 0, 0, 0,
       0, 1, 0, 0,
       0, 0, 1, 0,
       0, 0, 0, 1
     ];
     var halfFov = this.fov * Math.PI / 180 / 2;
-    var a = 1 / Math.tan(halfFov);
-    var b = this.far - this.near;
+    var f = 1 / Math.tan(halfFov);
+    var nf = 1 / (this.near - this.far);
 
-    mat[0] = a / this.aspect;
-    mat[5] = a;
-    mat[10] = -(this.far + this.near) / b;
+    mat[0] = f / this.aspect;
+    mat[5] = f;
+    mat[10] = (this.far + this.near) * nf;
     mat[11] = -1;
-    mat[14] = -2 * this.near * this.far / b;
+    mat[14] = 2 * this.near * this.far * nf;
     mat[15] = 0;
 
-    //by comparision with matrixProjection.exe and glMatrix,
-    //the 11th element is always -1
+    //by comparision with matrixProjection.exe and glMatrix, the 11th element is always -1
     this.projMatrix.setElements(
       mat[0], mat[1], mat[2], mat[3],
       mat[4], mat[5], mat[6], mat[7],
