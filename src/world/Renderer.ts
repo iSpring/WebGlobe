@@ -42,10 +42,12 @@ class Renderer {
       return;
     }
 
+    Kernel.gl.clear(Kernel.gl.COLOR_BUFFER_BIT | Kernel.gl.DEPTH_BUFFER_BIT);
     gl.clearColor(255, 255, 255, 1.0);
+
     gl.enable(gl.DEPTH_TEST);
-    //gl.disable(gl.DEPTH_TEST); //此处禁用深度测试是为了解决两个不同层级的切片在拖动时一起渲染会导致屏闪的问题
     gl.depthFunc(gl.LEQUAL);
+    gl.depthMask(true);
 
     gl.enable(gl.CULL_FACE); //一定要启用裁剪，否则显示不出立体感
     gl.frontFace(gl.CCW);//指定逆时针方向为正面
@@ -57,6 +59,9 @@ class Renderer {
   render(scene: Scene, camera: PerspectiveCamera) {
     Kernel.gl.viewport(0, 0, Kernel.canvas.width, Kernel.canvas.height);
     Kernel.gl.clear(Kernel.gl.COLOR_BUFFER_BIT | Kernel.gl.DEPTH_BUFFER_BIT);
+    Kernel.gl.enable(Kernel.gl.DEPTH_TEST);
+    Kernel.gl.depthFunc(Kernel.gl.LEQUAL);
+    Kernel.gl.depthMask(true);
     camera.viewMatrix = null;
     //update viewMatrix and projViewMatrix of camera
     camera.updateProjViewMatrix();

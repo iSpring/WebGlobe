@@ -16,8 +16,12 @@ class GraphicGroup{
         this.children = [];
     }
 
-    add(g: Drawable){
-        this.children.push(g);
+    add(g: Drawable, first: boolean = false){
+        if(first){
+            this.children.unshift(g);
+        }else{
+            this.children.push(g);
+        }
         g.parent = this;
     }
 

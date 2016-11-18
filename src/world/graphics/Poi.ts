@@ -11,7 +11,7 @@ const vs =
 `
 attribute vec3 aPosition;
 uniform mat4 uPMVMatrix;
-				
+
 void main(void) {
   gl_Position = uPMVMatrix * vec4(aPosition, 1.0);
   gl_PointSize = 10.0;
@@ -27,6 +27,8 @@ void main()
 	gl_FragColor = vec4(1.0, 1.0, 0.0, 0.5);
 }
 `;
+
+//gl_FragColor = vec4(1.0, 1.0, 0.0, 0.5);
 
 class Poi extends Graphic {
     constructor(public geometry: Marker, public material: PoiMaterial){

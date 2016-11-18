@@ -23,9 +23,6 @@ class Globe {
   constructor(canvas: HTMLCanvasElement, args: any) {
     args = args || {};
     Kernel.globe = this;
-
-    // var vs_content = ShaderContent.SIMPLE_SHADER.VS_CONTENT;
-    // var fs_content = ShaderContent.SIMPLE_SHADER.FS_CONTENT;
     this.renderer = Kernel.renderer = new Renderer(canvas);
     this.scene = new Scene();
     var radio = canvas.width / canvas.height;
@@ -49,7 +46,7 @@ class Globe {
       this.scene.tiledLayer = null;
     }
     this.tiledLayer = tiledLayer;
-    this.scene.add(this.tiledLayer);
+    this.scene.add(this.tiledLayer, true);
     //添加第0级的子图层
     var subLayer0 = new SubTiledLayer({
       level: 0

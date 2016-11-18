@@ -8,6 +8,7 @@
       function startWebGL() {
         var canvas = document.getElementById("canvasId");
         window.globe = new Globe(canvas);
+
         var mapSelector = document.getElementById("mapSelector");
         mapSelector.onchange = changeTiledLayer;
         changeTiledLayer();
