@@ -30,8 +30,8 @@ class Globe {
     this.scene = new Scene();
     var radio = canvas.width / canvas.height;
     this.camera = new PerspectiveCamera(30, radio, 1.0, 20000000.0);
-    this.renderer.bindScene(this.scene);
-    this.renderer.bindCamera(this.camera);
+    this.renderer.setScene(this.scene);
+    this.renderer.setCamera(this.camera);
     this.setLevel(0);
     this.renderer.setIfAutoRefresh(true);
     EventUtils.initLayout();
@@ -103,7 +103,7 @@ class Globe {
       level = level > this.MAX_LEVEL ? this.MAX_LEVEL : level; //超过最大的渲染级别就不渲染
       if(level !== this.CURRENT_LEVEL){
         this.camera.animateToLevel(level);
-      }      
+      }
     }
   }
 
@@ -170,7 +170,7 @@ class Globe {
       levelsTileGrids.splice(0, 1);
     }
   }
-  
+
 }
 
 export = Globe;

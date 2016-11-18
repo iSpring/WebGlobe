@@ -107,6 +107,17 @@ class PerspectiveCamera extends Object3D {
     return this.matrix.getInverseMatrix();
   }
 
+  updateViewMatrix(): Matrix{
+    this.viewMatrix = this.getViewMatrix();
+    return this.viewMatrix;
+  }
+
+  updateProjViewMatrix(): Matrix{
+    this.updateViewMatrix();
+    this.projViewMatrix = this.projMatrix.multiplyMatrix(this.viewMatrix);
+    return this.projViewMatrix;
+  }
+
   look(cameraPnt: Vertice, targetPnt: Vertice, upDirection: Vector = new Vector(0, 1, 0)): void {
     var cameraPntCopy = cameraPnt.clone();
     var targetPntCopy = targetPnt.clone();
