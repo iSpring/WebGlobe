@@ -11,7 +11,7 @@ import PerspectiveCamera = require('../PerspectiveCamera');
 class PoiLayer extends GraphicGroup{
     constructor(){
         super();
-        var p = MathUtils.geographicToCartesianCoord(0, 0, Kernel.EARTH_RADIUS + 1000000);
+        var p = MathUtils.geographicToCartesianCoord(180, 0, Kernel.EARTH_RADIUS + 1000000);
         var marker = new Marker(p.x, p.y, p.z);
         //var marker = new Marker(0, 0, 14198820-100);
         var material = new PoiMaterial();

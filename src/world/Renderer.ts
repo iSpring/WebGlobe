@@ -27,6 +27,7 @@ class Renderer {
           }) as WebGLRenderingContextExtension;
           if (gl) {
             Kernel.gl = gl;
+            (<any>window).gl = gl;
             Kernel.canvas = canvas;
             break;
           }
