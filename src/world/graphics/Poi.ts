@@ -19,6 +19,7 @@ void main(void) {
 }
 `;
 
+//http://stackoverflow.com/questions/3497068/textured-points-in-opengl-es-2-0
 const fs =
 `
 precision mediump float;
@@ -26,7 +27,7 @@ uniform sampler2D uSampler;
 
 void main()
 {
-	gl_FragColor = texture2D(uSampler, gl_PointCoord);
+	gl_FragColor = texture2D(uSampler, vec2(gl_PointCoord.x, 1.0 - gl_PointCoord.y));
 }
 `;
 
@@ -41,6 +42,9 @@ class Poi extends Graphic {
 
     onDraw(camera: PerspectiveCamera){
         var gl = Kernel.gl;
+
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
         //aPosition
         var locPosition = this.program.getAttribLocation('aPosition');
@@ -68,6 +72,7 @@ class Poi extends Graphic {
         gl.drawArrays(gl.POINTS, 0, 1);
 
         //释放当前绑定对象
+        gl.disable(gl.BLEND);
         gl.bindBuffer(gl.ARRAY_BUFFER, null);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
         gl.bindTexture(gl.TEXTURE_2D, null);
