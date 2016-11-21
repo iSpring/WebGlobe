@@ -331,8 +331,6 @@ const MathUtils = {
      * @return {*}
      */
     getLengthFromCamera2EarthSurface(level: number): number{
-        //7820683
-        //1.2261704318988444 * Kernel.EARTH_RADIUS / Math.pow(2, level);
         return 1.23 * Kernel.EARTH_RADIUS / Math.pow(2, level);
     },
 

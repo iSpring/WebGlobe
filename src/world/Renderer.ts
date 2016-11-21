@@ -48,7 +48,7 @@ class Renderer {
 
     gl.enable(gl.DEPTH_TEST);
     gl.depthFunc(gl.LEQUAL);
-    gl.depthMask(true);
+    gl.depthMask(true);//允许写入深度
 
     gl.enable(gl.CULL_FACE); //一定要启用裁剪，否则显示不出立体感
     gl.frontFace(gl.CCW);//指定逆时针方向为正面

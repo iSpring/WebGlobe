@@ -11,20 +11,22 @@ const vs =
 `
 attribute vec3 aPosition;
 uniform mat4 uPMVMatrix;
+uniform float uSize;
 
 void main(void) {
   gl_Position = uPMVMatrix * vec4(aPosition, 1.0);
-  gl_PointSize = 10.0;
+  gl_PointSize = uSize;
 }
 `;
 
 const fs =
 `
 precision mediump float;
+uniform sampler2D uSampler;
 
 void main()
 {
-	gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+	gl_FragColor = texture2D(uSampler, gl_PointCoord);
 }
 `;
 
@@ -38,19 +40,37 @@ class Poi extends Graphic {
     }
 
     onDraw(camera: PerspectiveCamera){
+        var gl = Kernel.gl;
+
         //aPosition
         var locPosition = this.program.getAttribLocation('aPosition');
         this.program.enableVertexAttribArray('aPosition');
         this.geometry.vbo.bind();
-        Kernel.gl.vertexAttribPointer(locPosition, 3, Kernel.gl.FLOAT, false, 0, 0);
+        gl.vertexAttribPointer(locPosition, 3, gl.FLOAT, false, 0, 0);
 
         //uPMVMatrix
-        var pmvMatrix = camera.projViewMatrix;//.multiplyMatrix(this.geometry.matrix);
+        var pmvMatrix = camera.projViewMatrix;
         var locPMVMatrix = this.program.getUniformLocation('uPMVMatrix');
-        Kernel.gl.uniformMatrix4fv(locPMVMatrix, false, pmvMatrix.elements);
+        gl.uniformMatrix4fv(locPMVMatrix, false, pmvMatrix.elements);
+
+        //uSize
+        var locSize = this.program.getUniformLocation('uSize');
+        gl.uniform1f(locSize, this.material.size);
+
+        //set uSampler
+        var locSampler = this.program.getUniformLocation('uSampler');
+        gl.activeTexture(gl.TEXTURE0);
+        //world.Cache.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, this.material.texture);
+        gl.uniform1i(locSampler, 0);
 
         //绘图,1表示1个点
-        Kernel.gl.drawArrays(Kernel.gl.POINTS, 0, 1);
+        gl.drawArrays(gl.POINTS, 0, 1);
+
+        //释放当前绑定对象
+        gl.bindBuffer(gl.ARRAY_BUFFER, null);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+        gl.bindTexture(gl.TEXTURE_2D, null);
     }
 }
 
