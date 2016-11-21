@@ -26,7 +26,7 @@ class Globe {
     this.renderer = Kernel.renderer = new Renderer(canvas);
     this.scene = new Scene();
     var radio = canvas.width / canvas.height;
-    this.camera = new PerspectiveCamera(30, radio, 1.0, 20000000.0);
+    this.camera = new PerspectiveCamera(30, radio, 1, Kernel.EARTH_RADIUS * 2);
     this.renderer.setScene(this.scene);
     this.renderer.setCamera(this.camera);
     this.setLevel(0);

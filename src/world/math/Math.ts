@@ -331,7 +331,8 @@ const MathUtils = {
      * @return {*}
      */
     getLengthFromCamera2EarthSurface(level: number): number{
-        return 7820683 / Math.pow(2, level);
+        //7820683
+        return 1.2261704318988444 * Kernel.EARTH_RADIUS / Math.pow(2, level);
     },
 
     /**将经纬度转换为笛卡尔空间直角坐标系中的x、y、z

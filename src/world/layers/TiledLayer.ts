@@ -8,9 +8,11 @@ abstract class TiledLayer extends GraphicGroup {
 
   //重写
   draw(camera: PerspectiveCamera){
-    Kernel.gl.disable(Kernel.gl.DEPTH_TEST);//此处禁用深度测试是为了解决两个不同层级的切片在拖动时一起渲染会导致屏闪的问题
+    //此处将深度测试设置为ALWAYS是为了解决两个不同层级的切片在拖动时一起渲染会导致屏闪的问题
+    Kernel.gl.depthFunc(Kernel.gl.ALWAYS);
     super.draw(camera);
-    Kernel.gl.enable(Kernel.gl.DEPTH_TEST);//恢复深度测试
+    //将深度测试恢复成LEQUAL
+    Kernel.gl.depthFunc(Kernel.gl.LEQUAL);
   }
 
   //重写

@@ -46,7 +46,7 @@ class TileInfo {
     this.maxLat = Egeo.maxLat;
     var minCoord = MathUtils.degreeGeographicToWebMercator(this.minLon, this.minLat);
     var maxCoord = MathUtils.degreeGeographicToWebMercator(this.maxLon, this.maxLat);
-    
+
     //投影坐标范围
     this.minX = minCoord[0];
     this.minY = minCoord[1];
@@ -81,7 +81,7 @@ class TileInfo {
     var deltaTextureCoord = 1.0 / this.segment;
     var changeElevation = this.type === Enum.TERRAIN_TILE && this.elevationInfo;
     //level不同设置的半径也不同
-    var levelDeltaR = 0; //this.level * 100;
+    var levelDeltaR = 0;//this.level * 2;
     //对WebMercator投影进行等间距划分格网
     var mercatorXs: number[] = []; //存储从最小的x到最大x的分割值
     var mercatorYs: number[] = []; //存储从最大的y到最小的y的分割值
@@ -117,7 +117,7 @@ class TileInfo {
         verticeArray.push(v);
         index++;
       }
-    }    
+    }
 
     //从左上到右下填充indices
     //添加的点的顺序:左上->左下->右下->右上
