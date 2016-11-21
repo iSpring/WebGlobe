@@ -21,6 +21,7 @@ void main()
 }
 `;
 
+//http://stackoverflow.com/questions/3497068/textured-points-in-opengl-es-2-0
 const fs =
 `
 precision mediump float;
