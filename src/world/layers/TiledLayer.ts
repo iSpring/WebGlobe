@@ -2,8 +2,19 @@
 import Kernel = require('../Kernel');
 import GraphicGroup = require('../GraphicGroup');
 import SubTiledLayer = require('./SubTiledLayer');
+import PerspectiveCamera = require('../PerspectiveCamera');
 
 abstract class TiledLayer extends GraphicGroup {
+
+  //重写
+  draw(camera: PerspectiveCamera){
+    //此处将深度测试设置为ALWAYS是为了解决两个不同层级的切片在拖动时一起渲染会导致屏闪的问题
+    Kernel.gl.depthFunc(Kernel.gl.ALWAYS);
+    super.draw(camera);
+    //将深度测试恢复成LEQUAL
+    Kernel.gl.depthFunc(Kernel.gl.LEQUAL);
+  }
+
   //重写
   add(subTiledLayer: SubTiledLayer) {
     super.add(subTiledLayer);

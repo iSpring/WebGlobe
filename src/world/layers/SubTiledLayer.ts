@@ -15,20 +15,7 @@ class SubTiledLayer extends GraphicGroup {
     this.level = args.level;
   }
 
-  //重写draw方法
-  draw(camera: any) {
-    /*if (this.level >= Kernel.TERRAIN_LEVEL && Kernel.globe && Kernel.globe.camera.pitch <= Kernel.TERRAIN_PITCH) {
-      Kernel.gl.clear(Kernel.gl.DEPTH_BUFFER_BIT);
-      Kernel.gl.clearDepth(1);
-      Kernel.gl.enable(Kernel.gl.DEPTH_TEST);
-    } else {
-      Kernel.gl.disable(Kernel.gl.DEPTH_TEST);
-    }*/
-    Kernel.gl.disable(Kernel.gl.DEPTH_TEST);
-    super.draw(camera);
-  }
-
-  //重写Object3DComponents的add方法
+  //重写GraphicGroup的add方法
   add(tile: Tile) {
     if (tile.tileInfo.level === this.level) {
       super.add(tile);
@@ -36,7 +23,7 @@ class SubTiledLayer extends GraphicGroup {
     }
   }
 
-  //重写Object3DComponents的destroy方法
+  //重写GraphicGroup的destroy方法
   destroy() {
     super.destroy();
     this.tiledLayer = null;

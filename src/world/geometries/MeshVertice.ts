@@ -1,5 +1,5 @@
-﻿///<amd-module name="world/geometries/Vertice"/>
-class Vertice{
+﻿///<amd-module name="world/geometries/MeshVertice"/>
+class MeshVertice{
 	p:number[];
 	n:number[];
 	uv:number[];
@@ -15,4 +15,4 @@ class Vertice{
 	}
 }
 
-export = Vertice;
+export = MeshVertice;

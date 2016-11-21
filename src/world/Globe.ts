@@ -23,15 +23,12 @@ class Globe {
   constructor(canvas: HTMLCanvasElement, args: any) {
     args = args || {};
     Kernel.globe = this;
-
-    // var vs_content = ShaderContent.SIMPLE_SHADER.VS_CONTENT;
-    // var fs_content = ShaderContent.SIMPLE_SHADER.FS_CONTENT;
     this.renderer = Kernel.renderer = new Renderer(canvas);
     this.scene = new Scene();
     var radio = canvas.width / canvas.height;
-    this.camera = new PerspectiveCamera(30, radio, 1.0, 20000000.0);
-    this.renderer.bindScene(this.scene);
-    this.renderer.bindCamera(this.camera);
+    this.camera = new PerspectiveCamera(30, radio, 1, Kernel.EARTH_RADIUS * 2);
+    this.renderer.setScene(this.scene);
+    this.renderer.setCamera(this.camera);
     this.setLevel(0);
     this.renderer.setIfAutoRefresh(true);
     EventUtils.initLayout();
@@ -49,7 +46,7 @@ class Globe {
       this.scene.tiledLayer = null;
     }
     this.tiledLayer = tiledLayer;
-    this.scene.add(this.tiledLayer);
+    this.scene.add(this.tiledLayer, true);
     //添加第0级的子图层
     var subLayer0 = new SubTiledLayer({
       level: 0
@@ -103,7 +100,7 @@ class Globe {
       level = level > this.MAX_LEVEL ? this.MAX_LEVEL : level; //超过最大的渲染级别就不渲染
       if(level !== this.CURRENT_LEVEL){
         this.camera.animateToLevel(level);
-      }      
+      }
     }
   }
 
@@ -170,7 +167,7 @@ class Globe {
       levelsTileGrids.splice(0, 1);
     }
   }
-  
+
 }
 
 export = Globe;

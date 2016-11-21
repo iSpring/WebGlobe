@@ -331,7 +331,9 @@ const MathUtils = {
      * @return {*}
      */
     getLengthFromCamera2EarthSurface(level: number): number{
-        return 7820683/Math.pow(2,level);
+        //7820683
+        //1.2261704318988444 * Kernel.EARTH_RADIUS / Math.pow(2, level);
+        return 1.23 * Kernel.EARTH_RADIUS / Math.pow(2, level);
     },
 
     /**将经纬度转换为笛卡尔空间直角坐标系中的x、y、z
@@ -372,8 +374,7 @@ const MathUtils = {
         var sin2 = y/Kernel.EARTH_RADIUS;
         if(sin2 > 1){
             sin2 = 2;
-        }
-        else if(sin2 < -1){
+        }else if(sin2 < -1){
             sin2 = -1;
         }
         var radianLat = Math.asin(sin2);
@@ -381,31 +382,26 @@ const MathUtils = {
         var sin1 = x / (Kernel.EARTH_RADIUS * cos2);
         if(sin1 > 1){
             sin1 = 1;
-        }
-        else if(sin1 < -1){
+        }else if(sin1 < -1){
             sin1 = -1;
         }
         var cos1 = z / (Kernel.EARTH_RADIUS * cos2);
         if(cos1 > 1){
             cos1 = 1;
-        }
-        else if(cos1 < -1){
+        }else if(cos1 < -1){
             cos1 = -1;
         }
         var radianLog = Math.asin(sin1);
         if(sin1 >= 0){//经度在[0,π]
             if(cos1 >= 0){//经度在[0,π/2]之间
                 radianLog = radianLog;
-            }
-            else{//经度在[π/2，π]之间
+            }else{//经度在[π/2，π]之间
                 radianLog = Math.PI - radianLog;
             }
-        }
-        else{//经度在[-π,0]之间
-            if(cos1  >= 0){//经度在[-π/2,0]之间
+        }else{//经度在[-π,0]之间
+            if(cos1 >= 0){//经度在[-π/2,0]之间
                 radianLog = radianLog;
-            }
-            else{//经度在[-π,-π/2]之间
+            }else{//经度在[-π,-π/2]之间
                 radianLog = -radianLog - Math.PI;
             }
         }
