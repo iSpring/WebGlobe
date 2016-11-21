@@ -3,6 +3,9 @@ import {WebGLRenderingContextExtension} from './Definitions';
 import Globe = require("./Globe");
 import Renderer = require("./Renderer");
 
+const radius = 14000;//6378137
+const maxProjectedCoord = Math.PI * radius;
+
 const Kernel = {
     gl: <WebGLRenderingContextExtension>null,
     canvas: <HTMLCanvasElement> null,
@@ -10,8 +13,8 @@ const Kernel = {
     globe: <Globe>null,
     idCounter: 0, //Object3D对象的唯一标识
     BASE_LEVEL: 6, //渲染的基准层级
-    EARTH_RADIUS: 637.8137*26,//6378137
-    MAX_PROJECTED_COORD: 2003.75083427892*26,//20037508.3427892
+    EARTH_RADIUS: radius,
+    MAX_PROJECTED_COORD: maxProjectedCoord,
     proxy: ""
 };
 
