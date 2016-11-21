@@ -13,7 +13,7 @@ class PoiLayer extends GraphicGroup{
     constructor(){
         super();
 
-        var p = MathUtils.geographicToCartesianCoord(0, 0, Kernel.EARTH_RADIUS);
+        var p = MathUtils.geographicToCartesianCoord(116.408540, 39.902350, Kernel.EARTH_RADIUS);
         var marker = new Marker(p.x, p.y, p.z);
         var url = "/WebGlobe/src/world/images/poi.png";
         var material = new PoiMaterial(url, 24);

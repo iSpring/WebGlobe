@@ -43,6 +43,7 @@ class Poi extends Graphic {
     onDraw(camera: PerspectiveCamera){
         var gl = Kernel.gl;
 
+        gl.disable(gl.DEPTH_TEST);
         gl.enable(gl.BLEND);
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
@@ -72,6 +73,7 @@ class Poi extends Graphic {
         gl.drawArrays(gl.POINTS, 0, 1);
 
         //释放当前绑定对象
+        gl.enable(gl.DEPTH_TEST);
         gl.disable(gl.BLEND);
         gl.bindBuffer(gl.ARRAY_BUFFER, null);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
