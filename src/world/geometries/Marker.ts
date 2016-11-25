@@ -15,7 +15,10 @@ class Marker implements Geometry{
 		this.vbo.unbind();
     }
 
-    destroy(){}
+    destroy(){
+        this.vbo.destroy();
+        this.vbo = null;
+    }
 }
 
 export = Marker;

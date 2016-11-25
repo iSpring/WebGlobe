@@ -14,7 +14,7 @@ class PerspectiveCamera extends Object3D {
   private animationDuration = 600;//层级变化的动画周期是600毫秒
   pitch: number;
   viewMatrix: Matrix;
-  projMatrix: Matrix;
+  projMatrix: Matrix;//当Matrix变化的时候，需要重新计算this.far
   projViewMatrix: Matrix;
   Enum: any = {
     EARTH_FULL_OVERSPREAD_SCREEN: "EARTH_FULL_OVERSPREAD_SCREEN", //Canvas内全部被地球充满
@@ -26,10 +26,15 @@ class PerspectiveCamera extends Object3D {
     super();
     this.pitch = 90;
     this.projMatrix = new Matrix();
-    this.setPerspectiveMatrix(this.fov, this.aspect, this.near, this.far);
+    this._rawSetPerspectiveMatrix(this.fov, this.aspect, this.near, this.far);
   }
 
-  setPerspectiveMatrix(fov: number = 45, aspect: number = 1, near: number = 1, far: number = 100): void {
+  _setPerspectiveMatrix(fov: number = 45, aspect: number = 1, near: number = 1, far: number = 100): void {
+    this._rawSetPerspectiveMatrix(fov, aspect, near, far);
+    this._updateFar();
+  }
+
+  _rawSetPerspectiveMatrix(fov: number = 45, aspect: number = 1, near: number = 1, far: number = 100): void {
     //https://github.com/toji/gl-matrix/blob/master/src/gl-matrix/mat4.js#L1788
     this.fov = fov;
     this.aspect = aspect;
@@ -85,28 +90,37 @@ class PerspectiveCamera extends Object3D {
     if (!(fov > 0)) {
       throw "invalid fov:" + fov;
     }
-    this.setPerspectiveMatrix(fov, this.aspect, this.near, this.far);
+    this._setPerspectiveMatrix(fov, this.aspect, this.near, this.far);
   }
 
   setAspect(aspect: number): void {
     if (!(aspect > 0)) {
       throw "invalid aspect:" + aspect;
     }
-    this.setPerspectiveMatrix(this.fov, aspect, this.near, this.far);
+    this._setPerspectiveMatrix(this.fov, aspect, this.near, this.far);
   }
 
   setNear(near: number): void {
     if (!(near > 0)) {
       throw "invalid near:" + near;
     }
-    this.setPerspectiveMatrix(this.fov, this.aspect, near, this.far);
+    this._setPerspectiveMatrix(this.fov, this.aspect, near, this.far);
   }
 
-  setFar(far: number): void {
-    if (!(far > 0)) {
-      throw "invalid far:" + far;
-    }
-    this.setPerspectiveMatrix(this.fov, this.aspect, this.near, far);
+  // setFar(far: number): void {
+  //   if (!(far > 0)) {
+  //     throw "invalid far:" + far;
+  //   }
+  //   this._rawSetPerspectiveMatrix(this.fov, this.aspect, this.near, far);
+  // }
+
+  _updateFar():void{
+    //重新计算far,保持far在满足正常需求情况下的最小值
+    //far值：视点与地球切面的距离
+    var length2EarthOrigin = Vector.fromVertice(this.getPosition()).getLength();
+    var far = Math.sqrt(length2EarthOrigin * length2EarthOrigin - Kernel.EARTH_RADIUS * Kernel.EARTH_RADIUS);
+    far *= 1.05;
+    this._rawSetPerspectiveMatrix(this.fov, this.aspect, this.near, far);
   }
 
   getViewMatrix(): Matrix {
@@ -119,8 +133,14 @@ class PerspectiveCamera extends Object3D {
     return this.viewMatrix;
   }
 
+  updateProjMatrix(): Matrix{
+    this._updateFar();
+    return this.projMatrix;
+  }
+
   updateProjViewMatrix(): Matrix{
     this.updateViewMatrix();
+    this.updateProjMatrix();
     this.projViewMatrix = this.projMatrix.multiplyMatrix(this.viewMatrix);
     return this.projViewMatrix;
   }
@@ -142,11 +162,13 @@ class PerspectiveCamera extends Object3D {
     this.matrix.setColumnTrans(transX, transY, transZ); //此处相当于对Camera的模型矩阵(不是视点矩阵)设置偏移量
     this.matrix.setLastRowDefault();
 
-    var deltaX = cameraPntCopy.x - targetPntCopy.x;
-    var deltaY = cameraPntCopy.y - targetPntCopy.y;
-    var deltaZ = cameraPntCopy.z - targetPntCopy.z;
-    var far = Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
-    this.setFar(far);
+    // var deltaX = cameraPntCopy.x - targetPntCopy.x;
+    // var deltaY = cameraPntCopy.y - targetPntCopy.y;
+    // var deltaZ = cameraPntCopy.z - targetPntCopy.z;
+    // var far = Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
+    // this.setFar(far);
+
+    this._updateFar();
   }
 
   lookAt(targetPnt: Vertice, upDirection?: Vector): void {
@@ -395,11 +417,6 @@ class PerspectiveCamera extends Object3D {
       var pNew = Vector.verticePlusVector(pOld, dir);
       this.setPosition(pNew.x, pNew.y, pNew.z);
     }
-    //重新计算far,保持far在满足正常需求情况下的最小值
-    //far值：视点与地球切面的距离
-    var length2EarthOrigin = Vector.fromVertice(this.getPosition()).getLength();
-    var far = Math.sqrt(length2EarthOrigin * length2EarthOrigin - Kernel.EARTH_RADIUS * Kernel.EARTH_RADIUS);
-    this.setFar(far * 1.05);
   }
 
   //判断世界坐标系中的点是否在Canvas中可见
