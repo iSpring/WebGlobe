@@ -22,14 +22,14 @@ class PerspectiveCamera extends Object3D {
   };
   private animating: boolean = false;
 
-  constructor(public fov = 90, public aspect = 1, public near = 1, public far = 1) {
+  constructor(public fov = 45, public aspect = 1, public near = 1, public far = 100) {
     super();
     this.pitch = 90;
     this.projMatrix = new Matrix();
     this.setPerspectiveMatrix(this.fov, this.aspect, this.near, this.far);
   }
 
-  setPerspectiveMatrix(fov: number = 90, aspect: number = 1, near: number = 1, far: number = 1): void {
+  setPerspectiveMatrix(fov: number = 45, aspect: number = 1, near: number = 1, far: number = 100): void {
     //https://github.com/toji/gl-matrix/blob/master/src/gl-matrix/mat4.js#L1788
     this.fov = fov;
     this.aspect = aspect;
@@ -66,6 +66,12 @@ class PerspectiveCamera extends Object3D {
     var direction = new Vector(-dirVertice.x, -dirVertice.y, -dirVertice.z);
     direction.normalize();
     return direction;
+  }
+
+  getDistance2EarthSurface(): number {
+    var position = this.getPosition();
+    var length2EarthSurface = Vector.fromVertice(position).getLength() - Kernel.EARTH_RADIUS;
+    return length2EarthSurface;
   }
 
   //获取投影矩阵与视点矩阵的乘积
@@ -294,19 +300,19 @@ class PerspectiveCamera extends Object3D {
   }
 
   animateToLevel(level: number): void {
-    var newMat = this._animateToLevel(level);
-    this._animateToMatrix(newMat, () => {
+    var newCamera = this._animateToLevel(level);
+    this._animateToCamera(newCamera, () => {
       Kernel.globe.CURRENT_LEVEL = level;
     });
   }
 
-  private _animateToMatrix(newMat: Matrix, cb: ()=>void){
+  private _animateToCamera(newCamera: PerspectiveCamera, cb: ()=>void){
     if(this.isAnimating()){
       return;
     }
     this.animating = true;
     var oldPosition = this.getPosition();
-    var newPosition = newMat.getPosition();
+    var newPosition = newCamera.matrix.getPosition();
     var span = this.animationDuration;
     var singleSpan = 1000 / 60;
     var count = Math.floor(span / singleSpan);
@@ -320,7 +326,7 @@ class PerspectiveCamera extends Object3D {
       }
       var a = timestap - start;
       if(a >= span){
-        this.matrix = newMat;
+        (<any>Object).assign(this, newCamera.toJson());
         this.animating = false;
         cb();
       }else{
@@ -332,22 +338,32 @@ class PerspectiveCamera extends Object3D {
     requestAnimationFrame(callback);
   }
 
-  private _animateToLevel(level: number): Matrix{
+  private _animateToLevel(level: number): PerspectiveCamera{
     if (!(Utils.isNonNegativeInteger(level))) {
       throw "invalid level:" + level;
     }
     var camera = this._clone();
     //don't call setLevel method because it will update CURRENT_LEVEL
     camera._setLevel(level);
-    return camera.matrix;
+    return camera;
   }
 
   private _clone(): PerspectiveCamera{
     var camera: PerspectiveCamera = new PerspectiveCamera();
-    camera.pitch = this.pitch;
-    camera.matrix = this.matrix.clone();
-    camera.projMatrix = this.projMatrix.clone();
+    (<any>Object).assign(camera, this.toJson());
     return camera;
+  }
+
+  toJson(): any {
+    return {
+      pitch: this.pitch,
+      near: this.near,
+      far: this.far,
+      fov: this.fov,
+      aspect: this.aspect,
+      matrix: this.matrix.clone(),
+      projMatrix: this.projMatrix.clone()
+    };
   }
 
   setLevel(level: number): void{
@@ -379,6 +395,11 @@ class PerspectiveCamera extends Object3D {
       var pNew = Vector.verticePlusVector(pOld, dir);
       this.setPosition(pNew.x, pNew.y, pNew.z);
     }
+    //重新计算far,保持far在满足正常需求情况下的最小值
+    //far值：视点与地球切面的距离
+    var length2EarthOrigin = Vector.fromVertice(this.getPosition()).getLength();
+    var far = Math.sqrt(length2EarthOrigin * length2EarthOrigin - Kernel.EARTH_RADIUS * Kernel.EARTH_RADIUS);
+    this.setFar(far * 1.05);
   }
 
   //判断世界坐标系中的点是否在Canvas中可见
