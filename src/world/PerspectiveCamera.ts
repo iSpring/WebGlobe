@@ -162,12 +162,6 @@ class PerspectiveCamera extends Object3D {
     this.matrix.setColumnTrans(transX, transY, transZ); //此处相当于对Camera的模型矩阵(不是视点矩阵)设置偏移量
     this.matrix.setLastRowDefault();
 
-    // var deltaX = cameraPntCopy.x - targetPntCopy.x;
-    // var deltaY = cameraPntCopy.y - targetPntCopy.y;
-    // var deltaZ = cameraPntCopy.z - targetPntCopy.z;
-    // var far = Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
-    // this.setFar(far);
-
     this._updateFar();
   }
 
@@ -411,12 +405,29 @@ class PerspectiveCamera extends Object3D {
     } else {
       var length2SurfaceNow = MathUtils.getLengthFromCamera2EarthSurface(Kernel.globe.CURRENT_LEVEL);
       var length2Surface = MathUtils.getLengthFromCamera2EarthSurface(level);
-      var deltaLength = length2SurfaceNow - length2Surface;
-      var dir = this.getLightDirection();
-      dir.setLength(deltaLength);
-      var pNew = Vector.verticePlusVector(pOld, dir);
-      this.setPosition(pNew.x, pNew.y, pNew.z);
+      if(length2Surface > (this.near * 0.6)){
+        var deltaLength = length2SurfaceNow - length2Surface;
+        var dir = this.getLightDirection();
+        dir.setLength(deltaLength);
+        var pNew = Vector.verticePlusVector(pOld, dir);
+        this.setPosition(pNew.x, pNew.y, pNew.z);
+      }else{
+        var deltaLevel = level - Kernel.globe.CURRENT_LEVEL;
+        var newFov = this._zoomInByFov(this.fov, deltaLevel)
+        this.setFov(newFov);
+      }
     }
+  }
+
+  private _zoomInByFov(fov1: number, deltaLevel: number): number{
+    var radianFov1 = MathUtils.degreeToRadian(fov1);
+    var halfRadianFov1 = radianFov1 / 2;
+    var tan1 = Math.tan(halfRadianFov1);
+    var tan2 = tan1 / Math.pow(2, deltaLevel);
+    var halfRadianFov2 = Math.atan(tan2);
+    var radianFov2 = halfRadianFov2 * 2;
+    var fov2 = MathUtils.radianToDegree(radianFov2);
+    return fov2;
   }
 
   //判断世界坐标系中的点是否在Canvas中可见

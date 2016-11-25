@@ -3,7 +3,7 @@ import {WebGLRenderingContextExtension} from './Definitions';
 import Globe = require("./Globe");
 import Renderer = require("./Renderer");
 
-const radius = 14000;//6378137
+const radius = 500;//6378137
 const maxProjectedCoord = Math.PI * radius;
 
 const Kernel = {

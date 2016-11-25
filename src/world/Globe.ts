@@ -20,8 +20,7 @@ class Globe {
   camera: PerspectiveCamera = null;
   tiledLayer: TiledLayer = null;
 
-  constructor(canvas: HTMLCanvasElement, args: any) {
-    args = args || {};
+  constructor(canvas: HTMLCanvasElement) {
     Kernel.globe = this;
     this.renderer = Kernel.renderer = new Renderer(canvas);
     this.scene = new Scene();

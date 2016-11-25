@@ -309,7 +309,7 @@ const MathUtils = {
         }
         var ndcX = 2 * canvasX / Kernel.canvas.width - 1;
         var ndcY = 1 - 2 * canvasY / Kernel.canvas.height;
-        return [ndcX,ndcY];
+        return [ndcX, ndcY];
     },
 
     //点变换: NDC->Canvas
@@ -322,7 +322,7 @@ const MathUtils = {
         }
         var canvasX = (1 + ndcX) * Kernel.canvas.width / 2.0;
         var canvasY = (1 - ndcY) * Kernel.canvas.height / 2.0;
-        return [canvasX,canvasY];
+        return [canvasX, canvasY];
     },
 
     /**
@@ -341,10 +341,10 @@ const MathUtils = {
      * @p 笛卡尔坐标系中的坐标
      */
     geographicToCartesianCoord(lon:number, lat: number, r: number = Kernel.EARTH_RADIUS): Vertice{
-        if(!(lon >= -(180+0.001) && lon <= (180+0.001))){
+        if(!(lon >= -(180 + 0.001) && lon <= (180 + 0.001))){
             throw "invalid lon";
         }
-        if(!(lat >= -(90+0.001) && lat <= (90+0.001))){
+        if(!(lat >= -(90 + 0.001) && lat <= (90 + 0.001))){
             throw "invalid lat";
         }
         var radianLon = this.degreeToRadian(lon);
@@ -353,10 +353,10 @@ const MathUtils = {
         var cos1 = Math.cos(radianLon);
         var sin2 = Math.sin(radianLat);
         var cos2 = Math.cos(radianLat);
-        var x = r*sin1*cos2;
-        var y = r*sin2;
-        var z = r*cos1*cos2;
-        return new Vertice(x,y,z);
+        var x = r * sin1 *cos2;
+        var y = r * sin2;
+        var z = r *cos1 * cos2;
+        return new Vertice(x, y, z);
     },
 
     /**
@@ -369,7 +369,7 @@ const MathUtils = {
         var x = verticeCopy.x;
         var y = verticeCopy.y;
         var z = verticeCopy.z;
-        var sin2 = y/Kernel.EARTH_RADIUS;
+        var sin2 = y / Kernel.EARTH_RADIUS;
         if(sin2 > 1){
             sin2 = 2;
         }else if(sin2 < -1){
@@ -390,16 +390,22 @@ const MathUtils = {
             cos1 = -1;
         }
         var radianLog = Math.asin(sin1);
-        if(sin1 >= 0){//经度在[0,π]
-            if(cos1 >= 0){//经度在[0,π/2]之间
+        if(sin1 >= 0){
+            //经度在[0,π]
+            if(cos1 >= 0){
+                //经度在[0, π/2]之间
                 radianLog = radianLog;
-            }else{//经度在[π/2，π]之间
+            }else{
+                //经度在[π/2, π]之间
                 radianLog = Math.PI - radianLog;
             }
-        }else{//经度在[-π,0]之间
-            if(cos1 >= 0){//经度在[-π/2,0]之间
+        }else{
+            //经度在[-π, 0]之间
+            if(cos1 >= 0){
+                //经度在[-π/2, 0]之间
                 radianLog = radianLog;
-            }else{//经度在[-π,-π/2]之间
+            }else{
+                //经度在[-π,-π/2]之间
                 radianLog = -radianLog - Math.PI;
             }
         }
@@ -455,9 +461,9 @@ const MathUtils = {
             throw "invalid y";
         }
         var a = y / Kernel.EARTH_RADIUS;
-        var b = Math.pow(Math.E,a);
+        var b = Math.pow(Math.E, a);
         var c = Math.atan(b);
-        var radianLat = 2*c - Math.PI/2;
+        var radianLat = 2 * c - Math.PI/2;
         return radianLat;
     },
 
@@ -501,7 +507,7 @@ const MathUtils = {
      * @return {*} 投影坐标x
      */
     radianLogToWebMercatorX(radianLog: number): number{
-        if(!(Utils.isNumber(radianLog) && radianLog <= (Math.PI+0.001) && radianLog >= -(Math.PI+0.001))){
+        if(!(Utils.isNumber(radianLog) && radianLog <= (Math.PI + 0.001) && radianLog >= -(Math.PI + 0.001))){
             throw "invalid radianLog";
         }
         return Kernel.EARTH_RADIUS * radianLog;
@@ -513,7 +519,7 @@ const MathUtils = {
      * @return {*} 投影坐标x
      */
     degreeLogToWebMercatorX(degreeLog: number): number{
-        if(!(Utils.isNumber(degreeLog) && degreeLog <= (180+0.001) && degreeLog >= -(180+0.001))){
+        if(!(Utils.isNumber(degreeLog) && degreeLog <= (180 + 0.001) && degreeLog >= -(180 + 0.001))){
             throw "invalid degreeLog";
         }
         var radianLog = this.degreeToRadian(degreeLog);
@@ -526,10 +532,10 @@ const MathUtils = {
      * @return {Number} 投影坐标y
      */
     radianLatToWebMercatorY(radianLat: number): number{
-        if(!(radianLat <= (Math.PI/2+0.001) && radianLat >= -(Math.PI/2+0.001))){
+        if(!(radianLat <= (Math.PI / 2 + 0.001) && radianLat >= -(Math.PI / 2 + 0.001))){
             throw "invalid radianLat";
         }
-        var a = Math.PI/4 + radianLat/2;
+        var a = Math.PI / 4 + radianLat / 2;
         var b = Math.tan(a);
         var c = Math.log(b);
         var y = Kernel.EARTH_RADIUS * c;
@@ -542,7 +548,7 @@ const MathUtils = {
      * @return {Number} 投影坐标y
      */
     degreeLatToWebMercatorY(degreeLat: number): number{
-        if(!(degreeLat <= (90+0.001) && degreeLat >= -(90+0.001))){
+        if(!(degreeLat <= (90 + 0.001) && degreeLat >= -(90 + 0.001))){
             throw "invalid degreeLat";
         }
         var radianLat = this.degreeToRadian(degreeLat);
@@ -558,7 +564,7 @@ const MathUtils = {
     radianGeographicToWebMercator(radianLog: number, radianLat: number): number[]{
         var x = this.radianLogToWebMercatorX(radianLog);
         var y = this.radianLatToWebMercatorY(radianLat);
-        return [x,y];
+        return [x, y];
     },
 
     /**
@@ -570,13 +576,13 @@ const MathUtils = {
     degreeGeographicToWebMercator(degreeLog: number, degreeLat: number): number[]{
         var x = this.degreeLogToWebMercatorX(degreeLog);
         var y = this.degreeLatToWebMercatorY(degreeLat);
-        return [x,y];
+        return [x, y];
     },
 
     //根据切片的level、row、column计算该切片所覆盖的投影区域的范围
     getTileWebMercatorEnvelopeByGrid(level: number, row: number, column: number): any{
         var k = Kernel.MAX_PROJECTED_COORD;
-        var size = 2*k / Math.pow(2,level);
+        var size = 2 * k / Math.pow(2, level);
         var minX = -k + column * size;
         var maxX = minX + size;
         var maxY = k - row * size;
@@ -592,14 +598,14 @@ const MathUtils = {
 
     //根据切片的level、row、column计算该切片所覆盖的经纬度区域的范围,以经纬度表示返回结果
     getTileGeographicEnvelopByGrid(level: number, row: number, column: number): any{
-        var Eproj = this.getTileWebMercatorEnvelopeByGrid(level,row,column);
-        var pMin = this.webMercatorToDegreeGeographic(Eproj.minX,Eproj.minY);
-        var pMax = this.webMercatorToDegreeGeographic(Eproj.maxX,Eproj.maxY);
+        var Eproj = this.getTileWebMercatorEnvelopeByGrid(level, row, column);
+        var pMin = this.webMercatorToDegreeGeographic(Eproj.minX, Eproj.minY);
+        var pMax = this.webMercatorToDegreeGeographic(Eproj.maxX, Eproj.maxY);
         var Egeo = {
-            "minLon":pMin[0],
-            "minLat":pMin[1],
-            "maxLon":pMax[0],
-            "maxLat":pMax[1]
+            "minLon": pMin[0],
+            "minLat": pMin[1],
+            "maxLon": pMax[0],
+            "maxLat": pMax[1]
         };
         return Egeo;
     },
@@ -611,19 +617,19 @@ const MathUtils = {
         var minLat = Egeo.minLat;
         var maxLon = Egeo.maxLon;
         var maxLat = Egeo.maxLat;
-        var pLeftBottom = this.geographicToCartesianCoord(minLon,minLat);
-        var pLeftTop = this.geographicToCartesianCoord(minLon,maxLat);
-        var pRightTop = this.geographicToCartesianCoord(maxLon,maxLat);
-        var pRightBottom = this.geographicToCartesianCoord(maxLon,minLat);
+        var pLeftBottom = this.geographicToCartesianCoord(minLon, minLat);
+        var pLeftTop = this.geographicToCartesianCoord(minLon, maxLat);
+        var pRightTop = this.geographicToCartesianCoord(maxLon, maxLat);
+        var pRightBottom = this.geographicToCartesianCoord(maxLon, minLat);
         var Ecar = {
-            "pLeftBottom":pLeftBottom,
-            "pLeftTop":pLeftTop,
-            "pRightTop":pRightTop,
-            "pRightBottom":pRightBottom,
-            "minLon":minLon,
-            "minLat":minLat,
-            "maxLon":maxLon,
-            "maxLat":maxLat
+            "pLeftBottom": pLeftBottom,
+            "pLeftTop": pLeftTop,
+            "pRightTop": pRightTop,
+            "pRightBottom": pRightBottom,
+            "minLon": minLon,
+            "minLat": minLat,
+            "maxLon": maxLon,
+            "maxLat": maxLat
         };
         return Ecar;
     },
@@ -636,20 +642,20 @@ const MathUtils = {
      * @return {Array}
      */
     getGeographicTileCenter(level: number, row: number, column: number): number[]{
-        var Egeo = this.getTileGeographicEnvelopByGrid(level,row,column);
+        var Egeo = this.getTileGeographicEnvelopByGrid(level, row, column);
         var minLon = Egeo.minLon;
         var minLat = Egeo.minLat;
         var maxLon = Egeo.maxLon;
         var maxLat = Egeo.maxLat;
         var centerLon = (minLon+maxLon)/2;//切片的经度中心
         var centerLat = (minLat+maxLat)/2;//切片的纬度中心
-        var lonlatTileCenter = [centerLon,centerLat];
+        var lonlatTileCenter = [centerLon, centerLat];
         return lonlatTileCenter;
     },
 
     getCartesianTileCenter(level: number, row: number, column: number): Vertice{
-        var lonLat = this.getGeographicTileCenter(level,row,column);
-        var vertice = this.geographicToCartesianCoord(lonLat[0],lonLat[1]);
+        var lonLat = this.getGeographicTileCenter(level, row, column);
+        var vertice = this.geographicToCartesianCoord(lonLat[0], lonLat[1]);
         return vertice;
     },
 
@@ -660,15 +666,15 @@ const MathUtils = {
      * @return {Array} 返回每个顶点的平均法向量的数组
      */
     calculateNormals(vs: number[], ind: number[]): number[]{
-        var x=0;
-        var y=1;
-        var z=2;
+        var x = 0;
+        var y = 1;
+        var z = 2;
         var ns:number[] = [];
         //对于每个vertex，初始化normal x, normal y, normal z
-        for(var i=0;i<vs.length;i=i+3){
-            ns[i+x]=0.0;
-            ns[i+y]=0.0;
-            ns[i+z]=0.0;
+        for(var i = 0;i < vs.length; i = i + 3){
+            ns[i + x]=0.0;
+            ns[i + y]=0.0;
+            ns[i + z]=0.0;
         }
 
         //用三元组vertices计算向量,所以i = i+3,i表示索引
