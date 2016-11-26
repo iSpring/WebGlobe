@@ -229,7 +229,6 @@ class Camera extends Object3D {
     if (pOld.x === 0 && pOld.y === 0 && pOld.z === 0) {
       //初始设置camera
       var length = this._getTheoryDistanceFromCamera2EarthSurface(level) + Kernel.EARTH_RADIUS; //level等级下摄像机应该到球心的距离
-      //var newPosition = MathUtils.geographicToCartesianCoord(115, 0, Kernel.EARTH_RADIUS + length)
       var origin = new Vertice(0, 0, 0);
       var vector = this.getLightDirection().getOpposite();
       vector.setLength(length);
