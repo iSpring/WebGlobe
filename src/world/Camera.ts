@@ -125,8 +125,10 @@ class Camera extends Object3D {
   }
 
   update(): void {
+    this.viewMatrix = null;
+
     //通过修改position和fov以更新matrix和projMatrix
-    //this._updatePositionAndFov();
+    this._updatePositionAndFov();
 
     //在_updatePositionAndFov()方法调用之后再计算viewMatrix
     this.viewMatrix = this.getViewMatrix();
@@ -178,7 +180,7 @@ class Camera extends Object3D {
       var safeLevel = this._getSafeThresholdLevelForNear();
       var deltaLevel = this.getLevel() - safeLevel;
       if(deltaLevel !== 0){
-        this._rawSetLevel(deltaLevel);
+        this._rawUpdatePositionByLevel(safeLevel);
         //摄像机位置拉远之后，我们看到的地球变小，为此，我们需要把fov值变小，以抵消摄像机位置距离增大导致的变化
         var newFov = this._calculateFovByDeltaLevel(this.fov, deltaLevel);
         this._setFov(newFov);
@@ -207,7 +209,7 @@ class Camera extends Object3D {
   }
 
   setLevel(level: number): void {
-    var isLevelChanged = this._rawSetLevel(level);
+    var isLevelChanged = this._rawUpdatePositionByLevel(level);
     if (isLevelChanged) {
       //不要在this._setLevel()方法中更新this.level，因为这会影响animateToLevel()方法
       this.level = level;
@@ -216,7 +218,7 @@ class Camera extends Object3D {
   }
 
   //设置观察到的层级，不要在该方法中修改this.level的值
-  private _rawSetLevel(level: number): boolean {
+  private _rawUpdatePositionByLevel(level: number): boolean {
     if (!(Utils.isNonNegativeInteger(level))) {
       throw "invalid level:" + level;
     }
@@ -295,7 +297,7 @@ class Camera extends Object3D {
     }
     var camera = this._clone();
     //don't call setLevel method because it will update CURRENT_LEVEL
-    camera._rawSetLevel(level);
+    camera._rawUpdatePositionByLevel(level);
     return camera;
   }
 
