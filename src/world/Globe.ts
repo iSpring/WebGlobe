@@ -145,7 +145,7 @@ class Globe {
       projView: projView,
       threshold: 1
     };
-    options.threshold = Math.min(90 / this.camera.pitch, 1.5);
+    options.threshold = Math.min(90 / this.camera.getPitch(), 1.5);
     //最大级别的level所对应的可见TileGrids
     var lastLevelTileGrids = this.camera.getVisibleTilesByLevel(level, options);
     var levelsTileGrids: any[] = []; //level-2
@@ -166,7 +166,6 @@ class Globe {
       levelsTileGrids.splice(0, 1);
     }
   }
-
 }
 
 export = Globe;

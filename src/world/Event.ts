@@ -172,11 +172,11 @@ const EventModule = {
     //上、下、左、右:38、40、37、39
     if (keyNum == 38 || keyNum == 40) {
       if (keyNum == 38) {
-        if (camera.pitch <= MIN_PITCH) {
+        if (camera.getPitch() <= MIN_PITCH) {
           return;
         }
       } else if (keyNum == 40) {
-        if (camera.pitch >= 90) {
+        if (camera.getPitch() >= 90) {
           return;
         }
         DELTA_PITCH *= -1;
@@ -195,7 +195,7 @@ const EventModule = {
         dirZ.setLength(legnth2Intersect);
         var pNew = Vector.verticePlusVector(pIntersect, dirZ);
         camera.look(pNew, pIntersect);
-        camera.pitch -= DELTA_PITCH;
+        camera.setPitch(camera.getPitch() - DELTA_PITCH);
         globe.refresh();
       } else {
         alert("视线与地球无交点");

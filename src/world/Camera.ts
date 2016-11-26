@@ -15,10 +15,10 @@ class Camera extends Object3D {
   private readonly animationDuration: number = 600;//层级变化的动画周期是600毫秒
   private readonly nearFactor: number = 0.6;
   private readonly baseTheoryDistanceFromCamera2EarthSurface = 1.23 * Kernel.EARTH_RADIUS;
+  private pitch: number;
   deltaFovLevel: number = 0;
   thresholdLevelForNear: number = -1;
-  level: number = -1; //当前渲染等级
-  pitch: number;
+  level: number = -1; //当前渲染等级  
   viewMatrix: Matrix;
   projMatrix: Matrix;//当Matrix变化的时候，需要重新计算this.far
   projViewMatrix: Matrix;
@@ -75,6 +75,14 @@ class Camera extends Object3D {
       mat[8], mat[9], mat[10], mat[11],
       mat[12], mat[13], mat[14], mat[15]
     );
+  }
+
+  getPitch(): number{
+    return this.pitch;
+  }
+
+  setPitch(pitch: number): void{
+
   }
 
   getLightDirection(): Vector {
