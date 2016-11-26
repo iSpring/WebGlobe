@@ -10,11 +10,10 @@ import Tile = require("./graphics/Tile");
 import ImageUtils = require("./Image");
 import EventUtils = require("./Event");
 
-class Globe {
-  MAX_LEVEL: number = 14;//最大的渲染级别14
-  CURRENT_LEVEL: number = -1; //当前渲染等级
+class Globe {  
   REFRESH_INTERVAL: number = 300; //Globe自动刷新时间间隔，以毫秒为单位
   idTimeOut: any = null; //refresh自定刷新的timeOut的handle
+  level: number = -1; //当前渲染等级
   renderer: Renderer = null;
   scene: Scene = null;
   camera: PerspectiveCamera = null;
@@ -31,7 +30,7 @@ class Globe {
     this.setLevel(0);
     this.renderer.setIfAutoRefresh(true);
     EventUtils.initLayout();
-  }
+  }  
 
   setTiledLayer(tiledLayer: TiledLayer) {
     clearTimeout(this.idTimeOut);
@@ -75,13 +74,17 @@ class Globe {
     this.tick();
   }
 
+  getLevel(){
+    return this.level;
+  }
+
   setLevel(level: number) {
     if (!Utils.isNonNegativeInteger(level)) {
       throw "invalid level:" + level;
     }
 
-    level = level > this.MAX_LEVEL ? this.MAX_LEVEL : level; //超过最大的渲染级别就不渲染
-    if (level != this.CURRENT_LEVEL) {
+    level = level > Kernel.MAX_LEVEL ? Kernel.MAX_LEVEL : level; //超过最大的渲染级别就不渲染
+    if (level != this.getLevel()) {
       if (this.camera instanceof PerspectiveCamera) {
         //要先执行camera.setLevel,然后再刷新
         this.camera.setLevel(level);
@@ -96,8 +99,8 @@ class Globe {
 
   animateToLevel(level: number){
     if(!this.isAnimating()){
-      level = level > this.MAX_LEVEL ? this.MAX_LEVEL : level; //超过最大的渲染级别就不渲染
-      if(level !== this.CURRENT_LEVEL){
+      level = level > Kernel.MAX_LEVEL ? Kernel.MAX_LEVEL : level; //超过最大的渲染级别就不渲染
+      if(level !== this.getLevel()){
         this.camera.animateToLevel(level);
       }
     }
@@ -138,7 +141,8 @@ class Globe {
     if (!this.tiledLayer || !this.scene || !this.camera) {
       return;
     }
-    var level = this.CURRENT_LEVEL + 3;
+    this.camera.update();
+    var level = this.getLevel() + 3;
     this.tiledLayer.updateSubLayerCount(level);
     var projView = this.camera.getProjViewMatrix();
     var options = {

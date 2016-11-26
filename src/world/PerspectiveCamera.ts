@@ -86,7 +86,7 @@ class PerspectiveCamera extends Object3D {
     return projViewMatrix;
   }
 
-  setFov(fov: number): void {
+  _setFov(fov: number): void {
     if (!(fov > 0)) {
       throw "invalid fov:" + fov;
     }
@@ -100,7 +100,7 @@ class PerspectiveCamera extends Object3D {
     this._setPerspectiveMatrix(this.fov, aspect, this.near, this.far);
   }
 
-  setNear(near: number): void {
+  _setNear(near: number): void {
     if (!(near > 0)) {
       throw "invalid near:" + near;
     }
@@ -143,6 +143,41 @@ class PerspectiveCamera extends Object3D {
     this.updateProjMatrix();
     this.projViewMatrix = this.projMatrix.multiplyMatrix(this.viewMatrix);
     return this.projViewMatrix;
+  }
+
+  private _setVirtualPosition(virtualPosisition: Vertice){
+
+  }
+
+  private _getVirtualPosition(): Vertice{
+    return null;
+  }
+
+  private _zoomInByFov(fov1: number, deltaLevel: number): number{
+    // if(length2Surface > (this.near * 0.6)){
+      //   var deltaLength = length2SurfaceNow - length2Surface;
+      //   var dir = this.getLightDirection();
+      //   dir.setLength(deltaLength);
+      //   var pNew = Vector.verticePlusVector(pOld, dir);
+      //   this.setPosition(pNew.x, pNew.y, pNew.z);
+      // }else{
+      //   var deltaLevel = level - Kernel.globe.CURRENT_LEVEL;
+      //   var newFov = this._zoomInByFov(this.fov, deltaLevel)
+      //   this._setFov(newFov);
+      // }
+      
+    var radianFov1 = MathUtils.degreeToRadian(fov1);
+    var halfRadianFov1 = radianFov1 / 2;
+    var tan1 = Math.tan(halfRadianFov1);
+    var tan2 = tan1 / Math.pow(2, deltaLevel);
+    var halfRadianFov2 = Math.atan(tan2);
+    var radianFov2 = halfRadianFov2 * 2;
+    var fov2 = MathUtils.radianToDegree(radianFov2);
+    return fov2;
+  }
+
+  update():void{
+    this.updateProjViewMatrix();
   }
 
   look(cameraPnt: Vertice, targetPnt: Vertice, upDirection: Vector = new Vector(0, 1, 0)): void {
@@ -318,7 +353,7 @@ class PerspectiveCamera extends Object3D {
   animateToLevel(level: number): void {
     var newCamera = this._animateToLevel(level);
     this._animateToCamera(newCamera, () => {
-      Kernel.globe.CURRENT_LEVEL = level;
+      Kernel.globe.level = level;
     });
   }
 
@@ -385,7 +420,7 @@ class PerspectiveCamera extends Object3D {
   setLevel(level: number): void{
     this._setLevel(level);
     //don't update CURRENT_LEVEL in _setLevel method because it will affect animateToLevel method
-    Kernel.globe.CURRENT_LEVEL = level;
+    Kernel.globe.level = level;
   }
 
   //设置观察到的层级
@@ -393,6 +428,7 @@ class PerspectiveCamera extends Object3D {
     if (!(Utils.isNonNegativeInteger(level))) {
       throw "invalid level:" + level;
     }
+    var globe = Kernel.globe;
     var pOld = this.getPosition();
     if (pOld.x === 0 && pOld.y === 0 && pOld.z === 0) {
       //初始设置camera
@@ -403,31 +439,14 @@ class PerspectiveCamera extends Object3D {
       var newPosition = vector.getVertice();
       this.look(newPosition, origin);
     } else {
-      var length2SurfaceNow = MathUtils.getLengthFromCamera2EarthSurface(Kernel.globe.CURRENT_LEVEL);
+      var length2SurfaceNow = MathUtils.getLengthFromCamera2EarthSurface(globe.getLevel());
       var length2Surface = MathUtils.getLengthFromCamera2EarthSurface(level);
-      if(length2Surface > (this.near * 0.6)){
-        var deltaLength = length2SurfaceNow - length2Surface;
-        var dir = this.getLightDirection();
-        dir.setLength(deltaLength);
-        var pNew = Vector.verticePlusVector(pOld, dir);
-        this.setPosition(pNew.x, pNew.y, pNew.z);
-      }else{
-        var deltaLevel = level - Kernel.globe.CURRENT_LEVEL;
-        var newFov = this._zoomInByFov(this.fov, deltaLevel)
-        this.setFov(newFov);
-      }
+      var deltaLength = length2SurfaceNow - length2Surface;
+      var dir = this.getLightDirection();
+      dir.setLength(deltaLength);
+      var pNew = Vector.verticePlusVector(pOld, dir);
+      this.setPosition(pNew.x, pNew.y, pNew.z);      
     }
-  }
-
-  private _zoomInByFov(fov1: number, deltaLevel: number): number{
-    var radianFov1 = MathUtils.degreeToRadian(fov1);
-    var halfRadianFov1 = radianFov1 / 2;
-    var tan1 = Math.tan(halfRadianFov1);
-    var tan2 = tan1 / Math.pow(2, deltaLevel);
-    var halfRadianFov2 = Math.atan(tan2);
-    var radianFov2 = halfRadianFov2 * 2;
-    var fov2 = MathUtils.radianToDegree(radianFov2);
-    return fov2;
   }
 
   //判断世界坐标系中的点是否在Canvas中可见

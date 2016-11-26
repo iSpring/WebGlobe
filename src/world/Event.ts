@@ -123,13 +123,13 @@ const EventModule = {
       var absoluteX = event.layerX || event.offsetX;
       var absoluteY = event.layerY || event.offsetY;
       var pickResult = globe.camera.getPickCartesianCoordInEarthByCanvas(absoluteX, absoluteY);
-      globe.setLevel(globe.CURRENT_LEVEL + 1);
+      globe.setLevel(globe.getLevel() + 1);
       if (pickResult.length >= 1) {
         var pickVertice = pickResult[0];
         var lonlat = MathUtils.cartesianCoordToGeographic(pickVertice);
         var lon = lonlat[0];
         var lat = lonlat[1];
-        globe.setLevel(globe.CURRENT_LEVEL + 1);
+        globe.setLevel(globe.getLevel() + 1);
         this.moveLonLatToCanvas(lon, lat, absoluteX, absoluteY);
       }
     }
@@ -152,7 +152,7 @@ const EventModule = {
       delta = event.detail;
       deltaLevel = -parseInt(<any>(delta / 3));
     }
-    var newLevel = globe.CURRENT_LEVEL + deltaLevel;
+    var newLevel = globe.getLevel() + deltaLevel;
     if(newLevel >= 0){
       globe.setLevel(newLevel);
       //globe.animateToLevel(newLevel);
