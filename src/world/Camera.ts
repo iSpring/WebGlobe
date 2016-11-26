@@ -11,10 +11,10 @@ import Matrix = require('./math/Matrix');
 import Object3D = require('./Object3D');
 
 class Camera extends Object3D {
+  private readonly initFov: number;
   private readonly animationDuration: number = 600;//层级变化的动画周期是600毫秒
   private readonly nearFactor: number = 0.6;
   private readonly baseTheoryDistanceFromCamera2EarthSurface = 1.23 * Kernel.EARTH_RADIUS;
-
   deltaFovLevel: number = 0;
   thresholdLevelForNear: number = -1;
   level: number = -1; //当前渲染等级
@@ -34,6 +34,7 @@ class Camera extends Object3D {
   //this.fov可以调整以实现缩放效果
   constructor(private fov = 45, private aspect = 1, private near = 1, private far = 100) {
     super();
+    this.initFov = this.fov;
     this.pitch = 90;
     this.projMatrix = new Matrix();
     this._rawSetPerspectiveMatrix(this.fov, this.aspect, this.near, this.far);
@@ -142,7 +143,7 @@ class Camera extends Object3D {
 
   //计算从第几级level开始不满足视景体的near值
   //比如第10级满足near，第11级不满足near，那么返回10
-  private _getSafeThresholdLevelForNear(){
+  private _getSafeThresholdLevelForNear() {
     var thresholdNear = this.near * this.nearFactor;
     var pow2level = this.baseTheoryDistanceFromCamera2EarthSurface / thresholdNear;
     var level = (<any>Math).log2(pow2level);
@@ -167,32 +168,104 @@ class Camera extends Object3D {
   }
 
   //返回更新后的fov值，如果返回结果 < 0，说明无需更新fov
-  private _updatePositionAndFov(): number{
+  private _updatePositionAndFov(): number {
+    //是否满足near值，和fov没有关系，和position有关
+    //但是改变position的话，fov也要相应变动以满足对应的缩放效果
+
     // var safeThresholdLevel = this._getSafeThresholdLevelForNear();
     // if(this.getLevel() > safeThresholdLevel){
 
     // }
-    var distance2EarthSurface = this.getDistance2EarthSurface();
-    var thresholdNear = this.near * this.nearFactor;
-    if(distance2EarthSurface <= thresholdNear){
-      //摄像机距离地球太近，导致图层不满足视景体的near值
+    const currentLevel = this.getLevel();
+
+    var safeLevel = this._getSafeThresholdLevelForNear();
+
+    if(currentLevel > safeLevel){
+      //摄像机距离地球太近，导致不满足视景体的near值,
       //我们需要将摄像机的位置拉远，以满足near值
-      var safeLevel = this._getSafeThresholdLevelForNear();
-      var deltaLevel = this.getLevel() - safeLevel;
-      if(deltaLevel !== 0){
-        this._rawUpdatePositionByLevel(safeLevel);
-        //摄像机位置拉远之后，我们看到的地球变小，为此，我们需要把fov值变小，以抵消摄像机位置距离增大导致的变化
-        var newFov = this._calculateFovByDeltaLevel(this.fov, deltaLevel);
-        this._setFov(newFov);
-        return this.fov;
-      }
+      this._rawUpdatePositionByLevel(safeLevel);
+      //比如safeLevel是10，而currentLevel是11，则deltaLevel为1
+      var deltaLevel = currentLevel - safeLevel;
+      //摄像机位置与地球表面距离变大之后，我们看到的地球变小，为此，我们需要把fov值变小，以抵消摄像机位置距离增大导致的变化
+      //deltaLevel应该为正正数，计算出的newFov应该比this.initFov要小
+      var newFov = this._calculateFovByDeltaLevel(this.initFov, deltaLevel);
+      this._setFov(newFov);
+    }else{
+      this._rawUpdatePositionByLevel(currentLevel);
+      this._setFov(this.initFov);
     }
+
+    // var distance2EarthSurface = this.getDistance2EarthSurface();
+    // var thresholdNear = this.near * this.nearFactor;
+    // if (distance2EarthSurface <= thresholdNear) {
+    //   //摄像机距离地球太近，导致不满足视景体的near值
+    //   //我们需要将摄像机的位置拉远，以满足near值
+
+    //   //比如currentLevel为11，safeLevel为10
+    //   deltaLevel = currentLevel - safeLevel;
+    //   //此处的deltaLevel应该为正数
+    //   if (deltaLevel !== 0) {
+    //     newLevel = safeLevel;
+    //     this._rawUpdatePositionByLevel(newLevel);
+    //     //摄像机位置与地球表面距离变大之后，我们看到的地球变小，为此，我们需要把fov值变小，以抵消摄像机位置距离增大导致的变化
+    //     var newFov = this._calculateFovByDeltaLevel(this.initFov, deltaLevel);
+    //     this._setFov(newFov);
+    //     return this.fov;
+    //   }
+    // } else {
+    //   //现在满足near值
+
+    //   if (this.fov < this.initFov * 0.95 && currentLevel <= safeLevel) {
+    //     //如果当前fov的值比初始的initFov值小，说明当前的fov被缩放过(0.95用于精度问题，防止出现29.999999与30进行对比的情况)
+    //     //比如currentLevel为11，this.fov为15，this.initFov为10，deltaLevel应该为负值
+    //     deltaLevel = this._calculateDeltaLevelByFov(this.fov, this.initFov);
+    //     newLevel = currentLevel + deltaLevel;
+    //     //上面的newLevel是float类型，向上取整，不要向下取整
+    //     newLevel = Math.ceil(newLevel);
+    //     //deltaLevel应该为负整数
+    //     deltaLevel = newLevel - currentLevel;
+    //     //比如currentLevel为11，newLevel为10，deltaLevel为-1
+    //     this._rawUpdatePositionByLevel(newLevel);
+    //     var newFov = this._calculateFovByDeltaLevel(this.fov, deltaLevel);
+    //     this._setFov(newFov);
+    //     return this.fov;
+    //   } else if (this.fov > this.initFov * 1.05) {
+    //     //不应该出现当前fov值比初始initFov的大的情况
+    //     throw `_updatePositionAndFov() Invalid fov: ${this.fov}`;
+    //   }
+    //}
+
     return -1;
   }
 
-  //通过调整fov的值造成层级缩放的效果
+
+  //fov从oldFov变成了newFov，计算相当于缩放了几级level
+  //比如从10级缩放到了第11级，fov从30变成了15，即oldFov为30，newFov为15，deltaLevel为1
+  //通过Math.log2()计算出结果，所以返回的是小数，可能是正数也可能是负数
+  private _calculateDeltaLevelByFov(oldFov: number, newFov: number): number {
+    //tan(halfFov) = h / distance，level不同的情况下h不变
+    //h1 = l1*tanθ1
+    //h2 = l2*tanθ2
+    //l2 = l1 * Math.pow(2, deltaLevel)
+    //deltaLevel = Math.log2(tanθ1 / tanθ2)
+    var radianOldFov = MathUtils.degreeToRadian(oldFov);
+    var halfRadianOldFov = radianOldFov / 2;
+    var tanOld = Math.tan(halfRadianOldFov);
+
+    var radianNewFov = MathUtils.degreeToRadian(newFov);
+    var halfRadianNewFov = radianNewFov / 2;
+    var tanNew = Math.tan(halfRadianNewFov);
+
+    var deltaLevel = (<any>Math).log2(tanOld / tanNew);
+    return deltaLevel;
+  }
+
+  //通过调整fov的值造成层级缩放的效果，比如在第10级的时候，oldFov为正常的30度，当放大到11级的时候，deltaLevel为1，计算出的新的newFov为15度多
   private _calculateFovByDeltaLevel(oldFov: number, deltaLevel: number): number {
-    //tan(halfFov) = h / distance
+    //tan(halfFov) = h / distance，level不同的情况下h不变
+    //h1 = l1*tanθ1
+    //h2 = l2*tanθ2
+    //l2 = l1 * Math.pow(2, deltaLevel)
     var radianOldFov = MathUtils.degreeToRadian(oldFov);
     var halfRadianOldFov = radianOldFov / 2;
     var tanOld = Math.tan(halfRadianOldFov);
@@ -237,13 +310,19 @@ class Camera extends Object3D {
       var newPosition = vector.getVertice();
       this.look(newPosition, origin);
     } else {
-      var distance2SurfaceNow = this._getTheoryDistanceFromCamera2EarthSurface(this.getLevel());
-      var distance2SurfaceNew = this._getTheoryDistanceFromCamera2EarthSurface(level);
-      var deltaDistance = distance2SurfaceNow - distance2SurfaceNew;
-      var dir = this.getLightDirection();
-      dir.setLength(deltaDistance);
-      var pNew = Vector.verticePlusVector(pOld, dir);
-      this.setPosition(pNew.x, pNew.y, pNew.z);
+      var length = this._getTheoryDistanceFromCamera2EarthSurface(level) + Kernel.EARTH_RADIUS; //level等级下摄像机应该到球心的距离
+      var vector = this.getLightDirection().getOpposite();
+      vector.setLength(length);
+      var newPosition = vector.getVertice();
+      this.setPosition(newPosition.x, newPosition.y, newPosition.z);
+
+      // var distance2SurfaceNow = this._getTheoryDistanceFromCamera2EarthSurface(this.getLevel());
+      // var distance2SurfaceNew = this._getTheoryDistanceFromCamera2EarthSurface(level);
+      // var deltaDistance = distance2SurfaceNow - distance2SurfaceNew;
+      // var dir = this.getLightDirection();
+      // dir.setLength(deltaDistance);
+      // var pNew = Vector.verticePlusVector(pOld, dir);
+      // this.setPosition(pNew.x, pNew.y, pNew.z);
     }
     return true;
   }

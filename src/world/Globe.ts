@@ -122,7 +122,12 @@ class Globe {
   tick() {
     var globe = Kernel.globe;
     if (globe) {
-      globe.refresh();
+      try{
+        //如果refresh方法出现异常而且没有捕捉，那么就会导致无法继续设置setTimeout，从而无法进一步更新切片
+        globe.refresh();
+      }catch(e){
+        console.error(e);
+      }
       this.idTimeOut = setTimeout(globe.tick, globe.REFRESH_INTERVAL);
     }
   }
