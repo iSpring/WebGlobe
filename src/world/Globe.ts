@@ -13,7 +13,6 @@ import EventUtils = require("./Event");
 class Globe {
   REFRESH_INTERVAL: number = 300; //Globe自动刷新时间间隔，以毫秒为单位
   idTimeOut: any = null; //refresh自定刷新的timeOut的handle
-  level: number = -1; //当前渲染等级
   renderer: Renderer = null;
   scene: Scene = null;
   camera: Camera = null;
@@ -75,21 +74,12 @@ class Globe {
   }
 
   getLevel(){
-    return this.level;
+    return this.camera ? this.camera.getLevel() : -1;
   }
 
   setLevel(level: number) {
-    if (!Utils.isNonNegativeInteger(level)) {
-      throw "invalid level:" + level;
-    }
-
-    level = level > Kernel.MAX_LEVEL ? Kernel.MAX_LEVEL : level; //超过最大的渲染级别就不渲染
-    if (level != this.getLevel()) {
-      if (this.camera instanceof Camera) {
-        //要先执行camera.setLevel,然后再刷新
-        this.camera.setLevel(level);
-        this.refresh();
-      }
+    if(this.camera){
+      this.camera.setLevel(level);
     }
   }
 

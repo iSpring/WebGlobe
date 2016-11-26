@@ -325,15 +325,6 @@ const MathUtils = {
         return [canvasX, canvasY];
     },
 
-    /**
-     * 根据层级计算出摄像机应该放置到距离地球表面多远的位置
-     * @param level
-     * @return {*}
-     */
-    getLengthFromCamera2EarthSurface(level: number): number{
-        return 1.23 * Kernel.EARTH_RADIUS / Math.pow(2, level);
-    },
-
     /**将经纬度转换为笛卡尔空间直角坐标系中的x、y、z
      * @lon 经度(角度单位)
      * @lat 纬度(角度单位)

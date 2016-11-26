@@ -11,7 +11,13 @@ import Matrix = require('./math/Matrix');
 import Object3D = require('./Object3D');
 
 class Camera extends Object3D {
-  private animationDuration = 600;//层级变化的动画周期是600毫秒
+  private readonly animationDuration: number = 600;//层级变化的动画周期是600毫秒
+  private readonly nearFactor: number = 0.6;
+  private readonly baseTheoryDistanceFromCamera2EarthSurface = 1.23 * Kernel.EARTH_RADIUS;
+
+  deltaFovLevel: number = 0;
+  thresholdLevelForNear: number = -1;
+  level: number = -1; //当前渲染等级
   pitch: number;
   viewMatrix: Matrix;
   projMatrix: Matrix;//当Matrix变化的时候，需要重新计算this.far
@@ -22,19 +28,23 @@ class Camera extends Object3D {
   };
   private animating: boolean = false;
 
-  constructor(public fov = 45, public aspect = 1, public near = 1, public far = 100) {
+  //this.near一旦初始化之后就不应该再修改
+  //this.far可以动态计算
+  //this.aspect在Viewport改变后重新计算
+  //this.fov可以调整以实现缩放效果
+  constructor(private fov = 45, private aspect = 1, private near = 1, private far = 100) {
     super();
     this.pitch = 90;
     this.projMatrix = new Matrix();
     this._rawSetPerspectiveMatrix(this.fov, this.aspect, this.near, this.far);
   }
 
-  _setPerspectiveMatrix(fov: number = 45, aspect: number = 1, near: number = 1, far: number = 100): void {
+  private _setPerspectiveMatrix(fov: number = 45, aspect: number = 1, near: number = 1, far: number = 100): void {
     this._rawSetPerspectiveMatrix(fov, aspect, near, far);
     this._updateFar();
   }
 
-  _rawSetPerspectiveMatrix(fov: number = 45, aspect: number = 1, near: number = 1, far: number = 100): void {
+  private _rawSetPerspectiveMatrix(fov: number = 45, aspect: number = 1, near: number = 1, far: number = 100): void {
     //https://github.com/toji/gl-matrix/blob/master/src/gl-matrix/mat4.js#L1788
     this.fov = fov;
     this.aspect = aspect;
@@ -86,7 +96,7 @@ class Camera extends Object3D {
     return projViewMatrix;
   }
 
-  _setFov(fov: number): void {
+  private _setFov(fov: number): void {
     if (!(fov > 0)) {
       throw "invalid fov:" + fov;
     }
@@ -100,21 +110,7 @@ class Camera extends Object3D {
     this._setPerspectiveMatrix(this.fov, aspect, this.near, this.far);
   }
 
-  _setNear(near: number): void {
-    if (!(near > 0)) {
-      throw "invalid near:" + near;
-    }
-    this._setPerspectiveMatrix(this.fov, this.aspect, near, this.far);
-  }
-
-  // setFar(far: number): void {
-  //   if (!(far > 0)) {
-  //     throw "invalid far:" + far;
-  //   }
-  //   this._rawSetPerspectiveMatrix(this.fov, this.aspect, this.near, far);
-  // }
-
-  _updateFar():void{
+  private _updateFar(): void {
     //重新计算far,保持far在满足正常需求情况下的最小值
     //far值：视点与地球切面的距离
     var length2EarthOrigin = Vector.fromVertice(this.getPosition()).getLength();
@@ -128,56 +124,198 @@ class Camera extends Object3D {
     return this.matrix.getInverseMatrix();
   }
 
-  updateViewMatrix(): Matrix{
+  update(): void {
+    //通过修改position和fov以更新matrix和projMatrix
+    //this._updatePositionAndFov();
+
+    //在_updatePositionAndFov()方法调用之后再计算viewMatrix
     this.viewMatrix = this.getViewMatrix();
-    return this.viewMatrix;
-  }
 
-  updateProjMatrix(): Matrix{
+    //最后更新far
     this._updateFar();
-    return this.projMatrix;
-  }
 
-  updateProjViewMatrix(): Matrix{
-    this.updateViewMatrix();
-    this.updateProjMatrix();
+    //update projViewMatrix
     this.projViewMatrix = this.projMatrix.multiplyMatrix(this.viewMatrix);
-    return this.projViewMatrix;
   }
 
-  private _setVirtualPosition(virtualPosisition: Vertice){
+  //计算从第几级level开始不满足视景体的near值
+  //比如第10级满足near，第11级不满足near，那么返回10
+  private _getSafeThresholdLevelForNear(){
+    var thresholdNear = this.near * this.nearFactor;
+    var pow2level = this.baseTheoryDistanceFromCamera2EarthSurface / thresholdNear;
+    var level = (<any>Math).log2(pow2level);
+    return Math.floor(level);
+  }
+
+  /**
+   * 根据层级计算出摄像机应该放置到距离地球表面多远的位置
+   * @param level
+   * @return {*}
+   */
+  private _getTheoryDistanceFromCamera2EarthSurface(level: number): number {
+    return this.baseTheoryDistanceFromCamera2EarthSurface / Math.pow(2, level);
+  }
+
+  private _setVirtualPosition(virtualPosisition: Vertice) {
 
   }
 
-  private _getVirtualPosition(): Vertice{
+  private _getVirtualPosition(): Vertice {
     return null;
   }
 
-  private _zoomInByFov(fov1: number, deltaLevel: number): number{
-    // if(length2Surface > (this.near * 0.6)){
-      //   var deltaLength = length2SurfaceNow - length2Surface;
-      //   var dir = this.getLightDirection();
-      //   dir.setLength(deltaLength);
-      //   var pNew = Vector.verticePlusVector(pOld, dir);
-      //   this.setPosition(pNew.x, pNew.y, pNew.z);
-      // }else{
-      //   var deltaLevel = level - Kernel.globe.CURRENT_LEVEL;
-      //   var newFov = this._zoomInByFov(this.fov, deltaLevel)
-      //   this._setFov(newFov);
-      // }
+  //返回更新后的fov值，如果返回结果 < 0，说明无需更新fov
+  private _updatePositionAndFov(): number{
+    // var safeThresholdLevel = this._getSafeThresholdLevelForNear();
+    // if(this.getLevel() > safeThresholdLevel){
 
-    var radianFov1 = MathUtils.degreeToRadian(fov1);
-    var halfRadianFov1 = radianFov1 / 2;
-    var tan1 = Math.tan(halfRadianFov1);
-    var tan2 = tan1 / Math.pow(2, deltaLevel);
-    var halfRadianFov2 = Math.atan(tan2);
-    var radianFov2 = halfRadianFov2 * 2;
-    var fov2 = MathUtils.radianToDegree(radianFov2);
-    return fov2;
+    // }
+    var distance2EarthSurface = this.getDistance2EarthSurface();
+    var thresholdNear = this.near * this.nearFactor;
+    if(distance2EarthSurface <= thresholdNear){
+      //摄像机距离地球太近，导致图层不满足视景体的near值
+      //我们需要将摄像机的位置拉远，以满足near值
+      var safeLevel = this._getSafeThresholdLevelForNear();
+      var deltaLevel = this.getLevel() - safeLevel;
+      if(deltaLevel !== 0){
+        this._rawSetLevel(deltaLevel);
+        //摄像机位置拉远之后，我们看到的地球变小，为此，我们需要把fov值变小，以抵消摄像机位置距离增大导致的变化
+        var newFov = this._calculateFovByDeltaLevel(this.fov, deltaLevel);
+        this._setFov(newFov);
+        return this.fov;
+      }
+    }
+    return -1;
   }
 
-  update():void{
-    this.updateProjViewMatrix();
+  //通过调整fov的值造成层级缩放的效果
+  private _calculateFovByDeltaLevel(oldFov: number, deltaLevel: number): number {
+    //tan(halfFov) = h / distance
+    var radianOldFov = MathUtils.degreeToRadian(oldFov);
+    var halfRadianOldFov = radianOldFov / 2;
+    var tanOld = Math.tan(halfRadianOldFov);
+    var tanNew = tanOld / Math.pow(2, deltaLevel);
+    var halfRadianNewFov = Math.atan(tanNew);
+    var radianNewFov = halfRadianNewFov * 2;
+    var newFov = MathUtils.radianToDegree(radianNewFov);
+    this.deltaFovLevel += deltaLevel;
+    return newFov;
+  }
+
+  getLevel(): number {
+    return this.level;
+  }
+
+  setLevel(level: number): void {
+    var isLevelChanged = this._rawSetLevel(level);
+    if (isLevelChanged) {
+      //不要在this._setLevel()方法中更新this.level，因为这会影响animateToLevel()方法
+      this.level = level;
+      Kernel.globe.refresh();
+    }
+  }
+
+  //设置观察到的层级，不要在该方法中修改this.level的值
+  private _rawSetLevel(level: number): boolean {
+    if (!(Utils.isNonNegativeInteger(level))) {
+      throw "invalid level:" + level;
+    }
+    level = level > Kernel.MAX_LEVEL ? Kernel.MAX_LEVEL : level; //超过最大的渲染级别就不渲染
+    if (level === this.level) {
+      return false;
+    }
+    var globe = Kernel.globe;
+    var pOld = this.getPosition();
+    if (pOld.x === 0 && pOld.y === 0 && pOld.z === 0) {
+      //初始设置camera
+      var length = this._getTheoryDistanceFromCamera2EarthSurface(level) + Kernel.EARTH_RADIUS; //level等级下摄像机应该到球心的距离
+      //var newPosition = MathUtils.geographicToCartesianCoord(115, 0, Kernel.EARTH_RADIUS + length)
+      var origin = new Vertice(0, 0, 0);
+      var vector = this.getLightDirection().getOpposite();
+      vector.setLength(length);
+      var newPosition = vector.getVertice();
+      this.look(newPosition, origin);
+    } else {
+      var distance2SurfaceNow = this._getTheoryDistanceFromCamera2EarthSurface(this.getLevel());
+      var distance2SurfaceNew = this._getTheoryDistanceFromCamera2EarthSurface(level);
+      var deltaDistance = distance2SurfaceNow - distance2SurfaceNew;
+      var dir = this.getLightDirection();
+      dir.setLength(deltaDistance);
+      var pNew = Vector.verticePlusVector(pOld, dir);
+      this.setPosition(pNew.x, pNew.y, pNew.z);
+    }
+    return true;
+  }
+
+  isAnimating(): boolean {
+    return this.animating;
+  }
+
+  animateToLevel(level: number): void {
+    var newCamera = this._animateToLevel(level);
+    this._animateToCamera(newCamera, () => {
+      this.level = level;
+    });
+  }
+
+  private _animateToCamera(newCamera: Camera, cb: () => void) {
+    if (this.isAnimating()) {
+      return;
+    }
+    this.animating = true;
+    var oldPosition = this.getPosition();
+    var newPosition = newCamera.matrix.getPosition();
+    var span = this.animationDuration;
+    var singleSpan = 1000 / 60;
+    var count = Math.floor(span / singleSpan);
+    var deltaX = (newPosition.x - oldPosition.x) / count;
+    var deltaY = (newPosition.y - oldPosition.y) / count;
+    var deltaZ = (newPosition.z - oldPosition.z) / count;
+    var start: number = -1;
+    var callback = (timestap: number) => {
+      if (start < 0) {
+        start = timestap;
+      }
+      var a = timestap - start;
+      if (a >= span) {
+        (<any>Object).assign(this, newCamera.toJson());
+        this.animating = false;
+        cb();
+      } else {
+        var p = this.getPosition();
+        this.setPosition(p.x + deltaX, p.y + deltaY, p.z + deltaZ);
+        requestAnimationFrame(callback);
+      }
+    };
+    requestAnimationFrame(callback);
+  }
+
+  private _animateToLevel(level: number): Camera {
+    if (!(Utils.isNonNegativeInteger(level))) {
+      throw "invalid level:" + level;
+    }
+    var camera = this._clone();
+    //don't call setLevel method because it will update CURRENT_LEVEL
+    camera._rawSetLevel(level);
+    return camera;
+  }
+
+  private _clone(): Camera {
+    var camera: Camera = new Camera();
+    (<any>Object).assign(camera, this.toJson());
+    return camera;
+  }
+
+  toJson(): any {
+    return {
+      pitch: this.pitch,
+      near: this.near,
+      far: this.far,
+      fov: this.fov,
+      aspect: this.aspect,
+      matrix: this.matrix.clone(),
+      projMatrix: this.projMatrix.clone()
+    };
   }
 
   look(cameraPnt: Vertice, targetPnt: Vertice, upDirection: Vector = new Vector(0, 1, 0)): void {
@@ -346,109 +484,6 @@ class Camera extends Object3D {
     return plan;
   }
 
-  isAnimating(): boolean{
-    return this.animating;
-  }
-
-  animateToLevel(level: number): void {
-    var newCamera = this._animateToLevel(level);
-    this._animateToCamera(newCamera, () => {
-      Kernel.globe.level = level;
-    });
-  }
-
-  private _animateToCamera(newCamera: Camera, cb: ()=>void){
-    if(this.isAnimating()){
-      return;
-    }
-    this.animating = true;
-    var oldPosition = this.getPosition();
-    var newPosition = newCamera.matrix.getPosition();
-    var span = this.animationDuration;
-    var singleSpan = 1000 / 60;
-    var count = Math.floor(span / singleSpan);
-    var deltaX = (newPosition.x - oldPosition.x) / count;
-    var deltaY = (newPosition.y - oldPosition.y) / count;
-    var deltaZ = (newPosition.z - oldPosition.z) / count;
-    var start:number = -1;
-    var callback = (timestap: number) => {
-      if(start < 0){
-        start = timestap;
-      }
-      var a = timestap - start;
-      if(a >= span){
-        (<any>Object).assign(this, newCamera.toJson());
-        this.animating = false;
-        cb();
-      }else{
-        var p = this.getPosition();
-        this.setPosition(p.x + deltaX, p.y + deltaY, p.z + deltaZ);
-        requestAnimationFrame(callback);
-      }
-    };
-    requestAnimationFrame(callback);
-  }
-
-  private _animateToLevel(level: number): Camera{
-    if (!(Utils.isNonNegativeInteger(level))) {
-      throw "invalid level:" + level;
-    }
-    var camera = this._clone();
-    //don't call setLevel method because it will update CURRENT_LEVEL
-    camera._setLevel(level);
-    return camera;
-  }
-
-  private _clone(): Camera{
-    var camera: Camera = new Camera();
-    (<any>Object).assign(camera, this.toJson());
-    return camera;
-  }
-
-  toJson(): any {
-    return {
-      pitch: this.pitch,
-      near: this.near,
-      far: this.far,
-      fov: this.fov,
-      aspect: this.aspect,
-      matrix: this.matrix.clone(),
-      projMatrix: this.projMatrix.clone()
-    };
-  }
-
-  setLevel(level: number): void{
-    this._setLevel(level);
-    //don't update CURRENT_LEVEL in _setLevel method because it will affect animateToLevel method
-    Kernel.globe.level = level;
-  }
-
-  //设置观察到的层级
-  private _setLevel(level: number): void {
-    if (!(Utils.isNonNegativeInteger(level))) {
-      throw "invalid level:" + level;
-    }
-    var globe = Kernel.globe;
-    var pOld = this.getPosition();
-    if (pOld.x === 0 && pOld.y === 0 && pOld.z === 0) {
-      //初始设置camera
-      var length = MathUtils.getLengthFromCamera2EarthSurface(level) + Kernel.EARTH_RADIUS; //level等级下摄像机应该到球心的距离
-      var origin = new Vertice(0, 0, 0);
-      var vector = this.getLightDirection().getOpposite();
-      vector.setLength(length);
-      var newPosition = vector.getVertice();
-      this.look(newPosition, origin);
-    } else {
-      var length2SurfaceNow = MathUtils.getLengthFromCamera2EarthSurface(globe.getLevel());
-      var length2Surface = MathUtils.getLengthFromCamera2EarthSurface(level);
-      var deltaLength = length2SurfaceNow - length2Surface;
-      var dir = this.getLightDirection();
-      dir.setLength(deltaLength);
-      var pNew = Vector.verticePlusVector(pOld, dir);
-      this.setPosition(pNew.x, pNew.y, pNew.z);
-    }
-  }
-
   //判断世界坐标系中的点是否在Canvas中可见
   //options:projView、verticeInNDC
   isWorldVerticeVisibleInCanvas(verticeInWorld: Vertice, options?: any): boolean {
@@ -520,7 +555,8 @@ class Camera extends Object3D {
       return false;
     }
 
-    function handleRow(centerRow: number, centerColumn: number) {
+    //处理一整行
+    function handleRow(centerRow: number, centerColumn: number): TileGrid[] {
       var result: TileGrid[] = [];
       var grid = new TileGrid(level, centerRow, centerColumn); // {level:level,row:centerRow,column:centerColumn};
       var visibleInfo = this.getTileVisibleInfo(grid.level, grid.row, grid.column, options);
