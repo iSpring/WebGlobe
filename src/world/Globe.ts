@@ -10,7 +10,7 @@ import Tile = require("./graphics/Tile");
 import ImageUtils = require("./Image");
 import EventUtils = require("./Event");
 
-class Globe {  
+class Globe {
   REFRESH_INTERVAL: number = 300; //Globe自动刷新时间间隔，以毫秒为单位
   idTimeOut: any = null; //refresh自定刷新的timeOut的handle
   level: number = -1; //当前渲染等级
@@ -30,7 +30,7 @@ class Globe {
     this.setLevel(0);
     this.renderer.setIfAutoRefresh(true);
     EventUtils.initLayout();
-  }  
+  }
 
   setTiledLayer(tiledLayer: TiledLayer) {
     clearTimeout(this.idTimeOut);
@@ -141,6 +141,7 @@ class Globe {
     if (!this.tiledLayer || !this.scene || !this.camera) {
       return;
     }
+    //先更新camera中的各种矩阵
     this.camera.update();
     var level = this.getLevel() + 3;
     this.tiledLayer.updateSubLayerCount(level);

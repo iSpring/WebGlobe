@@ -165,7 +165,7 @@ class PerspectiveCamera extends Object3D {
       //   var newFov = this._zoomInByFov(this.fov, deltaLevel)
       //   this._setFov(newFov);
       // }
-      
+
     var radianFov1 = MathUtils.degreeToRadian(fov1);
     var halfRadianFov1 = radianFov1 / 2;
     var tan1 = Math.tan(halfRadianFov1);
@@ -445,7 +445,7 @@ class PerspectiveCamera extends Object3D {
       var dir = this.getLightDirection();
       dir.setLength(deltaLength);
       var pNew = Vector.verticePlusVector(pOld, dir);
-      this.setPosition(pNew.x, pNew.y, pNew.z);      
+      this.setPosition(pNew.x, pNew.y, pNew.z);
     }
   }
 
