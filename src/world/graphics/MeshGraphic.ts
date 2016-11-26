@@ -5,7 +5,7 @@ import Program = require("../Program");
 import Graphic = require("./Graphic");
 import Mesh = require("../geometries/Mesh");
 import MeshTextureMaterial = require("../materials/MeshTextureMaterial");
-import PerspectiveCamera = require("../PerspectiveCamera");
+import Camera = require("../Camera");
 
 const vs =
 `
@@ -70,7 +70,7 @@ class MeshGraphic extends Graphic {
         gl.uniform1i(locSampler, 0);
     }
 
-    onDraw(camera: PerspectiveCamera) {
+    onDraw(camera: Camera) {
         var gl = Kernel.gl;
 
         //aPosition

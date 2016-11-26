@@ -2,7 +2,7 @@
 import Kernel = require("./Kernel");
 import MathUtils = require("./math/Math");
 import Vector = require("./math/Vector");
-import PerspectiveCamera = require("./PerspectiveCamera");
+import Camera = require("./Camera");
 
 type MouseMoveListener = (e: MouseEvent) => {};
 
@@ -102,7 +102,7 @@ const EventModule = {
     var v2 = Vector.fromVertice(p2);
     var rotateVector = v1.cross(v2);
     var rotateRadian = -Vector.getRadianOfTwoVectors(v1, v2);
-    var camera: PerspectiveCamera = Kernel.globe.camera;
+    var camera: Camera = Kernel.globe.camera;
     camera.worldRotateByVector(rotateRadian, rotateVector);
   },
 

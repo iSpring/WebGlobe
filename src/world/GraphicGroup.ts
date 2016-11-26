@@ -1,7 +1,7 @@
 ﻿///<amd-module name="world/GraphicGroup"/>
 import Kernel = require("./Kernel");
 import Graphic = require("./graphics/Graphic");
-import PerspectiveCamera = require("./PerspectiveCamera");
+import Camera = require("./Camera");
 
 type Drawable = Graphic | GraphicGroup;
 
@@ -69,7 +69,7 @@ class GraphicGroup{
         return this.visible;
     }
 
-    draw(camera: PerspectiveCamera){
+    draw(camera: Camera){
         if(this.isDrawable()){
             this.children.forEach(function(g: Drawable){
                 if(g.isDrawable()){

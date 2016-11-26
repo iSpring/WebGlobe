@@ -2,12 +2,12 @@
 import Kernel = require("./Kernel");
 import EventUtils = require("./Event");
 import Scene = require("./Scene");
-import PerspectiveCamera = require("./PerspectiveCamera");
+import Camera = require("./Camera");
 import {WebGLRenderingContextExtension, WebGLProgramExtension} from "./Definitions";
 
 class Renderer {
   scene: Scene = null;
-  camera: PerspectiveCamera = null;
+  camera: Camera = null;
   bAutoRefresh: boolean = false;
 
   constructor(canvas: HTMLCanvasElement) {
@@ -57,7 +57,7 @@ class Renderer {
     //gl.enable(gl.TEXTURE_2D);//WebGL: INVALID_ENUM: enable: invalid capability
   }
 
-  render(scene: Scene, camera: PerspectiveCamera) {
+  render(scene: Scene, camera: Camera) {
     Kernel.gl.viewport(0, 0, Kernel.canvas.width, Kernel.canvas.height);
     Kernel.gl.clear(Kernel.gl.COLOR_BUFFER_BIT | Kernel.gl.DEPTH_BUFFER_BIT);
     Kernel.gl.enable(Kernel.gl.DEPTH_TEST);
@@ -73,7 +73,7 @@ class Renderer {
     this.scene = scene;
   }
 
-  setCamera(camera: PerspectiveCamera) {
+  setCamera(camera: Camera) {
     this.camera = camera;
   }
 

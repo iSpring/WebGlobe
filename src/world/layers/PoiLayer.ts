@@ -6,7 +6,6 @@ import GraphicGroup = require('../GraphicGroup');
 import Poi = require('../graphics/Poi');
 import Marker = require('../geometries/Marker');
 import PoiMaterial = require('../materials/PoiMaterial');
-import PerspectiveCamera = require('../PerspectiveCamera');
 import MeshTextureMaterial = require('../materials/MeshTextureMaterial');
 
 class PoiLayer extends GraphicGroup{

@@ -2,7 +2,7 @@
 import Kernel = require("./Kernel");
 import Utils = require("./Utils");
 import Renderer = require("./Renderer");
-import PerspectiveCamera = require("./PerspectiveCamera");
+import Camera = require("./Camera");
 import Scene = require("./Scene");
 import TiledLayer = require("./layers/TiledLayer");
 import SubTiledLayer = require("./layers/SubTiledLayer");
@@ -16,7 +16,7 @@ class Globe {
   level: number = -1; //当前渲染等级
   renderer: Renderer = null;
   scene: Scene = null;
-  camera: PerspectiveCamera = null;
+  camera: Camera = null;
   tiledLayer: TiledLayer = null;
 
   constructor(canvas: HTMLCanvasElement) {
@@ -24,7 +24,7 @@ class Globe {
     this.renderer = Kernel.renderer = new Renderer(canvas);
     this.scene = new Scene();
     var radio = canvas.width / canvas.height;
-    this.camera = new PerspectiveCamera(30, radio, 1, Kernel.EARTH_RADIUS * 2);
+    this.camera = new Camera(30, radio, 1, Kernel.EARTH_RADIUS * 2);
     this.renderer.setScene(this.scene);
     this.renderer.setCamera(this.camera);
     this.setLevel(0);
@@ -85,7 +85,7 @@ class Globe {
 
     level = level > Kernel.MAX_LEVEL ? Kernel.MAX_LEVEL : level; //超过最大的渲染级别就不渲染
     if (level != this.getLevel()) {
-      if (this.camera instanceof PerspectiveCamera) {
+      if (this.camera instanceof Camera) {
         //要先执行camera.setLevel,然后再刷新
         this.camera.setLevel(level);
         this.refresh();

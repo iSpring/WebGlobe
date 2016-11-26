@@ -1,4 +1,4 @@
-///<amd-module name="world/PerspectiveCamera"/>
+///<amd-module name="world/Camera"/>
 import Kernel = require('./Kernel');
 import Utils = require('./Utils');
 import MathUtils = require('./math/Math');
@@ -10,7 +10,7 @@ import TileGrid = require('./TileGrid');
 import Matrix = require('./math/Matrix');
 import Object3D = require('./Object3D');
 
-class PerspectiveCamera extends Object3D {
+class Camera extends Object3D {
   private animationDuration = 600;//层级变化的动画周期是600毫秒
   pitch: number;
   viewMatrix: Matrix;
@@ -357,7 +357,7 @@ class PerspectiveCamera extends Object3D {
     });
   }
 
-  private _animateToCamera(newCamera: PerspectiveCamera, cb: ()=>void){
+  private _animateToCamera(newCamera: Camera, cb: ()=>void){
     if(this.isAnimating()){
       return;
     }
@@ -389,7 +389,7 @@ class PerspectiveCamera extends Object3D {
     requestAnimationFrame(callback);
   }
 
-  private _animateToLevel(level: number): PerspectiveCamera{
+  private _animateToLevel(level: number): Camera{
     if (!(Utils.isNonNegativeInteger(level))) {
       throw "invalid level:" + level;
     }
@@ -399,8 +399,8 @@ class PerspectiveCamera extends Object3D {
     return camera;
   }
 
-  private _clone(): PerspectiveCamera{
-    var camera: PerspectiveCamera = new PerspectiveCamera();
+  private _clone(): Camera{
+    var camera: Camera = new Camera();
     (<any>Object).assign(camera, this.toJson());
     return camera;
   }
@@ -793,4 +793,4 @@ class PerspectiveCamera extends Object3D {
   }
 }
 
-export = PerspectiveCamera;
+export = Camera;

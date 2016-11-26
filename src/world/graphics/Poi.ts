@@ -5,7 +5,7 @@ import Graphic = require('./Graphic');
 import Marker = require('../geometries/Marker');
 import PoiMaterial = require('../materials/PoiMaterial');
 import Program = require("../Program");
-import PerspectiveCamera = require("../PerspectiveCamera");
+import Camera = require("../Camera");
 
 const vs =
 `
@@ -40,7 +40,7 @@ class Poi extends Graphic {
         return new Program(this.getProgramType(), vs, fs);
     }
 
-    onDraw(camera: PerspectiveCamera){
+    onDraw(camera: Camera){
         var gl = Kernel.gl;
 
         //gl.disable(gl.DEPTH_TEST);
