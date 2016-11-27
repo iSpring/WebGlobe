@@ -20,6 +20,7 @@ class Camera extends Object3D {
   private viewMatrix: Matrix;//视点矩阵，即Camera模型矩阵的逆矩阵
   private projMatrix: Matrix;//当Matrix变化的时候，需要重新计算this.far
   private projViewMatrix: Matrix;//获取投影矩阵与视点矩阵的乘积
+  private projViewMatrixForDraw: Matrix;//实际传递给shader的矩阵是projViewMatrixForDraw，而不是projViewMatrix
   private animating: boolean = false;
 
   Enum: any = {
@@ -76,6 +77,26 @@ class Camera extends Object3D {
     );
   }
 
+  //更新各种矩阵，保守起见，可以在每帧绘制之前调用
+  //理论上只在用户交互的时候调用就可以
+  update(): void {
+    this.viewMatrix = null;
+    //视点矩阵是camera的模型矩阵的逆矩阵
+    //this.viewMatrix = this.matrix.getInverseMatrix();
+
+    //通过修改position和fov以更新matrix和projMatrix
+    this._updatePositionAndFov();
+
+    //在_updatePositionAndFov()方法调用之后再计算viewMatrix
+    this.viewMatrix = this.matrix.getInverseMatrix();
+
+    //最后更新far
+    this._updateFar();
+
+    //update projViewMatrix
+    this.projViewMatrix = this.projMatrix.multiplyMatrix(this.viewMatrix);
+  }
+
   getPitch(): number{
     var lightDirection = this.getLightDirection();
 
@@ -126,27 +147,6 @@ class Camera extends Object3D {
     this._rawSetPerspectiveMatrix(this.fov, this.aspect, this.near, far);
   }
 
-  getViewMatrix(): Matrix {
-    //视点矩阵是camera的模型矩阵的逆矩阵
-    return this.matrix.getInverseMatrix();
-  }
-
-  update(): void {
-    this.viewMatrix = null;
-
-    //通过修改position和fov以更新matrix和projMatrix
-    this._updatePositionAndFov();
-
-    //在_updatePositionAndFov()方法调用之后再计算viewMatrix
-    this.viewMatrix = this.getViewMatrix();
-
-    //最后更新far
-    this._updateFar();
-
-    //update projViewMatrix
-    this.projViewMatrix = this.projMatrix.multiplyMatrix(this.viewMatrix);
-  }
-
   //计算从第几级level开始不满足视景体的near值
   //比如第10级满足near，第11级不满足near，那么返回10
   private _getSafeThresholdLevelForNear() {
@@ -163,14 +163,6 @@ class Camera extends Object3D {
    */
   private _getTheoryDistanceFromCamera2EarthSurface(level: number): number {
     return this.baseTheoryDistanceFromCamera2EarthSurface / Math.pow(2, level);
-  }
-
-  private _setVirtualPosition(virtualPosisition: Vertice) {
-
-  }
-
-  private _getVirtualPosition(): Vertice {
-    return null;
   }
 
   //返回更新后的fov值，如果返回结果 < 0，说明无需更新fov
@@ -200,7 +192,6 @@ class Camera extends Object3D {
 
     return -1;
   }
-
 
   //fov从oldFov变成了newFov，计算相当于缩放了几级level
   //比如从10级缩放到了第11级，fov从30变成了15，即oldFov为30，newFov为15，deltaLevel为1
@@ -384,9 +375,6 @@ class Camera extends Object3D {
 
   //点变换: World->NDC
   private convertVerticeFromWorldToNDC(verticeInWorld: Vertice): Vertice {
-    // if (!(projViewMatrix instanceof Matrix)) {
-    //   projViewMatrix = this.getProjViewMatrix();
-    // }
     var columnWorld = [verticeInWorld.x, verticeInWorld.y, verticeInWorld.z, 1];
     var columnProject = this.projViewMatrix.multiplyColumn(columnWorld);
     var w = columnProject[3];
@@ -409,38 +397,25 @@ class Camera extends Object3D {
     var cameraZ = columnCameraTemp[2] / columnCameraTemp[3];
     var cameraW = 1;
     var columnCamera = [cameraX, cameraY, cameraZ, cameraW]; //真实的视坐标
-
-    var viewMatrix = this.getViewMatrix();
-    var inverseView = viewMatrix.getInverseMatrix(); //视点矩阵的逆矩阵
-    var columnWorld = inverseView.multiplyColumn(columnCamera); //单击点的世界坐标
+    var columnWorld = this.matrix.multiplyColumn(columnCamera); //单击点的世界坐标
     var verticeInWorld = new Vertice(columnWorld[0], columnWorld[1], columnWorld[2]);
     return verticeInWorld;
   }
 
   //点变换: Camera->World
-  private convertVerticeFromCameraToWorld(verticeInCamera: Vertice, /*optional*/ viewMatrix?: Matrix): Vertice {
-    if (!(viewMatrix instanceof Matrix)) {
-      viewMatrix = this.getViewMatrix();
-    }
+  private convertVerticeFromCameraToWorld(verticeInCamera: Vertice): Vertice {
     var verticeInCameraCopy = verticeInCamera.clone();
-    var inverseMatrix = viewMatrix.getInverseMatrix();
     var column = [verticeInCameraCopy.x, verticeInCameraCopy.y, verticeInCameraCopy.z, 1];
-    var column2 = inverseMatrix.multiplyColumn(column);
+    var column2 = this.matrix.multiplyColumn(column);
     var verticeInWorld = new Vertice(column2[0], column2[1], column2[2]);
     return verticeInWorld;
   }
 
   //向量变换: Camera->World
-  private convertVectorFromCameraToWorld(vectorInCamera: Vector, /*optional*/ viewMatrix?: Matrix): Vector {
-    if (!(vectorInCamera instanceof Vector)) {
-      throw "invalid vectorInCamera: not Vector";
-    }
-    if (!(viewMatrix instanceof Matrix)) {
-      viewMatrix = this.getViewMatrix();
-    }
+  private convertVectorFromCameraToWorld(vectorInCamera: Vector): Vector {
     var vectorInCameraCopy = vectorInCamera.clone();
     var verticeInCamera = vectorInCameraCopy.getVertice();
-    var verticeInWorld = this.convertVerticeFromCameraToWorld(verticeInCamera, viewMatrix);
+    var verticeInWorld = this.convertVerticeFromCameraToWorld(verticeInCamera);
     var originInWorld = this.getPosition();
     var vectorInWorld = Vector.verticeMinusVertice(verticeInWorld, originInWorld);
     vectorInWorld.normalize();
@@ -523,12 +498,8 @@ class Camera extends Object3D {
   }
 
   //判断世界坐标系中的点是否在Canvas中可见
-  //options:projView、verticeInNDC
-  private isWorldVerticeVisibleInCanvas(verticeInWorld: Vertice, options?: any): boolean {
-    if (!(verticeInWorld instanceof Vertice)) {
-      throw "invalid verticeInWorld: not Vertice";
-    }
-    options = options || {};
+  //options: {verticeInNDC,threshold}
+  private isWorldVerticeVisibleInCanvas(verticeInWorld: Vertice, options: any = {}): boolean {
     var threshold = typeof options.threshold == "number" ? Math.abs(options.threshold) : 1;
     var cameraP = this.getPosition();
     var dir = Vector.verticeMinusVertice(verticeInWorld, cameraP);
@@ -540,9 +511,6 @@ class Camera extends Object3D {
       var length2Pick = MathUtils.getLengthFromVerticeToVertice(cameraP, pickVertice);
       if (length2Vertice < length2Pick + 5) {
         if (!(options.verticeInNDC instanceof Vertice)) {
-          // if (!(options.projView instanceof Matrix)) {
-          //   options.projView = this.getProjViewMatrix();
-          // }
           options.verticeInNDC = this.convertVerticeFromWorldToNDC(verticeInWorld);
         }
         var result = options.verticeInNDC.x >= -1 && options.verticeInNDC.x <= 1 && options.verticeInNDC.y >= -threshold && options.verticeInNDC.y <= 1;
@@ -553,7 +521,7 @@ class Camera extends Object3D {
   }
 
   //判断地球表面的某个经纬度在Canvas中是否应该可见
-  //options:projView、verticeInNDC
+  //options: verticeInNDC
   private isGeoVisibleInCanvas(lon: number, lat: number, options?: any): boolean {
     var verticeInWorld = MathUtils.geographicToCartesianCoord(lon, lat);
     var result = this.isWorldVerticeVisibleInCanvas(verticeInWorld, options);
@@ -567,16 +535,12 @@ class Camera extends Object3D {
    * 3.形成的NDC四边形是顺时针方向
    */
   //获取level层级下的可见切片
-  //options:projView
-  getVisibleTilesByLevel(level: number, options?: any): TileGrid[] {
+  //options:
+  getVisibleTilesByLevel(level: number, options: any = {}): TileGrid[] {
     if (!(level >= 0)) {
       throw "invalid level";
     }
     var result: TileGrid[] = [];
-    options = options || {};
-    // if (!(options.projView instanceof Matrix)) {
-    //   options.projView = this.getProjViewMatrix();
-    // }
     //向左、向右、向上、向下最大的循环次数
     var LOOP_LIMIT = Math.min(10, Math.pow(2, level) - 1);
 
@@ -684,8 +648,8 @@ class Camera extends Object3D {
     return result;
   }
 
-  //options:projView
-  private getTileVisibleInfo(level: number, row: number, column: number, options?: any): any {
+  //options: threshold
+  private getTileVisibleInfo(level: number, row: number, column: number, options: any = {}): any {
     if (!(level >= 0)) {
       throw "invalid level";
     }
@@ -695,7 +659,7 @@ class Camera extends Object3D {
     if (!(column >= 0)) {
       throw "invalid column";
     }
-    options = options || {};
+
     var threshold = typeof options.threshold == "number" ? Math.abs(options.threshold) : 1;
     var result: any = {
       lb: {
@@ -733,9 +697,7 @@ class Camera extends Object3D {
       height: null,
       area: null
     };
-    // if (!(options.projView instanceof Matrix)) {
-    //   options.projView = this.getProjViewMatrix();
-    // }
+
     result.Egeo = MathUtils.getTileGeographicEnvelopByGrid(level, row, column);
     var tileMinLon = result.Egeo.minLon;
     var tileMaxLon = result.Egeo.maxLon;
@@ -749,7 +711,6 @@ class Camera extends Object3D {
     result.lb.verticeInNDC = this.convertVerticeFromWorldToNDC(result.lb.verticeInWorld);
     result.lb.visible = this.isWorldVerticeVisibleInCanvas(result.lb.verticeInWorld, {
       verticeInNDC: result.lb.verticeInNDC,
-      projView: options.projView,
       threshold: threshold
     });
     if (result.lb.visible) {
@@ -763,7 +724,6 @@ class Camera extends Object3D {
     result.lt.verticeInNDC = this.convertVerticeFromWorldToNDC(result.lt.verticeInWorld);
     result.lt.visible = this.isWorldVerticeVisibleInCanvas(result.lt.verticeInWorld, {
       verticeInNDC: result.lt.verticeInNDC,
-      projView: options.projView,
       threshold: threshold
     });
     if (result.lt.visible) {
@@ -777,7 +737,6 @@ class Camera extends Object3D {
     result.rt.verticeInNDC = this.convertVerticeFromWorldToNDC(result.rt.verticeInWorld);
     result.rt.visible = this.isWorldVerticeVisibleInCanvas(result.rt.verticeInWorld, {
       verticeInNDC: result.rt.verticeInNDC,
-      projView: options.projView,
       threshold: threshold
     });
     if (result.rt.visible) {
@@ -791,7 +750,6 @@ class Camera extends Object3D {
     result.rb.verticeInNDC = this.convertVerticeFromWorldToNDC(result.rb.verticeInWorld);
     result.rb.visible = this.isWorldVerticeVisibleInCanvas(result.rb.verticeInWorld, {
       verticeInNDC: result.rb.verticeInNDC,
-      projView: options.projView,
       threshold: threshold
     });
     if (result.rb.visible) {
@@ -820,10 +778,6 @@ class Camera extends Object3D {
 
   //地球一直是关于纵轴中心对称的，获取垂直方向上中心点信息
   private _getVerticalVisibleCenterInfo(): any {
-    // options = options || {};
-    // if (!options.projView) {
-    //   options.projView = this.getProjViewMatrix();
-    // }
     var result = {
       ndcY: <number>null,
       pIntersect: <Vertice>null,
