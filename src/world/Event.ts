@@ -178,44 +178,18 @@ const EventModule = {
       return;
     }
 
-    var MIN_PITCH = 36;
     var DELTA_PITCH = 2;
     var camera = globe.camera;
     var keyNum = event.keyCode !== undefined ? event.keyCode : event.which;
     //上、下、左、右:38、40、37、39
-    if (keyNum == 38 || keyNum == 40) {
-      if (keyNum == 38) {
-        if (camera.getPitch() <= MIN_PITCH) {
-          return;
-        }
-      } else if (keyNum == 40) {
-        if (camera.getPitch() >= 90) {
-          return;
-        }
-        DELTA_PITCH *= -1;
-      }
-
-      var pickResult = camera.getDirectionIntersectPointWithEarth();
-      if (pickResult.length > 0) {
-        var pIntersect = pickResult[0];
-        var pCamera = camera.getPosition();
-        var distance2Intersect = MathUtils.getLengthFromVerticeToVertice(pCamera, pIntersect);
-        var mat = camera.cloneMatrix();
-        mat.setColumnTrans(pIntersect.x, pIntersect.y, pIntersect.z);
-        var DELTA_RADIAN = MathUtils.degreeToRadian(DELTA_PITCH);
-        mat.localRotateX(DELTA_RADIAN);
-        var dirZ = mat.getColumnZ();
-        dirZ.setLength(distance2Intersect);
-        var pNew = Vector.verticePlusVector(pIntersect, dirZ);
-        camera.look(pNew, pIntersect);
-        camera.setPitch(camera.getPitch() - DELTA_PITCH);
-        globe.refresh();
-      } else {
-        console.log("视线与地球无交点");
-      }
+    if(keyNum === 38){
+      //向上键
+      camera.setPitch(camera.getPitch() + DELTA_PITCH);
+    }else if(keyNum === 40){
+      //向下键
+      camera.setPitch(camera.getPitch() - DELTA_PITCH);
     }
   }
-
 };
 
 export = EventModule;

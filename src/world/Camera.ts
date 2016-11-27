@@ -15,12 +15,19 @@ class Camera extends Object3D {
   private readonly animationDuration: number = 600;//层级变化的动画周期是600毫秒
   private readonly nearFactor: number = 0.6;
   private readonly baseTheoryDistanceFromCamera2EarthSurface = 1.23 * Kernel.EARTH_RADIUS;
-  private pitch: number;
+  private readonly maxPitch = 54;
+
   private level: number = -1; //当前渲染等级
+
+  private pitch: number;//Camera视线的倾斜角度，初始值为0，表示视线经过球心，单位为角度。正值表示抬头，赋值表示低头。
+  private pitchStartMatrix: Matrix;//从0开始倾斜视线时刻的模型矩阵，如果pitch=0，那么pitchStartMatrix为null值。
+  private pitchStartLevel: number = -1;//从0开始倾斜视线时刻的level，如果pitch=0，那么pitchStartLevel为负值。
+
   private viewMatrix: Matrix;//视点矩阵，即Camera模型矩阵的逆矩阵
   private projMatrix: Matrix;//当Matrix变化的时候，需要重新计算this.far
   private projViewMatrix: Matrix;//获取投影矩阵与视点矩阵的乘积
   private projViewMatrixForDraw: Matrix;//实际传递给shader的矩阵是projViewMatrixForDraw，而不是projViewMatrix
+
   private animating: boolean = false;
 
   Enum: any = {
@@ -35,7 +42,7 @@ class Camera extends Object3D {
   constructor(private fov = 45, private aspect = 1, private near = 1, private far = 100) {
     super();
     this.initFov = this.fov;
-    this.pitch = 90;
+    this.pitch = 0;
     this.projMatrix = new Matrix();
     this._rawSetPerspectiveMatrix(this.fov, this.aspect, this.near, this.far);
   }
@@ -228,31 +235,65 @@ class Camera extends Object3D {
       var newPosition = vector.getVertice();
       this.look(newPosition, origin);
     } else {
-      var length = this._getTheoryDistanceFromCamera2EarthSurface(level) + Kernel.EARTH_RADIUS; //level等级下摄像机应该到球心的距离
-      var vector = this.getLightDirection().getOpposite();
-      vector.setLength(length);
-      var newPosition = vector.getVertice();
-      this.setPosition(newPosition.x, newPosition.y, newPosition.z);
-
-      // var distance2SurfaceNow = this._getTheoryDistanceFromCamera2EarthSurface(this.getLevel());
-      // var distance2SurfaceNew = this._getTheoryDistanceFromCamera2EarthSurface(level);
-      // var deltaDistance = distance2SurfaceNow - distance2SurfaceNew;
-      // var dir = this.getLightDirection();
-      // dir.setLength(deltaDistance);
-      // var pNew = Vector.verticePlusVector(pOld, dir);
-      // this.setPosition(pNew.x, pNew.y, pNew.z);
+      // if(this.pitch === 0){
+      //   var length = this._getTheoryDistanceFromCamera2EarthSurface(level) + Kernel.EARTH_RADIUS; //level等级下摄像机应该到球心的距离
+      //   var vector = this.getLightDirection().getOpposite().setLength(length);
+      //   var newPosition = vector.getVertice();
+      //   this.setPosition(newPosition.x, newPosition.y, newPosition.z);
+      // }else{
+      // }
+      var distance2SurfaceOld = this._getTheoryDistanceFromCamera2EarthSurface(this.getLevel());
+      var distance2SurfaceNew = this._getTheoryDistanceFromCamera2EarthSurface(level);
+      var deltaDistance = distance2SurfaceOld - distance2SurfaceNew;
+      var dir = this.getLightDirection().setLength(deltaDistance);
+      var pNew = Vector.verticePlusVector(pOld, dir);
+      this.setPosition(pNew.x, pNew.y, pNew.z);
     }
     return true;
   }
 
   getPitch(): number{
-    var lightDirection = this.getLightDirection();
-
     return this.pitch;
   }
 
   setPitch(pitch: number): void{
+    if(this.pitch === pitch || pitch >= this.maxPitch){
+      return;
+    }
 
+    if(pitch < 0){
+      pitch = 0;
+    }
+
+    if(this.pitch === 0){
+      //没有倾斜=>倾斜
+      this.pitchStartMatrix = this.matrix.clone();
+      this.pitchStartLevel = this.level;
+    }
+
+    //处理旋转角度
+    this.pitch = pitch;
+    var radian = MathUtils.degreeToRadian(this.pitch);
+    var newMatrix = this.pitchStartMatrix.clone();
+    newMatrix.localRotateX(radian);
+
+    //处理level
+    var distance2SurfaceLevel1 = this._getTheoryDistanceFromCamera2EarthSurface(this.pitchStartLevel);
+    var distance2SurfaceLevel2 = this._getTheoryDistanceFromCamera2EarthSurface(this.level);
+    var deltaDistance = distance2SurfaceLevel2 - distance2SurfaceLevel1;
+    var lightDirection = newMatrix.getColumnZ().getOpposite().setLength(deltaDistance);
+    var newPosition = Vector.verticePlusVector(newMatrix.getColumnTrans(), lightDirection);
+    newMatrix.setColumnTrans(newPosition.x, newPosition.y, newPosition.z);
+
+    //如果当前的pitch为0，重置pitchStartMatrix和pitchStartLevel
+    if(this.pitch === 0){
+      this.pitchStartMatrix = null;
+      this.pitchStartLevel = -1;
+    }
+
+    //更新this.matrix
+    this.matrix = newMatrix;
+    Kernel.globe.refresh();
   }
 
   getLightDirection(): Vector {
