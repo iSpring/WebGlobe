@@ -373,54 +373,7 @@ class Camera extends Object3D {
     this.look(position, targetPntCopy, upDirection);
   }
 
-  //点变换: World->NDC
-  private convertVerticeFromWorldToNDC(verticeInWorld: Vertice): Vertice {
-    var columnWorld = [verticeInWorld.x, verticeInWorld.y, verticeInWorld.z, 1];
-    var columnProject = this.projViewMatrix.multiplyColumn(columnWorld);
-    var w = columnProject[3];
-    var columnNDC: number[] = [];
-    columnNDC[0] = columnProject[0] / w;
-    columnNDC[1] = columnProject[1] / w;
-    columnNDC[2] = columnProject[2] / w;
-    columnNDC[3] = 1;
-    var verticeInNDC = new Vertice(columnNDC[0], columnNDC[1], columnNDC[2]);
-    return verticeInNDC;
-  }
 
-  //点变换: NDC->World
-  private convertVerticeFromNdcToWorld(verticeInNDC: Vertice): Vertice {
-    var columnNDC: number[] = [verticeInNDC.x, verticeInNDC.y, verticeInNDC.z, 1]; //NDC归一化坐标
-    var inverseProj = this.projMatrix.getInverseMatrix(); //投影矩阵的逆矩阵
-    var columnCameraTemp = inverseProj.multiplyColumn(columnNDC); //带引号的“视坐标”
-    var cameraX = columnCameraTemp[0] / columnCameraTemp[3];
-    var cameraY = columnCameraTemp[1] / columnCameraTemp[3];
-    var cameraZ = columnCameraTemp[2] / columnCameraTemp[3];
-    var cameraW = 1;
-    var columnCamera = [cameraX, cameraY, cameraZ, cameraW]; //真实的视坐标
-    var columnWorld = this.matrix.multiplyColumn(columnCamera); //单击点的世界坐标
-    var verticeInWorld = new Vertice(columnWorld[0], columnWorld[1], columnWorld[2]);
-    return verticeInWorld;
-  }
-
-  //点变换: Camera->World
-  private convertVerticeFromCameraToWorld(verticeInCamera: Vertice): Vertice {
-    var verticeInCameraCopy = verticeInCamera.clone();
-    var column = [verticeInCameraCopy.x, verticeInCameraCopy.y, verticeInCameraCopy.z, 1];
-    var column2 = this.matrix.multiplyColumn(column);
-    var verticeInWorld = new Vertice(column2[0], column2[1], column2[2]);
-    return verticeInWorld;
-  }
-
-  //向量变换: Camera->World
-  private convertVectorFromCameraToWorld(vectorInCamera: Vector): Vector {
-    var vectorInCameraCopy = vectorInCamera.clone();
-    var verticeInCamera = vectorInCameraCopy.getVertice();
-    var verticeInWorld = this.convertVerticeFromCameraToWorld(verticeInCamera);
-    var originInWorld = this.getPosition();
-    var vectorInWorld = Vector.verticeMinusVertice(verticeInWorld, originInWorld);
-    vectorInWorld.normalize();
-    return vectorInWorld;
-  }
 
   //根据canvasX和canvasY获取拾取向量
   getPickDirectionByCanvas(canvasX: number, canvasY: number): Vector {
@@ -441,7 +394,7 @@ class Camera extends Object3D {
   //根据ndcX和ndcY获取拾取向量
   getPickDirectionByNDC(ndcX: number, ndcY: number): Vector {
     var verticeInNDC = new Vertice(ndcX, ndcY, 0.499);
-    var verticeInWorld = this.convertVerticeFromNdcToWorld(verticeInNDC);
+    var verticeInWorld = this._convertVerticeFromNdcToWorld(verticeInNDC);
     var cameraPositon = this.getPosition(); //摄像机的世界坐标
     var pickDirection = Vector.verticeMinusVertice(verticeInWorld, cameraPositon);
     pickDirection.normalize();
@@ -490,16 +443,65 @@ class Camera extends Object3D {
   }
 
   //得到摄像机的XOZ平面的方程
-  private getPlanXOZ(): Plan {
+  private _getPlanXOZ(): Plan {
     var position = this.getPosition();
     var direction = this.getLightDirection();
     var plan = MathUtils.getCrossPlaneByLine(position, direction);
     return plan;
   }
 
+  //点变换: World->NDC
+  private _convertVerticeFromWorldToNDC(verticeInWorld: Vertice): Vertice {
+    var columnWorld = [verticeInWorld.x, verticeInWorld.y, verticeInWorld.z, 1];
+    var columnProject = this.projViewMatrix.multiplyColumn(columnWorld);
+    var w = columnProject[3];
+    var columnNDC: number[] = [];
+    columnNDC[0] = columnProject[0] / w;
+    columnNDC[1] = columnProject[1] / w;
+    columnNDC[2] = columnProject[2] / w;
+    columnNDC[3] = 1;
+    var verticeInNDC = new Vertice(columnNDC[0], columnNDC[1], columnNDC[2]);
+    return verticeInNDC;
+  }
+
+  //点变换: NDC->World
+  private _convertVerticeFromNdcToWorld(verticeInNDC: Vertice): Vertice {
+    var columnNDC: number[] = [verticeInNDC.x, verticeInNDC.y, verticeInNDC.z, 1]; //NDC归一化坐标
+    var inverseProj = this.projMatrix.getInverseMatrix(); //投影矩阵的逆矩阵
+    var columnCameraTemp = inverseProj.multiplyColumn(columnNDC); //带引号的“视坐标”
+    var cameraX = columnCameraTemp[0] / columnCameraTemp[3];
+    var cameraY = columnCameraTemp[1] / columnCameraTemp[3];
+    var cameraZ = columnCameraTemp[2] / columnCameraTemp[3];
+    var cameraW = 1;
+    var columnCamera = [cameraX, cameraY, cameraZ, cameraW]; //真实的视坐标
+    var columnWorld = this.matrix.multiplyColumn(columnCamera); //单击点的世界坐标
+    var verticeInWorld = new Vertice(columnWorld[0], columnWorld[1], columnWorld[2]);
+    return verticeInWorld;
+  }
+
+  //点变换: Camera->World
+  private _convertVerticeFromCameraToWorld(verticeInCamera: Vertice): Vertice {
+    var verticeInCameraCopy = verticeInCamera.clone();
+    var column = [verticeInCameraCopy.x, verticeInCameraCopy.y, verticeInCameraCopy.z, 1];
+    var column2 = this.matrix.multiplyColumn(column);
+    var verticeInWorld = new Vertice(column2[0], column2[1], column2[2]);
+    return verticeInWorld;
+  }
+
+  //向量变换: Camera->World
+  private _convertVectorFromCameraToWorld(vectorInCamera: Vector): Vector {
+    var vectorInCameraCopy = vectorInCamera.clone();
+    var verticeInCamera = vectorInCameraCopy.getVertice();
+    var verticeInWorld = this._convertVerticeFromCameraToWorld(verticeInCamera);
+    var originInWorld = this.getPosition();
+    var vectorInWorld = Vector.verticeMinusVertice(verticeInWorld, originInWorld);
+    vectorInWorld.normalize();
+    return vectorInWorld;
+  }
+
   //判断世界坐标系中的点是否在Canvas中可见
-  //options: {verticeInNDC,threshold}
-  private isWorldVerticeVisibleInCanvas(verticeInWorld: Vertice, options: any = {}): boolean {
+  //options: verticeInNDC,threshold
+  private _isWorldVerticeVisibleInCanvas(verticeInWorld: Vertice, options: any = {}): boolean {
     var threshold = typeof options.threshold == "number" ? Math.abs(options.threshold) : 1;
     var cameraP = this.getPosition();
     var dir = Vector.verticeMinusVertice(verticeInWorld, cameraP);
@@ -511,7 +513,7 @@ class Camera extends Object3D {
       var length2Pick = MathUtils.getLengthFromVerticeToVertice(cameraP, pickVertice);
       if (length2Vertice < length2Pick + 5) {
         if (!(options.verticeInNDC instanceof Vertice)) {
-          options.verticeInNDC = this.convertVerticeFromWorldToNDC(verticeInWorld);
+          options.verticeInNDC = this._convertVerticeFromWorldToNDC(verticeInWorld);
         }
         var result = options.verticeInNDC.x >= -1 && options.verticeInNDC.x <= 1 && options.verticeInNDC.y >= -threshold && options.verticeInNDC.y <= 1;
         return result;
@@ -522,9 +524,9 @@ class Camera extends Object3D {
 
   //判断地球表面的某个经纬度在Canvas中是否应该可见
   //options: verticeInNDC
-  private isGeoVisibleInCanvas(lon: number, lat: number, options?: any): boolean {
+  private _isGeoVisibleInCanvas(lon: number, lat: number, options?: any): boolean {
     var verticeInWorld = MathUtils.geographicToCartesianCoord(lon, lat);
-    var result = this.isWorldVerticeVisibleInCanvas(verticeInWorld, options);
+    var result = this._isWorldVerticeVisibleInCanvas(verticeInWorld, options);
     return result;
   }
 
@@ -561,7 +563,7 @@ class Camera extends Object3D {
     function handleRow(centerRow: number, centerColumn: number): TileGrid[] {
       var result: TileGrid[] = [];
       var grid = new TileGrid(level, centerRow, centerColumn); // {level:level,row:centerRow,column:centerColumn};
-      var visibleInfo = this.getTileVisibleInfo(grid.level, grid.row, grid.column, options);
+      var visibleInfo = this._getTileVisibleInfo(grid.level, grid.row, grid.column, options);
       var isRowCenterVisible = checkVisible(visibleInfo);
       if (isRowCenterVisible) {
         (grid as any).visibleInfo = visibleInfo;
@@ -575,7 +577,7 @@ class Camera extends Object3D {
           leftLoopTime++;
           grid = TileGrid.getTileGridByBrother(level, centerRow, leftColumn, MathUtils.LEFT, mathOptions);
           leftColumn = grid.column;
-          visibleInfo = this.getTileVisibleInfo(grid.level, grid.row, grid.column, options);
+          visibleInfo = this._getTileVisibleInfo(grid.level, grid.row, grid.column, options);
           visible = checkVisible(visibleInfo);
           if (visible) {
             (<any>grid).visibleInfo = visibleInfo;
@@ -592,7 +594,7 @@ class Camera extends Object3D {
           rightLoopTime++;
           grid = TileGrid.getTileGridByBrother(level, centerRow, rightColumn, MathUtils.RIGHT, mathOptions);
           rightColumn = grid.column;
-          visibleInfo = this.getTileVisibleInfo(grid.level, grid.row, grid.column, options);
+          visibleInfo = this._getTileVisibleInfo(grid.level, grid.row, grid.column, options);
           visible = checkVisible(visibleInfo);
           if (visible) {
             (<any>grid).visibleInfo = visibleInfo;
@@ -649,7 +651,7 @@ class Camera extends Object3D {
   }
 
   //options: threshold
-  private getTileVisibleInfo(level: number, row: number, column: number, options: any = {}): any {
+  private _getTileVisibleInfo(level: number, row: number, column: number, options: any = {}): any {
     if (!(level >= 0)) {
       throw "invalid level";
     }
@@ -708,8 +710,8 @@ class Camera extends Object3D {
     result.lb.lon = tileMinLon;
     result.lb.lat = tileMinLat;
     result.lb.verticeInWorld = MathUtils.geographicToCartesianCoord(result.lb.lon, result.lb.lat);
-    result.lb.verticeInNDC = this.convertVerticeFromWorldToNDC(result.lb.verticeInWorld);
-    result.lb.visible = this.isWorldVerticeVisibleInCanvas(result.lb.verticeInWorld, {
+    result.lb.verticeInNDC = this._convertVerticeFromWorldToNDC(result.lb.verticeInWorld);
+    result.lb.visible = this._isWorldVerticeVisibleInCanvas(result.lb.verticeInWorld, {
       verticeInNDC: result.lb.verticeInNDC,
       threshold: threshold
     });
@@ -721,8 +723,8 @@ class Camera extends Object3D {
     result.lt.lon = tileMinLon;
     result.lt.lat = tileMaxLat;
     result.lt.verticeInWorld = MathUtils.geographicToCartesianCoord(result.lt.lon, result.lt.lat);
-    result.lt.verticeInNDC = this.convertVerticeFromWorldToNDC(result.lt.verticeInWorld);
-    result.lt.visible = this.isWorldVerticeVisibleInCanvas(result.lt.verticeInWorld, {
+    result.lt.verticeInNDC = this._convertVerticeFromWorldToNDC(result.lt.verticeInWorld);
+    result.lt.visible = this._isWorldVerticeVisibleInCanvas(result.lt.verticeInWorld, {
       verticeInNDC: result.lt.verticeInNDC,
       threshold: threshold
     });
@@ -734,8 +736,8 @@ class Camera extends Object3D {
     result.rt.lon = tileMaxLon;
     result.rt.lat = tileMaxLat;
     result.rt.verticeInWorld = MathUtils.geographicToCartesianCoord(result.rt.lon, result.rt.lat);
-    result.rt.verticeInNDC = this.convertVerticeFromWorldToNDC(result.rt.verticeInWorld);
-    result.rt.visible = this.isWorldVerticeVisibleInCanvas(result.rt.verticeInWorld, {
+    result.rt.verticeInNDC = this._convertVerticeFromWorldToNDC(result.rt.verticeInWorld);
+    result.rt.visible = this._isWorldVerticeVisibleInCanvas(result.rt.verticeInWorld, {
       verticeInNDC: result.rt.verticeInNDC,
       threshold: threshold
     });
@@ -747,8 +749,8 @@ class Camera extends Object3D {
     result.rb.lon = tileMaxLon;
     result.rb.lat = tileMinLat;
     result.rb.verticeInWorld = MathUtils.geographicToCartesianCoord(result.rb.lon, result.rb.lat);
-    result.rb.verticeInNDC = this.convertVerticeFromWorldToNDC(result.rb.verticeInWorld);
-    result.rb.visible = this.isWorldVerticeVisibleInCanvas(result.rb.verticeInWorld, {
+    result.rb.verticeInNDC = this._convertVerticeFromWorldToNDC(result.rb.verticeInWorld);
+    result.rb.visible = this._isWorldVerticeVisibleInCanvas(result.rb.verticeInWorld, {
       verticeInNDC: result.rb.verticeInNDC,
       threshold: threshold
     });
