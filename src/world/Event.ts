@@ -184,10 +184,10 @@ const EventModule = {
     //上、下、左、右:38、40、37、39
     if(keyNum === 38){
       //向上键
-      camera.setPitch(camera.getPitch() + DELTA_PITCH);
+      camera.setDeltaPitch(DELTA_PITCH);
     }else if(keyNum === 40){
       //向下键
-      camera.setPitch(camera.getPitch() - DELTA_PITCH);
+      camera.setDeltaPitch(DELTA_PITCH);
     }
   }
 };
