@@ -54,7 +54,7 @@ class Poi extends Graphic {
         gl.vertexAttribPointer(locPosition, 3, gl.FLOAT, false, 0, 0);
 
         //uPMVMatrix
-        var pmvMatrix = camera.projViewMatrix;
+        var pmvMatrix = camera.getProjViewMatrixForDraw();
         var locPMVMatrix = this.program.getUniformLocation('uPMVMatrix');
         gl.uniformMatrix4fv(locPMVMatrix, false, pmvMatrix.elements);
 

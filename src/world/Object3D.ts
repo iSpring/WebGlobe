@@ -5,10 +5,18 @@ import Vertice = require('./math/Vertice');
 import Vector = require('./math/Vector');
 
 class Object3D {
-    matrix: Matrix;
+    protected matrix: Matrix;
 
     constructor() {
         this.matrix = new Matrix();
+    }
+
+    getMatrix(): Matrix{
+        return this.matrix;
+    }
+
+    cloneMatrix(): Matrix{
+        return this.matrix.clone();
     }
 
     //需要子类重写

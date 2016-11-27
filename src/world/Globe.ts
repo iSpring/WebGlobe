@@ -140,9 +140,9 @@ class Globe {
     this.camera.update();
     var level = this.getLevel() + 3;
     this.tiledLayer.updateSubLayerCount(level);
-    var projView = this.camera.getProjViewMatrix();
+    //var projView = this.camera.getProjViewMatrix();
     var options = {
-      projView: projView,
+      //projView: projView,
       threshold: 1
     };
     options.threshold = Math.min(90 / this.camera.getPitch(), 1.5);

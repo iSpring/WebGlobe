@@ -80,7 +80,7 @@ class MeshGraphic extends Graphic {
         gl.vertexAttribPointer(locPosition, 3, gl.FLOAT, false, 0, 0);
 
         //uPMVMatrix
-        var pmvMatrix = camera.projViewMatrix.multiplyMatrix(this.geometry.matrix);
+        var pmvMatrix = camera.getProjViewMatrixForDraw().multiplyMatrix(this.geometry.getMatrix());
         var locPMVMatrix = this.program.getUniformLocation('uPMVMatrix');
         gl.uniformMatrix4fv(locPMVMatrix, false, pmvMatrix.elements);
 

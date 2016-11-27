@@ -63,7 +63,6 @@ class Renderer {
     Kernel.gl.enable(Kernel.gl.DEPTH_TEST);
     Kernel.gl.depthFunc(Kernel.gl.LEQUAL);
     Kernel.gl.depthMask(true);
-    camera.viewMatrix = null;
     //update viewMatrix, projMatrix and projViewMatrix
     camera.update();
     scene.draw(camera);

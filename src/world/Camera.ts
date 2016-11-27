@@ -16,17 +16,16 @@ class Camera extends Object3D {
   private readonly nearFactor: number = 0.6;
   private readonly baseTheoryDistanceFromCamera2EarthSurface = 1.23 * Kernel.EARTH_RADIUS;
   private pitch: number;
-  deltaFovLevel: number = 0;
-  thresholdLevelForNear: number = -1;
-  level: number = -1; //当前渲染等级  
-  viewMatrix: Matrix;
-  projMatrix: Matrix;//当Matrix变化的时候，需要重新计算this.far
-  projViewMatrix: Matrix;
+  private level: number = -1; //当前渲染等级
+  private viewMatrix: Matrix;//视点矩阵，即Camera模型矩阵的逆矩阵
+  private projMatrix: Matrix;//当Matrix变化的时候，需要重新计算this.far
+  private projViewMatrix: Matrix;//获取投影矩阵与视点矩阵的乘积
+  private animating: boolean = false;
+
   Enum: any = {
     EARTH_FULL_OVERSPREAD_SCREEN: "EARTH_FULL_OVERSPREAD_SCREEN", //Canvas内全部被地球充满
     EARTH_NOT_FULL_OVERSPREAD_SCREEN: "EARTH_NOT_FULL_OVERSPREAD_SCREEN" //Canvas没有全部被地球充满
   };
-  private animating: boolean = false;
 
   //this.near一旦初始化之后就不应该再修改
   //this.far可以动态计算
@@ -78,6 +77,8 @@ class Camera extends Object3D {
   }
 
   getPitch(): number{
+    var lightDirection = this.getLightDirection();
+
     return this.pitch;
   }
 
@@ -98,11 +99,8 @@ class Camera extends Object3D {
     return length2EarthSurface;
   }
 
-  //获取投影矩阵与视点矩阵的乘积
-  getProjViewMatrix(): Matrix {
-    var viewMatrix = this.getViewMatrix();
-    var projViewMatrix = this.projMatrix.multiplyMatrix(viewMatrix);
-    return projViewMatrix;
+  getProjViewMatrixForDraw(): Matrix{
+    return this.projViewMatrix;
   }
 
   private _setFov(fov: number): void {
@@ -179,14 +177,11 @@ class Camera extends Object3D {
   private _updatePositionAndFov(): number {
     //是否满足near值，和fov没有关系，和position有关
     //但是改变position的话，fov也要相应变动以满足对应的缩放效果
-
-    // var safeThresholdLevel = this._getSafeThresholdLevelForNear();
-    // if(this.getLevel() > safeThresholdLevel){
-
-    // }
     const currentLevel = this.getLevel();
-
     var safeLevel = this._getSafeThresholdLevelForNear();
+
+    //_rawUpdatePositionByLevel()方法会修改this.matrix
+    //_setFov()方法会修改this.projMatrix
 
     if(currentLevel > safeLevel){
       //摄像机距离地球太近，导致不满足视景体的near值,
@@ -202,46 +197,6 @@ class Camera extends Object3D {
       this._rawUpdatePositionByLevel(currentLevel);
       this._setFov(this.initFov);
     }
-
-    // var distance2EarthSurface = this.getDistance2EarthSurface();
-    // var thresholdNear = this.near * this.nearFactor;
-    // if (distance2EarthSurface <= thresholdNear) {
-    //   //摄像机距离地球太近，导致不满足视景体的near值
-    //   //我们需要将摄像机的位置拉远，以满足near值
-
-    //   //比如currentLevel为11，safeLevel为10
-    //   deltaLevel = currentLevel - safeLevel;
-    //   //此处的deltaLevel应该为正数
-    //   if (deltaLevel !== 0) {
-    //     newLevel = safeLevel;
-    //     this._rawUpdatePositionByLevel(newLevel);
-    //     //摄像机位置与地球表面距离变大之后，我们看到的地球变小，为此，我们需要把fov值变小，以抵消摄像机位置距离增大导致的变化
-    //     var newFov = this._calculateFovByDeltaLevel(this.initFov, deltaLevel);
-    //     this._setFov(newFov);
-    //     return this.fov;
-    //   }
-    // } else {
-    //   //现在满足near值
-
-    //   if (this.fov < this.initFov * 0.95 && currentLevel <= safeLevel) {
-    //     //如果当前fov的值比初始的initFov值小，说明当前的fov被缩放过(0.95用于精度问题，防止出现29.999999与30进行对比的情况)
-    //     //比如currentLevel为11，this.fov为15，this.initFov为10，deltaLevel应该为负值
-    //     deltaLevel = this._calculateDeltaLevelByFov(this.fov, this.initFov);
-    //     newLevel = currentLevel + deltaLevel;
-    //     //上面的newLevel是float类型，向上取整，不要向下取整
-    //     newLevel = Math.ceil(newLevel);
-    //     //deltaLevel应该为负整数
-    //     deltaLevel = newLevel - currentLevel;
-    //     //比如currentLevel为11，newLevel为10，deltaLevel为-1
-    //     this._rawUpdatePositionByLevel(newLevel);
-    //     var newFov = this._calculateFovByDeltaLevel(this.fov, deltaLevel);
-    //     this._setFov(newFov);
-    //     return this.fov;
-    //   } else if (this.fov > this.initFov * 1.05) {
-    //     //不应该出现当前fov值比初始initFov的大的情况
-    //     throw `_updatePositionAndFov() Invalid fov: ${this.fov}`;
-    //   }
-    //}
 
     return -1;
   }
@@ -281,7 +236,6 @@ class Camera extends Object3D {
     var halfRadianNewFov = Math.atan(tanNew);
     var radianNewFov = halfRadianNewFov * 2;
     var newFov = MathUtils.radianToDegree(radianNewFov);
-    this.deltaFovLevel += deltaLevel;
     return newFov;
   }
 
@@ -340,7 +294,13 @@ class Camera extends Object3D {
   }
 
   animateToLevel(level: number): void {
-    var newCamera = this._animateToLevel(level);
+    if (!(Utils.isNonNegativeInteger(level))) {
+      throw "invalid level:" + level;
+    }
+    var newCamera = this._clone();
+    //don't call setLevel method because it will update CURRENT_LEVEL
+    newCamera._rawUpdatePositionByLevel(level);
+
     this._animateToCamera(newCamera, () => {
       this.level = level;
     });
@@ -376,16 +336,6 @@ class Camera extends Object3D {
       }
     };
     requestAnimationFrame(callback);
-  }
-
-  private _animateToLevel(level: number): Camera {
-    if (!(Utils.isNonNegativeInteger(level))) {
-      throw "invalid level:" + level;
-    }
-    var camera = this._clone();
-    //don't call setLevel method because it will update CURRENT_LEVEL
-    camera._rawUpdatePositionByLevel(level);
-    return camera;
   }
 
   private _clone(): Camera {
@@ -426,19 +376,19 @@ class Camera extends Object3D {
     this._updateFar();
   }
 
-  lookAt(targetPnt: Vertice, upDirection?: Vector): void {
+  private _lookAt(targetPnt: Vertice, upDirection?: Vector): void {
     var targetPntCopy = targetPnt.clone();
     var position = this.getPosition();
     this.look(position, targetPntCopy, upDirection);
   }
 
   //点变换: World->NDC
-  convertVerticeFromWorldToNDC(verticeInWorld: Vertice, /*optional*/ projViewMatrix?: Matrix): Vertice {
-    if (!(projViewMatrix instanceof Matrix)) {
-      projViewMatrix = this.getProjViewMatrix();
-    }
+  private convertVerticeFromWorldToNDC(verticeInWorld: Vertice): Vertice {
+    // if (!(projViewMatrix instanceof Matrix)) {
+    //   projViewMatrix = this.getProjViewMatrix();
+    // }
     var columnWorld = [verticeInWorld.x, verticeInWorld.y, verticeInWorld.z, 1];
-    var columnProject = projViewMatrix.multiplyColumn(columnWorld);
+    var columnProject = this.projViewMatrix.multiplyColumn(columnWorld);
     var w = columnProject[3];
     var columnNDC: number[] = [];
     columnNDC[0] = columnProject[0] / w;
@@ -450,7 +400,7 @@ class Camera extends Object3D {
   }
 
   //点变换: NDC->World
-  convertVerticeFromNdcToWorld(verticeInNDC: Vertice): Vertice {
+  private convertVerticeFromNdcToWorld(verticeInNDC: Vertice): Vertice {
     var columnNDC: number[] = [verticeInNDC.x, verticeInNDC.y, verticeInNDC.z, 1]; //NDC归一化坐标
     var inverseProj = this.projMatrix.getInverseMatrix(); //投影矩阵的逆矩阵
     var columnCameraTemp = inverseProj.multiplyColumn(columnNDC); //带引号的“视坐标”
@@ -468,7 +418,7 @@ class Camera extends Object3D {
   }
 
   //点变换: Camera->World
-  convertVerticeFromCameraToWorld(verticeInCamera: Vertice, /*optional*/ viewMatrix?: Matrix): Vertice {
+  private convertVerticeFromCameraToWorld(verticeInCamera: Vertice, /*optional*/ viewMatrix?: Matrix): Vertice {
     if (!(viewMatrix instanceof Matrix)) {
       viewMatrix = this.getViewMatrix();
     }
@@ -481,7 +431,7 @@ class Camera extends Object3D {
   }
 
   //向量变换: Camera->World
-  convertVectorFromCameraToWorld(vectorInCamera: Vector, /*optional*/ viewMatrix?: Matrix): Vector {
+  private convertVectorFromCameraToWorld(vectorInCamera: Vector, /*optional*/ viewMatrix?: Matrix): Vector {
     if (!(vectorInCamera instanceof Vector)) {
       throw "invalid vectorInCamera: not Vector";
     }
@@ -565,7 +515,7 @@ class Camera extends Object3D {
   }
 
   //得到摄像机的XOZ平面的方程
-  getPlanXOZ(): Plan {
+  private getPlanXOZ(): Plan {
     var position = this.getPosition();
     var direction = this.getLightDirection();
     var plan = MathUtils.getCrossPlaneByLine(position, direction);
@@ -574,7 +524,7 @@ class Camera extends Object3D {
 
   //判断世界坐标系中的点是否在Canvas中可见
   //options:projView、verticeInNDC
-  isWorldVerticeVisibleInCanvas(verticeInWorld: Vertice, options?: any): boolean {
+  private isWorldVerticeVisibleInCanvas(verticeInWorld: Vertice, options?: any): boolean {
     if (!(verticeInWorld instanceof Vertice)) {
       throw "invalid verticeInWorld: not Vertice";
     }
@@ -590,10 +540,10 @@ class Camera extends Object3D {
       var length2Pick = MathUtils.getLengthFromVerticeToVertice(cameraP, pickVertice);
       if (length2Vertice < length2Pick + 5) {
         if (!(options.verticeInNDC instanceof Vertice)) {
-          if (!(options.projView instanceof Matrix)) {
-            options.projView = this.getProjViewMatrix();
-          }
-          options.verticeInNDC = this.convertVerticeFromWorldToNDC(verticeInWorld, options.projView);
+          // if (!(options.projView instanceof Matrix)) {
+          //   options.projView = this.getProjViewMatrix();
+          // }
+          options.verticeInNDC = this.convertVerticeFromWorldToNDC(verticeInWorld);
         }
         var result = options.verticeInNDC.x >= -1 && options.verticeInNDC.x <= 1 && options.verticeInNDC.y >= -threshold && options.verticeInNDC.y <= 1;
         return result;
@@ -604,7 +554,7 @@ class Camera extends Object3D {
 
   //判断地球表面的某个经纬度在Canvas中是否应该可见
   //options:projView、verticeInNDC
-  isGeoVisibleInCanvas(lon: number, lat: number, options?: any): boolean {
+  private isGeoVisibleInCanvas(lon: number, lat: number, options?: any): boolean {
     var verticeInWorld = MathUtils.geographicToCartesianCoord(lon, lat);
     var result = this.isWorldVerticeVisibleInCanvas(verticeInWorld, options);
     return result;
@@ -624,9 +574,9 @@ class Camera extends Object3D {
     }
     var result: TileGrid[] = [];
     options = options || {};
-    if (!(options.projView instanceof Matrix)) {
-      options.projView = this.getProjViewMatrix();
-    }
+    // if (!(options.projView instanceof Matrix)) {
+    //   options.projView = this.getProjViewMatrix();
+    // }
     //向左、向右、向上、向下最大的循环次数
     var LOOP_LIMIT = Math.min(10, Math.pow(2, level) - 1);
 
@@ -691,7 +641,7 @@ class Camera extends Object3D {
       return result;
     }
 
-    var verticalCenterInfo = this._getVerticalVisibleCenterInfo(options);
+    var verticalCenterInfo = this._getVerticalVisibleCenterInfo();
     var centerGrid = TileGrid.getTileGridByGeo(verticalCenterInfo.lon, verticalCenterInfo.lat, level);
     var handleRowThis = handleRow.bind(this);
 
@@ -735,7 +685,7 @@ class Camera extends Object3D {
   }
 
   //options:projView
-  getTileVisibleInfo(level: number, row: number, column: number, options?: any): any {
+  private getTileVisibleInfo(level: number, row: number, column: number, options?: any): any {
     if (!(level >= 0)) {
       throw "invalid level";
     }
@@ -783,9 +733,9 @@ class Camera extends Object3D {
       height: null,
       area: null
     };
-    if (!(options.projView instanceof Matrix)) {
-      options.projView = this.getProjViewMatrix();
-    }
+    // if (!(options.projView instanceof Matrix)) {
+    //   options.projView = this.getProjViewMatrix();
+    // }
     result.Egeo = MathUtils.getTileGeographicEnvelopByGrid(level, row, column);
     var tileMinLon = result.Egeo.minLon;
     var tileMaxLon = result.Egeo.maxLon;
@@ -796,7 +746,7 @@ class Camera extends Object3D {
     result.lb.lon = tileMinLon;
     result.lb.lat = tileMinLat;
     result.lb.verticeInWorld = MathUtils.geographicToCartesianCoord(result.lb.lon, result.lb.lat);
-    result.lb.verticeInNDC = this.convertVerticeFromWorldToNDC(result.lb.verticeInWorld, options.projView);
+    result.lb.verticeInNDC = this.convertVerticeFromWorldToNDC(result.lb.verticeInWorld);
     result.lb.visible = this.isWorldVerticeVisibleInCanvas(result.lb.verticeInWorld, {
       verticeInNDC: result.lb.verticeInNDC,
       projView: options.projView,
@@ -810,7 +760,7 @@ class Camera extends Object3D {
     result.lt.lon = tileMinLon;
     result.lt.lat = tileMaxLat;
     result.lt.verticeInWorld = MathUtils.geographicToCartesianCoord(result.lt.lon, result.lt.lat);
-    result.lt.verticeInNDC = this.convertVerticeFromWorldToNDC(result.lt.verticeInWorld, options.projView);
+    result.lt.verticeInNDC = this.convertVerticeFromWorldToNDC(result.lt.verticeInWorld);
     result.lt.visible = this.isWorldVerticeVisibleInCanvas(result.lt.verticeInWorld, {
       verticeInNDC: result.lt.verticeInNDC,
       projView: options.projView,
@@ -824,7 +774,7 @@ class Camera extends Object3D {
     result.rt.lon = tileMaxLon;
     result.rt.lat = tileMaxLat;
     result.rt.verticeInWorld = MathUtils.geographicToCartesianCoord(result.rt.lon, result.rt.lat);
-    result.rt.verticeInNDC = this.convertVerticeFromWorldToNDC(result.rt.verticeInWorld, options.projView);
+    result.rt.verticeInNDC = this.convertVerticeFromWorldToNDC(result.rt.verticeInWorld);
     result.rt.visible = this.isWorldVerticeVisibleInCanvas(result.rt.verticeInWorld, {
       verticeInNDC: result.rt.verticeInNDC,
       projView: options.projView,
@@ -838,7 +788,7 @@ class Camera extends Object3D {
     result.rb.lon = tileMaxLon;
     result.rb.lat = tileMinLat;
     result.rb.verticeInWorld = MathUtils.geographicToCartesianCoord(result.rb.lon, result.rb.lat);
-    result.rb.verticeInNDC = this.convertVerticeFromWorldToNDC(result.rb.verticeInWorld, options.projView);
+    result.rb.verticeInNDC = this.convertVerticeFromWorldToNDC(result.rb.verticeInWorld);
     result.rb.visible = this.isWorldVerticeVisibleInCanvas(result.rb.verticeInWorld, {
       verticeInNDC: result.rb.verticeInNDC,
       projView: options.projView,
@@ -869,11 +819,11 @@ class Camera extends Object3D {
   }
 
   //地球一直是关于纵轴中心对称的，获取垂直方向上中心点信息
-  private _getVerticalVisibleCenterInfo(options?: any): any {
-    options = options || {};
-    if (!options.projView) {
-      options.projView = this.getProjViewMatrix();
-    }
+  private _getVerticalVisibleCenterInfo(): any {
+    // options = options || {};
+    // if (!options.projView) {
+    //   options.projView = this.getProjViewMatrix();
+    // }
     var result = {
       ndcY: <number>null,
       pIntersect: <Vertice>null,
