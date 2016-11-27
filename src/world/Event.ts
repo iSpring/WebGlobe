@@ -159,6 +159,10 @@ const EventModule = {
     }
   },
 
+  /**
+   * 通过向上和向下的键盘按键调整Camera视线方向的倾斜角度pitch
+   * 初始pitch值为0
+   */
   onKeyDown(event: KeyboardEvent) {
     var globe = Kernel.globe;
     if (!globe) {
@@ -186,19 +190,19 @@ const EventModule = {
       if (pickResult.length > 0) {
         var pIntersect = pickResult[0];
         var pCamera = camera.getPosition();
-        var legnth2Intersect = MathUtils.getLengthFromVerticeToVertice(pCamera, pIntersect);
+        var distance2Intersect = MathUtils.getLengthFromVerticeToVertice(pCamera, pIntersect);
         var mat = camera.cloneMatrix();
         mat.setColumnTrans(pIntersect.x, pIntersect.y, pIntersect.z);
         var DELTA_RADIAN = MathUtils.degreeToRadian(DELTA_PITCH);
         mat.localRotateX(DELTA_RADIAN);
         var dirZ = mat.getColumnZ();
-        dirZ.setLength(legnth2Intersect);
+        dirZ.setLength(distance2Intersect);
         var pNew = Vector.verticePlusVector(pIntersect, dirZ);
         camera.look(pNew, pIntersect);
         camera.setPitch(camera.getPitch() - DELTA_PITCH);
         globe.refresh();
       } else {
-        alert("视线与地球无交点");
+        console.log("视线与地球无交点");
       }
     }
   }

@@ -80,9 +80,26 @@ class Camera extends Object3D {
   //更新各种矩阵，保守起见，可以在每帧绘制之前调用
   //理论上只在用户交互的时候调用就可以
   update(): void {
-    this.viewMatrix = null;
+    this._normalUpdate();
+    //this._updateProjViewMatrixForDraw();
+  }
+
+  _normalUpdate(){
     //视点矩阵是camera的模型矩阵的逆矩阵
-    //this.viewMatrix = this.matrix.getInverseMatrix();
+    this.viewMatrix = this.matrix.getInverseMatrix();
+
+    //通过修改far值更新projMatrix
+    this._updateFar();
+
+    //更新projViewMatrix
+    this.projViewMatrix = this.projMatrix.multiplyMatrix(this.viewMatrix);
+  }
+
+  _updateProjViewMatrixForDraw(){
+    var matrix = this.matrix.clone();
+    var viewMatrix = this.viewMatrix.clone();
+    var projMatrix = this.projMatrix.clone();
+    var projViewMatrix = this.projViewMatrix.clone();
 
     //通过修改position和fov以更新matrix和projMatrix
     this._updatePositionAndFov();
@@ -94,57 +111,7 @@ class Camera extends Object3D {
     this._updateFar();
 
     //update projViewMatrix
-    this.projViewMatrix = this.projMatrix.multiplyMatrix(this.viewMatrix);
-  }
-
-  getPitch(): number{
-    var lightDirection = this.getLightDirection();
-
-    return this.pitch;
-  }
-
-  setPitch(pitch: number): void{
-
-  }
-
-  getLightDirection(): Vector {
-    var dirVertice = this.matrix.getColumnZ();
-    var direction = new Vector(-dirVertice.x, -dirVertice.y, -dirVertice.z);
-    direction.normalize();
-    return direction;
-  }
-
-  getDistance2EarthSurface(): number {
-    var position = this.getPosition();
-    var length2EarthSurface = Vector.fromVertice(position).getLength() - Kernel.EARTH_RADIUS;
-    return length2EarthSurface;
-  }
-
-  getProjViewMatrixForDraw(): Matrix{
-    return this.projViewMatrix;
-  }
-
-  private _setFov(fov: number): void {
-    if (!(fov > 0)) {
-      throw "invalid fov:" + fov;
-    }
-    this._setPerspectiveMatrix(fov, this.aspect, this.near, this.far);
-  }
-
-  setAspect(aspect: number): void {
-    if (!(aspect > 0)) {
-      throw "invalid aspect:" + aspect;
-    }
-    this._setPerspectiveMatrix(this.fov, aspect, this.near, this.far);
-  }
-
-  private _updateFar(): void {
-    //重新计算far,保持far在满足正常需求情况下的最小值
-    //far值：视点与地球切面的距离
-    var length2EarthOrigin = Vector.fromVertice(this.getPosition()).getLength();
-    var far = Math.sqrt(length2EarthOrigin * length2EarthOrigin - Kernel.EARTH_RADIUS * Kernel.EARTH_RADIUS);
-    far *= 1.05;
-    this._rawSetPerspectiveMatrix(this.fov, this.aspect, this.near, far);
+    this.projViewMatrixForDraw = projMatrix.multiplyMatrix(viewMatrix);
   }
 
   //计算从第几级level开始不满足视景体的near值
@@ -166,14 +133,14 @@ class Camera extends Object3D {
   }
 
   //返回更新后的fov值，如果返回结果 < 0，说明无需更新fov
-  private _updatePositionAndFov(): number {
+  private _updatePositionAndFov() {
     //是否满足near值，和fov没有关系，和position有关
     //但是改变position的话，fov也要相应变动以满足对应的缩放效果
     const currentLevel = this.getLevel();
     var safeLevel = this._getSafeThresholdLevelForNear();
 
-    //_rawUpdatePositionByLevel()方法会修改this.matrix
-    //_setFov()方法会修改this.projMatrix
+    //_rawUpdatePositionByLevel()方法会修改matrix
+    //_setFov()方法会修改projMatrix
 
     if(currentLevel > safeLevel){
       //摄像机距离地球太近，导致不满足视景体的near值,
@@ -189,8 +156,6 @@ class Camera extends Object3D {
       this._rawUpdatePositionByLevel(currentLevel);
       this._setFov(this.initFov);
     }
-
-    return -1;
   }
 
   //fov从oldFov变成了newFov，计算相当于缩放了几级level
@@ -278,6 +243,56 @@ class Camera extends Object3D {
       // this.setPosition(pNew.x, pNew.y, pNew.z);
     }
     return true;
+  }
+
+  getPitch(): number{
+    var lightDirection = this.getLightDirection();
+
+    return this.pitch;
+  }
+
+  setPitch(pitch: number): void{
+
+  }
+
+  getLightDirection(): Vector {
+    var dirVertice = this.matrix.getColumnZ();
+    var direction = new Vector(-dirVertice.x, -dirVertice.y, -dirVertice.z);
+    direction.normalize();
+    return direction;
+  }
+
+  getDistance2EarthSurface(): number {
+    var position = this.getPosition();
+    var length2EarthSurface = Vector.fromVertice(position).getLength() - Kernel.EARTH_RADIUS;
+    return length2EarthSurface;
+  }
+
+  getProjViewMatrixForDraw(): Matrix{
+    return this.projViewMatrix;
+  }
+
+  private _setFov(fov: number): void {
+    if (!(fov > 0)) {
+      throw "invalid fov:" + fov;
+    }
+    this._setPerspectiveMatrix(fov, this.aspect, this.near, this.far);
+  }
+
+  setAspect(aspect: number): void {
+    if (!(aspect > 0)) {
+      throw "invalid aspect:" + aspect;
+    }
+    this._setPerspectiveMatrix(this.fov, aspect, this.near, this.far);
+  }
+
+  private _updateFar(): void {
+    //重新计算far,保持far在满足正常需求情况下的最小值
+    //far值：视点与地球切面的距离
+    var length2EarthOrigin = Vector.fromVertice(this.getPosition()).getLength();
+    var far = Math.sqrt(length2EarthOrigin * length2EarthOrigin - Kernel.EARTH_RADIUS * Kernel.EARTH_RADIUS);
+    far *= 1.05;
+    this._rawSetPerspectiveMatrix(this.fov, this.aspect, this.near, far);
   }
 
   isAnimating(): boolean {
