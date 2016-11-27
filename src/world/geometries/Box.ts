@@ -1,10 +1,10 @@
 ﻿///<amd-module name="world/geometries/Box"/>
 
-import Vertice = require("./Vertice");
+import Vertice = require("./MeshVertice");
 import Triangle = require("./Triangle");
-import Geometry = require("./Geometry");
+import Mesh = require("./Mesh");
 
-class Box extends Geometry {
+class Box extends Mesh {
 	constructor(public length: number, public width: number, public height: number) {
 		super();
 		this.buildTriangles();

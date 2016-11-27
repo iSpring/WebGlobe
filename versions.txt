@@ -86,6 +86,12 @@
 
 0.1.1 在js和ts中均修复了在两极地区抖动的问题：world/Event#moveGeo()
 
-0.2 将World.js中的许多类的设计理念，包括Program、GraphicGroup、Graphic、Geometry、Material、VertexBufferObject等，现在SubTiledLayer和TiledLayer都继承自GraphicGroup，并且让Tile继承自于Graphic
+0.2 引入World.js中的许多类的设计理念，包括Program、GraphicGroup、Graphic、Geometry、Material、VertexBufferObject等，现在SubTiledLayer和TiledLayer都继承自GraphicGroup，并且让Tile继承自于Graphic
 
 0.2.1 修复了在leve 15及以上的情况下，拖动地图导致地图空白的问题，见issue#9
+
+0.2.2 删除高程相关代码
+
+0.2.3 将world/geometries/Geomtry重命名为world/geometries/Mesh，并在package.json中添加了多个npm scripts，对应gulp中定义的tasks
+
+0.2.4 之前EARTH_RADIUS的值为6378137，特别大，导致了深度值计算有问题，从而使得深度测试不能正常进行。将EARTH_RADIUS改成14000，使得深度测试可以正常进行。并加入了Poi和PoiLayer这两个类。

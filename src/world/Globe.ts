@@ -1,9 +1,8 @@
 ///<amd-module name="world/Globe"/>
 import Kernel = require("./Kernel");
 import Utils = require("./Utils");
-// import ShaderContent = require("./ShaderContent");
 import Renderer = require("./Renderer");
-import PerspectiveCamera = require("./PerspectiveCamera");
+import Camera = require("./Camera");
 import Scene = require("./Scene");
 import TiledLayer = require("./layers/TiledLayer");
 import SubTiledLayer = require("./layers/SubTiledLayer");
@@ -12,27 +11,21 @@ import ImageUtils = require("./Image");
 import EventUtils = require("./Event");
 
 class Globe {
-  MAX_LEVEL: number = 14;//最大的渲染级别14
-  CURRENT_LEVEL: number = -1; //当前渲染等级
   REFRESH_INTERVAL: number = 300; //Globe自动刷新时间间隔，以毫秒为单位
   idTimeOut: any = null; //refresh自定刷新的timeOut的handle
   renderer: Renderer = null;
   scene: Scene = null;
-  camera: PerspectiveCamera = null;
+  camera: Camera = null;
   tiledLayer: TiledLayer = null;
 
-  constructor(canvas: HTMLCanvasElement, args: any) {
-    args = args || {};
+  constructor(canvas: HTMLCanvasElement) {
     Kernel.globe = this;
-
-    // var vs_content = ShaderContent.SIMPLE_SHADER.VS_CONTENT;
-    // var fs_content = ShaderContent.SIMPLE_SHADER.FS_CONTENT;
     this.renderer = Kernel.renderer = new Renderer(canvas);
     this.scene = new Scene();
     var radio = canvas.width / canvas.height;
-    this.camera = new PerspectiveCamera(30, radio, 1.0, 20000000.0);
-    this.renderer.bindScene(this.scene);
-    this.renderer.bindCamera(this.camera);
+    this.camera = new Camera(30, radio, 1, Kernel.EARTH_RADIUS * 2);
+    this.renderer.setScene(this.scene);
+    this.renderer.setCamera(this.camera);
     this.setLevel(0);
     this.renderer.setIfAutoRefresh(true);
     EventUtils.initLayout();
@@ -50,7 +43,7 @@ class Globe {
       this.scene.tiledLayer = null;
     }
     this.tiledLayer = tiledLayer;
-    this.scene.add(this.tiledLayer);
+    this.scene.add(this.tiledLayer, true);
     //添加第0级的子图层
     var subLayer0 = new SubTiledLayer({
       level: 0
@@ -80,18 +73,13 @@ class Globe {
     this.tick();
   }
 
-  setLevel(level: number) {
-    if (!Utils.isNonNegativeInteger(level)) {
-      throw "invalid level:" + level;
-    }
+  getLevel(){
+    return this.camera ? this.camera.getLevel() : -1;
+  }
 
-    level = level > this.MAX_LEVEL ? this.MAX_LEVEL : level; //超过最大的渲染级别就不渲染
-    if (level != this.CURRENT_LEVEL) {
-      if (this.camera instanceof PerspectiveCamera) {
-        //要先执行camera.setLevel,然后再刷新
-        this.camera.setLevel(level);
-        this.refresh();
-      }
+  setLevel(level: number) {
+    if(this.camera){
+      this.camera.setLevel(level);
     }
   }
 
@@ -101,7 +89,10 @@ class Globe {
 
   animateToLevel(level: number){
     if(!this.isAnimating()){
-      this.camera.animateToLevel(level);
+      level = level > Kernel.MAX_LEVEL ? Kernel.MAX_LEVEL : level; //超过最大的渲染级别就不渲染
+      if(level !== this.getLevel()){
+        this.camera.animateToLevel(level);
+      }
     }
   }
 
@@ -131,7 +122,12 @@ class Globe {
   tick() {
     var globe = Kernel.globe;
     if (globe) {
-      globe.refresh();
+      try{
+        //如果refresh方法出现异常而且没有捕捉，那么就会导致无法继续设置setTimeout，从而无法进一步更新切片
+        globe.refresh();
+      }catch(e){
+        console.error(e);
+      }
       this.idTimeOut = setTimeout(globe.tick, globe.REFRESH_INTERVAL);
     }
   }
@@ -140,14 +136,16 @@ class Globe {
     if (!this.tiledLayer || !this.scene || !this.camera) {
       return;
     }
-    var level = this.CURRENT_LEVEL + 3;
+    //先更新camera中的各种矩阵
+    this.camera.update();
+    var level = this.getLevel() + 3;
     this.tiledLayer.updateSubLayerCount(level);
-    var projView = this.camera.getProjViewMatrix();
+    //var projView = this.camera.getProjViewMatrix();
     var options = {
-      projView: projView,
+      //projView: projView,
       threshold: 1
     };
-    options.threshold = Math.min(90 / this.camera.pitch, 1.5);
+    options.threshold = Math.min(90 / this.camera.getPitch(), 1.5);
     //最大级别的level所对应的可见TileGrids
     var lastLevelTileGrids = this.camera.getVisibleTilesByLevel(level, options);
     var levelsTileGrids: any[] = []; //level-2
@@ -166,29 +164,6 @@ class Globe {
       var subLayer = <SubTiledLayer>this.tiledLayer.children[subLevel];
       subLayer.updateTiles(levelsTileGrids[0], true);
       levelsTileGrids.splice(0, 1);
-    }
-    if (Kernel.TERRAIN_ENABLED) {
-      this.requestElevationsAndCheckTerrain();
-    }
-  }
-
-  //请求更新高程数据，并检测Terrain
-  requestElevationsAndCheckTerrain() {
-    var level = this.tiledLayer.children.length - 1;
-    //当level>7时请求更新高程数据
-    //请求的数据与第7级的切片大小相同
-    //if(level > Kernel.ELEVATION_LEVEL){
-
-    //达到TERRAIN_LEVEL级别时考虑三维请求
-    if (level >= Kernel.TERRAIN_LEVEL) {
-      for (var i = Kernel.ELEVATION_LEVEL + 1; i <= level; i++) {
-        var subLayer = <SubTiledLayer>this.tiledLayer.children[i];
-        subLayer.requestElevations();
-        //检查SubTiledLayer下的子图层是否符合转换成TerrainTile的条件，如果适合就自动以三维地形图显示
-        if (i >= Kernel.TERRAIN_LEVEL) {
-          subLayer.checkTerrain();
-        }
-      }
     }
   }
 }

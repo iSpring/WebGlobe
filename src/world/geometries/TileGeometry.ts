@@ -1,10 +1,10 @@
 ﻿///<amd-module name="world/geometries/TileGeometry"/>
 
-import Vertice = require("./Vertice");
+import Vertice = require("./MeshVertice");
 import Triangle = require("./Triangle");
-import Geometry = require("./Geometry");
+import Mesh = require("./Mesh");
 
-class TileGeometry extends Geometry {
+class TileGeometry extends Mesh {
   constructor(public vertices: Vertice[], public triangles: Triangle[]) {
     super();
   }

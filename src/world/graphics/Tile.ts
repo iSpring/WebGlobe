@@ -1,12 +1,11 @@
 ///<amd-module name="world/graphics/Tile"/>
 import Kernel = require('../Kernel');
 import Enum = require('../Enum');
-import Elevation = require('../Elevation');
 import MathUtils = require('../math/Math');
 import MeshGraphic = require('../graphics/MeshGraphic');
 import TileMaterial = require('../materials/TileMaterial');
 import TileGeometry = require("../geometries/TileGeometry");
-import Vertice = require("../geometries/Vertice");
+import Vertice = require("../geometries/MeshVertice");
 import Triangle = require("../geometries/Triangle");
 
 class TileInfo {
@@ -14,7 +13,6 @@ class TileInfo {
   //type如果是TERRAIN_TILE，表示其buffer已经设置为高程形式
   //type如果是UNKNOWN，表示buffer没设置
   type: number = Enum.UNKNOWN;
-  elevationLevel: number = 0;//高程level
   minLon: number = null;
   minLat: number = null;
   maxLon: number = null;
@@ -31,14 +29,15 @@ class TileInfo {
 
   constructor(public level: number, public row: number, public column: number, public url: string) {
     this._setTileInfo();
-    this._checkTerrain();
+    if (this.type == Enum.UNKNOWN) {
+      //初始type为UNKNOWN，还未初始化buffer，应该显示为GlobeTile
+      this._handleGlobeTile();
+    }
     this.material = new TileMaterial(this.level, this.url);
   }
 
   // 根据传入的切片的层级以及行列号信息设置切片的经纬度范围 以及设置其纹理
   _setTileInfo() {
-    this.elevationLevel = Elevation.getAncestorElevationLevel(this.level);
-
     //经纬度范围
     var Egeo = MathUtils.getTileGeographicEnvelopByGrid(this.level, this.row, this.column);
     this.minLon = Egeo.minLon;
@@ -47,47 +46,12 @@ class TileInfo {
     this.maxLat = Egeo.maxLat;
     var minCoord = MathUtils.degreeGeographicToWebMercator(this.minLon, this.minLat);
     var maxCoord = MathUtils.degreeGeographicToWebMercator(this.maxLon, this.maxLat);
-    
+
     //投影坐标范围
     this.minX = minCoord[0];
     this.minY = minCoord[1];
     this.maxX = maxCoord[0];
     this.maxY = maxCoord[1];
-  }
-
-  /**
-     * 判断是否满足现实Terrain的条件，若满足则转换为三维地形
-     * 条件:
-     * 1.当前显示的是GlobeTile
-     * 2.该切片的level大于TERRAIN_LEVEL
-     * 3.pich不为90
-     * 4.当前切片的高程数据存在
-     * 5.如果bForce为true，则表示强制显示为三维，不考虑level
-     */
-  _checkTerrain(bForce: boolean = false) {
-    var globe = Kernel.globe;
-    var a = bForce === true ? true : this.level >= Kernel.TERRAIN_LEVEL;
-    var shouldShowTerrain = this.type != Enum.TERRAIN_TILE && a && globe && globe.camera && globe.camera.pitch != 90;
-    if (shouldShowTerrain) {
-      //应该以TerrainTile显示
-      if (!this.elevationInfo) {
-        this.elevationInfo = Elevation.getExactElevation(this.level, this.row, this.column);
-      }
-      var canShowTerrain = this.elevationInfo ? true : false;
-      if (canShowTerrain) {
-        //能够显示为TerrainTile
-        this._handleTerrainTile();
-      } else {
-        //不能够显示为TerrainTile
-        this.visible = false;
-        //this.handleGlobeTile();
-      }
-    } else {
-      if (this.type == Enum.UNKNOWN) {
-        //初始type为UNKNOWN，还未初始化buffer，应该显示为GlobeTile
-        this._handleGlobeTile();
-      }
-    }
   }
 
   //处理球面的切片
@@ -99,13 +63,6 @@ class TileInfo {
     } else {
       this.segment = 1;
     }
-    this._handleTile();
-  }
-
-  //处理地形的切片
-  _handleTerrainTile() {
-    this.type = Enum.TERRAIN_TILE;
-    this.segment = 10;
     this._handleTile();
   }
 
@@ -124,7 +81,7 @@ class TileInfo {
     var deltaTextureCoord = 1.0 / this.segment;
     var changeElevation = this.type === Enum.TERRAIN_TILE && this.elevationInfo;
     //level不同设置的半径也不同
-    var levelDeltaR = 0; //this.level * 100;
+    var levelDeltaR = 0;//this.level * 2;
     //对WebMercator投影进行等间距划分格网
     var mercatorXs: number[] = []; //存储从最小的x到最大x的分割值
     var mercatorYs: number[] = []; //存储从最大的y到最小的y的分割值
@@ -147,7 +104,7 @@ class TileInfo {
       for (j = 0; j <= this.segment; j++) {
         var merX = mercatorXs[j];
         var merY = mercatorYs[i];
-        var ele = changeElevation ? this.elevationInfo.elevations[(this.segment + 1) * i + j] : 0;
+        var ele:number = 0;//高程
         var lonlat = MathUtils.webMercatorToDegreeGeographic(merX, merY);
         var p = MathUtils.geographicToCartesianCoord(lonlat[0], lonlat[1], Kernel.EARTH_RADIUS + ele + levelDeltaR).getArray();
         vertices = vertices.concat(p); //顶点坐标
@@ -160,7 +117,7 @@ class TileInfo {
         verticeArray.push(v);
         index++;
       }
-    }    
+    }
 
     //从左上到右下填充indices
     //添加的点的顺序:左上->左下->右下->右上
@@ -187,12 +144,6 @@ class TileInfo {
       }
     }
 
-    // var infos = {
-    //   vertices: vertices,
-    //   indices: indices,
-    //   textureCoords: textureCoords
-    // };
-    // this.setBuffers(infos);
     this.geometry = new TileGeometry(verticeArray, triangleArray);
   }
 }

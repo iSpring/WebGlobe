@@ -1,5 +1,5 @@
 ﻿///<amd-module name="world/geometries/Triangle"/>
-import Vertice = require("./Vertice");
+import Vertice = require("./MeshVertice");
 
 class Triangle{
 

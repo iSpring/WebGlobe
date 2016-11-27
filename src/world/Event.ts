@@ -2,7 +2,7 @@
 import Kernel = require("./Kernel");
 import MathUtils = require("./math/Math");
 import Vector = require("./math/Vector");
-import PerspectiveCamera = require("./PerspectiveCamera");
+import Camera = require("./Camera");
 
 type MouseMoveListener = (e: MouseEvent) => {};
 
@@ -102,7 +102,7 @@ const EventModule = {
     var v2 = Vector.fromVertice(p2);
     var rotateVector = v1.cross(v2);
     var rotateRadian = -Vector.getRadianOfTwoVectors(v1, v2);
-    var camera: PerspectiveCamera = Kernel.globe.camera;
+    var camera: Camera = Kernel.globe.camera;
     camera.worldRotateByVector(rotateRadian, rotateVector);
   },
 
@@ -123,13 +123,13 @@ const EventModule = {
       var absoluteX = event.layerX || event.offsetX;
       var absoluteY = event.layerY || event.offsetY;
       var pickResult = globe.camera.getPickCartesianCoordInEarthByCanvas(absoluteX, absoluteY);
-      globe.setLevel(globe.CURRENT_LEVEL + 1);
+      globe.setLevel(globe.getLevel() + 1);
       if (pickResult.length >= 1) {
         var pickVertice = pickResult[0];
         var lonlat = MathUtils.cartesianCoordToGeographic(pickVertice);
         var lon = lonlat[0];
         var lat = lonlat[1];
-        globe.setLevel(globe.CURRENT_LEVEL + 1);
+        globe.setLevel(globe.getLevel() + 1);
         this.moveLonLatToCanvas(lon, lat, absoluteX, absoluteY);
       }
     }
@@ -152,13 +152,26 @@ const EventModule = {
       delta = event.detail;
       deltaLevel = -parseInt(<any>(delta / 3));
     }
-    var newLevel = globe.CURRENT_LEVEL + deltaLevel;
+    var newLevel = globe.getLevel() + deltaLevel;
     if(newLevel >= 0){
-      //globe.setLevel(newLevel);
-      globe.animateToLevel(newLevel);
+      globe.setLevel(newLevel);
+      //globe.animateToLevel(newLevel);
     }
   },
 
+  /**
+   * 通过向上和向下的键盘按键调整Camera视线方向的倾斜角度pitch
+   * 初始pitch值为0
+   * 当在A时刻要将pitch值从0变成一个非0值时，我们需要记录A时刻Camera的模型矩阵A.matrix和当时的级别A.level
+   * 然后经过多次修改pitch值以及多次缩放后到达B时刻，B时刻的pitch值为B.pitch，层级为B.level
+   * 即便摄像机视线没有指向真实地球的中心了，我们也会假象一个虚拟地球，让我们的经过pitch倾斜后的实现指向虚拟地球的中心以便套用公式计算缩放距离
+   * 我们这样确定在B时刻摄像机的matrix：
+   * 1. 我们计算的起点是A时刻Camera的初始状态（A.matrix和A.level）
+   * 2. 将A.matrix.localRotateX(B.pitch)，这样就将摄像机旋转了，即确定了B时刻摄像机模型坐标系坐标轴的方向
+   * 3. 我们还需要确定B时刻摄像机的位置，按照标准公式计算在A.level层级下，Camera距离地球表面的距离应该是A.distance2Surface
+   *    相应的，按照标准公式计算在B.level层级下，Camera距离地球表面的距离应该是B.distance2Surface
+   *    那么我们将A.matrix.getPosition()沿着B.matrix.getLightDirection()视线往前移动(B.distance2Surface - A.distance2Surface)的距离即可
+   */
   onKeyDown(event: KeyboardEvent) {
     var globe = Kernel.globe;
     if (!globe) {
@@ -172,11 +185,11 @@ const EventModule = {
     //上、下、左、右:38、40、37、39
     if (keyNum == 38 || keyNum == 40) {
       if (keyNum == 38) {
-        if (camera.pitch <= MIN_PITCH) {
+        if (camera.getPitch() <= MIN_PITCH) {
           return;
         }
       } else if (keyNum == 40) {
-        if (camera.pitch >= 90) {
+        if (camera.getPitch() >= 90) {
           return;
         }
         DELTA_PITCH *= -1;
@@ -186,19 +199,19 @@ const EventModule = {
       if (pickResult.length > 0) {
         var pIntersect = pickResult[0];
         var pCamera = camera.getPosition();
-        var legnth2Intersect = MathUtils.getLengthFromVerticeToVertice(pCamera, pIntersect);
-        var mat = camera.matrix.clone();
+        var distance2Intersect = MathUtils.getLengthFromVerticeToVertice(pCamera, pIntersect);
+        var mat = camera.cloneMatrix();
         mat.setColumnTrans(pIntersect.x, pIntersect.y, pIntersect.z);
         var DELTA_RADIAN = MathUtils.degreeToRadian(DELTA_PITCH);
         mat.localRotateX(DELTA_RADIAN);
         var dirZ = mat.getColumnZ();
-        dirZ.setLength(legnth2Intersect);
+        dirZ.setLength(distance2Intersect);
         var pNew = Vector.verticePlusVector(pIntersect, dirZ);
         camera.look(pNew, pIntersect);
-        camera.pitch -= DELTA_PITCH;
+        camera.setPitch(camera.getPitch() - DELTA_PITCH);
         globe.refresh();
       } else {
-        alert("视线与地球无交点");
+        console.log("视线与地球无交点");
       }
     }
   }
