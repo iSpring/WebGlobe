@@ -317,7 +317,7 @@ class Camera extends Object3D {
       }
       var a = timestap - start;
       if (a >= span) {
-        (<any>Object).assign(this, newCamera.toJson());
+        (<any>Object).assign(this, newCamera._toJson());
         this.animating = false;
         cb();
       } else {
@@ -331,11 +331,11 @@ class Camera extends Object3D {
 
   private _clone(): Camera {
     var camera: Camera = new Camera();
-    (<any>Object).assign(camera, this.toJson());
+    (<any>Object).assign(camera, this._toJson());
     return camera;
   }
 
-  toJson(): any {
+  private _toJson(): any {
     return {
       pitch: this.pitch,
       near: this.near,
@@ -373,12 +373,10 @@ class Camera extends Object3D {
     this.look(position, targetPntCopy, upDirection);
   }
 
-
-
   //根据canvasX和canvasY获取拾取向量
-  getPickDirectionByCanvas(canvasX: number, canvasY: number): Vector {
+  private _getPickDirectionByCanvas(canvasX: number, canvasY: number): Vector {
     var ndcXY = MathUtils.convertPointFromCanvasToNDC(canvasX, canvasY);
-    var pickDirection = this.getPickDirectionByNDC(ndcXY[0], ndcXY[1]);
+    var pickDirection = this._getPickDirectionByNDC(ndcXY[0], ndcXY[1]);
     return pickDirection;
   }
 
@@ -392,7 +390,7 @@ class Camera extends Object3D {
   }
 
   //根据ndcX和ndcY获取拾取向量
-  getPickDirectionByNDC(ndcX: number, ndcY: number): Vector {
+  private _getPickDirectionByNDC(ndcX: number, ndcY: number): Vector {
     var verticeInNDC = new Vertice(ndcX, ndcY, 0.499);
     var verticeInWorld = this._convertVerticeFromNdcToWorld(verticeInNDC);
     var cameraPositon = this.getPosition(); //摄像机的世界坐标
@@ -401,7 +399,7 @@ class Camera extends Object3D {
     return pickDirection;
   }
 
-  //获取直线与地球的交点，该方法与World.Math.getLineIntersectPointWithEarth功能基本一样，只不过该方法对相交点进行了远近排序
+  //获取直线与地球的交点，该方法与MathUtils.getLineIntersectPointWithEarth功能基本一样，只不过该方法对相交点进行了远近排序
   getPickCartesianCoordInEarthByLine(line: Line): Vertice[] {
     var result: Vertice[] = [];
     //pickVertice是笛卡尔空间直角坐标系中的坐标
@@ -427,15 +425,15 @@ class Camera extends Object3D {
 
   //计算拾取射线与地球的交点，以笛卡尔空间直角坐标系坐标数组的形式返回
   getPickCartesianCoordInEarthByCanvas(canvasX: number, canvasY: number): Vertice[] {
-    var pickDirection = this.getPickDirectionByCanvas(canvasX, canvasY);
+    var pickDirection = this._getPickDirectionByCanvas(canvasX, canvasY);
     var p = this.getPosition();
     var line = new Line(p, pickDirection);
     var result = this.getPickCartesianCoordInEarthByLine(line);
     return result;
   }
 
-  getPickCartesianCoordInEarthByNDC(ndcX: number, ndcY: number): Vertice[] {
-    var pickDirection = this.getPickDirectionByNDC(ndcX, ndcY);
+  private _getPickCartesianCoordInEarthByNDC(ndcX: number, ndcY: number): Vertice[] {
+    var pickDirection = this._getPickDirectionByNDC(ndcX, ndcY);
     var p = this.getPosition();
     var line = new Line(p, pickDirection);
     var result = this.getPickCartesianCoordInEarthByLine(line);
@@ -797,7 +795,7 @@ class Camera extends Object3D {
       var ndcY: number;
       //从上往下找topNdcY
       for (ndcY = 1.0; ndcY >= -1.0; ndcY -= delta) {
-        pickResults = this.getPickCartesianCoordInEarthByNDC(0, ndcY);
+        pickResults = this._getPickCartesianCoordInEarthByNDC(0, ndcY);
         if (pickResults.length > 0) {
           topNdcY = ndcY;
           break;
@@ -806,7 +804,7 @@ class Camera extends Object3D {
 
       //从下往上找
       for (ndcY = -1.0; ndcY <= 1.0; ndcY += delta) {
-        pickResults = this.getPickCartesianCoordInEarthByNDC(0, ndcY);
+        pickResults = this._getPickCartesianCoordInEarthByNDC(0, ndcY);
         if (pickResults.length > 0) {
           bottomNdcY = ndcY;
           break;
@@ -814,7 +812,7 @@ class Camera extends Object3D {
       }
       result.ndcY = (topNdcY + bottomNdcY) / 2;
     }
-    pickResults = this.getPickCartesianCoordInEarthByNDC(0, result.ndcY);
+    pickResults = this._getPickCartesianCoordInEarthByNDC(0, result.ndcY);
     result.pIntersect = pickResults[0];
     var lonlat = MathUtils.cartesianCoordToGeographic(result.pIntersect);
     result.lon = lonlat[0];
