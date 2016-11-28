@@ -272,7 +272,7 @@ class Camera extends Object3D {
     }
     var intersect = intersects[0];
     var camera2Intersect = MathUtils.getLengthFromVerticeToVertice(currentCameraPosition, intersect);
-    var theoryDistance2Interscet = this._getTheoryDistanceFromCamera2EarthSurface(this.level);
+    var theoryDistance2Interscet = this._getTheoryDistanceFromCamera2EarthSurface(level);
     var deltaVectorFromIntersect2NewPosition = matrix.getColumnZ().normalize().setLength(theoryDistance2Interscet);
     var newCameraPosition = Vector.verticePlusVector(intersect, deltaVectorFromIntersect2NewPosition);
     matrix.setColumnTrans(newCameraPosition.x, newCameraPosition.y, newCameraPosition.z);
