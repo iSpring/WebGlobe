@@ -15,12 +15,19 @@ class Camera extends Object3D {
   private readonly animationDuration: number = 600;//层级变化的动画周期是600毫秒
   private readonly nearFactor: number = 0.6;
   private readonly baseTheoryDistanceFromCamera2EarthSurface = 1.23 * Kernel.EARTH_RADIUS;
-  private pitch: number;
+  private readonly maxPitch = 54;
+
   private level: number = -1; //当前渲染等级
+
+  private isPitchZero: boolean = true;//表示当前Camera视线有没有发生倾斜
+  //private pitchStartMatrix: Matrix;//从0开始倾斜视线时刻的模型矩阵，如果pitch=0，那么pitchStartMatrix为null值。
+  //private pitchStartLevel: number = -1;//从0开始倾斜视线时刻的level，如果pitch=0，那么pitchStartLevel为负值。
+
   private viewMatrix: Matrix;//视点矩阵，即Camera模型矩阵的逆矩阵
   private projMatrix: Matrix;//当Matrix变化的时候，需要重新计算this.far
   private projViewMatrix: Matrix;//获取投影矩阵与视点矩阵的乘积
   private projViewMatrixForDraw: Matrix;//实际传递给shader的矩阵是projViewMatrixForDraw，而不是projViewMatrix
+
   private animating: boolean = false;
 
   Enum: any = {
@@ -35,7 +42,6 @@ class Camera extends Object3D {
   constructor(private fov = 45, private aspect = 1, private near = 1, private far = 100) {
     super();
     this.initFov = this.fov;
-    this.pitch = 90;
     this.projMatrix = new Matrix();
     this._rawSetPerspectiveMatrix(this.fov, this.aspect, this.near, this.far);
   }
@@ -84,7 +90,7 @@ class Camera extends Object3D {
     //this._updateProjViewMatrixForDraw();
   }
 
-  _normalUpdate(){
+  _normalUpdate() {
     //视点矩阵是camera的模型矩阵的逆矩阵
     this.viewMatrix = this.matrix.getInverseMatrix();
 
@@ -95,7 +101,7 @@ class Camera extends Object3D {
     this.projViewMatrix = this.projMatrix.multiplyMatrix(this.viewMatrix);
   }
 
-  _updateProjViewMatrixForDraw(){
+  _updateProjViewMatrixForDraw() {
     var matrix = this.matrix.clone();
     var viewMatrix = this.viewMatrix.clone();
     var projMatrix = this.projMatrix.clone();
@@ -142,7 +148,7 @@ class Camera extends Object3D {
     //_rawUpdatePositionByLevel()方法会修改matrix
     //_setFov()方法会修改projMatrix
 
-    if(currentLevel > safeLevel){
+    if (currentLevel > safeLevel) {
       //摄像机距离地球太近，导致不满足视景体的near值,
       //我们需要将摄像机的位置拉远，以满足near值
       this._rawUpdatePositionByLevel(safeLevel);
@@ -152,7 +158,7 @@ class Camera extends Object3D {
       //deltaLevel应该为正正数，计算出的newFov应该比this.initFov要小
       var newFov = this._calculateFovByDeltaLevel(this.initFov, deltaLevel);
       this._setFov(newFov);
-    }else{
+    } else {
       this._rawUpdatePositionByLevel(currentLevel);
       this._setFov(this.initFov);
     }
@@ -228,31 +234,105 @@ class Camera extends Object3D {
       var newPosition = vector.getVertice();
       this.look(newPosition, origin);
     } else {
-      var length = this._getTheoryDistanceFromCamera2EarthSurface(level) + Kernel.EARTH_RADIUS; //level等级下摄像机应该到球心的距离
-      var vector = this.getLightDirection().getOpposite();
-      vector.setLength(length);
-      var newPosition = vector.getVertice();
-      this.setPosition(newPosition.x, newPosition.y, newPosition.z);
-
-      // var distance2SurfaceNow = this._getTheoryDistanceFromCamera2EarthSurface(this.getLevel());
+      // if(this.pitch === 0){
+      //   var length = this._getTheoryDistanceFromCamera2EarthSurface(level) + Kernel.EARTH_RADIUS; //level等级下摄像机应该到球心的距离
+      //   var vector = this.getLightDirection().getOpposite().setLength(length);
+      //   var newPosition = vector.getVertice();
+      //   this.setPosition(newPosition.x, newPosition.y, newPosition.z);
+      // }else{
+      // }
+      //无论Camera视线倾斜多少，永远保持视线与地球的交叉点到摄像机的距离满足公式
+      // var distance2Intersect = this._getTheoryDistanceFromCamera2EarthSurface(level);
+      // var distance2SurfaceOld = this._getTheoryDistanceFromCamera2EarthSurface(this.getLevel());
       // var distance2SurfaceNew = this._getTheoryDistanceFromCamera2EarthSurface(level);
-      // var deltaDistance = distance2SurfaceNow - distance2SurfaceNew;
-      // var dir = this.getLightDirection();
-      // dir.setLength(deltaDistance);
+      // var deltaDistance = distance2SurfaceOld - distance2SurfaceNew;
+      // var dir = this.getLightDirection().setLength(deltaDistance);
       // var pNew = Vector.verticePlusVector(pOld, dir);
       // this.setPosition(pNew.x, pNew.y, pNew.z);
+      var matrix = this.matrix.clone();
+      var hasIntersect = this._calculateNewCameraPositionByLevel(matrix, level);
+      if (hasIntersect) {
+        this.matrix = matrix;
+      } else {
+        throw "_rawUpdatePositionByLevel: light direction doesn't have intersects with earth";
+      }
     }
     return true;
   }
 
-  getPitch(): number{
-    var lightDirection = this.getLightDirection();
-
-    return this.pitch;
+  _calculateNewCameraPositionByLevel(matrix: Matrix, level: number): boolean {
+    //matrix表示已经调整了pitch后的摄像机模型矩阵，要根据level计算matrix的position
+    var direction = matrix.getColumnZ().getOpposite();
+    var currentCameraPosition = matrix.getPosition();
+    var line = new Line(currentCameraPosition, direction);
+    var intersects = this.getPickCartesianCoordInEarthByLine(line);
+    //我们要保证经过这次旋转之后，视线会与地球有交点
+    if (intersects.length < 2) {
+      return false;
+    }
+    var intersect = intersects[0];
+    var camera2Intersect = MathUtils.getLengthFromVerticeToVertice(currentCameraPosition, intersect);
+    var theoryDistance2Interscet = this._getTheoryDistanceFromCamera2EarthSurface(level);
+    var deltaVectorFromIntersect2NewPosition = matrix.getColumnZ().normalize().setLength(theoryDistance2Interscet);
+    var newCameraPosition = Vector.verticePlusVector(intersect, deltaVectorFromIntersect2NewPosition);
+    matrix.setColumnTrans(newCameraPosition.x, newCameraPosition.y, newCameraPosition.z);
+    return true;
   }
 
-  setPitch(pitch: number): void{
+  setDeltaPitch(deltaPitch: number) {
+    var currentPitch = this.getPitch();
+    var newPitch = currentPitch + deltaPitch;
+    if (newPitch > this.maxPitch) {
+      return;
+    }
+    if (newPitch < 0) {
+      newPitch = 0;
+    }
+    //我们要保证经过这次旋转之后，视线会与地球有交点
+    // var distance2Origin = Vector.fromVertice(this.getPosition()).getLength();
+    // var sinv = Kernel.EARTH_RADIUS / distance2Origin;
+    // var maxPitch = MathUtils.radianToDegree(Math.asin(sinv));
+    // if(newPitch > maxPitch){
+    //   return;
+    // }
 
+    //计算最终的deltaPitch
+    deltaPitch = newPitch - currentPitch;
+    var deltaRadian = MathUtils.degreeToRadian(deltaPitch);
+    //先不对this.matrix进行更新，对其拷贝进行更新
+    var matrix = this.matrix.clone();
+    matrix.localRotateX(deltaRadian);
+    var hasIntersect = this._calculateNewCameraPositionByLevel(matrix, this.level);
+    if (!hasIntersect) {
+      //我们要保证经过这次旋转之后，视线会与地球有交点
+      return;
+    }
+
+    //刷新
+    this.isPitchZero = newPitch === 0;
+    this.matrix = matrix;
+    Kernel.globe.refresh();
+  }
+
+  //pitch表示Camera视线的倾斜角度，初始值为0，表示视线经过球心，单位为角度，范围是[0, this.maxPitch]
+  getPitch(): number {
+    //计算夹角
+    var lightDirection = this.getLightDirection();
+    var vectorFromCmeraToEarthOrigin = Vector.fromVertice(this.getPosition()).getOpposite().normalize();
+    var cosθ = lightDirection.dot(vectorFromCmeraToEarthOrigin);
+    var radian = Math.acos(cosθ);
+
+    //计算夹角的正负
+    var crossVector = vectorFromCmeraToEarthOrigin.cross(lightDirection).normalize();
+    var zAxisDirection = this.matrix.getColumnZ().normalize();
+    if (crossVector.dot(zAxisDirection) > 0) {
+      //正值
+      radian = Math.abs(radian);
+    } else {
+      //负值
+      radian = - Math.abs(radian);
+    }
+    return MathUtils.radianToDegree(radian);
   }
 
   getLightDirection(): Vector {
@@ -268,7 +348,7 @@ class Camera extends Object3D {
     return length2EarthSurface;
   }
 
-  getProjViewMatrixForDraw(): Matrix{
+  getProjViewMatrixForDraw(): Matrix {
     return this.projViewMatrix;
   }
 
@@ -352,7 +432,6 @@ class Camera extends Object3D {
 
   private _toJson(): any {
     return {
-      pitch: this.pitch,
       near: this.near,
       far: this.far,
       fov: this.fov,
@@ -800,7 +879,7 @@ class Camera extends Object3D {
       lat: <number>null
     };
     var pickResults: Vertice[];
-    if (this.pitch == 90) {
+    if (this.isPitchZero) {
       result.ndcY = 0;
     } else {
       var count = 10;
