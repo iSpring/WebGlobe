@@ -29,6 +29,20 @@ const MathUtils = {
         return ( value & ( value - 1 ) ) === 0 && value !== 0;
     },
 
+    asinSafely(value: number){
+        if(value > 1){
+            value = 1;
+        }
+        return Math.asin(value);
+    },
+
+    acosSafely(value: number){
+        if(value > 1){
+            value = 1;
+        }
+        return Math.acos(value);
+    },
+
     /**
      * 将其他进制的数字转换为10进制
      * @param numSys 要准换的进制

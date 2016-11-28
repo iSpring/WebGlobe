@@ -226,7 +226,7 @@ class Camera extends Object3D {
     var globe = Kernel.globe;
     var pOld = this.getPosition();
     if (pOld.x === 0 && pOld.y === 0 && pOld.z === 0) {
-      //初始设置camera
+      //init camera
       var length = this._getTheoryDistanceFromCamera2EarthSurface(level) + Kernel.EARTH_RADIUS; //level等级下摄像机应该到球心的距离
       var origin = new Vertice(0, 0, 0);
       var vector = this.getLightDirection().getOpposite();
@@ -234,27 +234,24 @@ class Camera extends Object3D {
       var newPosition = vector.getVertice();
       this.look(newPosition, origin);
     } else {
-      // if(this.pitch === 0){
-      //   var length = this._getTheoryDistanceFromCamera2EarthSurface(level) + Kernel.EARTH_RADIUS; //level等级下摄像机应该到球心的距离
-      //   var vector = this.getLightDirection().getOpposite().setLength(length);
-      //   var newPosition = vector.getVertice();
-      //   this.setPosition(newPosition.x, newPosition.y, newPosition.z);
-      // }else{
-      // }
-      //无论Camera视线倾斜多少，永远保持视线与地球的交叉点到摄像机的距离满足公式
-      // var distance2Intersect = this._getTheoryDistanceFromCamera2EarthSurface(level);
-      // var distance2SurfaceOld = this._getTheoryDistanceFromCamera2EarthSurface(this.getLevel());
-      // var distance2SurfaceNew = this._getTheoryDistanceFromCamera2EarthSurface(level);
-      // var deltaDistance = distance2SurfaceOld - distance2SurfaceNew;
-      // var dir = this.getLightDirection().setLength(deltaDistance);
-      // var pNew = Vector.verticePlusVector(pOld, dir);
-      // this.setPosition(pNew.x, pNew.y, pNew.z);
-      var matrix = this.matrix.clone();
-      var hasIntersect = this._calculateNewCameraPositionByLevel(matrix, level);
-      if (hasIntersect) {
-        this.matrix = matrix;
-      } else {
-        throw "_rawUpdatePositionByLevel: light direction doesn't have intersects with earth";
+      var currentPosition = this.getPosition();
+      if(this.isPitchZero){
+        var length = this._getTheoryDistanceFromCamera2EarthSurface(level) + Kernel.EARTH_RADIUS;
+        var vector = this.getLightDirection().getOpposite().setLength(length);
+        var newPosition = vector.getVertice();
+        this.setPosition(newPosition.x, newPosition.y, newPosition.z);
+      }else{
+        var intersects = this.getDirectionIntersectPointWithEarth();
+        if(intersects.length === 0){
+          throw "no intersect";
+        }
+        var intersect = intersects[0];
+        var distance2Intersect = MathUtils.getLengthFromVerticeToVertice(currentPosition, intersect);
+        var deltaLevel = level - this.level;
+        var newDistance2Intersect = distance2Intersect / Math.pow(2, deltaLevel);
+        var deltaDistance = distance2Intersect - newDistance2Intersect;
+        var deltaVector = this.getLightDirection().setLength(deltaDistance);
+        var newPosition = Vector.verticePlusVector(currentPosition, deltaVector);
       }
     }
     return true;
@@ -298,6 +295,9 @@ class Camera extends Object3D {
 
     //计算最终的deltaPitch
     deltaPitch = newPitch - currentPitch;
+    if(deltaPitch === 0){
+      return;
+    }
     var deltaRadian = MathUtils.degreeToRadian(deltaPitch);
     //先不对this.matrix进行更新，对其拷贝进行更新
     var matrix = this.matrix.clone();
@@ -320,12 +320,12 @@ class Camera extends Object3D {
     var lightDirection = this.getLightDirection();
     var vectorFromCmeraToEarthOrigin = Vector.fromVertice(this.getPosition()).getOpposite().normalize();
     var cosθ = lightDirection.dot(vectorFromCmeraToEarthOrigin);
-    var radian = Math.acos(cosθ);
+    var radian = MathUtils.acosSafely(cosθ);
 
     //计算夹角的正负
     var crossVector = vectorFromCmeraToEarthOrigin.cross(lightDirection).normalize();
-    var zAxisDirection = this.matrix.getColumnZ().normalize();
-    if (crossVector.dot(zAxisDirection) > 0) {
+    var xAxisDirection = this.matrix.getColumnX().normalize();
+    if (crossVector.dot(xAxisDirection) > 0) {
       //正值
       radian = Math.abs(radian);
     } else {
