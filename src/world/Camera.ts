@@ -19,9 +19,9 @@ class Camera extends Object3D {
 
   private level: number = -1; //当前渲染等级
 
-  private isPitchZero: boolean = true;//表示当前Camera视线有没有发生倾斜
-  //private pitchStartMatrix: Matrix;//从0开始倾斜视线时刻的模型矩阵，如果pitch=0，那么pitchStartMatrix为null值。
-  //private pitchStartLevel: number = -1;//从0开始倾斜视线时刻的level，如果pitch=0，那么pitchStartLevel为负值。
+  //旋转的时候，绕着视线与地球交点进行旋转
+  //定义抬头时，旋转角为正值
+  private isZeroPitch: boolean = true;//表示当前Camera视线有没有发生倾斜
 
   private viewMatrix: Matrix;//视点矩阵，即Camera模型矩阵的逆矩阵
   private projMatrix: Matrix;//当Matrix变化的时候，需要重新计算this.far
@@ -235,7 +235,7 @@ class Camera extends Object3D {
       this.look(newPosition, origin);
     } else {
       var currentPosition = this.getPosition();
-      if(this.isPitchZero){
+      if(this.isZeroPitch){
         var length = this._getTheoryDistanceFromCamera2EarthSurface(level) + Kernel.EARTH_RADIUS;
         var vector = this.getLightDirection().getOpposite().setLength(length);
         var newPosition = vector.getVertice();
@@ -285,13 +285,6 @@ class Camera extends Object3D {
     if (newPitch < 0) {
       newPitch = 0;
     }
-    //我们要保证经过这次旋转之后，视线会与地球有交点
-    // var distance2Origin = Vector.fromVertice(this.getPosition()).getLength();
-    // var sinv = Kernel.EARTH_RADIUS / distance2Origin;
-    // var maxPitch = MathUtils.radianToDegree(Math.asin(sinv));
-    // if(newPitch > maxPitch){
-    //   return;
-    // }
 
     //计算最终的deltaPitch
     deltaPitch = newPitch - currentPitch;
@@ -309,29 +302,38 @@ class Camera extends Object3D {
     }
 
     //刷新
-    this.isPitchZero = newPitch === 0;
+    this.isZeroPitch = newPitch === 0;
     this.matrix = matrix;
     Kernel.globe.refresh();
   }
 
   //pitch表示Camera视线的倾斜角度，初始值为0，表示视线经过球心，单位为角度，范围是[0, this.maxPitch]
   getPitch(): number {
+    var intersects = this.getDirectionIntersectPointWithEarth();
+    if(intersects.length === 0){
+      throw "no intersects";
+    }
+    var intersect = intersects[0];
+
     //计算夹角
-    var lightDirection = this.getLightDirection();
-    var vectorFromCmeraToEarthOrigin = Vector.fromVertice(this.getPosition()).getOpposite().normalize();
-    var cosθ = lightDirection.dot(vectorFromCmeraToEarthOrigin);
+    var vectorOrigin2Intersect = Vector.fromVertice(intersect);
+    var length1 = vectorOrigin2Intersect.getLength();
+    var vectorIntersect2Camera = Vector.verticeMinusVertice(this.getPosition(), intersect);
+    var length2 = vectorIntersect2Camera.getLength();
+    var cosθ = vectorOrigin2Intersect.dot(vectorIntersect2Camera) / (length1 * length2);
     var radian = MathUtils.acosSafely(cosθ);
 
     //计算夹角的正负
-    var crossVector = vectorFromCmeraToEarthOrigin.cross(lightDirection).normalize();
-    var xAxisDirection = this.matrix.getColumnX().normalize();
-    if (crossVector.dot(xAxisDirection) > 0) {
+    var crossVector = vectorOrigin2Intersect.cross(vectorIntersect2Camera);
+    var xAxisDirection = this.matrix.getColumnX()
+    if(crossVector.dot(xAxisDirection)){
       //正值
       radian = Math.abs(radian);
-    } else {
+    }else{
       //负值
       radian = - Math.abs(radian);
     }
+
     return MathUtils.radianToDegree(radian);
   }
 
@@ -879,7 +881,7 @@ class Camera extends Object3D {
       lat: <number>null
     };
     var pickResults: Vertice[];
-    if (this.isPitchZero) {
+    if (this.isZeroPitch) {
       result.ndcY = 0;
     } else {
       var count = 10;
