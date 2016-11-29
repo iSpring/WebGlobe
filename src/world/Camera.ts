@@ -19,6 +19,8 @@ class Camera extends Object3D {
 
   private level: number = -1; //当前渲染等级
 
+  private animationLevel: number = -1;//非整数，表示缩放动画过程中的level
+
   //旋转的时候，绕着视线与地球交点进行旋转
   //定义抬头时，旋转角为正值
   private isZeroPitch: boolean = true;//表示当前Camera视线有没有发生倾斜
@@ -58,13 +60,13 @@ class Camera extends Object3D {
 
   private _rawSetPerspectiveMatrix(fov: number = 45, aspect: number = 1, near: number = 1, far: number = 100, projMatrix: Matrix = this.projMatrix): void {
     //https://github.com/toji/gl-matrix/blob/master/src/gl-matrix/mat4.js#L1788
-    if(this.projMatrix === projMatrix){
+    if (this.projMatrix === projMatrix) {
       this.fov = fov;
       this.aspect = aspect;
       this.near = near;
       this.far = far;
     }
-    
+
     var mat = [
       1, 0, 0, 0,
       0, 1, 0, 0,
@@ -110,7 +112,7 @@ class Camera extends Object3D {
     // this._rawSetPerspectiveMatrix(this.fov, this.aspect, this.near, far);
   }
 
-  private _getMinimalFar(cameraPosition: Vertice): number{
+  private _getMinimalFar(cameraPosition: Vertice): number {
     //重新计算far,保持far在满足正常需求情况下的最小值
     //far值：视点与地球切面的距离
     var distance2EarthOrigin = Vector.fromVertice(cameraPosition).getLength();
@@ -168,7 +170,9 @@ class Camera extends Object3D {
   private _updatePositionAndFov(cameraMatrix: Matrix): number {
     //是否满足near值，和fov没有关系，和position有关
     //但是改变position的话，fov也要相应变动以满足对应的缩放效果
-    const currentLevel = this.getLevel();
+    const currentLevel = this.animating ? this.animationLevel : this.level;
+
+    //safeLevel不是整数
     var safeLevel = this._getSafeThresholdLevelForNear();
 
     if (currentLevel > safeLevel) {
@@ -193,7 +197,8 @@ class Camera extends Object3D {
     var thresholdNear = this.near * this.nearFactor;
     var pow2level = this.baseTheoryDistanceFromCamera2EarthSurface / thresholdNear;
     var level = (<any>Math).log2(pow2level);
-    return Math.floor(level);
+    //return Math.floor(level);
+    return level;
   }
 
   /**
@@ -271,13 +276,13 @@ class Camera extends Object3D {
   }
 
   //设置观察到的层级，不要在该方法中修改this.level的值
-  private _updatePositionByLevel(level: number, cameraMatrix: Matrix) {    
+  private _updatePositionByLevel(level: number, cameraMatrix: Matrix) {
     var globe = Kernel.globe;
     var intersects = this._getDirectionIntersectPointWithEarth(cameraMatrix);
     if (intersects.length === 0) {
       throw "no intersect";
     }
-    var intersect = intersects[0];    
+    var intersect = intersects[0];
     var theoryDistance2Interscet = this._getTheoryDistanceFromCamera2EarthSurface(level);
     var vector = cameraMatrix.getColumnZ();
     vector.setLength(theoryDistance2Interscet);
@@ -405,24 +410,21 @@ class Camera extends Object3D {
     return this.animating;
   }
 
-  animateToLevel(level: number): void {
-    if (!(Utils.isNonNegativeInteger(level))) {
-      throw "invalid level:" + level;
-    }
-    var newCamera = this._clone();
-    //don't call setLevel method because it will update CURRENT_LEVEL
-    // newCamera._updatePositionByLevel(level);
-
-    this._animateToCamera(newCamera.matrix.getPosition(), () => {
-      this.level = level;
-    });
-  }
-
-  private _animateToCamera(newPosition: Vertice, cb: () => void) {
+  animateToLevel(newLevel: number): void {
     if (this.isAnimating()) {
       return;
     }
-    this.animating = true;
+
+    if (!(Utils.isNonNegativeInteger(newLevel))) {
+      throw "invalid level:" + newLevel;
+    }
+    var newCameraMatrix = this.matrix.clone();
+    this._updatePositionByLevel(newLevel, newCameraMatrix);
+    var newPosition = newCameraMatrix.getPosition();
+
+    //don't call setLevel method because it will update CURRENT_LEVEL
+    // newCamera._updatePositionByLevel(newLevel);
+
     var oldPosition = this.getPosition();
     var span = this.animationDuration;
     var singleSpan = 1000 / 60;
@@ -430,7 +432,11 @@ class Camera extends Object3D {
     var deltaX = (newPosition.x - oldPosition.x) / count;
     var deltaY = (newPosition.y - oldPosition.y) / count;
     var deltaZ = (newPosition.z - oldPosition.z) / count;
+    var deltaLevel = (newLevel - this.level) / count;
     var start: number = -1;
+    this.animationLevel = this.level;
+    this.animating = true;
+
     var callback = (timestap: number) => {
       if (start < 0) {
         start = timestap;
@@ -438,10 +444,14 @@ class Camera extends Object3D {
       var a = timestap - start;
       if (a >= span) {
         // (<any>Object).assign(this, newCamera._toJson());
-        this.setPosition(newPosition.x, newPosition.y, newPosition.z);
+        // this.setPosition(newPosition.x, newPosition.y, newPosition.z);
+        // this.animating = false;
+        //cb();
         this.animating = false;
-        cb();
+        this.animationLevel = -1;
+        this.setLevel(newLevel);
       } else {
+        this.animationLevel += deltaLevel;
         var p = this.getPosition();
         this.setPosition(p.x + deltaX, p.y + deltaY, p.z + deltaZ);
         requestAnimationFrame(callback);
@@ -450,22 +460,22 @@ class Camera extends Object3D {
     requestAnimationFrame(callback);
   }
 
-  private _clone(): Camera {
-    var camera: Camera = new Camera();
-    (<any>Object).assign(camera, this._toJson());
-    return camera;
-  }
+  // private _clone(): Camera {
+  //   var camera: Camera = new Camera();
+  //   (<any>Object).assign(camera, this._toJson());
+  //   return camera;
+  // }
 
-  private _toJson(): any {
-    return {
-      near: this.near,
-      far: this.far,
-      fov: this.fov,
-      aspect: this.aspect,
-      matrix: this.matrix.clone(),
-      projMatrix: this.projMatrix.clone()
-    };
-  }
+  // private _toJson(): any {
+  //   return {
+  //     near: this.near,
+  //     far: this.far,
+  //     fov: this.fov,
+  //     aspect: this.aspect,
+  //     matrix: this.matrix.clone(),
+  //     projMatrix: this.projMatrix.clone()
+  //   };
+  // }
 
   private _look(cameraPnt: Vertice, targetPnt: Vertice, upDirection: Vector = new Vector(0, 1, 0)): void {
     var cameraPntCopy = cameraPnt.clone();
@@ -501,7 +511,7 @@ class Camera extends Object3D {
   }
 
   //获取cameraMatrix视线与地球的交点
-  private _getDirectionIntersectPointWithEarth(cameraMatrix: Matrix): Vertice[]{
+  private _getDirectionIntersectPointWithEarth(cameraMatrix: Matrix): Vertice[] {
     var dir = cameraMatrix.getColumnZ().getOpposite();
     var p = cameraMatrix.getPosition();
     var line = new Line(p, dir);
