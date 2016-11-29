@@ -26,6 +26,10 @@ class Camera extends Object3D {
   private viewMatrix: Matrix;//视点矩阵，即Camera模型矩阵的逆矩阵
   private projMatrix: Matrix;//当Matrix变化的时候，需要重新计算this.far
   private projViewMatrix: Matrix;//获取投影矩阵与视点矩阵的乘积
+
+  private matrixForDraw: Matrix;
+  private viewMatrixForDraw: Matrix;
+  private projMatrixForDraw: Matrix;
   private projViewMatrixForDraw: Matrix;//实际传递给shader的矩阵是projViewMatrixForDraw，而不是projViewMatrix
 
   private animating: boolean = false;
@@ -138,26 +142,26 @@ class Camera extends Object3D {
   }
 
   _updateProjViewMatrixForDraw() {
-    var newMatrix = this.matrix.clone();
+    this.matrixForDraw = this.matrix.clone();
 
     //通过修改position以更新matrix
-    var newFov = this._updatePositionAndFov(newMatrix);
+    var newFov = this._updatePositionAndFov(this.matrixForDraw);
     var aspect = this.aspect;
     var near = this.near;
 
     //计算newFar
-    var newPosition = newMatrix.getPosition();
+    var newPosition = this.matrixForDraw.getPosition();
     var newFar = this.far; //this._getMinimalFar(newPosition); 
 
     //根据newFov和newFar重新计算
-    var newProjMatrix = new Matrix();
-    this._rawSetPerspectiveMatrix(newFov, aspect, near, newFar, newProjMatrix);
+    this.projMatrixForDraw = new Matrix();
+    this._rawSetPerspectiveMatrix(newFov, aspect, near, newFar, this.projMatrixForDraw);
 
     //在_updatePositionAndFov()方法调用之后再计算newViewMatrix
-    var newViewMatrix = newMatrix.getInverseMatrix();
+    this.viewMatrixForDraw = this.matrixForDraw.getInverseMatrix();
 
     //最后计算projViewMatrixForDraw
-    this.projViewMatrixForDraw = newProjMatrix.multiplyMatrix(newViewMatrix);
+    this.projViewMatrixForDraw = this.projMatrixForDraw.multiplyMatrix(this.viewMatrixForDraw);
   }
 
   //返回更新后的fov值，如果返回结果 < 0，说明无需更新fov
@@ -297,7 +301,7 @@ class Camera extends Object3D {
       return;
     }
 
-    var intersects = this.getDirectionIntersectPointWithEarth();
+    var intersects = this._getDirectionIntersectPointWithEarth(this.matrix);
     if (intersects.length === 0) {
       throw "no intersects";
     }
@@ -324,7 +328,7 @@ class Camera extends Object3D {
     if (this.isZeroPitch) {
       return 0;
     }
-    var intersects = this.getDirectionIntersectPointWithEarth();
+    var intersects = this._getDirectionIntersectPointWithEarth(this.matrix);
     if (intersects.length === 0) {
       throw "no intersects";
     }
@@ -350,6 +354,38 @@ class Camera extends Object3D {
     }
 
     return MathUtils.radianToDegree(radian);
+  }
+
+  //计算拾取射线与地球的交点，以笛卡尔空间直角坐标系坐标数组的形式返回
+  //该方法需要projViewMatrixForDraw系列矩阵进行计算
+  getPickCartesianCoordInEarthByCanvas(canvasX: number, canvasY: number): Vertice[] {
+    this.update();
+
+    //暂存projViewMatrix系列矩阵
+    var matrix = this.matrix;
+    var viewMatrix = this.viewMatrix;
+    var projMatrix = this.projMatrix;
+    var projViewMatrix = this.projViewMatrix;
+
+    //将projViewMatrix系列矩阵赋值为projViewMatrixForDraw系列矩阵
+    this.matrix = this.matrixForDraw;
+    this.viewMatrix = this.viewMatrixForDraw;
+    this.projMatrix = this.projMatrixForDraw;
+    this.projViewMatrix = this.projViewMatrixForDraw;
+
+    //基于projViewMatrixForDraw系列矩阵进行计算，应该没有误差
+    var pickDirection = this._getPickDirectionByCanvas(canvasX, canvasY);
+    var p = this.getPosition();
+    var line = new Line(p, pickDirection);
+    var result = this._getPickCartesianCoordInEarthByLine(line);
+
+    //还原projViewMatrix系列矩阵
+    this.matrix = matrix;
+    this.viewMatrix = viewMatrix;
+    this.projMatrix = projMatrix;
+    this.projViewMatrix = projViewMatrix;
+
+    return result;
   }
 
   getLightDirection(): Vector {
@@ -464,17 +500,12 @@ class Camera extends Object3D {
     return pickDirection;
   }
 
+  //获取cameraMatrix视线与地球的交点
   private _getDirectionIntersectPointWithEarth(cameraMatrix: Matrix): Vertice[]{
     var dir = cameraMatrix.getColumnZ().getOpposite();
     var p = cameraMatrix.getPosition();
     var line = new Line(p, dir);
-    var result = this.getPickCartesianCoordInEarthByLine(line);
-    return result;
-  }
-
-  //获取当前视线与地球的交点
-  getDirectionIntersectPointWithEarth(): Vertice[] {
-    var result = this._getDirectionIntersectPointWithEarth(this.matrix);
+    var result = this._getPickCartesianCoordInEarthByLine(line);
     return result;
   }
 
@@ -489,7 +520,7 @@ class Camera extends Object3D {
   }
 
   //获取直线与地球的交点，该方法与MathUtils.getLineIntersectPointWithEarth功能基本一样，只不过该方法对相交点进行了远近排序
-  getPickCartesianCoordInEarthByLine(line: Line): Vertice[] {
+  private _getPickCartesianCoordInEarthByLine(line: Line): Vertice[] {
     var result: Vertice[] = [];
     //pickVertice是笛卡尔空间直角坐标系中的坐标
     var pickVertices = MathUtils.getLineIntersectPointWithEarth(line);
@@ -512,20 +543,11 @@ class Camera extends Object3D {
     return result;
   }
 
-  //计算拾取射线与地球的交点，以笛卡尔空间直角坐标系坐标数组的形式返回
-  getPickCartesianCoordInEarthByCanvas(canvasX: number, canvasY: number): Vertice[] {
-    var pickDirection = this._getPickDirectionByCanvas(canvasX, canvasY);
-    var p = this.getPosition();
-    var line = new Line(p, pickDirection);
-    var result = this.getPickCartesianCoordInEarthByLine(line);
-    return result;
-  }
-
   private _getPickCartesianCoordInEarthByNDC(ndcX: number, ndcY: number): Vertice[] {
     var pickDirection = this._getPickDirectionByNDC(ndcX, ndcY);
     var p = this.getPosition();
     var line = new Line(p, pickDirection);
-    var result = this.getPickCartesianCoordInEarthByLine(line);
+    var result = this._getPickCartesianCoordInEarthByLine(line);
     return result;
   }
 
@@ -593,7 +615,7 @@ class Camera extends Object3D {
     var cameraP = this.getPosition();
     var dir = Vector.verticeMinusVertice(verticeInWorld, cameraP);
     var line = new Line(cameraP, dir);
-    var pickResult = this.getPickCartesianCoordInEarthByLine(line);
+    var pickResult = this._getPickCartesianCoordInEarthByLine(line);
     if (pickResult.length > 0) {
       var pickVertice = pickResult[0];
       var length2Vertice = MathUtils.getLengthFromVerticeToVertice(cameraP, verticeInWorld);

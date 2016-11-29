@@ -13,7 +13,7 @@ const Kernel = {
     globe: <Globe> null,
     idCounter: <number> 0, //Object3D对象的唯一标识
     BASE_LEVEL: <number> 6, //渲染的基准层级
-    MAX_LEVEL: <number> 14,//最大的渲染级别
+    MAX_LEVEL: <number> 17,//最大的渲染级别
     EARTH_RADIUS: <number> radius,
     MAX_PROJECTED_COORD: <number> maxProjectedCoord,
     proxy: <string> ""
