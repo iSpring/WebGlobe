@@ -102,8 +102,8 @@ class Camera extends Object3D {
   }
 
   private _updateFar(): void {
-    var far = this._getMinimalFar(this.matrix.getPosition());
-    this._rawSetPerspectiveMatrix(this.fov, this.aspect, this.near, far);
+    // var far = this._getMinimalFar(this.matrix.getPosition());
+    // this._rawSetPerspectiveMatrix(this.fov, this.aspect, this.near, far);
   }
 
   private _getMinimalFar(cameraPosition: Vertice): number{
@@ -147,7 +147,7 @@ class Camera extends Object3D {
 
     //计算newFar
     var newPosition = newMatrix.getPosition();
-    var newFar = this._getMinimalFar(newPosition); 
+    var newFar = this.far; //this._getMinimalFar(newPosition); 
 
     //根据newFov和newFar重新计算
     var newProjMatrix = new Matrix();
