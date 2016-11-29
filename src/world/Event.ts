@@ -49,51 +49,54 @@ const EventModule = {
   },
 
   onMouseDown(event: MouseEvent) {
-    if (Kernel.globe) {
-      this.bMouseDown = true;
-      this.previousX = event.layerX || event.offsetX;
-      this.previousY = event.layerY || event.offsetY;
-      var pickResult = Kernel.globe.camera.getPickCartesianCoordInEarthByCanvas(this.previousX, this.previousY);
-      if (pickResult.length > 0) {
-        this.dragGeo = MathUtils.cartesianCoordToGeographic(pickResult[0]);
-        console.log("单击点三维坐标:(" + pickResult[0].x + "," + pickResult[0].y + "," + pickResult[0].z + ");经纬度坐标:[" + this.dragGeo[0] + "," + this.dragGeo[1] + "]");
-      }
-      this.canvas.addEventListener("mousemove", this.onMouseMoveListener, false);
+    var globe = Kernel.globe;
+    if (!globe || globe.isAnimating()) {
+      return;
     }
+    this.bMouseDown = true;
+    this.previousX = event.layerX || event.offsetX;
+    this.previousY = event.layerY || event.offsetY;
+    var pickResult = Kernel.globe.camera.getPickCartesianCoordInEarthByCanvas(this.previousX, this.previousY);
+    if (pickResult.length > 0) {
+      this.dragGeo = MathUtils.cartesianCoordToGeographic(pickResult[0]);
+      console.log("单击点三维坐标:(" + pickResult[0].x + "," + pickResult[0].y + "," + pickResult[0].z + ");经纬度坐标:[" + this.dragGeo[0] + "," + this.dragGeo[1] + "]");
+    }
+    this.canvas.addEventListener("mousemove", this.onMouseMoveListener, false);
   },
 
   onMouseMove(event: MouseEvent) {
     var globe = Kernel.globe;
-    if (globe && this.bMouseDown) {
-      var currentX = event.layerX || event.offsetX;
-      var currentY = event.layerY || event.offsetY;
-      var pickResult = globe.camera.getPickCartesianCoordInEarthByCanvas(currentX, currentY);
-      if (pickResult.length > 0) {
-        //鼠标在地球范围内
-        if (this.dragGeo) {
-          //鼠标拖动过程中要显示底图
-          //globe.showAllSubTiledLayerAndTiles();
-          var newGeo = MathUtils.cartesianCoordToGeographic(pickResult[0]);
-          this.moveGeo(this.dragGeo[0], this.dragGeo[1], newGeo[0], newGeo[1]);
-        } else {
-          //进入地球内部
-          this.dragGeo = MathUtils.cartesianCoordToGeographic(pickResult[0]);
-        }
-        this.previousX = currentX;
-        this.previousY = currentY;
-        this.canvas.style.cursor = "pointer";
+    if (!globe || globe.isAnimating() || !this.bMouseDown) {
+      return;
+    }
+    var currentX = event.layerX || event.offsetX;
+    var currentY = event.layerY || event.offsetY;
+    var pickResult = globe.camera.getPickCartesianCoordInEarthByCanvas(currentX, currentY);
+    if (pickResult.length > 0) {
+      //鼠标在地球范围内
+      if (this.dragGeo) {
+        //鼠标拖动过程中要显示底图
+        //globe.showAllSubTiledLayerAndTiles();
+        var newGeo = MathUtils.cartesianCoordToGeographic(pickResult[0]);
+        this.moveGeo(this.dragGeo[0], this.dragGeo[1], newGeo[0], newGeo[1]);
       } else {
-        //鼠标超出地球范围
-        this.previousX = -1;
-        this.previousY = -1;
-        this.dragGeo = null;
-        this.canvas.style.cursor = "default";
+        //进入地球内部
+        this.dragGeo = MathUtils.cartesianCoordToGeographic(pickResult[0]);
       }
+      this.previousX = currentX;
+      this.previousY = currentY;
+      this.canvas.style.cursor = "pointer";
+    } else {
+      //鼠标超出地球范围
+      this.previousX = -1;
+      this.previousY = -1;
+      this.dragGeo = null;
+      this.canvas.style.cursor = "default";
     }
   },
 
   moveGeo(oldLon: number, oldLat: number, newLon: number, newLat: number) {
-    if(oldLon === newLon && oldLat === newLat){
+    if (oldLon === newLon && oldLat === newLat) {
       return;
     }
     var p1 = MathUtils.geographicToCartesianCoord(oldLon, oldLat);
@@ -119,25 +122,27 @@ const EventModule = {
 
   onDbClick(event: MouseEvent) {
     var globe = Kernel.globe;
-    if (globe) {
-      var absoluteX = event.layerX || event.offsetX;
-      var absoluteY = event.layerY || event.offsetY;
-      var pickResult = globe.camera.getPickCartesianCoordInEarthByCanvas(absoluteX, absoluteY);
+    if (!globe || globe.isAnimating()) {
+      return;
+    }
+
+    var absoluteX = event.layerX || event.offsetX;
+    var absoluteY = event.layerY || event.offsetY;
+    var pickResult = globe.camera.getPickCartesianCoordInEarthByCanvas(absoluteX, absoluteY);
+    globe.setLevel(globe.getLevel() + 1);
+    if (pickResult.length >= 1) {
+      var pickVertice = pickResult[0];
+      var lonlat = MathUtils.cartesianCoordToGeographic(pickVertice);
+      var lon = lonlat[0];
+      var lat = lonlat[1];
       globe.setLevel(globe.getLevel() + 1);
-      if (pickResult.length >= 1) {
-        var pickVertice = pickResult[0];
-        var lonlat = MathUtils.cartesianCoordToGeographic(pickVertice);
-        var lon = lonlat[0];
-        var lat = lonlat[1];
-        globe.setLevel(globe.getLevel() + 1);
-        this.moveLonLatToCanvas(lon, lat, absoluteX, absoluteY);
-      }
+      this.moveLonLatToCanvas(lon, lat, absoluteX, absoluteY);
     }
   },
 
   onMouseWheel(event: MouseWheelEvent) {
     var globe = Kernel.globe;
-    if (!globe) {
+    if (!globe || globe.isAnimating()) {
       return;
     }
 
@@ -153,7 +158,7 @@ const EventModule = {
       deltaLevel = -parseInt(<any>(delta / 3));
     }
     var newLevel = globe.getLevel() + deltaLevel;
-    if(newLevel >= 0){
+    if (newLevel >= 0) {
       //globe.setLevel(newLevel);
       globe.animateToLevel(newLevel);
     }
@@ -165,7 +170,7 @@ const EventModule = {
    */
   onKeyDown(event: KeyboardEvent) {
     var globe = Kernel.globe;
-    if (!globe) {
+    if (!globe || globe.isAnimating()) {
       return;
     }
 
@@ -173,10 +178,10 @@ const EventModule = {
     var camera = globe.camera;
     var keyNum = event.keyCode !== undefined ? event.keyCode : event.which;
     //上、下、左、右:38、40、37、39
-    if(keyNum === 38){
+    if (keyNum === 38) {
       //向上键
       camera.setDeltaPitch(DELTA_PITCH);
-    }else if(keyNum === 40){
+    } else if (keyNum === 40) {
       //向下键
       camera.setDeltaPitch(-DELTA_PITCH);
     }
