@@ -44,6 +44,7 @@ class Camera extends Object3D {
     this.initFov = this.fov;
     this.projMatrix = new Matrix();
     this._rawSetPerspectiveMatrix(this.fov, this.aspect, this.near, this.far);
+    this._initCameraPosition();
   }
 
   private _setPerspectiveMatrix(fov: number = 45, aspect: number = 1, near: number = 1, far: number = 100): void {
@@ -103,21 +104,47 @@ class Camera extends Object3D {
 
   _updateProjViewMatrixForDraw() {
     var matrix = this.matrix.clone();
-    var viewMatrix = this.viewMatrix.clone();
+    // var viewMatrix = this.viewMatrix.clone();
     var projMatrix = this.projMatrix.clone();
-    var projViewMatrix = this.projViewMatrix.clone();
+    // var projViewMatrix = this.projViewMatrix.clone();
 
     //通过修改position和fov以更新matrix和projMatrix
-    this._updatePositionAndFov();
+    this._updatePositionAndFov(matrix, projMatrix);
 
     //在_updatePositionAndFov()方法调用之后再计算viewMatrix
-    this.viewMatrix = this.matrix.getInverseMatrix();
+    var viewMatrix = matrix.getInverseMatrix();
 
     //最后更新far
     this._updateFar();
 
     //update projViewMatrix
     this.projViewMatrixForDraw = projMatrix.multiplyMatrix(viewMatrix);
+  }
+
+  //返回更新后的fov值，如果返回结果 < 0，说明无需更新fov
+  private _updatePositionAndFov(cameraMatrix: Matrix, projMatrix: Matrix) {
+    //是否满足near值，和fov没有关系，和position有关
+    //但是改变position的话，fov也要相应变动以满足对应的缩放效果
+    const currentLevel = this.getLevel();
+    var safeLevel = this._getSafeThresholdLevelForNear();
+
+    //_rawUpdatePositionByLevel()方法会修改matrix
+    //_setFov()方法会修改projMatrix
+
+    if (currentLevel > safeLevel) {
+      //摄像机距离地球太近，导致不满足视景体的near值,
+      //我们需要将摄像机的位置拉远，以满足near值
+      this._updatePositionByLevel(safeLevel, cameraMatrix);
+      //比如safeLevel是10，而currentLevel是11，则deltaLevel为1
+      var deltaLevel = currentLevel - safeLevel;
+      //摄像机位置与地球表面距离变大之后，我们看到的地球变小，为此，我们需要把fov值变小，以抵消摄像机位置距离增大导致的变化
+      //deltaLevel应该为正正数，计算出的newFov应该比this.initFov要小
+      var newFov = this._calculateFovByDeltaLevel(this.initFov, deltaLevel);
+      this._setFov(newFov);
+    } else {
+      this._updatePositionByLevel(currentLevel, cameraMatrix);
+      this._setFov(this.initFov);
+    }
   }
 
   //计算从第几级level开始不满足视景体的near值
@@ -136,32 +163,6 @@ class Camera extends Object3D {
    */
   private _getTheoryDistanceFromCamera2EarthSurface(level: number): number {
     return this.baseTheoryDistanceFromCamera2EarthSurface / Math.pow(2, level);
-  }
-
-  //返回更新后的fov值，如果返回结果 < 0，说明无需更新fov
-  private _updatePositionAndFov() {
-    //是否满足near值，和fov没有关系，和position有关
-    //但是改变position的话，fov也要相应变动以满足对应的缩放效果
-    const currentLevel = this.getLevel();
-    var safeLevel = this._getSafeThresholdLevelForNear();
-
-    //_rawUpdatePositionByLevel()方法会修改matrix
-    //_setFov()方法会修改projMatrix
-
-    if (currentLevel > safeLevel) {
-      //摄像机距离地球太近，导致不满足视景体的near值,
-      //我们需要将摄像机的位置拉远，以满足near值
-      this._rawUpdatePositionByLevel(safeLevel);
-      //比如safeLevel是10，而currentLevel是11，则deltaLevel为1
-      var deltaLevel = currentLevel - safeLevel;
-      //摄像机位置与地球表面距离变大之后，我们看到的地球变小，为此，我们需要把fov值变小，以抵消摄像机位置距离增大导致的变化
-      //deltaLevel应该为正正数，计算出的newFov应该比this.initFov要小
-      var newFov = this._calculateFovByDeltaLevel(this.initFov, deltaLevel);
-      this._setFov(newFov);
-    } else {
-      this._rawUpdatePositionByLevel(currentLevel);
-      this._setFov(this.initFov);
-    }
   }
 
   //fov从oldFov变成了newFov，计算相当于缩放了几级level
@@ -206,74 +207,42 @@ class Camera extends Object3D {
   }
 
   setLevel(level: number): void {
-    var isLevelChanged = this._rawUpdatePositionByLevel(level);
-    if (isLevelChanged) {
-      //不要在this._setLevel()方法中更新this.level，因为这会影响animateToLevel()方法
-      this.level = level;
-      Kernel.globe.refresh();
-    }
-  }
-
-  //设置观察到的层级，不要在该方法中修改this.level的值
-  private _rawUpdatePositionByLevel(level: number): boolean {
     if (!(Utils.isNonNegativeInteger(level))) {
       throw "invalid level:" + level;
     }
     level = level > Kernel.MAX_LEVEL ? Kernel.MAX_LEVEL : level; //超过最大的渲染级别就不渲染
     if (level === this.level) {
-      return false;
+      return;
     }
-    var globe = Kernel.globe;
-    var pOld = this.getPosition();
-    if (pOld.x === 0 && pOld.y === 0 && pOld.z === 0) {
-      //init camera
-      var length = this._getTheoryDistanceFromCamera2EarthSurface(level) + Kernel.EARTH_RADIUS; //level等级下摄像机应该到球心的距离
-      var origin = new Vertice(0, 0, 0);
-      var vector = this.getLightDirection().getOpposite();
-      vector.setLength(length);
-      var newPosition = vector.getVertice();
-      this.look(newPosition, origin);
-    } else {
-      var currentPosition = this.getPosition();
-      if(this.isZeroPitch){
-        var length = this._getTheoryDistanceFromCamera2EarthSurface(level) + Kernel.EARTH_RADIUS;
-        var vector = this.getLightDirection().getOpposite().setLength(length);
-        var newPosition = vector.getVertice();
-        this.setPosition(newPosition.x, newPosition.y, newPosition.z);
-      }else{
-        var intersects = this.getDirectionIntersectPointWithEarth();
-        if(intersects.length === 0){
-          throw "no intersect";
-        }
-        var intersect = intersects[0];
-        var distance2Intersect = MathUtils.getLengthFromVerticeToVertice(currentPosition, intersect);
-        var deltaLevel = level - this.level;
-        var newDistance2Intersect = distance2Intersect / Math.pow(2, deltaLevel);
-        var deltaDistance = distance2Intersect - newDistance2Intersect;
-        var deltaVector = this.getLightDirection().setLength(deltaDistance);
-        var newPosition = Vector.verticePlusVector(currentPosition, deltaVector);
-      }
-    }
-    return true;
+    var isLevelChanged = this._updatePositionByLevel(level, this.matrix);
+    //不要在this._setLevel()方法中更新this.level，因为这会影响animateToLevel()方法
+    this.level = level;
+    Kernel.globe.refresh();
   }
 
-  _calculateNewCameraPositionByLevel(matrix: Matrix, level: number): boolean {
-    //matrix表示已经调整了pitch后的摄像机模型矩阵，要根据level计算matrix的position
-    var direction = matrix.getColumnZ().getOpposite();
-    var currentCameraPosition = matrix.getPosition();
-    var line = new Line(currentCameraPosition, direction);
-    var intersects = this.getPickCartesianCoordInEarthByLine(line);
-    //我们要保证经过这次旋转之后，视线会与地球有交点
-    if (intersects.length < 2) {
-      return false;
+  private _initCameraPosition() {
+    var initLevel = 0;
+    var length = this._getTheoryDistanceFromCamera2EarthSurface(initLevel) + Kernel.EARTH_RADIUS; //level等级下摄像机应该到球心的距离
+    var origin = new Vertice(0, 0, 0);
+    var vector = this.getLightDirection().getOpposite();
+    vector.setLength(length);
+    var newPosition = vector.getVertice();
+    this._look(newPosition, origin);
+  }
+
+  //设置观察到的层级，不要在该方法中修改this.level的值
+  private _updatePositionByLevel(level: number, cameraMatrix: Matrix) {    
+    var globe = Kernel.globe;
+    var intersects = this._getDirectionIntersectPointWithEarth(cameraMatrix);
+    if (intersects.length === 0) {
+      throw "no intersect";
     }
-    var intersect = intersects[0];
-    var camera2Intersect = MathUtils.getLengthFromVerticeToVertice(currentCameraPosition, intersect);
+    var intersect = intersects[0];    
     var theoryDistance2Interscet = this._getTheoryDistanceFromCamera2EarthSurface(level);
-    var deltaVectorFromIntersect2NewPosition = matrix.getColumnZ().normalize().setLength(theoryDistance2Interscet);
-    var newCameraPosition = Vector.verticePlusVector(intersect, deltaVectorFromIntersect2NewPosition);
-    matrix.setColumnTrans(newCameraPosition.x, newCameraPosition.y, newCameraPosition.z);
-    return true;
+    var vector = cameraMatrix.getColumnZ();
+    vector.setLength(theoryDistance2Interscet);
+    var newCameraPosition = Vector.verticePlusVector(intersect, vector);
+    cameraMatrix.setColumnTrans(newCameraPosition.x, newCameraPosition.y, newCameraPosition.z);
   }
 
   setDeltaPitch(deltaPitch: number) {
@@ -288,18 +257,25 @@ class Camera extends Object3D {
 
     //计算最终的deltaPitch
     deltaPitch = newPitch - currentPitch;
-    if(deltaPitch === 0){
+    if (deltaPitch === 0) {
       return;
     }
+
+    var intersects = this.getDirectionIntersectPointWithEarth();
+    if (intersects.length === 0) {
+      throw "no intersects";
+    }
+    var intersect = intersects[0];
+
     var deltaRadian = MathUtils.degreeToRadian(deltaPitch);
     //先不对this.matrix进行更新，对其拷贝进行更新
     var matrix = this.matrix.clone();
+    //将matrix移动到交点位置
+    matrix.setColumnTrans(intersect.x, intersect.y, intersect.z);
+    //旋转
     matrix.localRotateX(deltaRadian);
-    var hasIntersect = this._calculateNewCameraPositionByLevel(matrix, this.level);
-    if (!hasIntersect) {
-      //我们要保证经过这次旋转之后，视线会与地球有交点
-      return;
-    }
+    //更新matrix的position
+    this._updatePositionByLevel(this.level, matrix);
 
     //刷新
     this.isZeroPitch = newPitch === 0;
@@ -309,8 +285,11 @@ class Camera extends Object3D {
 
   //pitch表示Camera视线的倾斜角度，初始值为0，表示视线经过球心，单位为角度，范围是[0, this.maxPitch]
   getPitch(): number {
+    if (this.isZeroPitch) {
+      return 0;
+    }
     var intersects = this.getDirectionIntersectPointWithEarth();
-    if(intersects.length === 0){
+    if (intersects.length === 0) {
       throw "no intersects";
     }
     var intersect = intersects[0];
@@ -326,10 +305,10 @@ class Camera extends Object3D {
     //计算夹角的正负
     var crossVector = vectorOrigin2Intersect.cross(vectorIntersect2Camera);
     var xAxisDirection = this.matrix.getColumnX()
-    if(crossVector.dot(xAxisDirection)){
+    if (crossVector.dot(xAxisDirection)) {
       //正值
       radian = Math.abs(radian);
-    }else{
+    } else {
       //负值
       radian = - Math.abs(radian);
     }
@@ -387,7 +366,7 @@ class Camera extends Object3D {
     }
     var newCamera = this._clone();
     //don't call setLevel method because it will update CURRENT_LEVEL
-    newCamera._rawUpdatePositionByLevel(level);
+    // newCamera._updatePositionByLevel(level);
 
     this._animateToCamera(newCamera, () => {
       this.level = level;
@@ -443,7 +422,7 @@ class Camera extends Object3D {
     };
   }
 
-  look(cameraPnt: Vertice, targetPnt: Vertice, upDirection: Vector = new Vector(0, 1, 0)): void {
+  private _look(cameraPnt: Vertice, targetPnt: Vertice, upDirection: Vector = new Vector(0, 1, 0)): void {
     var cameraPntCopy = cameraPnt.clone();
     var targetPntCopy = targetPnt.clone();
     var up = upDirection.clone();
@@ -466,7 +445,7 @@ class Camera extends Object3D {
   private _lookAt(targetPnt: Vertice, upDirection?: Vector): void {
     var targetPntCopy = targetPnt.clone();
     var position = this.getPosition();
-    this.look(position, targetPntCopy, upDirection);
+    this._look(position, targetPntCopy, upDirection);
   }
 
   //根据canvasX和canvasY获取拾取向量
@@ -476,12 +455,17 @@ class Camera extends Object3D {
     return pickDirection;
   }
 
-  //获取当前视线与地球的交点
-  getDirectionIntersectPointWithEarth(): Vertice[] {
-    var dir = this.getLightDirection();
-    var p = this.getPosition();
+  private _getDirectionIntersectPointWithEarth(cameraMatrix: Matrix): Vertice[]{
+    var dir = cameraMatrix.getColumnZ().getOpposite();
+    var p = cameraMatrix.getPosition();
     var line = new Line(p, dir);
     var result = this.getPickCartesianCoordInEarthByLine(line);
+    return result;
+  }
+
+  //获取当前视线与地球的交点
+  getDirectionIntersectPointWithEarth(): Vertice[] {
+    var result = this._getDirectionIntersectPointWithEarth(this.matrix);
     return result;
   }
 
