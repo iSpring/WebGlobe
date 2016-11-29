@@ -5,7 +5,7 @@ import Program = require("../Program");
 import Graphic = require("./Graphic");
 import Mesh = require("../geometries/Mesh");
 import MeshTextureMaterial = require("../materials/MeshTextureMaterial");
-import PerspectiveCamera = require("../PerspectiveCamera");
+import Camera = require("../Camera");
 
 const vs =
 `
@@ -54,31 +54,35 @@ class MeshGraphic extends Graphic {
     }
 
     _drawTextureMaterial(program: any) {
+        var gl = Kernel.gl;
+
         //set aUV
         var locUV = program.getAttribLocation('aUV');
         program.enableVertexAttribArray('aUV');
         this.geometry.uvbo.bind();
-        Kernel.gl.vertexAttribPointer(locUV, 2, Kernel.gl.FLOAT, false, 0, 0);
+        gl.vertexAttribPointer(locUV, 2, gl.FLOAT, false, 0, 0);
 
         //set uSampler
         var locSampler = program.getUniformLocation('uSampler');
-        Kernel.gl.activeTexture(Kernel.gl.TEXTURE0);
+        gl.activeTexture(gl.TEXTURE0);
         //world.Cache.activeTexture(gl.TEXTURE0);
-        Kernel.gl.bindTexture(Kernel.gl.TEXTURE_2D, this.material.texture);
-        Kernel.gl.uniform1i(locSampler, 0);
+        gl.bindTexture(gl.TEXTURE_2D, this.material.texture);
+        gl.uniform1i(locSampler, 0);
     }
 
-    onDraw(camera: PerspectiveCamera) {
+    onDraw(camera: Camera) {
+        var gl = Kernel.gl;
+
         //aPosition
         var locPosition = this.program.getAttribLocation('aPosition');
         this.program.enableVertexAttribArray('aPosition');
         this.geometry.vbo.bind();
-        Kernel.gl.vertexAttribPointer(locPosition, 3, Kernel.gl.FLOAT, false, 0, 0);
+        gl.vertexAttribPointer(locPosition, 3, gl.FLOAT, false, 0, 0);
 
         //uPMVMatrix
-        var pmvMatrix = camera.projViewMatrix.multiplyMatrix(this.geometry.matrix);
+        var pmvMatrix = camera.getProjViewMatrixForDraw().multiplyMatrix(this.geometry.getMatrix());
         var locPMVMatrix = this.program.getUniformLocation('uPMVMatrix');
-        Kernel.gl.uniformMatrix4fv(locPMVMatrix, false, pmvMatrix.elements);
+        gl.uniformMatrix4fv(locPMVMatrix, false, pmvMatrix.elements);
 
         this._drawTextureMaterial(this.program);
 
@@ -87,12 +91,12 @@ class MeshGraphic extends Graphic {
 
         //绘图
         var count = this.geometry.triangles.length * 3;
-        Kernel.gl.drawElements(Kernel.gl.TRIANGLES, count, Kernel.gl.UNSIGNED_SHORT, 0);
+        gl.drawElements(gl.TRIANGLES, count, gl.UNSIGNED_SHORT, 0);
 
         //释放当前绑定对象
-        Kernel.gl.bindBuffer(Kernel.gl.ARRAY_BUFFER, null);
-        Kernel.gl.bindBuffer(Kernel.gl.ELEMENT_ARRAY_BUFFER, null);
-        Kernel.gl.bindTexture(Kernel.gl.TEXTURE_2D, null);
+        gl.bindBuffer(gl.ARRAY_BUFFER, null);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+        gl.bindTexture(gl.TEXTURE_2D, null);
     }
 }
 

@@ -13,7 +13,7 @@ class MeshTextureMaterial extends Material {
     private ready:boolean = false;
     private deleted: boolean = false;
 
-    constructor(imageOrUrl?: ImageType) {
+    constructor(imageOrUrl?: ImageType, public flipY: boolean = true) {
         super();
         this.texture = Kernel.gl.createTexture();
         if(imageOrUrl){
@@ -69,37 +69,41 @@ class MeshTextureMaterial extends Material {
             return;
         }
 
-        Kernel.gl.bindTexture(Kernel.gl.TEXTURE_2D, this.texture);
-        Kernel.gl.pixelStorei(Kernel.gl.UNPACK_FLIP_Y_WEBGL, +true);
+        var gl = Kernel.gl;
 
-        Kernel.gl.texImage2D(Kernel.gl.TEXTURE_2D, 0, Kernel.gl.RGBA, Kernel.gl.RGBA, Kernel.gl.UNSIGNED_BYTE, this.image);
+        gl.bindTexture(gl.TEXTURE_2D, this.texture);
+        if(this.flipY){
+            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, +true);
+        }
+
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.image);
 
         var isMipMap = this.image.width === this.image.height && MathUtils.isPowerOfTwo(this.image.width);
 
         if (isMipMap) {
             //使用MipMap
-            Kernel.gl.texParameteri(Kernel.gl.TEXTURE_2D, Kernel.gl.TEXTURE_MIN_FILTER, Kernel.gl.LINEAR_MIPMAP_NEAREST);
-            Kernel.gl.texParameteri(Kernel.gl.TEXTURE_2D, Kernel.gl.TEXTURE_MAG_FILTER, Kernel.gl.LINEAR); //LINEAR_MIPMAP_NEAREST LINEAR_MIPMAP_LINEAR
-            Kernel.gl.texParameteri(Kernel.gl.TEXTURE_2D, Kernel.gl.TEXTURE_WRAP_S, Kernel.gl.CLAMP_TO_EDGE);
-            Kernel.gl.texParameteri(Kernel.gl.TEXTURE_2D, Kernel.gl.TEXTURE_WRAP_T, Kernel.gl.CLAMP_TO_EDGE);
-            Kernel.gl.generateMipmap(Kernel.gl.TEXTURE_2D);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR); //LINEAR_MIPMAP_NEAREST LINEAR_MIPMAP_LINEAR
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            gl.generateMipmap(gl.TEXTURE_2D);
         } else {
-            Kernel.gl.texParameteri(Kernel.gl.TEXTURE_2D, Kernel.gl.TEXTURE_MIN_FILTER, Kernel.gl.LINEAR);//gl.NEAREST
-            Kernel.gl.texParameteri(Kernel.gl.TEXTURE_2D, Kernel.gl.TEXTURE_MAG_FILTER, Kernel.gl.LINEAR);//gl.NEAREST
-
-            Kernel.gl.texParameteri(Kernel.gl.TEXTURE_2D, Kernel.gl.TEXTURE_WRAP_S, Kernel.gl.CLAMP_TO_EDGE);
-            Kernel.gl.texParameteri(Kernel.gl.TEXTURE_2D, Kernel.gl.TEXTURE_WRAP_T, Kernel.gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);//gl.NEAREST
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);//gl.NEAREST
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
         }
 
-        Kernel.gl.bindTexture(Kernel.gl.TEXTURE_2D, null);
+        gl.bindTexture(gl.TEXTURE_2D, null);
 
         this.ready = true;
     }
 
     //释放显卡中的texture资源
     destroy() {
-        if (Kernel.gl.isTexture(this.texture)) {
-            Kernel.gl.deleteTexture(this.texture);
+        var gl = Kernel.gl;
+        if (gl.isTexture(this.texture)) {
+            gl.deleteTexture(this.texture);
         }
         this.texture = null;
         this.deleted = true;

@@ -2,7 +2,7 @@
 import Kernel = require("./Kernel");
 import MathUtils = require("./math/Math");
 import Vector = require("./math/Vector");
-import PerspectiveCamera = require("./PerspectiveCamera");
+import Camera = require("./Camera");
 
 type MouseMoveListener = (e: MouseEvent) => {};
 
@@ -56,7 +56,7 @@ const EventModule = {
       var pickResult = Kernel.globe.camera.getPickCartesianCoordInEarthByCanvas(this.previousX, this.previousY);
       if (pickResult.length > 0) {
         this.dragGeo = MathUtils.cartesianCoordToGeographic(pickResult[0]);
-        //console.log("单击点三维坐标:(" + pickResult[0].x + "," + pickResult[0].y + "," + pickResult[0].z + ");经纬度坐标:[" + this.dragGeo[0] + "," + this.dragGeo[1] + "]");
+        console.log("单击点三维坐标:(" + pickResult[0].x + "," + pickResult[0].y + "," + pickResult[0].z + ");经纬度坐标:[" + this.dragGeo[0] + "," + this.dragGeo[1] + "]");
       }
       this.canvas.addEventListener("mousemove", this.onMouseMoveListener, false);
     }
@@ -102,7 +102,7 @@ const EventModule = {
     var v2 = Vector.fromVertice(p2);
     var rotateVector = v1.cross(v2);
     var rotateRadian = -Vector.getRadianOfTwoVectors(v1, v2);
-    var camera: PerspectiveCamera = Kernel.globe.camera;
+    var camera: Camera = Kernel.globe.camera;
     camera.worldRotateByVector(rotateRadian, rotateVector);
   },
 
@@ -123,13 +123,13 @@ const EventModule = {
       var absoluteX = event.layerX || event.offsetX;
       var absoluteY = event.layerY || event.offsetY;
       var pickResult = globe.camera.getPickCartesianCoordInEarthByCanvas(absoluteX, absoluteY);
-      globe.setLevel(globe.CURRENT_LEVEL + 1);
+      globe.setLevel(globe.getLevel() + 1);
       if (pickResult.length >= 1) {
         var pickVertice = pickResult[0];
         var lonlat = MathUtils.cartesianCoordToGeographic(pickVertice);
         var lon = lonlat[0];
         var lat = lonlat[1];
-        globe.setLevel(globe.CURRENT_LEVEL + 1);
+        globe.setLevel(globe.getLevel() + 1);
         this.moveLonLatToCanvas(lon, lat, absoluteX, absoluteY);
       }
     }
@@ -152,57 +152,35 @@ const EventModule = {
       delta = event.detail;
       deltaLevel = -parseInt(<any>(delta / 3));
     }
-    var newLevel = globe.CURRENT_LEVEL + deltaLevel;
+    var newLevel = globe.getLevel() + deltaLevel;
     if(newLevel >= 0){
-      //globe.setLevel(newLevel);
-      globe.animateToLevel(newLevel);
+      globe.setLevel(newLevel);
+      //globe.animateToLevel(newLevel);
     }
   },
 
+  /**
+   * 通过向上和向下的键盘按键调整Camera视线方向的倾斜角度pitch
+   * 初始pitch值为0
+   */
   onKeyDown(event: KeyboardEvent) {
     var globe = Kernel.globe;
     if (!globe) {
       return;
     }
 
-    var MIN_PITCH = 36;
     var DELTA_PITCH = 2;
     var camera = globe.camera;
     var keyNum = event.keyCode !== undefined ? event.keyCode : event.which;
     //上、下、左、右:38、40、37、39
-    if (keyNum == 38 || keyNum == 40) {
-      if (keyNum == 38) {
-        if (camera.pitch <= MIN_PITCH) {
-          return;
-        }
-      } else if (keyNum == 40) {
-        if (camera.pitch >= 90) {
-          return;
-        }
-        DELTA_PITCH *= -1;
-      }
-
-      var pickResult = camera.getDirectionIntersectPointWithEarth();
-      if (pickResult.length > 0) {
-        var pIntersect = pickResult[0];
-        var pCamera = camera.getPosition();
-        var legnth2Intersect = MathUtils.getLengthFromVerticeToVertice(pCamera, pIntersect);
-        var mat = camera.matrix.clone();
-        mat.setColumnTrans(pIntersect.x, pIntersect.y, pIntersect.z);
-        var DELTA_RADIAN = MathUtils.degreeToRadian(DELTA_PITCH);
-        mat.localRotateX(DELTA_RADIAN);
-        var dirZ = mat.getColumnZ();
-        dirZ.setLength(legnth2Intersect);
-        var pNew = Vector.verticePlusVector(pIntersect, dirZ);
-        camera.look(pNew, pIntersect);
-        camera.pitch -= DELTA_PITCH;
-        globe.refresh();
-      } else {
-        alert("视线与地球无交点");
-      }
+    if(keyNum === 38){
+      //向上键
+      camera.setDeltaPitch(DELTA_PITCH);
+    }else if(keyNum === 40){
+      //向下键
+      camera.setDeltaPitch(-DELTA_PITCH);
     }
   }
-
 };
 
 export = EventModule;

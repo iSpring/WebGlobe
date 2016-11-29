@@ -22,15 +22,17 @@ class VertexBufferObject{
 			this.bind();
 		}
 
-		if(this.target === Kernel.gl.ARRAY_BUFFER){
-			Kernel.gl.bufferData(Kernel.gl.ARRAY_BUFFER, new Float32Array(data), usage);
-		}else if(this.target === Kernel.gl.ELEMENT_ARRAY_BUFFER){
-			Kernel.gl.bufferData(Kernel.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(data), usage);
+		var gl = Kernel.gl;
+
+		if(this.target === gl.ARRAY_BUFFER){
+			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data), usage);
+		}else if(this.target === gl.ELEMENT_ARRAY_BUFFER){
+			gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(data), usage);
 		}
 	}
 
 	destroy(){
-		if(Kernel.gl.isBuffer(this.buffer)){
+		if(this.buffer){
 			Kernel.gl.deleteBuffer(this.buffer);
 		}
 		this.buffer = null;

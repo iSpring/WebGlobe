@@ -1,19 +1,17 @@
 ///<amd-module name="world/materials/PoiMaterial"/>
 
-import Material = require("./Material");
+import MeshTextureMaterial = require("./MeshTextureMaterial");
 
-class PoiMaterial implements Material{
-    
-    isReady(){
-        return true;
+type ImageType = string | HTMLImageElement;
+
+class PoiMaterial extends MeshTextureMaterial{
+
+    constructor(imageOrUrl?: ImageType, public size:number = 16){
+        super(imageOrUrl, false);
     }
 
     getType(){
         return "PoiMaterial";
-    }
-
-    destroy(){
-
     }
 }
 

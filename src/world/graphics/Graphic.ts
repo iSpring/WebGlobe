@@ -5,7 +5,7 @@ import Geometry = require("../geometries/Geometry");
 import Material = require("../materials/Material");
 import Program = require("../Program");
 import ProgramUtils = require("../ProgramUtils");
-import PerspectiveCamera = require("../PerspectiveCamera");
+import Camera = require("../Camera");
 
 interface GraphicOptions{
     geometry: Geometry;
@@ -44,14 +44,14 @@ abstract class Graphic{
         return this.visible &&  this.isReady();
     }
 
-    draw(camera: PerspectiveCamera){
+    draw(camera: Camera){
         if(this.isDrawable()){
             this.program.use();
             this.onDraw(camera);
         }
     }
 
-    abstract onDraw(camera: PerspectiveCamera):void
+    abstract onDraw(camera: Camera):void
 
     destroy(){
         this.parent = null;

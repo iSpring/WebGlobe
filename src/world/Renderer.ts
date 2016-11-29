@@ -2,12 +2,12 @@
 import Kernel = require("./Kernel");
 import EventUtils = require("./Event");
 import Scene = require("./Scene");
-import PerspectiveCamera = require("./PerspectiveCamera");
+import Camera = require("./Camera");
 import {WebGLRenderingContextExtension, WebGLProgramExtension} from "./Definitions";
 
 class Renderer {
   scene: Scene = null;
-  camera: PerspectiveCamera = null;
+  camera: Camera = null;
   bAutoRefresh: boolean = false;
 
   constructor(canvas: HTMLCanvasElement) {
@@ -48,7 +48,7 @@ class Renderer {
 
     gl.enable(gl.DEPTH_TEST);
     gl.depthFunc(gl.LEQUAL);
-    gl.depthMask(true);
+    gl.depthMask(true);//允许写入深度
 
     gl.enable(gl.CULL_FACE); //一定要启用裁剪，否则显示不出立体感
     gl.frontFace(gl.CCW);//指定逆时针方向为正面
@@ -57,15 +57,14 @@ class Renderer {
     //gl.enable(gl.TEXTURE_2D);//WebGL: INVALID_ENUM: enable: invalid capability
   }
 
-  render(scene: Scene, camera: PerspectiveCamera) {
+  render(scene: Scene, camera: Camera) {
     Kernel.gl.viewport(0, 0, Kernel.canvas.width, Kernel.canvas.height);
     Kernel.gl.clear(Kernel.gl.COLOR_BUFFER_BIT | Kernel.gl.DEPTH_BUFFER_BIT);
     Kernel.gl.enable(Kernel.gl.DEPTH_TEST);
     Kernel.gl.depthFunc(Kernel.gl.LEQUAL);
     Kernel.gl.depthMask(true);
-    camera.viewMatrix = null;
-    //update viewMatrix and projViewMatrix of camera
-    camera.updateProjViewMatrix();
+    //update viewMatrix, projMatrix and projViewMatrix
+    camera.update();
     scene.draw(camera);
   }
 
@@ -73,7 +72,7 @@ class Renderer {
     this.scene = scene;
   }
 
-  setCamera(camera: PerspectiveCamera) {
+  setCamera(camera: Camera) {
     this.camera = camera;
   }
 
