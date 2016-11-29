@@ -100,3 +100,5 @@
       Camera中所有的计算（比如计算视野中的可见切片）都是基于matrix、viewMatrix、projMatrix和projViewMatrix。
       但是实际传递给shader用于绘图的是projViewMatrixForDraw。Camera.getPickCartesianCoordInEarthByCanvas()方法也是基于projViewMatrixForDraw系列矩阵的。
       该版本提高了深度值的精度，基本解决了z值精度问题。在update()方法中会计算projViewMatrixForDraw系列矩阵。
+
+0.3.1 使得Globe.animateToLevel()可以在0.3.0的版本上运行，解决办法是引入了camera.animationLevel，其值是非整数。      
