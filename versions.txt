@@ -95,3 +95,8 @@
 0.2.3 将world/geometries/Geomtry重命名为world/geometries/Mesh，并在package.json中添加了多个npm scripts，对应gulp中定义的tasks
 
 0.2.4 之前EARTH_RADIUS的值为6378137，特别大，导致了深度值计算有问题，从而使得深度测试不能正常进行。将EARTH_RADIUS改成14000，使得深度测试可以正常进行。并加入了Poi和PoiLayer这两个类。
+
+0.3.0 将EARTH_RADIUS从14000改为500，在0-10级的时候，通过改变Camera的position实现缩放，在10级之后通过改变fov实现缩放。
+      Camera中所有的计算（比如计算视野中的可见切片）都是基于matrix、viewMatrix、projMatrix和projViewMatrix。
+      但是实际传递给shader用于绘图的是projViewMatrixForDraw。Camera.getPickCartesianCoordInEarthByCanvas()方法也是基于projViewMatrixForDraw系列矩阵的。
+      该版本提高了深度值的精度，基本解决了z值精度问题。在update()方法中会计算projViewMatrixForDraw系列矩阵。
