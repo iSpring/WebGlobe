@@ -413,18 +413,17 @@ class Camera extends Object3D {
     //don't call setLevel method because it will update CURRENT_LEVEL
     // newCamera._updatePositionByLevel(level);
 
-    this._animateToCamera(newCamera, () => {
+    this._animateToCamera(newCamera.matrix.getPosition(), () => {
       this.level = level;
     });
   }
 
-  private _animateToCamera(newCamera: Camera, cb: () => void) {
+  private _animateToCamera(newPosition: Vertice, cb: () => void) {
     if (this.isAnimating()) {
       return;
     }
     this.animating = true;
     var oldPosition = this.getPosition();
-    var newPosition = newCamera.matrix.getPosition();
     var span = this.animationDuration;
     var singleSpan = 1000 / 60;
     var count = Math.floor(span / singleSpan);
@@ -438,7 +437,8 @@ class Camera extends Object3D {
       }
       var a = timestap - start;
       if (a >= span) {
-        (<any>Object).assign(this, newCamera._toJson());
+        // (<any>Object).assign(this, newCamera._toJson());
+        this.setPosition(newPosition.x, newPosition.y, newPosition.z);
         this.animating = false;
         cb();
       } else {
