@@ -153,7 +153,7 @@ class Camera extends Object3D {
 
     //计算newFar
     var newPosition = this.matrixForDraw.getPosition();
-    var newFar = this.far; //this._getMinimalFar(newPosition); 
+    var newFar = this.far; //this._getMinimalFar(newPosition);
 
     //根据newFov和newFar重新计算
     this.projMatrixForDraw = new Matrix();
@@ -422,9 +422,6 @@ class Camera extends Object3D {
     this._updatePositionByLevel(newLevel, newCameraMatrix);
     var newPosition = newCameraMatrix.getPosition();
 
-    //don't call setLevel method because it will update CURRENT_LEVEL
-    // newCamera._updatePositionByLevel(newLevel);
-
     var oldPosition = this.getPosition();
     var span = this.animationDuration;
     var singleSpan = 1000 / 60;
@@ -443,10 +440,6 @@ class Camera extends Object3D {
       }
       var a = timestap - start;
       if (a >= span) {
-        // (<any>Object).assign(this, newCamera._toJson());
-        // this.setPosition(newPosition.x, newPosition.y, newPosition.z);
-        // this.animating = false;
-        //cb();
         this.animating = false;
         this.animationLevel = -1;
         this.setLevel(newLevel);
@@ -459,23 +452,6 @@ class Camera extends Object3D {
     };
     requestAnimationFrame(callback);
   }
-
-  // private _clone(): Camera {
-  //   var camera: Camera = new Camera();
-  //   (<any>Object).assign(camera, this._toJson());
-  //   return camera;
-  // }
-
-  // private _toJson(): any {
-  //   return {
-  //     near: this.near,
-  //     far: this.far,
-  //     fov: this.fov,
-  //     aspect: this.aspect,
-  //     matrix: this.matrix.clone(),
-  //     projMatrix: this.projMatrix.clone()
-  //   };
-  // }
 
   private _look(cameraPnt: Vertice, targetPnt: Vertice, upDirection: Vector = new Vector(0, 1, 0)): void {
     var cameraPntCopy = cameraPnt.clone();
