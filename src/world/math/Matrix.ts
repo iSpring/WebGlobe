@@ -14,6 +14,15 @@ class Matrix{
       this.setElements(m11, m12, m13, m14, m21, m22, m23, m24, m31, m32, m33, m34, m41, m42, m43, m44);
     }
 
+    equals(matrix: Matrix): boolean{
+      if(this === matrix){
+        return true;
+      }
+      return this.elements.every((ele: number, index: number) => {
+        return ele === matrix.elements[index];
+      });
+    }
+
     setElements(m11: number, m12: number, m13: number, m14: number,
                 m21: number, m22: number, m23: number, m24: number,
                 m31: number, m32: number, m33: number, m34: number,
@@ -185,9 +194,6 @@ class Matrix{
     }
 
     setMatrixByOther(otherMatrix: Matrix): void {
-      if (!(otherMatrix instanceof Matrix)) {
-        throw "invalid otherMatrix";
-      }
       for (var i = 0; i < otherMatrix.elements.length; i++) {
         this.elements[i] = otherMatrix.elements[i];
       }
@@ -201,7 +207,14 @@ class Matrix{
           1, 0, 0, 0,
           0, 1, 0, 0,
           0, 0, 1, 0,
-          0, 0, 0, 1);
+          0, 0, 0, 1
+      );
+    }
+
+    setUniqueValue(value: number){
+      this.elements.forEach((ele, index) => {
+        this.elements[index] = value;
+      });
     }
 
     /**
@@ -231,7 +244,8 @@ class Matrix{
           this.elements[0], this.elements[4], this.elements[8], this.elements[12],
           this.elements[1], this.elements[5], this.elements[9], this.elements[13],
           this.elements[2], this.elements[6], this.elements[10], this.elements[14],
-          this.elements[3], this.elements[7], this.elements[11], this.elements[15]);
+          this.elements[3], this.elements[7], this.elements[11], this.elements[15]
+      );
     }
 
     multiplyMatrix(otherMatrix: Matrix): Matrix {

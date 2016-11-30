@@ -17,13 +17,19 @@ class Camera extends Object3D {
   private readonly baseTheoryDistanceFromCamera2EarthSurface = 1.23 * Kernel.EARTH_RADIUS;
   private readonly maxPitch = 40;
 
-  private level: number = -1; //当前渲染等级
-
-  private animationLevel: number = -1;//非整数，表示缩放动画过程中的level
-
   //旋转的时候，绕着视线与地球交点进行旋转
   //定义抬头时，旋转角为正值
   private isZeroPitch: boolean = true;//表示当前Camera视线有没有发生倾斜
+
+  private level: number = -1; //当前渲染等级
+  private realLevel: number = -2;//可能是正数，可能是非整数，非整数表示缩放动画过程中的level
+
+  private lastRealLevel: number = -3;//上次render()时所用到的this.realLevel
+  private lastMatrix: Matrix;//上次render()时的this.matrix
+  private lastFov: number = -1;
+  private lastAspect: number = -1;
+  private lastNear: number = -1;
+  private lastFar: number = -1;
 
   private viewMatrix: Matrix;//视点矩阵，即Camera模型矩阵的逆矩阵
   private projMatrix: Matrix;//当Matrix变化的时候，需要重新计算this.far
@@ -36,11 +42,6 @@ class Camera extends Object3D {
 
   private animating: boolean = false;
 
-  Enum: any = {
-    EARTH_FULL_OVERSPREAD_SCREEN: "EARTH_FULL_OVERSPREAD_SCREEN", //Canvas内全部被地球充满
-    EARTH_NOT_FULL_OVERSPREAD_SCREEN: "EARTH_NOT_FULL_OVERSPREAD_SCREEN" //Canvas没有全部被地球充满
-  };
-
   //this.near一旦初始化之后就不应该再修改
   //this.far可以动态计算
   //this.aspect在Viewport改变后重新计算
@@ -48,6 +49,8 @@ class Camera extends Object3D {
   constructor(private fov = 45, private aspect = 1, private near = 1, private far = 100) {
     super();
     this.initFov = this.fov;
+    this.lastMatrix = new Matrix();
+    this.lastMatrix.setUniqueValue(0);
     this.projMatrix = new Matrix();
     this._rawSetPerspectiveMatrix(this.fov, this.aspect, this.near, this.far);
     this._initCameraPosition();
@@ -121,11 +124,27 @@ class Camera extends Object3D {
     return far;
   }
 
-  //更新各种矩阵，保守起见，可以在每帧绘制之前调用
-  //理论上只在用户交互的时候调用就可以
-  update(): void {
-    this._normalUpdate();
-    this._updateProjViewMatrixForDraw();
+  //更新各种矩阵，理论上只在用户交互的时候调用就可以
+  update(force: boolean = false): void {
+    if(force || this._isNeedUpdate()){
+      this._normalUpdate();
+      this._updateProjViewMatrixForDraw();
+    }
+    this.lastFov = this.fov;
+    this.lastAspect = this.aspect;
+    this.lastNear = this.near;
+    this.lastFar = this.far;
+    this.lastRealLevel = this.realLevel;
+    this.lastMatrix.setMatrixByOther(this.matrix);
+  }
+
+  private _isNeedUpdate(): boolean{
+    return (this.fov !== this.lastFov) ||
+           (this.aspect !== this.lastAspect) ||
+           (this.near !== this.lastNear) ||
+           (this.far !== this.lastFar) ||
+           (this.realLevel !== this.lastRealLevel) ||
+           (!this.matrix.equals(this.lastMatrix));
   }
 
   getProjViewMatrixForDraw(): Matrix {
@@ -168,9 +187,8 @@ class Camera extends Object3D {
 
   //返回更新后的fov值，如果返回结果 < 0，说明无需更新fov
   private _updatePositionAndFov(cameraMatrix: Matrix): number {
-    //是否满足near值，和fov没有关系，和position有关
-    //但是改变position的话，fov也要相应变动以满足对应的缩放效果
-    const currentLevel = this.animating ? this.animationLevel : this.level;
+    //是否满足near值，和fov没有关系，和position有关，但是改变position的话，fov也要相应变动以满足对应的缩放效果
+    const currentLevel = this.animating ? this.realLevel : this.level;
 
     //safeLevel不是整数
     var safeLevel = this._getSafeThresholdLevelForNear();
@@ -260,8 +278,9 @@ class Camera extends Object3D {
       return;
     }
     var isLevelChanged = this._updatePositionByLevel(level, this.matrix);
-    //不要在this._setLevel()方法中更新this.level，因为这会影响animateToLevel()方法
+    //不要在this._updatePositionByLevel()方法中更新this.level，因为这会影响animateToLevel()方法
     this.level = level;
+    this.realLevel = level;
     Kernel.globe.refresh();
   }
 
@@ -431,7 +450,7 @@ class Camera extends Object3D {
     var deltaZ = (newPosition.z - oldPosition.z) / count;
     var deltaLevel = (newLevel - this.level) / count;
     var start: number = -1;
-    this.animationLevel = this.level;
+    this.realLevel = this.level;
     this.animating = true;
 
     var callback = (timestap: number) => {
@@ -441,10 +460,10 @@ class Camera extends Object3D {
       var a = timestap - start;
       if (a >= span) {
         this.animating = false;
-        this.animationLevel = -1;
+        this.realLevel = newLevel;
         this.setLevel(newLevel);
       } else {
-        this.animationLevel += deltaLevel;
+        this.realLevel += deltaLevel;
         var p = this.getPosition();
         this.setPosition(p.x + deltaX, p.y + deltaY, p.z + deltaZ);
         requestAnimationFrame(callback);
