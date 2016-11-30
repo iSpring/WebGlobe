@@ -58,12 +58,13 @@ class Renderer {
   }
 
   render(scene: Scene, camera: Camera) {
-    Kernel.gl.viewport(0, 0, Kernel.canvas.width, Kernel.canvas.height);
-    Kernel.gl.clear(Kernel.gl.COLOR_BUFFER_BIT | Kernel.gl.DEPTH_BUFFER_BIT);
-    Kernel.gl.enable(Kernel.gl.DEPTH_TEST);
-    Kernel.gl.depthFunc(Kernel.gl.LEQUAL);
-    Kernel.gl.depthMask(true);
-    //update viewMatrix, projMatrix and projViewMatrix
+    var gl = Kernel.gl;
+    gl.viewport(0, 0, Kernel.canvas.width, Kernel.canvas.height);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.clearColor(0, 0, 0, 1);
+    gl.enable(gl.DEPTH_TEST);
+    gl.depthFunc(gl.LEQUAL);
+    gl.depthMask(true);
     camera.update();
     scene.draw(camera);
   }
