@@ -1,7 +1,7 @@
 ﻿///<amd-module name="world/GraphicGroup"/>
 import Kernel = require("./Kernel");
 import Graphic = require("./graphics/Graphic");
-import Camera = require("./Camera");
+import Camera from "./Camera";
 
 type Drawable = Graphic | GraphicGroup;
 

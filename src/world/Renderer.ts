@@ -2,7 +2,7 @@
 import Kernel = require("./Kernel");
 import EventUtils = require("./Event");
 import Scene = require("./Scene");
-import Camera = require("./Camera");
+import Camera from "./Camera";
 import {WebGLRenderingContextExtension, WebGLProgramExtension} from "./Definitions";
 
 class Renderer {

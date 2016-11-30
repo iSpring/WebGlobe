@@ -5,7 +5,7 @@ import Geometry = require("../geometries/Geometry");
 import Material = require("../materials/Material");
 import Program = require("../Program");
 import ProgramUtils = require("../ProgramUtils");
-import Camera = require("../Camera");
+import Camera from "../Camera";
 
 interface GraphicOptions{
     geometry: Geometry;

@@ -2,7 +2,7 @@
 import Kernel = require("./Kernel");
 import MathUtils = require("./math/Math");
 import Vector = require("./math/Vector");
-import Camera = require("./Camera");
+import Camera from  "./Camera";
 
 type MouseMoveListener = (e: MouseEvent) => {};
 

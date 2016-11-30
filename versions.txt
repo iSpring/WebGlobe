@@ -104,3 +104,5 @@
 0.3.1 使得Globe.animateToLevel()可以在0.3.0的版本上运行，解决办法是引入了camera.animationLevel，其值是非整数。
 
 0.3.2 优化了Camera.update()方法，只有发生用户交互的情况下才实际进行计算。
+
+0.3.3 优化了Globe.refresh()方法，只有发生用具交互的情况下才重新计算可见切片。

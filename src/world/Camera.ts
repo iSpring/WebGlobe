@@ -10,6 +10,48 @@ import TileGrid = require('./TileGrid');
 import Matrix = require('./math/Matrix');
 import Object3D = require('./Object3D');
 
+export class CameraCore{
+  constructor(private fov: number, private aspect: number, private near: number, private far: number, private realLevel: number, private matrix: Matrix){
+
+  }
+
+  getFov(){
+    return this.fov;
+  }
+
+  getAspect(){
+    return this.aspect;
+  }
+
+  getNear(){
+    return this.near;
+  }
+
+  getFar(){
+    return this.far;
+  }
+
+  getRealLeavel(){
+    return this.realLevel;
+  }
+
+  getMatrix(){
+    return this.matrix;
+  }
+
+  equals(other: CameraCore): boolean{
+    if(!other){
+      return false;
+    }
+    return this.fov === other.getFov() &&
+           this.aspect === other.getAspect() &&
+           this.near === other.getNear() &&
+           this.far === other.getFar() &&
+           this.realLevel === other.getRealLeavel() &&
+           this.matrix.equals(other.getMatrix());
+  }
+}
+
 class Camera extends Object3D {
   private readonly initFov: number;
   private readonly animationDuration: number = 600;//层级变化的动画周期是600毫秒
@@ -136,6 +178,10 @@ class Camera extends Object3D {
     this.lastFar = this.far;
     this.lastRealLevel = this.realLevel;
     this.lastMatrix.setMatrixByOther(this.matrix);
+  }
+
+  getCameraCore(){
+    return new CameraCore(this.fov, this.aspect, this.near, this.far, this.realLevel, this.matrix.clone());
   }
 
   private _isNeedUpdate(): boolean{
@@ -937,4 +983,4 @@ class Camera extends Object3D {
   }
 }
 
-export = Camera;
+export default Camera;

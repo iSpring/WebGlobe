@@ -5,7 +5,7 @@ import Program = require("../Program");
 import Graphic = require("./Graphic");
 import Mesh = require("../geometries/Mesh");
 import MeshTextureMaterial = require("../materials/MeshTextureMaterial");
-import Camera = require("../Camera");
+import Camera from "../Camera";
 
 const vs =
 `

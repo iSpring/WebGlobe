@@ -2,7 +2,7 @@
 import Kernel = require("./Kernel");
 import Utils = require("./Utils");
 import Renderer = require("./Renderer");
-import Camera = require("./Camera");
+import Camera, {CameraCore} from "./Camera";
 import Scene = require("./Scene");
 import TiledLayer = require("./layers/TiledLayer");
 import SubTiledLayer = require("./layers/SubTiledLayer");
@@ -17,6 +17,7 @@ class Globe {
   scene: Scene = null;
   camera: Camera = null;
   tiledLayer: TiledLayer = null;
+  private cameraCore: CameraCore = null;
 
   constructor(canvas: HTMLCanvasElement) {
     Kernel.globe = this;
@@ -132,12 +133,18 @@ class Globe {
     }
   }
 
-  refresh() {
+  refresh(force: boolean = false) {
     if (!this.tiledLayer || !this.scene || !this.camera) {
       return;
     }
     //先更新camera中的各种矩阵
-    this.camera.update();
+    this.camera.update(force);
+    var newCameraCore = this.camera.getCameraCore();
+    var isNeedRefresh = force || !newCameraCore.equals(this.cameraCore);
+    this.cameraCore = newCameraCore;
+    if(!isNeedRefresh){
+      return;
+    }
     var level = this.getLevel() + 3;
     this.tiledLayer.updateSubLayerCount(level);
     var options = {

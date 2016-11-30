@@ -5,7 +5,7 @@ import Graphic = require('./Graphic');
 import Marker = require('../geometries/Marker');
 import PoiMaterial = require('../materials/PoiMaterial');
 import Program = require("../Program");
-import Camera = require("../Camera");
+import Camera from "../Camera";
 
 const vs =
 `

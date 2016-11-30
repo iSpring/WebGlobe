@@ -2,7 +2,7 @@
 import Kernel = require('../Kernel');
 import GraphicGroup = require('../GraphicGroup');
 import SubTiledLayer = require('./SubTiledLayer');
-import Camera = require('../Camera');
+import Camera from '../Camera';
 
 abstract class TiledLayer extends GraphicGroup {
 
