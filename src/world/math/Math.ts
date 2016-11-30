@@ -33,12 +33,18 @@ const MathUtils = {
         if(value > 1){
             value = 1;
         }
+        if(value < -1){
+            value = -1;
+        }
         return Math.asin(value);
     },
 
     acosSafely(value: number){
         if(value > 1){
             value = 1;
+        }
+        if(value < -1){
+            value = -1;
         }
         return Math.acos(value);
     },
@@ -375,26 +381,23 @@ const MathUtils = {
         var y = verticeCopy.y;
         var z = verticeCopy.z;
         var sin2 = y / Kernel.EARTH_RADIUS;
-        if(sin2 > 1){
-            sin2 = 2;
-        }else if(sin2 < -1){
-            sin2 = -1;
-        }
-        var radianLat = Math.asin(sin2);
+        var radianLat = this.asinSafely(sin2);
         var cos2 = Math.cos(radianLat);
         var sin1 = x / (Kernel.EARTH_RADIUS * cos2);
         if(sin1 > 1){
             sin1 = 1;
-        }else if(sin1 < -1){
+        }
+        if(sin1 < -1){
             sin1 = -1;
         }
         var cos1 = z / (Kernel.EARTH_RADIUS * cos2);
         if(cos1 > 1){
             cos1 = 1;
-        }else if(cos1 < -1){
+        }
+        if(cos1 < -1){
             cos1 = -1;
         }
-        var radianLog = Math.asin(sin1);
+        var radianLog = this.asinSafely(sin1);
         if(sin1 >= 0){
             //经度在[0,π]
             if(cos1 >= 0){

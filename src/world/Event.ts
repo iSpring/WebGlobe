@@ -59,7 +59,7 @@ const EventModule = {
     var pickResult = Kernel.globe.camera.getPickCartesianCoordInEarthByCanvas(this.previousX, this.previousY);
     if (pickResult.length > 0) {
       this.dragGeo = MathUtils.cartesianCoordToGeographic(pickResult[0]);
-      console.log("单击点三维坐标:(" + pickResult[0].x + "," + pickResult[0].y + "," + pickResult[0].z + ");经纬度坐标:[" + this.dragGeo[0] + "," + this.dragGeo[1] + "]");
+      //console.log("单击点三维坐标:(" + pickResult[0].x + "," + pickResult[0].y + "," + pickResult[0].z + ");经纬度坐标:[" + this.dragGeo[0] + "," + this.dragGeo[1] + "]");
     }
     this.canvas.addEventListener("mousemove", this.onMouseMoveListener, false);
   },
