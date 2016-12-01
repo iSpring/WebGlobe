@@ -8,9 +8,9 @@ import Vertice = require("../math/Vertice");
 import Matrix = require("../math/Matrix");
 
 class Atmosphere  extends Mesh {
-  private readonly segment: number = 36;
+  private readonly segment: number = 360;
   private readonly radius1: number = Kernel.EARTH_RADIUS;
-  private readonly radius2: number = Kernel.EARTH_RADIUS * 1.2;
+  private readonly radius2: number = Kernel.EARTH_RADIUS * 1.01;
 
   constructor() {
     super();
@@ -29,7 +29,7 @@ class Atmosphere  extends Mesh {
     mat2.setColumnTrans(0, this.radius2, 0);
     var meshVertices2: MeshVertice[] = [];
 
-    var deltaRadian: number = Math.PI * 2 / this.segment;
+    var deltaRadian: number = - Math.PI * 2 / this.segment;
     var deltaS: number = 1.0 / this.segment;
     var u: number = 0;
 
@@ -64,6 +64,8 @@ class Atmosphere  extends Mesh {
       mat1.worldRotateZ(deltaRadian);
       mat2.worldRotateZ(deltaRadian);
     }
+
+    this.vertices.push(...meshVertices1, ...meshVertices2);
   }
 }
 

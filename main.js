@@ -1,9 +1,9 @@
 ﻿window.onload = function() {
   require(["world/Kernel", "world/Globe", "world/layers/BingTiledLayer", "world/layers/NokiaTiledLayer", "world/layers/OsmTiledLayer",
-  "world/layers/SosoTiledLayer", "world/layers/TiandituTiledLayer", "world/layers/GoogleTiledLayer",
+  "world/layers/SosoTiledLayer", "world/layers/TiandituTiledLayer", "world/layers/GoogleTiledLayer", "world/graphics/Atmosphere",
   "world/layers/PoiLayer"],
     function(Kernel, Globe, BingTiledLayer, NokiaTiledLayer, OsmTiledLayer, SosoTiledLayer, TiandituTiledLayer, GoogleTiledLayer,
-    PoiLayer) {
+    Atmosphere, PoiLayer) {
 
       window.Kernel = Kernel;
 
@@ -14,6 +14,10 @@
         var mapSelector = document.getElementById("mapSelector");
         mapSelector.onchange = changeTiledLayer;
         changeTiledLayer();
+
+        var atmosphere = Atmosphere.getInstance();
+
+        window.globe.scene.add(atmosphere);
 
         var poiLayer = new PoiLayer();
         window.globe.scene.add(poiLayer);

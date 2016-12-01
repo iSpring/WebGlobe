@@ -13,7 +13,7 @@ class MeshTextureMaterial extends Material {
     private ready:boolean = false;
     private deleted: boolean = false;
 
-    constructor(imageOrUrl?: ImageType, public flipY: boolean = true) {
+    constructor(imageOrUrl: ImageType = null, public flipY: boolean = true) {
         super();
         this.texture = Kernel.gl.createTexture();
         if(imageOrUrl){

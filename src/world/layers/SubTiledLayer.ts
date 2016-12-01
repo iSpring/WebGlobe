@@ -96,7 +96,7 @@ class SubTiledLayer extends GraphicGroup {
           url: ""
         };
         args.url = this.tiledLayer.getImageUrl(args.level, args.row, args.column);
-        tile = Tile.getTile(args.level, args.row, args.column, args.url);
+        tile = Tile.getInstance(args.level, args.row, args.column, args.url);
         this.add(tile);
       }
     }

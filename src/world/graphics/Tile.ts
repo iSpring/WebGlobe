@@ -151,11 +151,11 @@ class TileInfo {
 class Tile extends MeshGraphic {
   subTiledLayer: any;
 
-  constructor(public geometry: TileGeometry, public material: TileMaterial, public tileInfo: TileInfo) {
+  private constructor(public geometry: TileGeometry, public material: TileMaterial, public tileInfo: TileInfo) {
     super(geometry, material);
   }
 
-  static getTile(level: number, row: number, column: number, url: string) {
+  static getInstance(level: number, row: number, column: number, url: string) {
     var tileInfo = new TileInfo(level, row, column, url);
     return new Tile(tileInfo.geometry, tileInfo.material, tileInfo);
   }

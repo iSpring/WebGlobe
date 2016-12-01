@@ -1,16 +1,21 @@
-///<amd-module name="world/graphics/Poi"/>
+///<amd-module name="world/graphics/Atmosphere"/>
 
 import Kernel = require("../Kernel");
 import MeshGraphic = require('./MeshGraphic');
-import Marker = require('../geometries/Marker');
-import MeshTextureMaterial = require('../materials/MeshTextureMaterial');
-import Program = require("../Program");
-import Camera from "../Camera";
 import AtmosphereGeometry = require("../geometries/Atmosphere");
+import MeshTextureMaterial = require('../materials/MeshTextureMaterial');
+import Camera from "../Camera";
 
 class Atmosphere extends MeshGraphic {
-    constructor(public geometry: AtmosphereGeometry, public material: MeshTextureMaterial){
+    private constructor(public geometry: AtmosphereGeometry, public material: MeshTextureMaterial){
         super(geometry, material);
+    }
+
+    static getInstance(): Atmosphere{
+        var geometry = new AtmosphereGeometry();
+        var imageUrl = "/WebGlobe/src/world/images/atmosphere64.png";
+        var material = new MeshTextureMaterial(imageUrl, false);
+        return new Atmosphere(geometry, material);
     }
 
     onDraw(camera: Camera){
