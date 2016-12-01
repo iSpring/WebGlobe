@@ -10,10 +10,11 @@ import Matrix = require("../math/Matrix");
 class Atmosphere  extends Mesh {
   private readonly segment: number = 36;
   private readonly radius1: number = Kernel.EARTH_RADIUS;
-  private readonly radius2: number = Kernel.EARTH_RADIUS * 1.1;
+  private readonly radius2: number = Kernel.EARTH_RADIUS * 1.2;
 
   constructor() {
     super();
+    this.buildTriangles();
   }
 
   buildTriangles(){
@@ -32,7 +33,7 @@ class Atmosphere  extends Mesh {
     var deltaS: number = 1.0 / this.segment;
     var u: number = 0;
 
-    for(var i = 0; i < this.segment; i++){
+    for(var i = 0; i <= this.segment; i++){
       u = deltaS * i;
       if(u > 1){
         u = 1;
@@ -47,7 +48,7 @@ class Atmosphere  extends Mesh {
 
       //big radius, v is always 0
       meshVertices2.push(new MeshVertice({
-        i: this.segment + i,
+        i: this.segment + 1 + i,
         p: mat2.getPosition().getArray(),
         uv: [u, 0]
       }));
