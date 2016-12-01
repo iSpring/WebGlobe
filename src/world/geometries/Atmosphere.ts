@@ -28,31 +28,31 @@ class Atmosphere  extends Mesh {
     mat2.setColumnTrans(0, this.radius2, 0);
     var meshVertices2: MeshVertice[] = [];
 
-    var deltaRadian = Math.PI * 2 / this.segment;
+    var deltaRadian: number = Math.PI * 2 / this.segment;
+    var deltaS: number = 1.0 / this.segment;
+    var u: number = 0;
 
     for(var i = 0; i < this.segment; i++){
+      u = deltaS * i;
+      if(u > 1){
+        u = 1;
+      }
+      //don't flip Y
+      //small radius, v is always 1
       meshVertices1.push(new MeshVertice({
         i: i,
-        p: mat1.getPosition().getArray()
+        p: mat1.getPosition().getArray(),
+        uv: [u, 1]
       }));
 
+      //big radius, v is always 0
       meshVertices2.push(new MeshVertice({
         i: this.segment + i,
-        p: mat2.getPosition().getArray()
+        p: mat2.getPosition().getArray(),
+        uv: [u, 0]
       }));
 
-      //don't flip Y
-      if(i % 2 === 0){
-        //meshVertices1[i] left bottom
-        meshVertices1[i].uv = [0, 1];
-        //meshVertices2[i] left top
-        meshVertices2[i].uv = [0, 0];
-      }else{
-        //meshVertices1[i] right bottom
-        meshVertices1[i].uv = [1, 1];
-        //meshVertices2[i] right top
-        meshVertices2[i].uv = [1, 0];
-
+      if(i > 0){
         var vLeftTop = meshVertices2[i-1];
         var vLeftBottom = meshVertices1[i-1];
         var vRightTop = meshVertices2[i];
