@@ -4,7 +4,6 @@ import Kernel = require("../Kernel");
 import Geometry = require("../geometries/Geometry");
 import Material = require("../materials/Material");
 import Program = require("../Program");
-import ProgramUtils = require("../ProgramUtils");
 import Camera from "../Camera";
 
 interface GraphicOptions{
@@ -23,7 +22,7 @@ abstract class Graphic{
     constructor(public geometry: Geometry, public material: Material){
         this.id = ++Kernel.idCounter;
         this.parent = null;
-        this.program = ProgramUtils.getProgram(this);
+        this.program = Program.getProgram(this);
     }
 
     setVisible(visible: boolean){
