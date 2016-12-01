@@ -471,6 +471,11 @@ class Camera extends Object3D {
     return length2EarthSurface;
   }
 
+  getDistance2EarthOrigin(): number{
+    var position = this.getPosition();
+    return Vector.fromVertice(position).getLength();
+  }
+
   isAnimating(): boolean {
     return this.animating;
   }
