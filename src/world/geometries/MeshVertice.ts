@@ -7,11 +7,12 @@ class MeshVertice{
 	i:number;
 
 	constructor(args:any){
-		this.p = args.p;//[x,y,z]
-		this.n = args.n;//[x,y,z]
-		this.uv = args.uv;//[s,t]
-		this.c = args.c;//[r,g,b]
 		this.i = args.i;//index
+		this.p = args.p;//[x,y,z]
+		this.uv = args.uv;//[s,t]
+
+		this.n = args.n;//[x,y,z]
+		this.c = args.c;//[r,g,b]
 	}
 }
 
