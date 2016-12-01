@@ -1,46 +1,20 @@
 ///<amd-module name="world/graphics/Poi"/>
 
 import Kernel = require("../Kernel");
-import Graphic = require('./Graphic');
+import MeshGraphic = require('./MeshGraphic');
 import Marker = require('../geometries/Marker');
 import MeshTextureMaterial = require('../materials/MeshTextureMaterial');
 import Program = require("../Program");
 import Camera from "../Camera";
+import AtmosphereGeometry = require("../geometries/Atmosphere");
 
-const vs =
-`
-attribute vec3 aPosition;
-uniform mat4 uPMVMatrix;
-uniform float uSize;
-
-void main(void) {
-  gl_Position = uPMVMatrix * vec4(aPosition, 1.0);
-  gl_PointSize = uSize;
-}
-`;
-
-//http://stackoverflow.com/questions/3497068/textured-points-in-opengl-es-2-0
-const fs =
-`
-precision mediump float;
-uniform sampler2D uSampler;
-
-void main()
-{
-	gl_FragColor = texture2D(uSampler, vec2(gl_PointCoord.x, 1.0 - gl_PointCoord.y));
-}
-`;
-
-class Atmosphere extends Graphic {
-    constructor(public geometry: Marker, public material: MeshTextureMaterial){
+class Atmosphere extends MeshGraphic {
+    constructor(public geometry: AtmosphereGeometry, public material: MeshTextureMaterial){
         super(geometry, material);
     }
 
-    createProgram(){
-        return new Program(this.getProgramType(), vs, fs);
-    }
-
     onDraw(camera: Camera){
+        super.onDraw(camera);
         // var gl = Kernel.gl;
 
         // //gl.disable(gl.DEPTH_TEST);

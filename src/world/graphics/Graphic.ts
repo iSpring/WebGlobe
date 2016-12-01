@@ -5,18 +5,19 @@ import Geometry = require("../geometries/Geometry");
 import Material = require("../materials/Material");
 import Program = require("../Program");
 import Camera from "../Camera";
+import GraphicGroup = require("../GraphicGroup");
 
 interface GraphicOptions{
     geometry: Geometry;
     material: Material;
-    parent: any;
+    parent: GraphicGroup;
     visible?: boolean;
 }
 
 abstract class Graphic{
-    id:number;
+    id: number;
     visible: boolean = true;
-    parent: any;
+    parent: GraphicGroup;
     program: Program;
 
     constructor(public geometry: Geometry, public material: Material){
