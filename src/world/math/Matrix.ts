@@ -51,43 +51,43 @@ class Matrix{
       return this;
     }
 
-    setColumnX(x: number, y: number, z: number) {
-      this.elements[0] = x;
-      this.elements[1] = y;
-      this.elements[2] = z;
+    setVectorX(vector: Vector) {
+      this.elements[0] = vector.x;
+      this.elements[1] = vector.y;
+      this.elements[2] = vector.z;
     }
 
-    getColumnX(): Vector {
+    getVectorX(): Vector {
       return new Vector(this.elements[0], this.elements[1], this.elements[2]);
     }
 
-    setColumnY(x: number, y: number, z: number) {
-      this.elements[4] = x;
-      this.elements[5] = y;
-      this.elements[6] = z;
+    setVectorY(vector: Vector) {
+      this.elements[4] = vector.x;
+      this.elements[5] = vector.y;
+      this.elements[6] = vector.z;
     }
 
-    getColumnY(): Vector {
+    getVectorY(): Vector {
       return new Vector(this.elements[4], this.elements[5], this.elements[6]);
     }
 
-    setColumnZ(x: number, y: number, z: number) {
-      this.elements[8] = x;
-      this.elements[9] = y;
-      this.elements[10] = z;
+    setVectorZ(vector: Vector) {
+      this.elements[8] = vector.x;
+      this.elements[9] = vector.y;
+      this.elements[10] = vector.z;
     }
 
-    getColumnZ(): Vector {
+    getVectorZ(): Vector {
       return new Vector(this.elements[8], this.elements[9], this.elements[10]);
     }
 
-    setColumnTrans(x: number, y: number, z: number) {
-      this.elements[12] = x;
-      this.elements[13] = y;
-      this.elements[14] = z;
+    setPosition(vertice: Vertice) {
+      this.elements[12] = vertice.x;
+      this.elements[13] = vertice.y;
+      this.elements[14] = vertice.z;
     }
 
-    getColumnTrans(): Vertice {
+    getPosition(): Vertice {
       return new Vertice(this.elements[12], this.elements[13], this.elements[14]);
     }
 
@@ -306,10 +306,6 @@ class Matrix{
       }
     }
 
-    getPosition(): Vertice{
-        return this.getColumnTrans();
-    }
-
     worldTranslate(x: number, y: number, z: number) {
       this.elements[12] += x;
       this.elements[13] += y;
@@ -336,10 +332,10 @@ class Matrix{
     }
 
     localScale(scaleX: number, scaleY: number, scaleZ: number): void {
-      var transVertice = this.getColumnTrans();
-      this.setColumnTrans(0, 0, 0);
+      var transVertice = this.getPosition();
+      this.setPosition(new Vertice(0, 0, 0));
       this.worldScale(scaleX, scaleY, scaleZ);
-      this.setColumnTrans(transVertice.x, transVertice.y, transVertice.z);
+      this.setPosition(transVertice);
     }
 
     worldRotateX(radian: number): void {
@@ -432,27 +428,27 @@ class Matrix{
     }
 
     localRotateX(radian: number): void {
-      var transVertice = this.getColumnTrans();
-      this.setColumnTrans(0, 0, 0);
-      var columnX = this.getColumnX();
+      var transVertice = this.getPosition();
+      this.setPosition(new Vertice(0, 0, 0));
+      var columnX = this.getVectorX();
       this.worldRotateByVector(radian, columnX);
-      this.setColumnTrans(transVertice.x, transVertice.y, transVertice.z);
+      this.setPosition(transVertice);
     }
 
     localRotateY(radian: number): void {
-      var transVertice = this.getColumnTrans();
-      this.setColumnTrans(0, 0, 0);
-      var columnY = this.getColumnY();
+      var transVertice = this.getPosition();
+      this.setPosition(new Vertice(0, 0, 0));
+      var columnY = this.getVectorY();
       this.worldRotateByVector(radian, columnY);
-      this.setColumnTrans(transVertice.x, transVertice.y, transVertice.z);
+      this.setPosition(transVertice);
     }
 
     localRotateZ(radian: number): void {
-      var transVertice = this.getColumnTrans();
-      this.setColumnTrans(0, 0, 0);
-      var columnZ = this.getColumnZ();
+      var transVertice = this.getPosition();
+      this.setPosition(new Vertice(0, 0, 0));
+      var columnZ = this.getVectorZ();
       this.worldRotateByVector(radian, columnZ);
-      this.setColumnTrans(transVertice.x, transVertice.y, transVertice.z);
+      this.setPosition(transVertice);
     }
 
     //localVector指的是相对于模型坐标系中的向量
@@ -462,10 +458,10 @@ class Matrix{
       var worldColumn = this.multiplyColumn(localColumn); //模型坐标转换为世界坐标
       var worldVector = new Vector(worldColumn[0], worldColumn[1], worldColumn[2]);
 
-      var transVertice = this.getColumnTrans();
-      this.setColumnTrans(0, 0, 0);
+      var transVertice = this.getPosition();
+      this.setPosition(new Vertice(0, 0, 0));
       this.worldRotateByVector(radian, worldVector);
-      this.setColumnTrans(transVertice.x, transVertice.y, transVertice.z);
+      this.setPosition(transVertice);
     }
   };
 

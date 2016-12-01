@@ -8,93 +8,114 @@ class Object3D {
     protected matrix: Matrix;
 
     constructor() {
-        this.matrix = new Matrix();
+      this.matrix = new Matrix();
     }
 
     getMatrix(): Matrix{
-        return this.matrix;
+      return this.matrix;
     }
 
     cloneMatrix(): Matrix{
-        return this.matrix.clone();
+      return this.matrix.clone();
     }
 
-    //需要子类重写
+    setVectorX(vector: Vector) {
+      this.matrix.setVectorX(vector);
+    }
+
+    getVectorX(): Vector {
+      return this.matrix.getVectorX();
+    }
+
+    setVectorY(vector: Vector) {
+      this.matrix.setVectorY(vector);
+    }
+
+    getVectorY(): Vector {
+      return this.matrix.getVectorY();
+    }
+
+    setVectorZ(vector: Vector) {
+      this.matrix.setVectorZ(vector);
+    }
+
+    getVectorZ(): Vector {
+      return this.matrix.getVectorZ();
+    }
+
+    setPosition(vertice: Vertice): void {
+      this.matrix.setPosition(vertice);
+    }
+
     getPosition(): Vertice {
-        var position = this.matrix.getPosition();
-        return position;
-    }
-
-    //需要子类重写
-    setPosition(x: number, y: number, z: number): void {
-        this.matrix.setColumnTrans(x, y, z);
+      return this.matrix.getPosition();
     }
 
     worldTranslate(x: number, y: number, z: number): void {
-        this.matrix.worldTranslate(x, y, z);
+      this.matrix.worldTranslate(x, y, z);
     }
 
     localTranslate(x: number, y: number, z: number): void {
-        this.matrix.localTranslate(x, y, z);
+      this.matrix.localTranslate(x, y, z);
     }
 
     worldScale(scaleX: number, scaleY: number, scaleZ: number): void {
-        this.matrix.worldScale(scaleX, scaleY, scaleZ);
+      this.matrix.worldScale(scaleX, scaleY, scaleZ);
     }
 
     localScale(scaleX: number, scaleY: number, scaleZ: number): void {
-        this.matrix.localScale(scaleX, scaleY, scaleZ);
+      this.matrix.localScale(scaleX, scaleY, scaleZ);
     }
 
     worldRotateX(radian: number): void {
-        this.matrix.worldRotateX(radian);
+      this.matrix.worldRotateX(radian);
     }
 
     worldRotateY(radian: number): void {
-        this.matrix.worldRotateY(radian);
+      this.matrix.worldRotateY(radian);
     }
 
     worldRotateZ(radian: number): void {
-        this.matrix.worldRotateZ(radian);
+      this.matrix.worldRotateZ(radian);
     }
 
     worldRotateByVector(radian: number, vector: Vector): void {
-        this.matrix.worldRotateByVector(radian, vector);
+      this.matrix.worldRotateByVector(radian, vector);
     }
 
     localRotateX(radian: number): void {
-        this.matrix.localRotateX(radian);
+      this.matrix.localRotateX(radian);
     }
 
     localRotateY(radian: number): void {
-        this.matrix.localRotateY(radian);
+      this.matrix.localRotateY(radian);
     }
 
     localRotateZ(radian: number): void {
-        this.matrix.localRotateZ(radian);
+      this.matrix.localRotateZ(radian);
     }
 
     //localVector指的是相对于模型坐标系中的向量
     localRotateByVector(radian: number, localVector: Vector): void {
-        this.matrix.localRotateByVector(radian, localVector);
+      this.matrix.localRotateByVector(radian, localVector);
     }
 
     getXAxisDirection(): Vector {
-        var directionX = this.matrix.getColumnX();
-        directionX.normalize();
-        return directionX;
+      var directionX = this.matrix.getVectorX();
+      directionX.normalize();
+      return directionX;
     }
 
     getYAxisDirection(): Vector {
-        var directionY = this.matrix.getColumnY();
-        directionY.normalize();
-        return directionY;
+      var directionY = this.matrix.getVectorY();
+      directionY.normalize();
+      return directionY;
     }
 
     getZAxisDirection(): Vector {
-        var directionZ = this.matrix.getColumnZ();
-        directionZ.normalize();
-        return directionZ;
+      var directionZ = this.matrix.getVectorZ();
+      directionZ.normalize();
+      return directionZ;
     }
 }
 

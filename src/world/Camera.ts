@@ -349,10 +349,10 @@ class Camera extends Object3D {
     }
     var intersect = intersects[0];
     var theoryDistance2Interscet = this._getTheoryDistanceFromCamera2EarthSurface(level);
-    var vector = cameraMatrix.getColumnZ();
+    var vector = cameraMatrix.getVectorZ();
     vector.setLength(theoryDistance2Interscet);
     var newCameraPosition = Vector.verticePlusVector(intersect, vector);
-    cameraMatrix.setColumnTrans(newCameraPosition.x, newCameraPosition.y, newCameraPosition.z);
+    cameraMatrix.setPosition(newCameraPosition);
   }
 
   setDeltaPitch(deltaPitch: number) {
@@ -381,7 +381,7 @@ class Camera extends Object3D {
     //先不对this.matrix进行更新，对其拷贝进行更新
     var matrix = this.matrix.clone();
     //将matrix移动到交点位置
-    matrix.setColumnTrans(intersect.x, intersect.y, intersect.z);
+    matrix.setPosition(intersect);
     //旋转
     matrix.localRotateX(deltaRadian);
     //更新matrix的position
@@ -414,7 +414,7 @@ class Camera extends Object3D {
 
     //计算夹角的正负
     var crossVector = vectorOrigin2Intersect.cross(vectorIntersect2Camera);
-    var xAxisDirection = this.matrix.getColumnX()
+    var xAxisDirection = this.matrix.getVectorX()
     if (crossVector.dot(xAxisDirection)) {
       //正值
       radian = Math.abs(radian);
@@ -459,7 +459,7 @@ class Camera extends Object3D {
   }
 
   getLightDirection(): Vector {
-    var dirVertice = this.matrix.getColumnZ();
+    var dirVertice = this.matrix.getVectorZ();
     var direction = new Vector(-dirVertice.x, -dirVertice.y, -dirVertice.z);
     direction.normalize();
     return direction;
@@ -511,7 +511,7 @@ class Camera extends Object3D {
       } else {
         this.realLevel += deltaLevel;
         var p = this.getPosition();
-        this.setPosition(p.x + deltaX, p.y + deltaY, p.z + deltaZ);
+        this.setPosition(new Vertice(p.x + deltaX, p.y + deltaY, p.z + deltaZ));
         requestAnimationFrame(callback);
       }
     };
@@ -522,17 +522,20 @@ class Camera extends Object3D {
     var cameraPntCopy = cameraPnt.clone();
     var targetPntCopy = targetPnt.clone();
     var up = upDirection.clone();
-    var transX = cameraPntCopy.x;
-    var transY = cameraPntCopy.y;
-    var transZ = cameraPntCopy.z;
-    var zAxis = new Vector(cameraPntCopy.x - targetPntCopy.x, cameraPntCopy.y - targetPntCopy.y, cameraPntCopy.z - targetPntCopy.z).normalize();
+    
+    var zAxis = new Vector(
+      cameraPntCopy.x - targetPntCopy.x, 
+      cameraPntCopy.y - targetPntCopy.y, 
+      cameraPntCopy.z - targetPntCopy.z
+    );
+    zAxis.normalize();
     var xAxis = up.cross(zAxis).normalize();
     var yAxis = zAxis.cross(xAxis).normalize();
 
-    this.matrix.setColumnX(xAxis.x, xAxis.y, xAxis.z); //此处相当于对Camera的模型矩阵(不是视点矩阵)设置X轴方向
-    this.matrix.setColumnY(yAxis.x, yAxis.y, yAxis.z); //此处相当于对Camera的模型矩阵(不是视点矩阵)设置Y轴方向
-    this.matrix.setColumnZ(zAxis.x, zAxis.y, zAxis.z); //此处相当于对Camera的模型矩阵(不是视点矩阵)设置Z轴方向
-    this.matrix.setColumnTrans(transX, transY, transZ); //此处相当于对Camera的模型矩阵(不是视点矩阵)设置偏移量
+    this.matrix.setVectorX(xAxis); //此处相当于对Camera的模型矩阵(不是视点矩阵)设置X轴方向
+    this.matrix.setVectorY(yAxis); //此处相当于对Camera的模型矩阵(不是视点矩阵)设置Y轴方向
+    this.matrix.setVectorZ(zAxis); //此处相当于对Camera的模型矩阵(不是视点矩阵)设置Z轴方向
+    this.matrix.setPosition(cameraPntCopy); //此处相当于对Camera的模型矩阵(不是视点矩阵)设置偏移量
     this.matrix.setLastRowDefault();
 
     this._updateFar();
@@ -553,7 +556,7 @@ class Camera extends Object3D {
 
   //获取cameraMatrix视线与地球的交点
   private _getDirectionIntersectPointWithEarth(cameraMatrix: Matrix): Vertice[] {
-    var dir = cameraMatrix.getColumnZ().getOpposite();
+    var dir = cameraMatrix.getVectorZ().getOpposite();
     var p = cameraMatrix.getPosition();
     var line = new Line(p, dir);
     var result = this._getPickCartesianCoordInEarthByLine(line);

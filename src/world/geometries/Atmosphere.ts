@@ -22,11 +22,11 @@ class Atmosphere  extends Mesh {
     this.triangles = [];
 
     var mat1 = new Matrix();
-    mat1.setColumnTrans(0, this.radius1, 0);
+    mat1.setPosition(new Vertice(0, this.radius1, 0));
     var meshVertices1: MeshVertice[] = [];
 
     var mat2 = new Matrix();
-    mat2.setColumnTrans(0, this.radius2, 0);
+    mat2.setPosition(new Vertice(0, this.radius2, 0));
     var meshVertices2: MeshVertice[] = [];
 
     var deltaRadian: number = - Math.PI * 2 / this.segment;
