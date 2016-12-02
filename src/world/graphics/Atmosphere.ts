@@ -15,7 +15,7 @@ class Atmosphere extends MeshGraphic {
     static getInstance(): Atmosphere{
         var geometry = new AtmosphereGeometry();
         var imageUrl = "/WebGlobe/src/world/images/atmosphere64.png";
-        var material = new MeshTextureMaterial(imageUrl, true);
+        var material = new MeshTextureMaterial(imageUrl, false);
         return new Atmosphere(geometry, material);
     }
 

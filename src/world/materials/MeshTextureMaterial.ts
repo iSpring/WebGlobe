@@ -13,7 +13,7 @@ class MeshTextureMaterial extends Material {
     private ready:boolean = false;
     private deleted: boolean = false;
 
-    constructor(imageOrUrl: ImageType = null, public flipY: boolean = true) {
+    constructor(imageOrUrl: ImageType = null, public flipY: boolean = false) {
         super();
         this.texture = Kernel.gl.createTexture();
         if(imageOrUrl){
@@ -72,8 +72,11 @@ class MeshTextureMaterial extends Material {
         var gl = Kernel.gl;
 
         gl.bindTexture(gl.TEXTURE_2D, this.texture);
+
         if(this.flipY){
             gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, +true);
+        }else{
+            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, +false);
         }
 
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.image);

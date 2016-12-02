@@ -8,9 +8,8 @@ class TileMaterial extends MeshTextureMaterial{
   level: number;
 
   constructor(level: number, imageOrUrl: ImageType){
-    super();
+    super(imageOrUrl, true);
     this.level = level >= 0 ? level : 20;
-    this.setImageOrUrl(imageOrUrl);
   }
 
   onLoad() {
