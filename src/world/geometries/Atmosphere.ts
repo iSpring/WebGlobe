@@ -9,8 +9,8 @@ import Matrix = require("../math/Matrix");
 
 class Atmosphere  extends Mesh {
   private readonly segment: number = 360;
-  private readonly radius1: number = Kernel.EARTH_RADIUS;
-  private readonly radius2: number = Kernel.EARTH_RADIUS * 1.2;
+  private readonly radius1: number = Kernel.EARTH_RADIUS * 0.99;
+  private readonly radius2: number = Kernel.EARTH_RADIUS * 1.01;
 
   constructor() {
     super();
