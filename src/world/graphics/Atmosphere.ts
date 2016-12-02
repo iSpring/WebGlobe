@@ -20,6 +20,12 @@ class Atmosphere extends MeshGraphic {
     }
 
     onDraw(camera: Camera){
+        var gl = Kernel.gl;
+        gl.disable(gl.DEPTH_TEST);
+        gl.depthMask(false);
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
         this.geometry.getMatrix().setUnitMatrix();
 
         //根据Camera动态调整Atmosphere的matrix，使其一直垂直面向摄像机
@@ -40,6 +46,10 @@ class Atmosphere extends MeshGraphic {
         this.geometry.localScale(sinθ, sinθ, sinθ);
 
         super.onDraw(camera);
+
+        gl.enable(gl.DEPTH_TEST);
+        gl.depthMask(true);
+        gl.disable(gl.BLEND);
     }
 }
 
