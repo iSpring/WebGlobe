@@ -20,6 +20,7 @@ void main(void) {
 `;
 
 //http://stackoverflow.com/questions/3497068/textured-points-in-opengl-es-2-0
+//gl_FragColor = texture2D(uSampler, vec2(gl_PointCoord.x, 1.0 - gl_PointCoord.y));
 const fs =
 `
 precision mediump float;
@@ -27,7 +28,7 @@ uniform sampler2D uSampler;
 
 void main()
 {
-	gl_FragColor = texture2D(uSampler, vec2(gl_PointCoord.x, 1.0 - gl_PointCoord.y));
+	gl_FragColor = texture2D(uSampler, vec2(gl_PointCoord.x, gl_PointCoord.y));
 }
 `;
 
