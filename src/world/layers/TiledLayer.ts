@@ -38,22 +38,20 @@ abstract class TiledLayer extends GraphicGroup {
   refresh(lastLevel: number, lastLevelTileGrids: TileGrid[]){
     this._updateSubLayerCount(lastLevel);
 
-    var levelsTileGrids: any[] = []; //lastLevel->2
+    var levelsTileGrids: TileGrid[][] = [];
     var parentTileGrids = lastLevelTileGrids;
-    var i: number;
-    for (i = lastLevel; i >= 2; i--) {
-      levelsTileGrids.push(parentTileGrids); //此行代码表示第i层级的可见切片
+    var subLevel: number;
+
+    for (subLevel = lastLevel; subLevel >= 2; subLevel--) {
+      levelsTileGrids[subLevel] = parentTileGrids;//此行代码表示第subLevel层级的可见切片
       parentTileGrids = Utils.map(parentTileGrids, function (item) {
         return item.getParent();
       });
       parentTileGrids = Utils.filterRepeatArray(parentTileGrids);
     }
-    levelsTileGrids.reverse(); //2->lastLevel
-    for (i = 2; i <= lastLevel; i++) {
-      var subLevel = i;
-      var subLayer = <SubTiledLayer>this.children[subLevel];
-      subLayer.updateTiles(levelsTileGrids[0], true);
-      levelsTileGrids.splice(0, 1);
+
+    for (subLevel = 2; subLevel <= lastLevel; subLevel++) {
+      (<SubTiledLayer>this.children[subLevel]).updateTiles(levelsTileGrids[subLevel], true);
     }
   }
 

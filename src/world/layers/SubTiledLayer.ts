@@ -41,8 +41,7 @@ class SubTiledLayer extends GraphicGroup {
   }
 
   //根据传入的tiles信息进行更新其children
-  updateTiles(visibleTileGrids: TileGrid[], bAddNew: boolean) { //camera,options
-    //var visibleTileGrids = camera.getVisibleTilesByLevel(this.level,options);
+  updateTiles(visibleTileGrids: TileGrid[], bAddNew: boolean) {
     //检查visibleTileGrids中是否存在指定的切片信息
     function checkTileExist(tileArray: TileGrid[], lev: number, row: number, col: number): any {
       var result = {

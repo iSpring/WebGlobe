@@ -7,6 +7,7 @@ import TileMaterial = require('../materials/TileMaterial');
 import TileGeometry = require("../geometries/TileGeometry");
 import Vertice = require("../geometries/MeshVertice");
 import Triangle = require("../geometries/Triangle");
+import SubTiledLayer = require("../layers/SubTiledLayer");
 
 class TileInfo {
   //type如果是GLOBE_TILE，表示其buffer已经设置为一般形式
@@ -149,7 +150,7 @@ class TileInfo {
 }
 
 class Tile extends MeshGraphic {
-  subTiledLayer: any;
+  subTiledLayer: SubTiledLayer;
 
   private constructor(public geometry: TileGeometry, public material: TileMaterial, public tileInfo: TileInfo) {
     super(geometry, material);
