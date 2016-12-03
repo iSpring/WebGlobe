@@ -7,7 +7,7 @@ class ArcGISTiledLayer extends TiledLayer{
     super();
   }
 
-  getImageUrl(level: number, row: number, column: number) {
+  getTileUrl(level: number, row: number, column: number) {
     var url = Kernel.proxy + "?" + this.url + "/tile/" + level + "/" + row + "/" + column;
     return this.wrapUrlWithProxy(url);
   }

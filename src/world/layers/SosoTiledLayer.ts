@@ -2,10 +2,11 @@
 import TiledLayer = require('./TiledLayer');
 
 class SosoTiledLayer extends TiledLayer {
-  getImageUrl(level: number, row: number, column: number): string {
-    // if(level >= 10){
-    //   return this.getImageUrl2(level, row, column);
-    // }
+  
+  getTileUrl(level: number, row: number, column: number): string {
+    if(level >= 10){
+      return this.getImageUrl2(level, row, column);
+    }
 
     return this.getImageUrl1(level, row, column);
   }

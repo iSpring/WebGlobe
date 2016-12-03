@@ -5,10 +5,11 @@ import MathUtils = require('../math/Math');
 import TileGrid = require('../TileGrid');
 import GraphicGroup = require('../GraphicGroup');
 import Tile = require('../graphics/Tile');
+import TiledLayer = require('./TiledLayer');
 
 class SubTiledLayer extends GraphicGroup {
   level: number = -1;
-  tiledLayer: any = null;
+  tiledLayer: TiledLayer = null;
 
   constructor(args: any) {
     super();
@@ -95,7 +96,7 @@ class SubTiledLayer extends GraphicGroup {
           column: tileGridInfo.column,
           url: ""
         };
-        args.url = this.tiledLayer.getImageUrl(args.level, args.row, args.column);
+        args.url = this.tiledLayer.getTileUrl(args.level, args.row, args.column);
         tile = Tile.getInstance(args.level, args.row, args.column, args.url);
         this.add(tile);
       }

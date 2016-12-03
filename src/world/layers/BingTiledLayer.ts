@@ -4,7 +4,8 @@ import TiledLayer = require('./TiledLayer');
 
 //Bing地图
 class BingTiledLayer extends TiledLayer{
-  getImageUrl(level: number, row: number, column: number): string {
+
+  getTileUrl(level: number, row: number, column: number): string {
     var url = "";
     var tileX = column;
     var tileY = row;
@@ -41,6 +42,7 @@ class BingTiledLayer extends TiledLayer{
     url = "//ecn.t" + serverIdx + ".tiles.virtualearth.net/tiles/h" + strMerge4 + ".jpeg?g=1239&mkt=en-us";
     return url;
   }
+
 }
 
 export = BingTiledLayer;

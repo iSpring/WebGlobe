@@ -11,7 +11,7 @@ import ImageUtils = require("./Image");
 import EventUtils = require("./Event");
 
 class Globe {
-  REFRESH_INTERVAL: number = 300; //Globe自动刷新时间间隔，以毫秒为单位
+  REFRESH_INTERVAL: number = 100; //Globe自动刷新时间间隔，以毫秒为单位
   idTimeOut: any = null; //refresh自定刷新的timeOut的handle
   renderer: Renderer = null;
   scene: Scene = null;
@@ -65,7 +65,7 @@ class Globe {
           column: n,
           url: ""
         };
-        args.url = this.tiledLayer.getImageUrl(args.level, args.row, args.column);
+        args.url = this.tiledLayer.getTileUrl(args.level, args.row, args.column);
         var tile = Tile.getInstance(args.level, args.row, args.column, args.url);
         subLayer1.add(tile);
       }

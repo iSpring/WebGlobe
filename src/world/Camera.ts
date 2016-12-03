@@ -54,7 +54,7 @@ export class CameraCore{
 
 class Camera extends Object3D {
   private readonly initFov: number;
-  private readonly animationDuration: number = 600;//层级变化的动画周期是600毫秒
+  private readonly animationDuration: number = 200;//层级变化的动画周期，毫秒
   private readonly nearFactor: number = 0.6;
   private readonly baseTheoryDistanceFromCamera2EarthSurface = 1.23 * Kernel.EARTH_RADIUS;
   private readonly maxPitch = 40;

@@ -29,7 +29,7 @@ abstract class TiledLayer extends GraphicGroup {
   }
 
   //根据切片的层级以及行列号获取图片的url,抽象方法，供子类实现
-  abstract getImageUrl(level: number, row: number, column: number): string
+  abstract getTileUrl(level: number, row: number, column: number): string
 
   //根据传入的level更新SubTiledLayer的数量
   updateSubLayerCount(level: number) {
