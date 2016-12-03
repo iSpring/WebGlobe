@@ -50,6 +50,8 @@ abstract class TiledLayer extends GraphicGroup {
       parentTileGrids = Utils.filterRepeatArray(parentTileGrids);
     }
 
+    console.log("----------------------------------------------------------");
+
     for (subLevel = 2; subLevel <= lastLevel; subLevel++) {
       (<SubTiledLayer>this.children[subLevel]).updateTiles(levelsTileGrids[subLevel], true);
     }
