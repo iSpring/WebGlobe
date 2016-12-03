@@ -46,15 +46,11 @@ class Globe {
     this.tiledLayer = tiledLayer;
     this.scene.add(this.tiledLayer, true);
     //添加第0级的子图层
-    var subLayer0 = new SubTiledLayer({
-      level: 0
-    });
+    var subLayer0 = new SubTiledLayer(0);
     this.tiledLayer.add(subLayer0);
 
     //要对level为1的图层进行特殊处理，在创建level为1时就创建其中的全部的四个tile
-    var subLayer1 = new SubTiledLayer({
-      level: 1
-    });
+    var subLayer1 = new SubTiledLayer(1);
     this.tiledLayer.add(subLayer1);
     Kernel.canvas.style.cursor = "wait";
     for (var m = 0; m <= 1; m++) {

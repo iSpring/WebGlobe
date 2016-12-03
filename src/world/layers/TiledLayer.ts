@@ -39,10 +39,7 @@ abstract class TiledLayer extends GraphicGroup {
     if (deltaLevel > 0) {
       //需要增加子图层
       for (i = 0; i < deltaLevel; i++) {
-        var args = {
-          level: i + subLayerCount
-        };
-        subLayer = new SubTiledLayer(args);
+        subLayer = new SubTiledLayer(i + subLayerCount);
         this.add(subLayer);
       }
     } else if (deltaLevel < 0) {

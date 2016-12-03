@@ -8,12 +8,10 @@ import Tile = require('../graphics/Tile');
 import TiledLayer = require('./TiledLayer');
 
 class SubTiledLayer extends GraphicGroup {
-  level: number = -1;
   tiledLayer: TiledLayer = null;
 
-  constructor(args: any) {
+  constructor(public level: number) {
     super();
-    this.level = args.level;
   }
 
   //重写GraphicGroup的add方法
