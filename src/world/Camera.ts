@@ -423,7 +423,13 @@ class Camera extends Object3D {
       radian = - Math.abs(radian);
     }
 
-    return MathUtils.radianToDegree(radian);
+    var pitch = MathUtils.radianToDegree(radian);
+
+    if(pitch >= 90){
+      throw `Invalid pitch: ${pitch}`;
+    }
+
+    return pitch;
   }
 
   //计算拾取射线与地球的交点，以笛卡尔空间直角坐标系坐标数组的形式返回

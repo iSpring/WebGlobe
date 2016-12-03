@@ -119,14 +119,14 @@ class Globe {
       return;
     }
     var lastLevel = this.getLevel() + 3;
-    this.tiledLayer.updateSubLayerCount(lastLevel);
     var options = {
       threshold: 1
     };
-    options.threshold = Math.min(90 / this.camera.getPitch(), 1.5);
+    var pitch = this.camera.getPitch();
+    options.threshold = Math.min(90 / (90 - pitch), 1.5);
     //最大级别的level所对应的可见TileGrids
     var lastLevelTileGrids = this.camera.getVisibleTilesByLevel(lastLevel, options);
-    this.tiledLayer.refresh(lastLevel, lastLevelTileGrids);    
+    this.tiledLayer.refresh(lastLevel, lastLevelTileGrids);
   }
 }
 

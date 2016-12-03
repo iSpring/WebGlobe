@@ -9,6 +9,8 @@ import Utils = require('../Utils');
 abstract class TiledLayer extends GraphicGroup {
 
   refresh(lastLevel: number, lastLevelTileGrids: TileGrid[]){
+    this._updateSubLayerCount(lastLevel);
+
     var levelsTileGrids: any[] = []; //lastLevel->2
     var parentTileGrids = lastLevelTileGrids;
     var i: number;
@@ -55,7 +57,7 @@ abstract class TiledLayer extends GraphicGroup {
   abstract getTileUrl(level: number, row: number, column: number): string
 
   //根据传入的level更新SubTiledLayer的数量
-  updateSubLayerCount(level: number) {
+  private _updateSubLayerCount(level: number) {
     var subLayerCount = this.children.length;
     var deltaLevel = level + 1 - subLayerCount;
     var i: number, subLayer: SubTiledLayer;
