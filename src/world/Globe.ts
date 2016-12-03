@@ -5,8 +5,6 @@ import Renderer = require("./Renderer");
 import Camera, { CameraCore } from "./Camera";
 import Scene = require("./Scene");
 import TiledLayer = require("./layers/TiledLayer");
-import SubTiledLayer = require("./layers/SubTiledLayer");
-import Tile = require("./graphics/Tile");
 import ImageUtils = require("./Image");
 import EventUtils = require("./Event");
 
@@ -46,29 +44,6 @@ class Globe {
     }
     this.tiledLayer = tiledLayer;
     this.scene.add(this.tiledLayer, true);
-
-    //添加第0级的子图层
-    var subLayer0 = new SubTiledLayer(0);
-    this.tiledLayer.add(subLayer0);
-
-    //要对level为1的图层进行特殊处理，在创建level为1时就创建其中的全部的四个tile
-    var subLayer1 = new SubTiledLayer(1);
-    this.tiledLayer.add(subLayer1);
-    Kernel.canvas.style.cursor = "wait";
-    for (var m = 0; m <= 1; m++) {
-      for (var n = 0; n <= 1; n++) {
-        var args = {
-          level: 1,
-          row: m,
-          column: n,
-          url: ""
-        };
-        args.url = this.tiledLayer.getTileUrl(args.level, args.row, args.column);
-        var tile = Tile.getInstance(args.level, args.row, args.column, args.url);
-        subLayer1.add(tile);
-      }
-    }
-    Kernel.canvas.style.cursor = "default";
   }
 
   getLevel() {
