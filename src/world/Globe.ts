@@ -118,31 +118,15 @@ class Globe {
     if (!isNeedRefresh) {
       return;
     }
-    var level = this.getLevel() + 3;
-    this.tiledLayer.updateSubLayerCount(level);
+    var lastLevel = this.getLevel() + 3;
+    this.tiledLayer.updateSubLayerCount(lastLevel);
     var options = {
       threshold: 1
     };
     options.threshold = Math.min(90 / this.camera.getPitch(), 1.5);
     //最大级别的level所对应的可见TileGrids
-    var lastLevelTileGrids = this.camera.getVisibleTilesByLevel(level, options);
-    var levelsTileGrids: any[] = []; //level-2
-    var parentTileGrids = lastLevelTileGrids;
-    var i: number;
-    for (i = level; i >= 2; i--) {
-      levelsTileGrids.push(parentTileGrids); //此行代码表示第i层级的可见切片
-      parentTileGrids = Utils.map(parentTileGrids, function (item) {
-        return item.getParent();
-      });
-      parentTileGrids = Utils.filterRepeatArray(parentTileGrids);
-    }
-    levelsTileGrids.reverse(); //2->level
-    for (i = 2; i <= level; i++) {
-      var subLevel = i;
-      var subLayer = <SubTiledLayer>this.tiledLayer.children[subLevel];
-      subLayer.updateTiles(levelsTileGrids[0], true);
-      levelsTileGrids.splice(0, 1);
-    }
+    var lastLevelTileGrids = this.camera.getVisibleTilesByLevel(lastLevel, options);
+    this.tiledLayer.refresh(lastLevel, lastLevelTileGrids);    
   }
 }
 

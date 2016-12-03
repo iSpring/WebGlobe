@@ -3,16 +3,39 @@ import Kernel = require('../Kernel');
 import GraphicGroup = require('../GraphicGroup');
 import SubTiledLayer = require('./SubTiledLayer');
 import Camera from '../Camera';
+import TileGrid = require('../TileGrid');
+import Utils = require('../Utils');
 
 abstract class TiledLayer extends GraphicGroup {
 
+  refresh(lastLevel: number, lastLevelTileGrids: TileGrid[]){
+    var levelsTileGrids: any[] = []; //lastLevel->2
+    var parentTileGrids = lastLevelTileGrids;
+    var i: number;
+    for (i = lastLevel; i >= 2; i--) {
+      levelsTileGrids.push(parentTileGrids); //此行代码表示第i层级的可见切片
+      parentTileGrids = Utils.map(parentTileGrids, function (item) {
+        return item.getParent();
+      });
+      parentTileGrids = Utils.filterRepeatArray(parentTileGrids);
+    }
+    levelsTileGrids.reverse(); //2->lastLevel
+    for (i = 2; i <= lastLevel; i++) {
+      var subLevel = i;
+      var subLayer = <SubTiledLayer>this.children[subLevel];
+      subLayer.updateTiles(levelsTileGrids[0], true);
+      levelsTileGrids.splice(0, 1);
+    }
+  }
+
   //重写
   draw(camera: Camera){
+    var gl = Kernel.gl;
     //此处将深度测试设置为ALWAYS是为了解决两个不同层级的切片在拖动时一起渲染会导致屏闪的问题
-    Kernel.gl.depthFunc(Kernel.gl.ALWAYS);
+    gl.depthFunc(gl.ALWAYS);
     super.draw(camera);
     //将深度测试恢复成LEQUAL
-    Kernel.gl.depthFunc(Kernel.gl.LEQUAL);
+    gl.depthFunc(gl.LEQUAL);
   }
 
   //重写
