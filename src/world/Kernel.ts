@@ -9,7 +9,6 @@ const maxProjectedCoord = Math.PI * radius;
 const Kernel = {
     gl: <WebGLRenderingContextExtension> null,
     canvas: <HTMLCanvasElement> null,
-    renderer: <Renderer> null,
     globe: <Globe> null,
     idCounter: <number> 0, //Object3D对象的唯一标识
     BASE_LEVEL: <number> 6, //渲染的基准层级

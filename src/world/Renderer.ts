@@ -3,17 +3,14 @@ import Kernel = require("./Kernel");
 import EventUtils = require("./Event");
 import Scene = require("./Scene");
 import Camera from "./Camera";
-import {WebGLRenderingContextExtension, WebGLProgramExtension} from "./Definitions";
+import { WebGLRenderingContextExtension, WebGLProgramExtension } from "./Definitions";
 
 class Renderer {
   scene: Scene = null;
   camera: Camera = null;
-  bAutoRefresh: boolean = false;
+  autoRefresh: boolean = false;
 
   constructor(canvas: HTMLCanvasElement) {
-    //之所以在此处设置Kernel.renderer是因为要在tick函数中使用
-    Kernel.renderer = this;
-
     EventUtils.bindEvents(canvas);
 
     var gl: WebGLRenderingContextExtension;
@@ -77,22 +74,20 @@ class Renderer {
     this.camera = camera;
   }
 
-  tick() {
-    if (Kernel.renderer instanceof Renderer) {
-      if (Kernel.renderer.scene && Kernel.renderer.camera) {
-        Kernel.renderer.render(Kernel.renderer.scene, Kernel.renderer.camera);
-      }
+  private _tick() {
+    if (this.scene && this.camera) {
+      this.render(this.scene, this.camera);
+    }
 
-      if (Kernel.renderer.bAutoRefresh) {
-        window.requestAnimationFrame(Kernel.renderer.tick);
-      }
+    if (this.autoRefresh) {
+      window.requestAnimationFrame(this._tick.bind(this));
     }
   }
 
-  setIfAutoRefresh(bAuto: boolean) {
-    this.bAutoRefresh = bAuto;
-    if (this.bAutoRefresh) {
-      this.tick();
+  setIfAutoRefresh(auto: boolean) {
+    this.autoRefresh = auto;
+    if (this.autoRefresh) {
+      this._tick();
     }
   }
 }
