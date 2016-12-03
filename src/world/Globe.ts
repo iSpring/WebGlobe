@@ -2,7 +2,7 @@
 import Kernel = require("./Kernel");
 import Utils = require("./Utils");
 import Renderer = require("./Renderer");
-import Camera, {CameraCore} from "./Camera";
+import Camera, { CameraCore } from "./Camera";
 import Scene = require("./Scene");
 import TiledLayer = require("./layers/TiledLayer");
 import SubTiledLayer = require("./layers/SubTiledLayer");
@@ -11,8 +11,8 @@ import ImageUtils = require("./Image");
 import EventUtils = require("./Event");
 
 class Globe {
-  REFRESH_INTERVAL: number = 100; //Globe自动刷新时间间隔，以毫秒为单位
-  idTimeOut: any = null; //refresh自定刷新的timeOut的handle
+  private readonly REFRESH_INTERVAL: number = 100; //Globe自动刷新时间间隔，以毫秒为单位
+  // private idTimeOut: number = -1; //refresh自定刷新的timeOut的handle
   renderer: Renderer = null;
   scene: Scene = null;
   camera: Camera = null;
@@ -30,10 +30,11 @@ class Globe {
     this.setLevel(0);
     this.renderer.setIfAutoRefresh(true);
     EventUtils.initLayout();
+    this._tick();
   }
 
   setTiledLayer(tiledLayer: TiledLayer) {
-    clearTimeout(this.idTimeOut);
+    // clearTimeout(this.idTimeOut);
     //在更换切片图层的类型时清空缓存的图片
     ImageUtils.clear();
     if (this.tiledLayer) {
@@ -45,6 +46,7 @@ class Globe {
     }
     this.tiledLayer = tiledLayer;
     this.scene.add(this.tiledLayer, true);
+
     //添加第0级的子图层
     var subLayer0 = new SubTiledLayer(0);
     this.tiledLayer.add(subLayer0);
@@ -67,66 +69,41 @@ class Globe {
       }
     }
     Kernel.canvas.style.cursor = "default";
-    this.tick();
   }
 
-  getLevel(){
+  getLevel() {
     return this.camera ? this.camera.getLevel() : -1;
   }
 
   setLevel(level: number) {
-    if(this.camera){
+    if (this.camera) {
       this.camera.setLevel(level);
     }
   }
 
-  isAnimating(): boolean{
+  isAnimating(): boolean {
     return this.camera.isAnimating();
   }
 
-  animateToLevel(level: number){
-    if(!this.isAnimating()){
+  animateToLevel(level: number) {
+    if (!this.isAnimating()) {
       level = level > Kernel.MAX_LEVEL ? Kernel.MAX_LEVEL : level; //超过最大的渲染级别就不渲染
-      if(level !== this.getLevel()){
+      if (level !== this.getLevel()) {
         this.camera.animateToLevel(level);
       }
     }
   }
 
-  /**
-   * 返回当前的各种矩阵信息:视点矩阵、投影矩阵、两者乘积，以及前三者的逆矩阵
-   * @returns {{View: null, _View: null, Proj: null, _Proj: null, ProjView: null, _View_Proj: null}}
-   * @private
-   */
-  /*_getMatrixInfo() {
-    var options: any = {
-      View: null, //视点矩阵
-      _View: null, //视点矩阵的逆矩阵
-      Proj: null, //投影矩阵
-      _Proj: null, //投影矩阵的逆矩阵
-      ProjView: null, //投影矩阵与视点矩阵的乘积
-      _View_Proj: null //视点逆矩阵与投影逆矩阵的乘积
-    };
-    options.View = this.getViewMatrix();
-    options._View = options.View.getInverseMatrix();
-    options.Proj = this.projMatrix;
-    options._Proj = options.Proj.getInverseMatrix();
-    options.ProjView = options.Proj.multiplyMatrix(options.View);
-    options._View_Proj = options.ProjView.getInverseMatrix();
-    return options;
-  }*/
-
-  tick() {
-    var globe = Kernel.globe;
-    if (globe) {
-      try{
-        //如果refresh方法出现异常而且没有捕捉，那么就会导致无法继续设置setTimeout，从而无法进一步更新切片
-        globe.refresh();
-      }catch(e){
-        console.error(e);
-      }
-      this.idTimeOut = setTimeout(globe.tick, globe.REFRESH_INTERVAL);
+  private _tick() {
+    try {
+      //如果refresh方法出现异常而且没有捕捉，那么就会导致无法继续设置setTimeout，从而无法进一步更新切片
+      this.refresh();
+    } catch (e) {
+      console.error(e);
     }
+    setTimeout(() => {
+      this._tick();
+    }, this.REFRESH_INTERVAL);
   }
 
   refresh(force: boolean = false) {
@@ -138,7 +115,7 @@ class Globe {
     var newCameraCore = this.camera.getCameraCore();
     var isNeedRefresh = force || !newCameraCore.equals(this.cameraCore);
     this.cameraCore = newCameraCore;
-    if(!isNeedRefresh){
+    if (!isNeedRefresh) {
       return;
     }
     var level = this.getLevel() + 3;
@@ -159,7 +136,7 @@ class Globe {
       });
       parentTileGrids = Utils.filterRepeatArray(parentTileGrids);
     }
-    levelsTileGrids.reverse(); //2-level
+    levelsTileGrids.reverse(); //2->level
     for (i = 2; i <= level; i++) {
       var subLevel = i;
       var subLayer = <SubTiledLayer>this.tiledLayer.children[subLevel];
