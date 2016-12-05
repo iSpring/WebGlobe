@@ -9,7 +9,6 @@ type ImageType = HTMLImageElement | string;
 class MeshTextureMaterial extends Material {
     texture: WebGLTexture;
     image: HTMLImageElement;
-    url: string;
     private ready:boolean = false;
     private deleted: boolean = false;
 
@@ -26,7 +25,7 @@ class MeshTextureMaterial extends Material {
     }
 
     isReady(): boolean{
-        return this.ready;
+        return this.ready && !this.deleted;
     }
 
     setImageOrUrl(imageOrUrl?: ImageType){
@@ -63,7 +62,7 @@ class MeshTextureMaterial extends Material {
     }
 
     //图片加载完成时触发
-    onLoad() {
+    protected onLoad() {
         //要考虑纹理已经被移除掉了图片才进入onLoad这种情况
         if (this.deleted) {
             return;
@@ -105,9 +104,17 @@ class MeshTextureMaterial extends Material {
     //释放显卡中的texture资源
     destroy() {
         var gl = Kernel.gl;
-        if (gl.isTexture(this.texture)) {
+        // if (gl.isTexture(this.texture)) {
+        //     gl.deleteTexture(this.texture);
+        // }
+        if(this.texture){
             gl.deleteTexture(this.texture);
         }
+        if(this.image && !this.ready){
+            console.log(`Cancel load image ${this.image.src}`);
+            this.image.src = "";
+        }
+        this.ready = false;
         this.texture = null;
         this.deleted = true;
     }
