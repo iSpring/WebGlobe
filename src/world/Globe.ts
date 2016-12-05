@@ -44,6 +44,7 @@ class Globe {
     }
     this.tiledLayer = tiledLayer;
     this.scene.add(this.tiledLayer, true);
+    this.refresh(true);
   }
 
   getLevel() {
