@@ -1,40 +1,40 @@
 {
-  "name": "webglobe",
-  "version": "0.3.3",
-  "description": "A WebGL virtual globe and map engine.",
-  "main": "require.js",
-  "scripts": {
-    "clear": "gulp clear",
-    "compile": "gulp compile",
-    "bundle": "gulp bundle",
-    "build": "gulp build",
-    "start": "npm run build"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/iSpring/WebGlobe.git"
-  },
-  "keywords": [
-    "WebGL",
-    "Map",
-    "Globe",
-    "Earth",
-    "3D",
-    "HTML5"
-  ],
-  "author": "iSpring",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/iSpring/WebGlobe/issues"
-  },
-  "homepage": "https://github.com/iSpring/WebGlobe#readme",
-  "devDependencies": {
-    "gulp": "^3.9.1",
-    "gulp-concat": "^2.6.0",
-    "gulp-typescript": "^3.0.2",
-    "gulp-uglify": "^2.0.0",
-    "requirejs": "^2.3.2",
-    "rmdir": "^1.2.0",
-    "typescript": "^2.0.3"
-  }
+    "name": "webglobe",
+    "version": "0.3.5",
+    "description": "A WebGL virtual globe and map engine.",
+    "main": "require.js",
+    "scripts": {
+        "clear": "gulp clear",
+        "compile": "gulp compile",
+        "bundle": "gulp bundle",
+        "build": "gulp build",
+        "start": "npm run build"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/iSpring/WebGlobe.git"
+    },
+    "keywords": [
+        "WebGL",
+        "Map",
+        "Globe",
+        "Earth",
+        "3D",
+        "HTML5"
+    ],
+    "author": "iSpring",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/iSpring/WebGlobe/issues"
+    },
+    "homepage": "https://github.com/iSpring/WebGlobe#readme",
+    "devDependencies": {
+        "gulp": "^3.9.1",
+        "gulp-concat": "^2.6.0",
+        "gulp-typescript": "^3.0.2",
+        "gulp-uglify": "^2.0.0",
+        "requirejs": "^2.3.2",
+        "rmdir": "^1.2.0",
+        "typescript": "^2.0.3"
+    }
 }
