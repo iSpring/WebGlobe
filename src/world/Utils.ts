@@ -195,6 +195,19 @@ const Utils = {
             cloneArray.splice(0,1);
         }
         return simplifyArray;
+    },
+
+    jsonp(url: string, callback: (response: any)=>{}){
+        var callbackName = `webglobe_callback_` + Math.random().toString().substring(2);
+        url += `&cb=${callbackName}`;        
+        var scriptElement = document.createElement("script");
+        scriptElement.src = url;
+        document.body.appendChild(scriptElement);
+        window[callbackName] = function(response: any){
+            callback(response);
+            document.body.removeChild(scriptElement);
+            delete window[callbackName];
+        }
     }
 };
 
