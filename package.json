@@ -1,10 +1,14 @@
 {
   "name": "webglobe",
-  "version": "0.1.1",
+  "version": "0.3.3",
   "description": "A WebGL virtual globe and map engine.",
   "main": "require.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "clear": "gulp clear",
+    "compile": "gulp compile",
+    "bundle": "gulp bundle",
+    "build": "gulp build",
+    "start": "npm run build"
   },
   "repository": {
     "type": "git",

@@ -85,3 +85,26 @@
 0.1.0 将Globe.js拆分成多个AMD模块，AMD代码放在js目录下；并将AMD代码用TypeScript重新实现，放到ts目录下，并对原有AMD的代码进行微调：解除了Vertice与Vector之间的相互引用，解除了Math与TileGrid之间的相互引用；通过gulp分别实现了对AMD和TypeScript代码进行编译压缩，通过requirejs均可加载相应bundle代码
 
 0.1.1 在js和ts中均修复了在两极地区抖动的问题：world/Event#moveGeo()
+
+0.2 引入World.js中的许多类的设计理念，包括Program、GraphicGroup、Graphic、Geometry、Material、VertexBufferObject等，现在SubTiledLayer和TiledLayer都继承自GraphicGroup，并且让Tile继承自于Graphic
+
+0.2.1 修复了在leve 15及以上的情况下，拖动地图导致地图空白的问题，见issue#9
+
+0.2.2 删除高程相关代码
+
+0.2.3 将world/geometries/Geomtry重命名为world/geometries/Mesh，并在package.json中添加了多个npm scripts，对应gulp中定义的tasks
+
+0.2.4 之前EARTH_RADIUS的值为6378137，特别大，导致了深度值计算有问题，从而使得深度测试不能正常进行。将EARTH_RADIUS改成14000，使得深度测试可以正常进行。并加入了Poi和PoiLayer这两个类。
+
+0.3.0 将EARTH_RADIUS从14000改为500，在0-10级的时候，通过改变Camera的position实现缩放，在10级之后通过改变fov实现缩放。
+      Camera中所有的计算（比如计算视野中的可见切片）都是基于matrix、viewMatrix、projMatrix和projViewMatrix。
+      但是实际传递给shader用于绘图的是projViewMatrixForDraw。Camera.getPickCartesianCoordInEarthByCanvas()方法也是基于projViewMatrixForDraw系列矩阵的。
+      该版本提高了深度值的精度，基本解决了z值精度问题。在update()方法中会计算projViewMatrixForDraw系列矩阵。
+
+0.3.1 使得Globe.animateToLevel()可以在0.3.0的版本上运行，解决办法是引入了camera.animationLevel，其值是非整数。
+
+0.3.2 优化了Camera.update()方法，只有发生用户交互的情况下才实际进行计算。
+
+0.3.3 优化了Globe.refresh()方法，只有发生用户交互的情况下才重新计算可见切片。
+
+0.3.4 增加了Atmosphere效果。

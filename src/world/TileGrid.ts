@@ -1,7 +1,7 @@
 ///<amd-module name="world/TileGrid"/>
 import Kernel = require('./Kernel');
 import Utils = require('./Utils');
-import MathUtils = require('./Math');
+import MathUtils = require('./math/Math');
 
 class TileGrid {
     static LEFT_TOP = "LEFT_TOP";
