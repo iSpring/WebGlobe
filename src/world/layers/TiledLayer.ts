@@ -13,8 +13,8 @@ abstract class TiledLayer extends GraphicGroup {
     super();
 
     //添加第0级的子图层
-    // var subLayer0 = new SubTiledLayer(0);
-    // this.add(subLayer0);
+    var subLayer0 = new SubTiledLayer(0);
+    this.add(subLayer0);
 
     //要对level为1的图层进行特殊处理，在创建level为1时就创建其中的全部的四个tile
     var subLayer1 = new SubTiledLayer(1);
@@ -53,7 +53,8 @@ abstract class TiledLayer extends GraphicGroup {
     console.log("----------------------------------------------------------");
 
     for (subLevel = 2; subLevel <= lastLevel; subLevel++) {
-      (<SubTiledLayer>this.children[subLevel]).updateTiles(levelsTileGrids[subLevel], true);
+      var addNew = lastLevel === subLevel || (lastLevel - subLevel) > 2;
+      (<SubTiledLayer>this.children[subLevel]).updateTiles(levelsTileGrids[subLevel], addNew);
     }
   }
 
