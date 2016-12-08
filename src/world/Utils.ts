@@ -199,14 +199,14 @@ const Utils = {
 
     jsonp(url: string, callback: (response: any)=>{}){
         var callbackName = `webglobe_callback_` + Math.random().toString().substring(2);
-        url += `&cb=${callbackName}`;        
+        url += `&cb=${callbackName}`;
         var scriptElement = document.createElement("script");
         scriptElement.src = url;
         document.body.appendChild(scriptElement);
-        window[callbackName] = function(response: any){
+        (<any>window)[callbackName] = function(response: any){
             callback(response);
             document.body.removeChild(scriptElement);
-            delete window[callbackName];
+            delete (<any>window)[callbackName];
         }
     }
 };
