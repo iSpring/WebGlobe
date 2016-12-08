@@ -34,7 +34,13 @@ void main()
 `;
 
 class Poi extends Graphic {
-    private constructor(public geometry: Marker, public material: PoiMaterial, public name: string, public address: string) {
+    private constructor(
+        public geometry: Marker, 
+        public material: PoiMaterial, 
+        public uuid: string,        
+        public name: string, 
+        public address: string,
+        public phone: string) {
         super(geometry, material);
     }
 
@@ -82,12 +88,12 @@ class Poi extends Graphic {
         gl.bindTexture(gl.TEXTURE_2D, null);
     }
 
-    static getInstance(lon: number, lat: number, name: string, address: string) {
+    static getInstance(lon: number, lat: number, uuid: string, name: string, address: string, phone: string) {
         var p = MathUtils.geographicToCartesianCoord(lon, lat, Kernel.EARTH_RADIUS + 0.001);
         var marker = new Marker(p.x, p.y, p.z);
         var url = "/WebGlobe/src/world/images/poi.png";
         var material = new PoiMaterial(url, 24);
-        var poi = new Poi(marker, material, name, address);
+        var poi = new Poi(marker, material, uuid, name, address, phone);
         return poi;
     }
 }

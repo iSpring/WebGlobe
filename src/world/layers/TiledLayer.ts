@@ -1,5 +1,7 @@
-///<amd-module name="world/layers/TiledLayer"/>
+///<amd-module name="world/layers/TiledLayer" />
+
 import Kernel = require('../Kernel');
+import Extent = require('../Extent');
 import GraphicGroup = require('../GraphicGroup');
 import SubTiledLayer = require('./SubTiledLayer');
 import Camera from '../Camera';
@@ -58,7 +60,6 @@ abstract class TiledLayer extends GraphicGroup {
     }
   }
 
-  //重写
   draw(camera: Camera){
     var gl = Kernel.gl;
     //此处将深度测试设置为ALWAYS是为了解决两个不同层级的切片在拖动时一起渲染会导致屏闪的问题
@@ -68,10 +69,25 @@ abstract class TiledLayer extends GraphicGroup {
     gl.depthFunc(gl.LEQUAL);
   }
 
-  //重写
   add(subTiledLayer: SubTiledLayer) {
     super.add(subTiledLayer);
     subTiledLayer.tiledLayer = this;
+  }
+
+  getExtent(level?: number){
+    var extents = this.getExtents(level);
+    return Extent.union(extents);
+  }
+
+  getExtents(level?: number): Extent[]{
+    if(!(level >= 0 && level <= (this.children.length - 1))){
+      level = this.children.length - 1 - 3;
+    }
+    var subTiledLayer = <SubTiledLayer>this.children[level];
+    if(subTiledLayer){
+      return subTiledLayer.getExtents();
+    }
+    return [];
   }
 
   protected wrapUrlWithProxy(url: string): string{
