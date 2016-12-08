@@ -8,12 +8,10 @@
             "world/layers/SosoTiledLayer",
             "world/layers/TiandituTiledLayer",
             "world/layers/GoogleTiledLayer",
-            "world/graphics/Atmosphere",
-            "world/layers/PoiLayer",
             "world/services/SearchService"
         ],
         function(Kernel, Globe, BingTiledLayer, NokiaTiledLayer, OsmTiledLayer, SosoTiledLayer,
-            TiandituTiledLayer, GoogleTiledLayer, Atmosphere, PoiLayer, SearchService) {
+            TiandituTiledLayer, GoogleTiledLayer, SearchService) {
 
             window.Kernel = Kernel;
 
@@ -31,13 +29,6 @@
                 var mapSelector = document.getElementById("mapSelector");
                 mapSelector.onchange = changeTiledLayer;
                 changeTiledLayer();
-
-                var atmosphere = Atmosphere.getInstance();
-
-                window.globe.scene.add(atmosphere);
-
-                var poiLayer = new PoiLayer();
-                window.globe.scene.add(poiLayer);
             }
 
             function changeTiledLayer() {

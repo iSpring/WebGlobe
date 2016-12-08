@@ -4,9 +4,11 @@ import Utils = require("./Utils");
 import Renderer = require("./Renderer");
 import Camera, { CameraCore } from "./Camera";
 import Scene = require("./Scene");
-import TiledLayer = require("./layers/TiledLayer");
 import ImageUtils = require("./Image");
 import EventUtils = require("./Event");
+import Atmosphere = require("./graphics/Atmosphere");
+import TiledLayer = require("./layers/TiledLayer");
+import PoiLayer = require("./layers/PoiLayer");
 
 class Globe {
   private readonly REFRESH_INTERVAL: number = 100; //Globe自动刷新时间间隔，以毫秒为单位
@@ -26,6 +28,10 @@ class Globe {
     this.renderer.setScene(this.scene);
     this.renderer.setCamera(this.camera);
     this.setLevel(0);
+    var atmosphere = Atmosphere.getInstance();
+    this.scene.add(atmosphere);
+    var poiLayer = new PoiLayer();
+    this.scene.add(poiLayer);
     this.renderer.setIfAutoRefresh(true);
     EventUtils.initLayout();
     this._tick();
