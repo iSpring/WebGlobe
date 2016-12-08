@@ -197,7 +197,7 @@ const Utils = {
         return simplifyArray;
     },
 
-    jsonp(url: string, callback: (response: any)=>{}){
+    jsonp(url: string, callback: (response: any)=>void){
         var callbackName = `webglobe_callback_` + Math.random().toString().substring(2);
         url += `&cb=${callbackName}`;
         var scriptElement = document.createElement("script");

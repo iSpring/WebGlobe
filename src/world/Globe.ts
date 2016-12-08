@@ -9,6 +9,7 @@ import EventUtils = require("./Event");
 import Atmosphere = require("./graphics/Atmosphere");
 import TiledLayer = require("./layers/TiledLayer");
 import PoiLayer = require("./layers/PoiLayer");
+import SearchService = require("./services/SearchService");
 
 class Globe {
   private readonly REFRESH_INTERVAL: number = 100; //Globe自动刷新时间间隔，以毫秒为单位
@@ -17,6 +18,7 @@ class Globe {
   scene: Scene = null;
   camera: Camera = null;
   tiledLayer: TiledLayer = null;
+  poiLayer: PoiLayer = null;
   private cameraCore: CameraCore = null;
 
   constructor(canvas: HTMLCanvasElement) {
@@ -30,8 +32,8 @@ class Globe {
     this.setLevel(0);
     var atmosphere = Atmosphere.getInstance();
     this.scene.add(atmosphere);
-    var poiLayer = new PoiLayer();
-    this.scene.add(poiLayer);
+    this.poiLayer = new PoiLayer();
+    this.scene.add(this.poiLayer);
     this.renderer.setIfAutoRefresh(true);
     EventUtils.initLayout();
     this._tick();
@@ -109,6 +111,14 @@ class Globe {
     //最大级别的level所对应的可见TileGrids
     var lastLevelTileGrids = this.camera.getVisibleTilesByLevel(lastLevel, options);
     this.tiledLayer.refresh(lastLevel, lastLevelTileGrids);
+  }
+
+  search(keyword: string) {
+    this.poiLayer.clear();
+    this.poiLayer.setKeyword(keyword);
+    SearchService.search(keyword, 11, 115.63160389892579, 40.208203447043054, 117.18273610107423, 39.59982601642098, (response)=>{
+      console.table(response.detail.pois);
+    });
   }
 }
 

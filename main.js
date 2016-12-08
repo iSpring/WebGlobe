@@ -6,12 +6,11 @@
             "world/layers/NokiaTiledLayer",
             "world/layers/OsmTiledLayer",
             "world/layers/SosoTiledLayer",
-            "world/layers/TiandituTiledLayer",
             "world/layers/GoogleTiledLayer",
             "world/services/SearchService"
         ],
         function(Kernel, Globe, BingTiledLayer, NokiaTiledLayer, OsmTiledLayer, SosoTiledLayer,
-            TiandituTiledLayer, GoogleTiledLayer, SearchService) {
+            GoogleTiledLayer, SearchService) {
 
             window.Kernel = Kernel;
 
@@ -49,9 +48,6 @@
                         break;
                     case "soso":
                         newTiledLayer = new SosoTiledLayer();
-                        break;
-                    case "tianditu":
-                        newTiledLayer = new TiandituTiledLayer();
                         break;
                     default:
                         break;

@@ -6,9 +6,10 @@ import Marker = require('../geometries/Marker');
 import PoiMaterial = require('../materials/PoiMaterial');
 import Program = require("../Program");
 import Camera from "../Camera";
+import MathUtils = require("../math/Math");
 
 const vs =
-`
+    `
 attribute vec3 aPosition;
 uniform mat4 uPMVMatrix;
 uniform float uSize;
@@ -22,7 +23,7 @@ void main(void) {
 //http://stackoverflow.com/questions/3497068/textured-points-in-opengl-es-2-0
 //gl_FragColor = texture2D(uSampler, vec2(gl_PointCoord.x, 1.0 - gl_PointCoord.y));
 const fs =
-`
+    `
 precision mediump float;
 uniform sampler2D uSampler;
 
@@ -33,15 +34,15 @@ void main()
 `;
 
 class Poi extends Graphic {
-    constructor(public geometry: Marker, public material: PoiMaterial){
+    private constructor(public geometry: Marker, public material: PoiMaterial, public name: string, public address: string) {
         super(geometry, material);
     }
 
-    createProgram(){
+    createProgram() {
         return new Program(this.getProgramType(), vs, fs);
     }
 
-    onDraw(camera: Camera){
+    onDraw(camera: Camera) {
         var gl = Kernel.gl;
 
         //gl.disable(gl.DEPTH_TEST);
@@ -79,6 +80,15 @@ class Poi extends Graphic {
         gl.bindBuffer(gl.ARRAY_BUFFER, null);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
         gl.bindTexture(gl.TEXTURE_2D, null);
+    }
+
+    static getInstance(lon: number, lat: number, name: string, address: string) {
+        var p = MathUtils.geographicToCartesianCoord(lon, lat, Kernel.EARTH_RADIUS + 0.001);
+        var marker = new Marker(p.x, p.y, p.z);
+        var url = "/WebGlobe/src/world/images/poi.png";
+        var material = new PoiMaterial(url, 24);
+        var poi = new Poi(marker, material, name, address);
+        return poi;
     }
 }
 
