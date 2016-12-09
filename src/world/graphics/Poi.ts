@@ -70,7 +70,7 @@ class Poi extends Graphic {
         //uPMVMatrix
         var pmvMatrix = camera.getProjViewMatrixForDraw();
         var locPMVMatrix = this.program.getUniformLocation('uPMVMatrix');
-        gl.uniformMatrix4fv(locPMVMatrix, false, pmvMatrix.elements);
+        gl.uniformMatrix4fv(locPMVMatrix, false, pmvMatrix.getFloat32Array());
 
         //uSize
         var locSize = this.program.getUniformLocation('uSize');
