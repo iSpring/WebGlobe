@@ -35,7 +35,6 @@ class Renderer {
     initWebGL(canvas);
 
     if (!gl) {
-      alert("浏览器不支持WebGL或将WebGL禁用!");
       console.debug("浏览器不支持WebGL或将WebGL禁用!");
       return;
     }

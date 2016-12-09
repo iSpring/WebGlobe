@@ -46,7 +46,7 @@ abstract class TiledLayer extends GraphicGroup {
 
     for (subLevel = lastLevel; subLevel >= 2; subLevel--) {
       levelsTileGrids[subLevel] = parentTileGrids;//此行代码表示第subLevel层级的可见切片
-      parentTileGrids = Utils.map(parentTileGrids, function (item) {
+      parentTileGrids = parentTileGrids.map(function (item) {
         return item.getParent();
       });
       parentTileGrids = Utils.filterRepeatArray(parentTileGrids);

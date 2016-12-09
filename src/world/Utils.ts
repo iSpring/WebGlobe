@@ -112,81 +112,35 @@ const Utils = {
         return v instanceof HTMLElement;
     },
 
-    forEach(arr: Array<any>, func: ArrayVoidCallbackFunction): void{
-        if(this.isFunction(Array.prototype.forEach)){
-            arr.forEach(func);
-        }else{
-            for(var i=0;i<arr.length;i++){
-                func(arr[i],i,arr);
-            }
-        }
+    forEach(arr: ArrayLike<any>, func: ArrayVoidCallbackFunction): void{
+        return this.isFunction((<any>arr).forEach) ? (<any>arr).forEach(func) : Array.prototype.forEach.call(arr, func);
     },
 
-    filter(arr: Array<any>, func: ArrayBooleanCallbackFunction): any[]{
-        var result: Array<any> = [];
-        if(this.isFunction(Array.prototype.filter)){
-            result = arr.filter(func);
-        }
-        else{
-            for(var i=0;i<arr.length;i++){
-                if(func(arr[i],i,arr)){
-                    result.push(arr[i]);
-                }
-            }
-        }
-        return result;
+    filter(arr: ArrayLike<any>, func: ArrayBooleanCallbackFunction): any[]{
+        return this.isFunction((<any>arr).filter) ? (<any>arr).filter(func) : Array.prototype.filter.call(arr, func);
     },
 
-    map(arr: Array<any>, func: ArrayAnyCallbackFunction): any[]{
-        var result:any[] = [];
-        if(this.isFunction(Array.prototype.map)){
-            result = arr.map(func);
-        }
-        else{
-            for(var i=0;i<arr.length;i++){
-                result.push(func(arr[i],i,arr));
-            }
-        }
-        return result;
+    map(arr: ArrayLike<any>, func: ArrayAnyCallbackFunction): any[]{
+        return this.isFunction((<any>arr).map) ? (<any>arr).map(func) : Array.prototype.map.call(arr, func);
     },
 
-    some(arr: Array<any>, func: ArrayBooleanCallbackFunction): boolean{
-        if(this.isFunction(Array.prototype.some)){
-            return arr.some(func);
-        }
-        else{
-            for(var i=0;i<arr.length;i++){
-                if(func(arr[i],i,arr)){
-                    return true;
-                }
-            }
-            return false;
-        }
+    some(arr: ArrayLike<any>, func: ArrayBooleanCallbackFunction): boolean{
+        return this.isFunction((<any>arr).some) ? (<any>arr).some(func) : Array.prototype.some.call(arr, func);
     },
 
-    every(arr: Array<any>, func: ArrayBooleanCallbackFunction): boolean{
-        if(this.isFunction(Array.prototype.every)){
-            return arr.every(func);
-        }
-        else{
-            for(var i=0;i<arr.length;i++){
-                if(!func(arr[i],i,arr)){
-                    return false;
-                }
-            }
-            return true;
-        }
+    every(arr: ArrayLike<any>, func: ArrayBooleanCallbackFunction): boolean{
+        return this.isFunction((<any>arr).every) ? (<any>arr).every(func) : Array.prototype.every.call(arr, func);
     },
 
     //过滤掉数组中重复的元素
     filterRepeatArray(arr: Array<any>): any[]{
-        var cloneArray = this.map(arr,function(item: any){
+        var cloneArray = arr.map(function(item: any){
             return item;
         });
         var simplifyArray: Array<any> = [];
         while(cloneArray.length > 0){
             var e = cloneArray[0];
-            var exist = this.some(simplifyArray,function(item: any){
+            var exist = simplifyArray.some(function(item: any){
                 return e.equals(item);
             });
             if(!exist){

@@ -1,4 +1,6 @@
 ///<amd-module name="world/math/Matrix"/>
+
+import Utils = require('../Utils');
 import Vertice = require('./Vertice');
 import Vector = require('./Vector');
 
@@ -18,7 +20,7 @@ class Matrix{
       if(this === matrix){
         return true;
       }
-      return this.elements.every((ele: number, index: number) => {
+      return Utils.every(this.elements, (ele: number, index: number) => {
         return ele === matrix.elements[index];
       });
     }
@@ -212,9 +214,11 @@ class Matrix{
     }
 
     setUniqueValue(value: number){
-      this.elements.forEach((ele, index) => {
-        this.elements[index] = value;
-      });
+      //TypeArray of IE11 doesn't support forEach method
+      var length = this.elements.length;
+      for(var i = 0; i < length; i++){
+        this.elements[i] = value;
+      }
     }
 
     /**
@@ -290,7 +294,7 @@ class Matrix{
     }
 
     hasNaN():boolean{
-      return this.elements.some(function(v){
+      return Utils.some(this.elements, function(v){
         return isNaN(v);
       });
     }

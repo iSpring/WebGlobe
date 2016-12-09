@@ -260,7 +260,7 @@ class Camera extends Object3D {
   private _getSafeThresholdLevelForNear() {
     var thresholdNear = this.near * this.nearFactor;
     var pow2level = this.baseTheoryDistanceFromCamera2EarthSurface / thresholdNear;
-    var level = (<any>Math).log2(pow2level);
+    var level = MathUtils.log2(pow2level);
     //return Math.floor(level);
     return level;
   }
@@ -291,7 +291,7 @@ class Camera extends Object3D {
     var halfRadianNewFov = radianNewFov / 2;
     var tanNew = Math.tan(halfRadianNewFov);
 
-    var deltaLevel = (<any>Math).log2(tanOld / tanNew);
+    var deltaLevel = MathUtils.log2(tanOld / tanNew);
     return deltaLevel;
   }
 
@@ -533,10 +533,10 @@ class Camera extends Object3D {
     var cameraPntCopy = cameraPnt.clone();
     var targetPntCopy = targetPnt.clone();
     var up = upDirection.clone();
-    
+
     var zAxis = new Vector(
-      cameraPntCopy.x - targetPntCopy.x, 
-      cameraPntCopy.y - targetPntCopy.y, 
+      cameraPntCopy.x - targetPntCopy.x,
+      cameraPntCopy.y - targetPntCopy.y,
       cameraPntCopy.z - targetPntCopy.z
     );
     zAxis.normalize();
