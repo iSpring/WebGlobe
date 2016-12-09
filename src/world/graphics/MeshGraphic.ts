@@ -82,7 +82,7 @@ class MeshGraphic extends Graphic {
         //uPMVMatrix
         var pmvMatrix = camera.getProjViewMatrixForDraw().multiplyMatrix(this.geometry.getMatrix());
         var locPMVMatrix = this.program.getUniformLocation('uPMVMatrix');
-        gl.uniformMatrix4fv(locPMVMatrix, false, pmvMatrix.elements);
+        gl.uniformMatrix4fv(locPMVMatrix, false, pmvMatrix.getFloat32Array());
 
         this._drawTextureMaterial(this.program);
 

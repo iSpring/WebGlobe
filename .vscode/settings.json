@@ -1,3 +1,4 @@
 {
+    "editor.renderWhitespace": "boundary",
     "typescript.check.workspaceVersion": false
 }

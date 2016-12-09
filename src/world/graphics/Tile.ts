@@ -1,6 +1,7 @@
 ///<amd-module name="world/graphics/Tile"/>
 import Kernel = require('../Kernel');
 import Enum = require('../Enum');
+import Extent = require('../Extent');
 import MathUtils = require('../math/Math');
 import MeshGraphic = require('../graphics/MeshGraphic');
 import TileMaterial = require('../materials/TileMaterial');
@@ -23,7 +24,6 @@ class TileInfo {
   maxX: number = null;
   maxY: number = null;
   segment: number = 1;
-  elevationInfo: any = null;
   geometry: TileGeometry;
   material: TileMaterial;
   visible: boolean;
@@ -80,7 +80,7 @@ class TileInfo {
     var deltaX = (this.maxX - this.minX) / this.segment;
     var deltaY = (this.maxY - this.minY) / this.segment;
     var deltaTextureCoord = 1.0 / this.segment;
-    var changeElevation = this.type === Enum.TERRAIN_TILE && this.elevationInfo;
+    var changeElevation = 0;//this.type === Enum.TERRAIN_TILE && this.elevationInfo;
     //level不同设置的半径也不同
     var levelDeltaR = 0;//this.level * 2;
     //对WebMercator投影进行等间距划分格网
@@ -161,11 +161,14 @@ class Tile extends MeshGraphic {
     return new Tile(tileInfo.geometry, tileInfo.material, tileInfo);
   }
 
+  getExtent(){
+    return new Extent(this.tileInfo.minLon, this.tileInfo.minLat, this.tileInfo.maxLon, this.tileInfo.maxLat);
+  }
+
   isDrawable(){
     return this.tileInfo.visible　&& super.isDrawable();
   }
 
-  //重写Object3D的destroy方法
   destroy() {
     super.destroy();
     this.subTiledLayer = null;

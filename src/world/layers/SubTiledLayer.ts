@@ -1,6 +1,7 @@
 ///<amd-module name="world/layers/SubTiledLayer"/>
 import Kernel = require('../Kernel');
 import Utils = require('../Utils');
+import Extent = require('../Extent');
 import MathUtils = require('../math/Math');
 import TileGrid = require('../TileGrid');
 import GraphicGroup = require('../GraphicGroup');
@@ -112,6 +113,14 @@ class SubTiledLayer extends GraphicGroup {
       }
     }
     return true;
+  }
+
+  getExtent(): Extent{
+    return Extent.union(this.getExtents());
+  }
+
+  getExtents(): Extent[]{
+    return this.children.map((item)=>(<Tile>item).getExtent());
   }
 }
 

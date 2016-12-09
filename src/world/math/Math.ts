@@ -6,6 +6,11 @@ import Vector = require('./Vector');
 import Line = require('./Line');
 import Plan = require('./Plan');
 
+//Math.log2() method is defined in ES6
+if(!(<any>Math).log2){
+    (<any>Math).log2 = (value: number) => (Math.log(value) / Math.log(2));
+}
+
 const MathUtils = {
     ONE_RADIAN_EQUAL_DEGREE:57.29577951308232,//180/Math.PI
     ONE_DEGREE_EQUAL_RADIAN:0.017453292519943295,//Math.PI/180
@@ -17,6 +22,10 @@ const MathUtils = {
     RIGHT:"RIGHT",
     TOP:"TOP",
     BOTTOM:"BOTTOM",
+
+    log2(value: number){
+        return (<any>Math).log2(value);
+    },
 
     izZero(value: any) : boolean {
         if(!Utils.isNumber(value)){

@@ -1,10 +1,16 @@
 ﻿window.onload = function() {
-    require(["world/Kernel", "world/Globe", "world/layers/BingTiledLayer", "world/layers/NokiaTiledLayer", "world/layers/OsmTiledLayer",
-            "world/layers/SosoTiledLayer", "world/layers/TiandituTiledLayer", "world/layers/GoogleTiledLayer", "world/graphics/Atmosphere",
-            "world/layers/PoiLayer"
+    require([
+            "world/Kernel",
+            "world/Globe",
+            "world/layers/BingTiledLayer",
+            "world/layers/NokiaTiledLayer",
+            "world/layers/OsmTiledLayer",
+            "world/layers/SosoTiledLayer",
+            "world/layers/GoogleTiledLayer",
+            "world/services/SearchService"
         ],
-        function(Kernel, Globe, BingTiledLayer, NokiaTiledLayer, OsmTiledLayer, SosoTiledLayer, TiandituTiledLayer, GoogleTiledLayer,
-            Atmosphere, PoiLayer) {
+        function(Kernel, Globe, BingTiledLayer, NokiaTiledLayer, OsmTiledLayer, SosoTiledLayer,
+            GoogleTiledLayer, SearchService) {
 
             window.Kernel = Kernel;
 
@@ -15,13 +21,6 @@
                 var mapSelector = document.getElementById("mapSelector");
                 mapSelector.onchange = changeTiledLayer;
                 changeTiledLayer();
-
-                var atmosphere = Atmosphere.getInstance();
-
-                window.globe.scene.add(atmosphere);
-
-                var poiLayer = new PoiLayer();
-                window.globe.scene.add(poiLayer);
             }
 
             function changeTiledLayer() {
@@ -42,9 +41,6 @@
                         break;
                     case "soso":
                         newTiledLayer = new SosoTiledLayer();
-                        break;
-                    case "tianditu":
-                        newTiledLayer = new TiandituTiledLayer();
                         break;
                     default:
                         break;
