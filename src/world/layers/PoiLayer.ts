@@ -23,7 +23,7 @@ class PoiLayer extends GraphicGroup {
     super.clear();
   }
 
-  addPoi(lon: number, lat: number, uuid: string, name: string, address: string, phone: string){
+  private _addPoi(lon: number, lat: number, uuid: string, name: string, address: string, phone: string){
     var poi = Poi.getInstance(lon, lat, uuid, name, address, phone);
     this.add(poi);
   }
@@ -32,19 +32,20 @@ class PoiLayer extends GraphicGroup {
     this.clear();
     this.keyword = keyword;
     var globe = Kernel.globe;
-    var level = globe.getLevel();
-    globe.getExtents(level).forEach((extent: Extent) => {
-      SearchService.search(keyword, level + 2, extent.getMinLon(), extent.getMinLat(), extent.getMaxLon(), extent.getMaxLat(), (response)=>{
-        console.log(`${keyword} pois:`, response.detail.pois);
+    var level = globe.getLevel() + 3;
+    var extents = globe.getExtents(level);
+    extents.forEach((extent: Extent) => {
+      SearchService.search(keyword, level, extent.getMinLon(), extent.getMinLat(), extent.getMaxLon(), extent.getMaxLat(), (response)=>{
+        console.log(`${keyword} response:`, response);
         var data = response.detail.pois || [];
         data.forEach((item: any) => {
           var lon = parseFloat(item.pointx);
           var lat = parseFloat(item.pointy);
-          this.addPoi(lon, lat, item.uid, item.name, item.addr, item.phone);
+          this._addPoi(lon, lat, item.uid, item.name, item.addr, item.phone);
         })
       });
     });
-    
+
   }
 }
 
