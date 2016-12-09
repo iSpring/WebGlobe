@@ -113,4 +113,6 @@
       1. 当MeshTextureMaterial执行destroy的时候，取消掉原有的图片请求；
       2. 当缩放的时候，不会请求父级别以及父父级别的切片。比如缩放到第15级的时候，不再请求第13和14级的切片，但是会请求12级及以前的切片，减少了图片请求的数量。
 
-0.3.6 为IE11等浏览器添加ES6方法的polyfill，并在Matrix中用Float64Array存储数据，并同时提供getFloat32Array()方法以便给Shader传递Float32Array类型的数据（Shader不支持Float64Array）。
+0.3.6 使得PoiLayer能基本搜索POI并将其显示；
+      为IE11等浏览器添加ES6方法的polyfill；
+      在Matrix中用Float64Array存储数据，并同时提供getFloat32Array()方法以便给Shader传递Float32Array类型的数据（Shader不支持Float64Array）。
