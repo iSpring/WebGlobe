@@ -56,10 +56,9 @@ class Poi extends Graphic {
 
     onDraw(camera: Camera) {
         var gl = Kernel.gl;
-
-        //gl.disable(gl.DEPTH_TEST);
-        gl.enable(gl.BLEND);
-        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+        
+        // gl.enable(gl.BLEND);
+        // gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
         //aPosition
         var locPosition = this.program.getAttribLocation('aPosition');
@@ -87,11 +86,10 @@ class Poi extends Graphic {
         gl.drawArrays(gl.POINTS, 0, 1);
 
         //释放当前绑定对象
-        //gl.enable(gl.DEPTH_TEST);
-        gl.disable(gl.BLEND);
-        gl.bindBuffer(gl.ARRAY_BUFFER, null);
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
-        gl.bindTexture(gl.TEXTURE_2D, null);
+        // gl.disable(gl.BLEND);
+        // gl.bindBuffer(gl.ARRAY_BUFFER, null);
+        // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+        // gl.bindTexture(gl.TEXTURE_2D, null);
     }
 
     static getInstance(lon: number, lat: number, uuid: string, name: string, address: string, phone: string) {

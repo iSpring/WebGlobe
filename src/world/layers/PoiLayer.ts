@@ -2,6 +2,7 @@
 import Kernel = require('../Kernel');
 import Utils = require('../Utils');
 import Extent = require('../Extent');
+import Camera from '../Camera';
 import MathUtils = require('../math/Math');
 import GraphicGroup = require('../GraphicGroup');
 import Poi = require('../graphics/Poi');
@@ -18,12 +19,27 @@ class PoiLayer extends GraphicGroup {
     this.add(poi);
   }
 
-  clear(){
+  draw(camera: Camera) {
+    var gl = Kernel.gl;
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    // gl.depthFunc(gl.ALWAYS);
+
+    super.draw(camera);
+
+    gl.disable(gl.BLEND);
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+    gl.bindTexture(gl.TEXTURE_2D, null);
+    // gl.depthFunc(gl.LEQUAL);
+  }
+
+  clear() {
     this.keyword = null;
     super.clear();
   }
 
-  private _addPoi(lon: number, lat: number, uuid: string, name: string, address: string, phone: string){
+  private _addPoi(lon: number, lat: number, uuid: string, name: string, address: string, phone: string) {
     var poi = Poi.getInstance(lon, lat, uuid, name, address, phone);
     this.add(poi);
   }
@@ -35,7 +51,7 @@ class PoiLayer extends GraphicGroup {
     var level = globe.getLevel() + 3;
     var extents = globe.getExtents(level);
     extents.forEach((extent: Extent) => {
-      SearchService.search(keyword, level, extent.getMinLon(), extent.getMinLat(), extent.getMaxLon(), extent.getMaxLat(), (response)=>{
+      SearchService.search(keyword, level, extent.getMinLon(), extent.getMinLat(), extent.getMaxLon(), extent.getMaxLat(), (response) => {
         console.log(`${keyword} response:`, response);
         var data = response.detail.pois || [];
         data.forEach((item: any) => {
