@@ -6,11 +6,10 @@
             "world/layers/NokiaTiledLayer",
             "world/layers/OsmTiledLayer",
             "world/layers/SosoTiledLayer",
-            "world/layers/GoogleTiledLayer",
-            "world/services/SearchService"
+            "world/layers/GoogleTiledLayer"
         ],
         function(Kernel, Globe, BingTiledLayer, NokiaTiledLayer, OsmTiledLayer, SosoTiledLayer,
-            GoogleTiledLayer, SearchService) {
+            GoogleTiledLayer) {
 
             window.Kernel = Kernel;
 

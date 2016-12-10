@@ -8,7 +8,6 @@ import GraphicGroup = require('../GraphicGroup');
 import Poi = require('../graphics/Poi');
 import PoiMaterial = require('../materials/PoiMaterial');
 import MeshTextureMaterial = require('../materials/MeshTextureMaterial');
-import SearchService = require("../services/SearchService");
 
 class PoiLayer extends GraphicGroup {
   keyword: string = null;
@@ -44,6 +43,11 @@ class PoiLayer extends GraphicGroup {
     this.add(poi);
   }
 
+  static search(wd: string, level: number, minLon: number, minLat: number, maxLon: number, maxLat: number, callback: (response: any) => void, pageCapacity: number = 50, pageIndex: number = 0) {
+    var url = `//apis.map.qq.com/jsapi?qt=syn&wd=${wd}&pn=${pageIndex}&rn=${pageCapacity}&output=jsonp&b=${minLon},${minLat},${maxLon},${maxLat}&l=${level}&c=000000`;
+    Utils.jsonp(url, callback);
+  }
+
   search(keyword: string) {
     this.clear();
     this.keyword = keyword;
@@ -51,7 +55,7 @@ class PoiLayer extends GraphicGroup {
     var level = globe.getLevel() + 3;
     var extents = globe.getExtents(level);
     extents.forEach((extent: Extent) => {
-      SearchService.search(keyword, level, extent.getMinLon(), extent.getMinLat(), extent.getMaxLon(), extent.getMaxLat(), (response) => {
+      PoiLayer.search(keyword, level, extent.getMinLon(), extent.getMinLat(), extent.getMaxLon(), extent.getMaxLat(), (response) => {
         console.log(`${keyword} response:`, response);
         var data = response.detail.pois || [];
         data.forEach((item: any) => {
