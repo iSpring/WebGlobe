@@ -25,13 +25,13 @@ class Globe {
     this.renderer = new Renderer(canvas);
     this.scene = new Scene();
     var radio = canvas.width / canvas.height;
-    this.camera = new Camera(30, radio, 1, Kernel.EARTH_RADIUS * 3);
+    this.camera = new Camera(30, radio, 1, Kernel.EARTH_RADIUS * 2);
     this.renderer.setScene(this.scene);
     this.renderer.setCamera(this.camera);
     this.setLevel(0);
     var atmosphere = Atmosphere.getInstance();
     this.scene.add(atmosphere);
-    this.poiLayer = new PoiLayer();
+    this.poiLayer = PoiLayer.getInstance();
     this.scene.add(this.poiLayer);
     this.renderer.setIfAutoRefresh(true);
     EventUtils.initLayout();

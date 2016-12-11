@@ -58,8 +58,9 @@ class TileInfo {
   //处理球面的切片
   _handleGlobeTile() {
     this.type = Enum.GLOBE_TILE;
-    if (this.level < Kernel.BASE_LEVEL) {
-      var changeLevel = Kernel.BASE_LEVEL - this.level;
+    var BASE_LEVEL = Kernel.BASE_LEVEL;
+    if (this.level < BASE_LEVEL) {
+      var changeLevel = BASE_LEVEL - this.level;
       this.segment = Math.pow(2, changeLevel);
     } else {
       this.segment = 1;

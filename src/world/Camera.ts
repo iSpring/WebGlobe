@@ -167,10 +167,12 @@ class Camera extends Object3D {
   }
 
   //更新各种矩阵，理论上只在用户交互的时候调用就可以
-  update(force: boolean = false): void {
+  update(force: boolean = false): boolean {
+    var updated = false;
     if(force || this._isNeedUpdate()){
       this._normalUpdate();
       this._updateProjViewMatrixForDraw();
+      updated = true;
     }
     this.lastFov = this.fov;
     this.lastAspect = this.aspect;
@@ -178,6 +180,7 @@ class Camera extends Object3D {
     this.lastFar = this.far;
     this.lastRealLevel = this.realLevel;
     this.lastMatrix.setMatrixByOther(this.matrix);
+    return updated;
   }
 
   getCameraCore(){

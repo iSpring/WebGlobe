@@ -116,3 +116,5 @@
 0.3.6 使得PoiLayer能基本搜索POI并将其显示；
       为IE11等浏览器添加ES6方法的polyfill；
       在Matrix中用Float64Array存储数据，并同时提供getFloat32Array()方法以便给Shader传递Float32Array类型的数据（Shader不支持Float64Array）。
+
+0.3.7 删除Poi类，并让PoiLayer继承自Graphic，每次OnDraw()的时候将所有poi点的坐标动态赋值给buffer，大幅减少了绘图命令的调用，提高了FPS。

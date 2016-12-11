@@ -55,7 +55,8 @@ class Renderer {
 
   render(scene: Scene, camera: Camera) {
     var gl = Kernel.gl;
-    gl.viewport(0, 0, Kernel.canvas.width, Kernel.canvas.height);
+    var canvas = Kernel.canvas;
+    gl.viewport(0, 0, canvas.width, canvas.height);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.clearColor(0, 0, 0, 1);
     gl.enable(gl.DEPTH_TEST);

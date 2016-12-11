@@ -50,7 +50,7 @@ class MeshGraphic extends Graphic {
     }
 
     createProgram(): Program{
-        return new Program(this.getProgramType(), vs, fs);
+        return Program.getProgram(vs, fs);
     }
 
     _drawTextureMaterial(program: any) {

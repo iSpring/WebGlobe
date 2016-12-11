@@ -60,11 +60,11 @@ abstract class TiledLayer extends GraphicGroup {
     }
   }
 
-  draw(camera: Camera){
+  onDraw(camera: Camera){
     var gl = Kernel.gl;
     //此处将深度测试设置为ALWAYS是为了解决两个不同层级的切片在拖动时一起渲染会导致屏闪的问题
     gl.depthFunc(gl.ALWAYS);
-    super.draw(camera);
+    super.onDraw(camera);
     //将深度测试恢复成LEQUAL
     gl.depthFunc(gl.LEQUAL);
   }
