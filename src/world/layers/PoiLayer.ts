@@ -18,13 +18,13 @@ class PoiLayer extends GraphicGroup {
     this.add(poi);
   }
 
-  draw(camera: Camera) {
+  onDraw(camera: Camera) {
     var gl = Kernel.gl;
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     // gl.depthFunc(gl.ALWAYS);
 
-    super.draw(camera);
+    super.onDraw(camera);
 
     gl.disable(gl.BLEND);
     gl.bindBuffer(gl.ARRAY_BUFFER, null);

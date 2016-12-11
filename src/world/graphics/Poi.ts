@@ -24,8 +24,9 @@ void main(void) {
 //gl_FragColor = texture2D(uSampler, vec2(gl_PointCoord.x, 1.0 - gl_PointCoord.y));
 
 //https://www.opengl.org/sdk/docs/tutorials/ClockworkCoders/discard.php
+//highp mediump
 const fs =
-    `
+`
 precision mediump float;
 uniform sampler2D uSampler;
 

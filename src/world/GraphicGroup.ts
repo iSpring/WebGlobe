@@ -5,30 +5,30 @@ import Camera from "./Camera";
 
 type Drawable = Graphic | GraphicGroup;
 
-class GraphicGroup{
+class GraphicGroup {
     id: number;
     parent: GraphicGroup;
     children: Drawable[];
     visible: boolean = true;
 
-    constructor(){
+    constructor() {
         this.id = ++Kernel.idCounter;
         this.children = [];
     }
 
-    add(g: Drawable, first: boolean = false){
-        if(first){
+    add(g: Drawable, first: boolean = false) {
+        if (first) {
             this.children.unshift(g);
-        }else{
+        } else {
             this.children.push(g);
         }
         g.parent = this;
     }
 
-    remove(g: Drawable): boolean{
+    remove(g: Drawable): boolean {
         var result = false;
         var findResult = this.findGraphicById(g.id);
-        if(findResult){
+        if (findResult) {
             g.destroy();
             this.children.splice(findResult.index, 1);
             g = null;
@@ -37,25 +37,25 @@ class GraphicGroup{
         return result;
     }
 
-    clear(){
-        var i = 0, length = this.children.length, g:Drawable = null;
-        for(; i < length; i++){
+    clear() {
+        var i = 0, length = this.children.length, g: Drawable = null;
+        for (; i < length; i++) {
             g = this.children[i];
             g.destroy();
         }
         this.children = [];
     }
 
-    destroy(){
+    destroy() {
         this.parent = null;
         this.clear();
     }
 
-    findGraphicById(graphicId: number){
-        var i = 0, length = this.children.length, g:Drawable = null;
-        for(; i < length; i++){
+    findGraphicById(graphicId: number) {
+        var i = 0, length = this.children.length, g: Drawable = null;
+        for (; i < length; i++) {
             g = this.children[i];
-            if(g.id === graphicId){
+            if (g.id === graphicId) {
                 return {
                     index: i,
                     graphic: g
@@ -65,18 +65,22 @@ class GraphicGroup{
         return null;
     }
 
-    isDrawable(){
+    isDrawable() {
         return this.visible;
     }
 
-    draw(camera: Camera){
-        if(this.isDrawable()){
-            this.children.forEach(function(g: Drawable){
-                if(g.isDrawable()){
-                    g.draw(camera);
-                }
-            });
+    draw(camera: Camera) {
+        if (this.isDrawable()) {
+            this.onDraw(camera);
         }
+    }
+
+    onDraw(camera: Camera) {
+        this.children.forEach(function (g: Drawable) {
+            if (g.isDrawable()) {
+                g.draw(camera);
+            }
+        });
     }
 }
 
