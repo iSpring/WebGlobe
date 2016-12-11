@@ -75,7 +75,7 @@ class GraphicGroup {
         }
     }
 
-    onDraw(camera: Camera) {
+    protected onDraw(camera: Camera) {
         this.children.forEach(function (g: Drawable) {
             if (g.isDrawable()) {
                 g.draw(camera);

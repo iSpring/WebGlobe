@@ -20,7 +20,7 @@ abstract class Graphic{
     parent: GraphicGroup;
     program: Program;
 
-    constructor(public geometry: Geometry, public material: Material){
+    constructor(public geometry: Geometry = null, public material: Material = null){
         this.id = ++Kernel.idCounter;
         this.parent = null;
         this.program = this.createProgram();
@@ -33,11 +33,11 @@ abstract class Graphic{
     abstract createProgram(): Program
 
     isReady(): boolean{
-        return this.geometry && this.material && this.material.isReady();
+        return !!(this.geometry && this.material && this.material.isReady());
     }
 
     isDrawable(): boolean{
-        return this.visible &&  this.isReady();
+        return this.visible && this.isReady();
     }
 
     draw(camera: Camera){
@@ -47,13 +47,17 @@ abstract class Graphic{
         }
     }
 
-    abstract onDraw(camera: Camera):void
+    protected abstract onDraw(camera: Camera):void
 
     destroy(){
         this.parent = null;
         //释放显卡中的资源
-        this.geometry.destroy();
-        this.material.destroy();
+        if(this.geometry){
+            this.geometry.destroy();
+        }
+        if(this.material){
+            this.material.destroy();
+        }
         this.geometry = null;
         this.material = null;
     }

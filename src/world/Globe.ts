@@ -31,7 +31,7 @@ class Globe {
     this.setLevel(0);
     var atmosphere = Atmosphere.getInstance();
     this.scene.add(atmosphere);
-    this.poiLayer = new PoiLayer();
+    this.poiLayer = PoiLayer.getInstance();
     this.scene.add(this.poiLayer);
     this.renderer.setIfAutoRefresh(true);
     EventUtils.initLayout();
