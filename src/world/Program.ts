@@ -1,4 +1,4 @@
-﻿///<amd-module name="world/Program"/>
+﻿///<amd-module name="world/Program" />
 
 import Kernel = require("./Kernel");
 import Graphic = require("./graphics/Graphic");
@@ -10,20 +10,18 @@ class Program{
 	private static currentProgram: Program;
 	private static readonly programs: Program[] = [];
 
-	constructor(public type:string, public vs:string, public fs:string){
+	private constructor(public vs:string, public fs:string){
 		//{name,type,size,loc,isAttribute, isEnabled} the default value of isEnabled is undefined
 		//Note: if attribute, loc is number; if uniform, loc is WebGLUniformLocation
 		this.activeInfosObject = {};
 		this._init();
 	}
 
-	static getProgram(graphic: Graphic){
+	static getProgram(vs: string, fs: string){
 		var program:Program = null;
 
-		var programType = graphic.getProgramType();
-
 		Program.programs.some(function(item){
-			if(item.type === graphic.getProgramType()){
+			if(item.vs === vs && item.fs === fs){
 				program = item;
 				return true;
 			}else{
@@ -32,7 +30,7 @@ class Program{
 		});
 
 		if(!program){
-			program = graphic.createProgram();
+			program = new Program(vs, fs);
 			Program.programs.push(program);
 		}
 

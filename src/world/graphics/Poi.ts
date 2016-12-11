@@ -52,7 +52,7 @@ class Poi extends Graphic {
     }
 
     createProgram() {
-        return new Program(this.getProgramType(), vs, fs);
+        return Program.getProgram(vs, fs);
     }
 
     onDraw(camera: Camera) {

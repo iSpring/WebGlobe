@@ -23,7 +23,7 @@ abstract class Graphic{
     constructor(public geometry: Geometry, public material: Material){
         this.id = ++Kernel.idCounter;
         this.parent = null;
-        this.program = Program.getProgram(this);
+        this.program = this.createProgram();
     }
 
     setVisible(visible: boolean){
@@ -31,10 +31,6 @@ abstract class Graphic{
     }
 
     abstract createProgram(): Program
-
-    getProgramType() {
-        return this.material.getType();
-    }
 
     isReady(): boolean{
         return this.geometry && this.material && this.material.isReady();

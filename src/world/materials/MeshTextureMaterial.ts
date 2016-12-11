@@ -20,10 +20,6 @@ class MeshTextureMaterial extends Material {
         }
     }
 
-    getType(){
-        return "MeshTextureMaterial";
-    }
-
     isReady(): boolean{
         return this.ready && !this.deleted;
     }
