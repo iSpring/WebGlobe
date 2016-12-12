@@ -53,25 +53,19 @@ class MeshGraphic extends Graphic {
         return Program.getProgram(vs, fs);
     }
 
-    _drawTextureMaterial(program: any) {
+    protected updateShaderMatrix(camera: Camera){
+        //uPMVMatrix
         var gl = Kernel.gl;
-
-        //set aUV
-        var locUV = program.getAttribLocation('aUV');
-        program.enableVertexAttribArray('aUV');
-        this.geometry.uvbo.bind();
-        gl.vertexAttribPointer(locUV, 2, gl.FLOAT, false, 0, 0);
-
-        //set uSampler
-        var locSampler = program.getUniformLocation('uSampler');
-        gl.activeTexture(gl.TEXTURE0);
-        //world.Cache.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, this.material.texture);
-        gl.uniform1i(locSampler, 0);
+        var pmvMatrix = camera.getProjViewMatrixForDraw().multiplyMatrix(this.geometry.getMatrix());
+        var locPMVMatrix = this.program.getUniformLocation('uPMVMatrix');
+        gl.uniformMatrix4fv(locPMVMatrix, false, pmvMatrix.getFloat32Array());
     }
 
-    onDraw(camera: Camera) {
+    protected onDraw(camera: Camera) {
         var gl = Kernel.gl;
+
+        //uPMVMatrix
+        this.updateShaderMatrix(camera);
 
         //aPosition
         var locPosition = this.program.getAttribLocation('aPosition');
@@ -79,12 +73,18 @@ class MeshGraphic extends Graphic {
         this.geometry.vbo.bind();
         gl.vertexAttribPointer(locPosition, 3, gl.FLOAT, false, 0, 0);
 
-        //uPMVMatrix
-        var pmvMatrix = camera.getProjViewMatrixForDraw().multiplyMatrix(this.geometry.getMatrix());
-        var locPMVMatrix = this.program.getUniformLocation('uPMVMatrix');
-        gl.uniformMatrix4fv(locPMVMatrix, false, pmvMatrix.getFloat32Array());
+        //set aUV
+        var locUV = this.program.getAttribLocation('aUV');
+        this.program.enableVertexAttribArray('aUV');
+        this.geometry.uvbo.bind();
+        gl.vertexAttribPointer(locUV, 2, gl.FLOAT, false, 0, 0);
 
-        this._drawTextureMaterial(this.program);
+        //set uSampler
+        var locSampler = this.program.getUniformLocation('uSampler');
+        gl.activeTexture(gl.TEXTURE0);
+        //world.Cache.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, this.material.texture);
+        gl.uniform1i(locSampler, 0);
 
         //设置索引，但不用往shader中赋值
         this.geometry.ibo.bind();
