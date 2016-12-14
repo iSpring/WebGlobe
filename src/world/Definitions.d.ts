@@ -1,4 +1,6 @@
 import Matrix = require('./math/Matrix');
+import Camera from './Camera';
+import GraphicGroup = require('./GraphicGroup');
 
 interface WebGLProgramExtension extends WebGLProgram{
     uMVMatrix: WebGLUniformLocation;
@@ -21,4 +23,12 @@ export interface IMockCamera{
     realLevel: number;
     matrix: Matrix;
     equals(other: IMockCamera): boolean;
+}
+
+export interface Drawable{
+    id: number;
+    parent: GraphicGroup;
+    draw(camera: Camera): void;
+    shouldDraw(): boolean;
+    destroy(): void;
 }

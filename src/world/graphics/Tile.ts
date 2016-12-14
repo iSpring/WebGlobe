@@ -166,8 +166,8 @@ class Tile extends MeshGraphic {
     return new Extent(this.tileInfo.minLon, this.tileInfo.minLat, this.tileInfo.maxLon, this.tileInfo.maxLat);
   }
 
-  isDrawable(){
-    return this.tileInfo.visible　&& super.isDrawable();
+  shouldDraw(){
+    return this.tileInfo.visible　&& super.shouldDraw();
   }
 
   destroy() {
