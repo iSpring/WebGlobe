@@ -12,7 +12,7 @@ import GraphicGroup = require('../GraphicGroup');
 abstract class Graphic implements Drawable{
     id: number;
     visible: boolean = true;
-    parent: GraphicGroup;
+    parent: GraphicGroup<Drawable>;
     program: Program;
 
     constructor(public geometry: Geometry = null, public material: Material = null){
@@ -46,7 +46,6 @@ abstract class Graphic implements Drawable{
 
     destroy(){
         this.parent = null;
-        //释放显卡中的资源
         if(this.geometry){
             this.geometry.destroy();
         }

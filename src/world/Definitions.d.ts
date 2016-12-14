@@ -27,7 +27,7 @@ export interface IMockCamera{
 
 export interface Drawable{
     id: number;
-    parent: GraphicGroup;
+    parent: GraphicGroup<Drawable>;
     draw(camera: Camera): void;
     shouldDraw(): boolean;
     destroy(): void;

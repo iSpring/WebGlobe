@@ -9,7 +9,7 @@ import Tile = require("../graphics/Tile");
 import TileGrid = require('../TileGrid');
 import Utils = require('../Utils');
 
-abstract class TiledLayer extends GraphicGroup {
+abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
 
   constructor(){
     super();
@@ -56,7 +56,7 @@ abstract class TiledLayer extends GraphicGroup {
 
     for (subLevel = 2; subLevel <= lastLevel; subLevel++) {
       var addNew = lastLevel === subLevel || (lastLevel - subLevel) > 2;
-      (<SubTiledLayer>this.children[subLevel]).updateTiles(levelsTileGrids[subLevel], addNew);
+      this.children[subLevel].updateTiles(levelsTileGrids[subLevel], addNew);
     }
   }
 
@@ -83,7 +83,7 @@ abstract class TiledLayer extends GraphicGroup {
     if(!(level >= 0 && level <= (this.children.length - 1))){
       level = this.children.length - 1 - 3;
     }
-    var subTiledLayer = <SubTiledLayer>this.children[level];
+    var subTiledLayer = this.children[level];
     if(subTiledLayer){
       return subTiledLayer.getExtents();
     }
@@ -118,7 +118,7 @@ abstract class TiledLayer extends GraphicGroup {
         var removeLevel = this.children.length - 1;
         //第0级和第1级不删除
         if (removeLevel >= 2) {
-          subLayer = <SubTiledLayer>this.children[removeLevel];
+          subLayer = this.children[removeLevel];
           this.remove(subLayer);
         } else {
           break;

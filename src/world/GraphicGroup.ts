@@ -5,10 +5,10 @@ import {Drawable} from './Definitions.d';
 import Graphic = require('./graphics/Graphic');
 import Camera from "./Camera";
 
-class GraphicGroup implements Drawable {
+class GraphicGroup<T extends Drawable> implements Drawable {
     id: number;
-    parent: GraphicGroup;
-    children: Drawable[];
+    parent: GraphicGroup<T>;
+    children: T[];
     visible: boolean = true;
 
     constructor() {
@@ -16,7 +16,7 @@ class GraphicGroup implements Drawable {
         this.children = [];
     }
 
-    add(g: Drawable, first: boolean = false) {
+    add(g: T, first: boolean = false) {
         if (first) {
             this.children.unshift(g);
         } else {
@@ -25,7 +25,7 @@ class GraphicGroup implements Drawable {
         g.parent = this;
     }
 
-    remove(g: Drawable): boolean {
+    remove(g: T): boolean {
         var result = false;
         var findResult = this.findGraphicById(g.id);
         if (findResult) {
@@ -66,7 +66,7 @@ class GraphicGroup implements Drawable {
     }
 
     shouldDraw() {
-        return this.visible;
+        return this.visible && this.children.length > 0;
     }
 
     draw(camera: Camera) {
