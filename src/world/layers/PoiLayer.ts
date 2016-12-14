@@ -109,7 +109,6 @@ class PoiLayer extends Graphic {
     //set uSampler
     var locSampler = this.program.getUniformLocation('uSampler');
     gl.activeTexture(gl.TEXTURE0);
-    //world.Cache.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, this.material.texture);
     gl.uniform1i(locSampler, 0);
 

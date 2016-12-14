@@ -11,7 +11,7 @@ import Utils = require('../Utils');
 
 abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
 
-  constructor(){
+  constructor() {
     super();
 
     //添加第0级的子图层
@@ -37,7 +37,7 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
     }
   }
 
-  refresh(lastLevel: number, lastLevelTileGrids: TileGrid[]){
+  refresh(lastLevel: number, lastLevelTileGrids: TileGrid[]) {
     this._updateSubLayerCount(lastLevel);
 
     var levelsTileGrids: TileGrid[][] = [];
@@ -60,8 +60,26 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
     }
   }
 
-  onDraw(camera: Camera){
+  onDraw(camera: Camera) {
+    var program = Tile.findProgram();
+    if (!program) {
+      return;
+    }
+    program.use();
     var gl = Kernel.gl;
+
+    //设置uniform变量的值
+    //uPMVMatrix
+    var pmvMatrix = camera.getProjViewMatrixForDraw();
+    var locPMVMatrix = program.getUniformLocation('uPMVMatrix');
+    gl.uniformMatrix4fv(locPMVMatrix, false, pmvMatrix.getFloat32Array());
+
+    //uSampler
+    gl.activeTexture(gl.TEXTURE0);
+    var locSampler = program.getUniformLocation('uSampler');
+    gl.uniform1i(locSampler, 0);
+
+
     //此处将深度测试设置为ALWAYS是为了解决两个不同层级的切片在拖动时一起渲染会导致屏闪的问题
     gl.depthFunc(gl.ALWAYS);
     super.onDraw(camera);
@@ -74,24 +92,24 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
     subTiledLayer.tiledLayer = this;
   }
 
-  getExtent(level?: number){
+  getExtent(level?: number) {
     var extents = this.getExtents(level);
     return Extent.union(extents);
   }
 
-  getExtents(level?: number): Extent[]{
-    if(!(level >= 0 && level <= (this.children.length - 1))){
+  getExtents(level?: number): Extent[] {
+    if (!(level >= 0 && level <= (this.children.length - 1))) {
       level = this.children.length - 1 - 3;
     }
     var subTiledLayer = this.children[level];
-    if(subTiledLayer){
+    if (subTiledLayer) {
       return subTiledLayer.getExtents();
     }
     return [];
   }
 
-  protected wrapUrlWithProxy(url: string): string{
-    if(Kernel.proxy){
+  protected wrapUrlWithProxy(url: string): string {
+    if (Kernel.proxy) {
       return Kernel.proxy + "?" + url;
     }
     return url;

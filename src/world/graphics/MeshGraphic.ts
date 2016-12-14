@@ -49,23 +49,31 @@ class MeshGraphic extends Graphic {
         return this.isGeometryReady() && super.isReady();
     }
 
+    static findProgram(): Program{
+        return Program.findProgram(vs, fs);
+    }
+
     createProgram(): Program{
         return Program.getProgram(vs, fs);
     }
 
-    protected updateShaderMatrix(camera: Camera){
+    protected updateShaderUniforms(camera: Camera){
         //uPMVMatrix
         var gl = Kernel.gl;
         var pmvMatrix = camera.getProjViewMatrixForDraw().multiplyMatrix(this.geometry.getMatrix());
         var locPMVMatrix = this.program.getUniformLocation('uPMVMatrix');
         gl.uniformMatrix4fv(locPMVMatrix, false, pmvMatrix.getFloat32Array());
+
+        //uSampler
+        gl.activeTexture(gl.TEXTURE0);
+        var locSampler = this.program.getUniformLocation('uSampler');
+        gl.uniform1i(locSampler, 0);
     }
 
     protected onDraw(camera: Camera) {
         var gl = Kernel.gl;
 
-        //uPMVMatrix
-        this.updateShaderMatrix(camera);
+        this.updateShaderUniforms(camera);
 
         //aPosition
         var locPosition = this.program.getAttribLocation('aPosition');
@@ -80,11 +88,7 @@ class MeshGraphic extends Graphic {
         gl.vertexAttribPointer(locUV, 2, gl.FLOAT, false, 0, 0);
 
         //set uSampler
-        var locSampler = this.program.getUniformLocation('uSampler');
-        gl.activeTexture(gl.TEXTURE0);
-        //world.Cache.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, this.material.texture);
-        gl.uniform1i(locSampler, 0);
 
         //设置索引，但不用往shader中赋值
         this.geometry.ibo.bind();
