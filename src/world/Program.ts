@@ -18,6 +18,17 @@ class Program{
 	}
 
 	static getProgram(vs: string, fs: string){
+		var program:Program = Program.findProgram(vs, fs);
+
+		if(!program){
+			program = new Program(vs, fs);
+			Program.programs.push(program);
+		}
+
+		return program;
+	}
+
+	static findProgram(vs: string, fs: string){
 		var program:Program = null;
 
 		Program.programs.some(function(item){
@@ -28,11 +39,6 @@ class Program{
 				return false;
 			}
 		});
-
-		if(!program){
-			program = new Program(vs, fs);
-			Program.programs.push(program);
-		}
 
 		return program;
 	}

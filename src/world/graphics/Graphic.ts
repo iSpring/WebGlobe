@@ -1,23 +1,18 @@
 ﻿///<amd-module name="world/graphics/Graphic"/>
 
-import Kernel = require("../Kernel");
-import Geometry = require("../geometries/Geometry");
-import Material = require("../materials/Material");
-import Program = require("../Program");
-import Camera from "../Camera";
-import GraphicGroup = require("../GraphicGroup");
+import Kernel = require('../Kernel');
+import {Drawable} from '../Definitions.d';
+import Geometry = require('../geometries/Geometry');
+import Material = require('../materials/Material');
+import Program = require('../Program');
+import Camera from '../Camera';
+import GraphicGroup = require('../GraphicGroup');
 
-interface GraphicOptions{
-    geometry: Geometry;
-    material: Material;
-    parent: GraphicGroup;
-    visible?: boolean;
-}
 
-abstract class Graphic{
+abstract class Graphic implements Drawable{
     id: number;
     visible: boolean = true;
-    parent: GraphicGroup;
+    parent: GraphicGroup<Drawable>;
     program: Program;
 
     constructor(public geometry: Geometry = null, public material: Material = null){
@@ -36,12 +31,12 @@ abstract class Graphic{
         return !!(this.geometry && this.material && this.material.isReady());
     }
 
-    isDrawable(): boolean{
+    shouldDraw(): boolean{
         return this.visible && this.isReady();
     }
 
     draw(camera: Camera){
-        if(this.isDrawable()){
+        if(this.shouldDraw()){
             this.program.use();
             this.onDraw(camera);
         }
@@ -51,7 +46,6 @@ abstract class Graphic{
 
     destroy(){
         this.parent = null;
-        //释放显卡中的资源
         if(this.geometry){
             this.geometry.destroy();
         }

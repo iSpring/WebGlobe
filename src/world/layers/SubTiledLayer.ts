@@ -1,4 +1,5 @@
 ///<amd-module name="world/layers/SubTiledLayer"/>
+
 import Kernel = require('../Kernel');
 import Utils = require('../Utils');
 import Extent = require('../Extent');
@@ -8,7 +9,7 @@ import GraphicGroup = require('../GraphicGroup');
 import Tile = require('../graphics/Tile');
 import TiledLayer = require('./TiledLayer');
 
-class SubTiledLayer extends GraphicGroup {
+class SubTiledLayer extends GraphicGroup<Tile> {
   tiledLayer: TiledLayer = null;
 
   constructor(public level: number) {
@@ -33,7 +34,7 @@ class SubTiledLayer extends GraphicGroup {
   findTile(level: number, row: number, column: number) {
     var length = this.children.length;
     for (var i = 0; i < length; i++) {
-      var tile = <Tile>this.children[i];
+      var tile = this.children[i];
       if (tile.tileInfo.level === level && tile.tileInfo.row === row && tile.tileInfo.column === column) {
         return tile;
       }
@@ -64,7 +65,7 @@ class SubTiledLayer extends GraphicGroup {
     var tilesNeedDelete: Tile[] = [];
     var i:number, tile:Tile;
     for (i = 0; i < this.children.length; i++) {
-      tile = <Tile>this.children[i];
+      tile = this.children[i];
       var checkResult = checkTileExist(visibleTileGrids, tile.tileInfo.level, tile.tileInfo.row, tile.tileInfo.column);
       var isExist = checkResult.isExist;
       if (isExist) {
@@ -104,7 +105,7 @@ class SubTiledLayer extends GraphicGroup {
 
   checkIfLoaded() {
     for (var i = 0; i < this.children.length; i++) {
-      var tile = <Tile>this.children[i];
+      var tile = this.children[i];
       if (tile) {
         var isTileLoaded = tile.material.isReady();
         if (!isTileLoaded) {
@@ -120,7 +121,7 @@ class SubTiledLayer extends GraphicGroup {
   }
 
   getExtents(): Extent[]{
-    return this.children.map((item)=>(<Tile>item).getExtent());
+    return this.children.map((item) => item.getExtent());
   }
 }
 

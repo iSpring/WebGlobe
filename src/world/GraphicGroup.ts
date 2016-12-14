@@ -1,14 +1,14 @@
 ﻿///<amd-module name="world/GraphicGroup"/>
-import Kernel = require("./Kernel");
-import Graphic = require("./graphics/Graphic");
+
+import Kernel = require('./Kernel');
+import {Drawable} from './Definitions.d';
+import Graphic = require('./graphics/Graphic');
 import Camera from "./Camera";
 
-type Drawable = Graphic | GraphicGroup;
-
-class GraphicGroup {
+class GraphicGroup<T extends Drawable> implements Drawable {
     id: number;
-    parent: GraphicGroup;
-    children: Drawable[];
+    parent: GraphicGroup<T>;
+    children: T[];
     visible: boolean = true;
 
     constructor() {
@@ -16,7 +16,7 @@ class GraphicGroup {
         this.children = [];
     }
 
-    add(g: Drawable, first: boolean = false) {
+    add(g: T, first: boolean = false) {
         if (first) {
             this.children.unshift(g);
         } else {
@@ -25,7 +25,7 @@ class GraphicGroup {
         g.parent = this;
     }
 
-    remove(g: Drawable): boolean {
+    remove(g: T): boolean {
         var result = false;
         var findResult = this.findGraphicById(g.id);
         if (findResult) {
@@ -65,19 +65,19 @@ class GraphicGroup {
         return null;
     }
 
-    isDrawable() {
-        return this.visible;
+    shouldDraw() {
+        return this.visible && this.children.length > 0;
     }
 
     draw(camera: Camera) {
-        if (this.isDrawable()) {
+        if (this.shouldDraw()) {
             this.onDraw(camera);
         }
     }
 
     protected onDraw(camera: Camera) {
         this.children.forEach(function (g: Drawable) {
-            if (g.isDrawable()) {
+            if (g.shouldDraw()) {
                 g.draw(camera);
             }
         });

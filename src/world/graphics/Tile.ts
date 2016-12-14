@@ -2,6 +2,7 @@
 import Kernel = require('../Kernel');
 import Enum = require('../Enum');
 import Extent = require('../Extent');
+import Camera from '../Camera';
 import MathUtils = require('../math/Math');
 import MeshGraphic = require('../graphics/MeshGraphic');
 import TileMaterial = require('../materials/TileMaterial');
@@ -162,12 +163,15 @@ class Tile extends MeshGraphic {
     return new Tile(tileInfo.geometry, tileInfo.material, tileInfo);
   }
 
+  protected updateShaderUniforms(camera: Camera){
+  }
+
   getExtent(){
     return new Extent(this.tileInfo.minLon, this.tileInfo.minLat, this.tileInfo.maxLon, this.tileInfo.maxLat);
   }
 
-  isDrawable(){
-    return this.tileInfo.visible　&& super.isDrawable();
+  shouldDraw(){
+    return this.tileInfo.visible　&& super.shouldDraw();
   }
 
   destroy() {
