@@ -120,3 +120,5 @@
 0.3.7 删除Poi类，并让PoiLayer继承自Graphic，每次OnDraw()的时候将所有poi点的坐标动态赋值给buffer，大幅减少了绘图命令的调用，提高了FPS。
 
 0.3.8 在TiledLayer中为program中的uniform变量设置值，减少了WebGL命令的调用次数。
+
+0.3.9 用webpack代替gulp作为打包工具

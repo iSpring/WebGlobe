@@ -6,17 +6,6 @@
         <meta http-equiv="Content-Type" content="text/html" />
         <meta name="charset" content="utf-8" />
         <link rel="stylesheet" type="text/css" href="index.css" />
-        <script type="text/javascript" src="require.js"></script>
-        <script type="text/javascript">
-            require.config({
-                baseUrl: "buildOutput/amd",
-                paths: {
-                    world: "world"
-                },
-                waitSeconds: 0
-            });
-        </script>
-        <script type="text/javascript" src="main.js"></script>
     </head>
 
     <body onselectstart="return false;">
@@ -24,12 +13,12 @@
             <option value="osm">OpenStreetMap</option>
             <option value="soso">腾讯地图</option>            
             <option value="bing">Bing Map</option>
-            <option value="tianditu">天地图</option>
         </select>
         <canvas id="canvasId" width="1000" height="1000"></canvas>
         <a id="blog" target="_blank" href="http://github.com/iSpring">
             <img src="images/iSpring.png" />
         </a>
     </body>
+	<script type="text/javascript" src="buildOutput/bundle.js"></script>
 
 </html>
