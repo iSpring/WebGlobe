@@ -6,10 +6,11 @@ import Camera from '../Camera';
 import MathUtils = require('../math/Math');
 import MeshGraphic = require('../graphics/MeshGraphic');
 import TileMaterial = require('../materials/TileMaterial');
-import TileGeometry = require("../geometries/TileGeometry");
-import Vertice = require("../geometries/MeshVertice");
-import Triangle = require("../geometries/Triangle");
-import SubTiledLayer = require("../layers/SubTiledLayer");
+import TileGeometry = require('../geometries/TileGeometry');
+import Vertice = require('../geometries/MeshVertice');
+import Triangle = require('../geometries/Triangle');
+import SubTiledLayer = require('../layers/SubTiledLayer');
+import TileGrid = require('../TileGrid');
 
 class TileInfo {
   //type如果是GLOBE_TILE，表示其buffer已经设置为一般形式
@@ -167,7 +168,9 @@ class Tile extends MeshGraphic {
   }
 
   getExtent(){
-    return new Extent(this.tileInfo.minLon, this.tileInfo.minLat, this.tileInfo.maxLon, this.tileInfo.maxLat);
+    var tileInfo = this.tileInfo;
+    var tileGrid = new TileGrid(tileInfo.level, tileInfo.row, tileInfo.column);
+    return new Extent(this.tileInfo.minLon, this.tileInfo.minLat, this.tileInfo.maxLon, this.tileInfo.maxLat, tileGrid);
   }
 
   shouldDraw(){

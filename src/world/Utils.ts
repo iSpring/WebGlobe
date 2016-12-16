@@ -1,4 +1,5 @@
-///<amd-module name="world/Utils"/>
+///<amd-module name="world/Utils" />
+
 type ArrayVoidCallbackFunction = (value: any, index: number, arr: Array<any>) => void;
 type ArrayBooleanCallbackFunction = (value: any, index: number, arr: any[]) => boolean;
 type ArrayAnyCallbackFunction = (value: any, index: number, arr: any[]) => any;
@@ -178,14 +179,6 @@ const Utils = {
             canceled = true;
         };
     }
-};
-
-(<any>window).testJsonp = function(){
-    //var url = 'http://sampleserver6.arcgisonline.com/arcgis/rest/services/SampleWorldCities/MapServer?f=json';
-    var url = 'http://www.runoob.com/try/ajax/jsonp.php?';
-    return Utils.jsonp(url, function(response){
-        console.log(response);
-    }, "jsoncallback");
 };
 
 export = Utils;
