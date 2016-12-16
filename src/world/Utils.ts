@@ -151,18 +151,41 @@ const Utils = {
         return simplifyArray;
     },
 
-    jsonp(url: string, callback: (response: any)=>void){
+    jsonp(url: string, callback: (response: any)=>void, callbackParameterName: string = "cb"): () => void{
         var callbackName = `webglobe_callback_` + Math.random().toString().substring(2);
-        url += `&cb=${callbackName}`;
-        var scriptElement = document.createElement("script");
-        scriptElement.src = url;
-        document.body.appendChild(scriptElement);
-        (<any>window)[callbackName] = function(response: any){
-            callback(response);
-            document.body.removeChild(scriptElement);
-            delete (<any>window)[callbackName];
+        if(url.indexOf('?') < 0){
+            url += '?';
+        }else{
+            url += '&';
         }
+        url += `${callbackParameterName}=window.${callbackName}`;
+        var scriptElement = document.createElement("script");
+        scriptElement.setAttribute("src", url);
+        scriptElement.setAttribute("async", "true");
+        document.body.appendChild(scriptElement);
+        var canceled = false;
+        (<any>window)[callbackName] = function(response: any){
+            if(!canceled){
+                callback(response);
+            }
+            delete (<any>window)[callbackName];
+            scriptElement.src = "";
+            if(scriptElement.parentNode){
+                scriptElement.parentNode.removeChild(scriptElement);
+            }
+        }
+        return function(){
+            canceled = true;
+        };
     }
+};
+
+(<any>window).testJsonp = function(){
+    //var url = 'http://sampleserver6.arcgisonline.com/arcgis/rest/services/SampleWorldCities/MapServer?f=json';
+    var url = 'http://www.runoob.com/try/ajax/jsonp.php?';
+    return Utils.jsonp(url, function(response){
+        console.log(response);
+    }, "jsoncallback");
 };
 
 export = Utils;
