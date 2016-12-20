@@ -103,7 +103,7 @@ class SubTiledLayer extends GraphicGroup<Tile> {
     }
   }
 
-  checkIfLoaded() {
+  checkIfAllTilesLoaded() {
     for (var i = 0; i < this.children.length; i++) {
       var tile = this.children[i];
       if (tile) {
@@ -122,6 +122,12 @@ class SubTiledLayer extends GraphicGroup<Tile> {
 
   getExtents(): Extent[]{
     return this.children.map((item) => item.getExtent());
+  }
+
+  getShouldDrawTilesCount(){
+    return this.visible ? this.children.filter((tile)=>{
+      return tile.visible && tile.isReady();
+    }).length : 0;
   }
 }
 

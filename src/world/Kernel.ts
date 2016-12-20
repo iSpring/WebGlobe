@@ -15,6 +15,8 @@ const Kernel = {
     MAX_LEVEL: <number> 15,//最大的渲染级别
     EARTH_RADIUS: <number> radius,
     MAX_PROJECTED_COORD: <number> maxProjectedCoord,
+    EARTH_FULL_OVERLAP_SCREEN_LEVEL: <number> 3,//从该层级开始，地球全部铺满Canvas
+    DELTA_LEVEL_BETWEEN_LAST_LEVEL_AND_CURRENT_LEVEL: 3,
     proxy: <string> ""
 };
 

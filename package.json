@@ -6,7 +6,7 @@
   "scripts": {
     "clear": "rimraf buildOutput",
     "prebuild:dev": "npm run clear",
-    "build:dev": "cross-env NODE_ENV=development webpack  --progress --colors",
+    "build:dev": "cross-env NODE_ENV=development webpack --progress --colors",
     "prebuild:prod": "npm run clear",
     "build:prod": "cross-env NODE_ENV=production webpack --progress --colors",
     "start": "npm run build:dev"

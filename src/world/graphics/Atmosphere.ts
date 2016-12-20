@@ -19,6 +19,10 @@ class Atmosphere extends MeshGraphic {
         return new Atmosphere(geometry, material);
     }
 
+    shouldDraw(camera: Camera){
+        return camera.getLevel() < Kernel.EARTH_FULL_OVERLAP_SCREEN_LEVEL && super.shouldDraw(camera);
+    }
+
     onDraw(camera: Camera){
         var gl = Kernel.gl;
         gl.disable(gl.DEPTH_TEST);

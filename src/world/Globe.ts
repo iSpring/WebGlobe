@@ -22,7 +22,7 @@ class Globe {
 
   constructor(canvas: HTMLCanvasElement) {
     Kernel.globe = this;
-    this.renderer = new Renderer(canvas);
+    this.renderer = new Renderer(canvas, this._onBeforeRender.bind(this));
     this.scene = new Scene();
     var radio = canvas.width / canvas.height;
     this.camera = new Camera(30, radio, 1, Kernel.EARTH_RADIUS * 2);
@@ -58,6 +58,11 @@ class Globe {
     return this.camera ? this.camera.getLevel() : -1;
   }
 
+  getLastLevel(){
+    var currentLevel = this.getLevel();
+    return currentLevel >= 0 ? (currentLevel + Kernel.DELTA_LEVEL_BETWEEN_LAST_LEVEL_AND_CURRENT_LEVEL) : -1;
+  }
+
   setLevel(level: number) {
     if (this.camera) {
       this.camera.setLevel(level);
@@ -75,6 +80,10 @@ class Globe {
         this.camera.animateToLevel(level);
       }
     }
+  }
+
+  private _onBeforeRender(renderer: Renderer){
+    //this.refresh();
   }
 
   private _tick() {
@@ -101,7 +110,8 @@ class Globe {
     if (!isNeedRefresh) {
       return;
     }
-    var lastLevel = this.getLevel() + 3;
+    var currentLevel = this.getLevel();
+    var lastLevel = this.getLastLevel();
     var options = {
       threshold: 1
     };
@@ -109,7 +119,7 @@ class Globe {
     options.threshold = Math.min(90 / (90 - pitch), 1.5);
     //最大级别的level所对应的可见TileGrids
     var lastLevelTileGrids = this.camera.getVisibleTilesByLevel(lastLevel, options);
-    this.tiledLayer.refresh(lastLevel, lastLevelTileGrids);
+    this.tiledLayer.refresh(currentLevel, lastLevel, lastLevelTileGrids);
   }
 
   getExtents(level?: number){

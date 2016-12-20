@@ -10,7 +10,11 @@ class Renderer {
   camera: Camera = null;
   autoRefresh: boolean = false;
 
-  constructor(canvas: HTMLCanvasElement) {
+  constructor(
+    private canvas: HTMLCanvasElement, 
+    private onBeforeRender?: (renderer: Renderer) => void,
+    private onAfterRender?: (renderer: Renderer) => void) {
+
     EventUtils.bindEvents(canvas);
 
     var gl: WebGLRenderingContextExtension;
@@ -63,7 +67,13 @@ class Renderer {
     gl.depthFunc(gl.LEQUAL);
     gl.depthMask(true);
     camera.update();
+    if(this.onBeforeRender){
+      this.onBeforeRender(this);
+    }
     scene.draw(camera);
+    if(this.onAfterRender){
+      this.onAfterRender(this);
+    }
   }
 
   setScene(scene: Scene) {

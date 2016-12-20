@@ -77,7 +77,7 @@ class GraphicGroup<T extends Drawable> implements Drawable {
 
     protected onDraw(camera: Camera) {
         this.children.forEach(function (g: Drawable) {
-            if (g.shouldDraw()) {
+            if (g.shouldDraw(camera)) {
                 g.draw(camera);
             }
         });

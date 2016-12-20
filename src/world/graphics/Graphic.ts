@@ -31,12 +31,12 @@ abstract class Graphic implements Drawable{
         return !!(this.geometry && this.material && this.material.isReady());
     }
 
-    shouldDraw(): boolean{
+    shouldDraw(camera: Camera): boolean{
         return this.visible && this.isReady();
     }
 
     draw(camera: Camera){
-        if(this.shouldDraw()){
+        if(this.shouldDraw(camera)){
             this.program.use();
             this.onDraw(camera);
         }
