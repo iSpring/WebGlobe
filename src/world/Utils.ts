@@ -4,14 +4,34 @@ type ArrayVoidCallbackFunction = (value: any, index: number, arr: Array<any>) =>
 type ArrayBooleanCallbackFunction = (value: any, index: number, arr: any[]) => boolean;
 type ArrayAnyCallbackFunction = (value: any, index: number, arr: any[]) => any;
 
+const pow2Cache:any = {};
+(function(cache:any){
+    cache[0] = 1;
+    for(var i:number = 1; i <= 20; i++){
+        cache[i] = cache[i-1]<<1;
+        cache[-i] = 1 / cache[i];
+    }
+    
+    console.log(cache);
+})(pow2Cache);
+
 const Utils = {
     GREATER:"GREATER",
     GEQUAL:"GEQUAL",
     LESS:"LESS",
     LEQUAL:"LEQUAL",
 
-    isBool(v: any): boolean{
-        return typeof v == "boolean";
+    // isBool(v: any): boolean{
+    //     return typeof v == "boolean";
+    // },
+
+    pow2(v: number){
+        var s: string = v.toString();
+        if(pow2Cache.hasOwnProperty(s)){
+            return pow2Cache[s];
+        }else{
+            return Math.pow(2, v);
+        }
     },
 
     isNumber(v: any): boolean{
@@ -78,39 +98,15 @@ const Utils = {
     },
 
     isNonNegativeInteger(v: number): boolean{
-        return this.isNonNegative(v) && this.isInteger;
-    },
-
-    isString(v: any): boolean{
-        return typeof v === "string";
+        return this.isNonNegative(v) && this.isInteger(v);
     },
 
     isArray(v: any): boolean{
         return Object.prototype.toString.call(v) === '[object Array]';
     },
 
-    isFunction(v: any): boolean{
-        return typeof v === "function";
-    },
-
-    isNull(v:any): boolean{
-        return v === null;
-    },
-
-    isUndefined(v:any): boolean{
-        return typeof v === "undefined";
-    },
-
-    isNullOrUndefined(v:any): boolean{
-        return this.isNull(v)||this.isUndefined(v);
-    },
-
-    isJsonObject(v:any): boolean{
-        return typeof v === "object" && !this.isNull(v) && !this.isArray(v);
-    },
-
-    isDom(v:any): boolean{
-        return v instanceof HTMLElement;
+    isFunction(v: any){
+        return typeof v === 'function';
     },
 
     forEach(arr: ArrayLike<any>, func: ArrayVoidCallbackFunction): void{
@@ -180,5 +176,7 @@ const Utils = {
         };
     }
 };
+
+(<any>window).Utils = Utils;
 
 export = Utils;

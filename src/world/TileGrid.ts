@@ -17,7 +17,11 @@ export enum TileGridPosition{
 
 class TileGrid {
 
-    constructor(public level: number, public row: number, public column: number) { }
+    private maxSize: number = 0;
+
+    constructor(public level: number, public row: number, public column: number) {
+        // this.maxSize = Math.pow(2, this.level);
+     }
 
     equals(other: TileGrid): boolean {
         return other && this.level === other.level && this.row === other.row && this.column === other.column;
