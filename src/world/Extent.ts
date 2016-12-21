@@ -1,6 +1,6 @@
 ///<amd-module name="world/Extent" />
 
-import TileGrid = require('./TileGrid');
+import TileGrid from './TileGrid';
 
 class Extent{
     constructor(private minLon: number, private minLat: number, private maxLon: number, private maxLat: number, private tileGrid: TileGrid){

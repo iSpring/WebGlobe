@@ -4,7 +4,7 @@ import Kernel = require('../Kernel');
 import Utils = require('../Utils');
 import Extent = require('../Extent');
 import MathUtils = require('../math/Math');
-import TileGrid = require('../TileGrid');
+import TileGrid from '../TileGrid';
 import GraphicGroup = require('../GraphicGroup');
 import Tile = require('../graphics/Tile');
 import TiledLayer = require('./TiledLayer');

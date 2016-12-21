@@ -6,7 +6,7 @@ import Vertice = require('./math/Vertice');
 import Vector = require('./math/Vector');
 import Line = require('./math/Line');
 import Plan = require('./math/Plan');
-import TileGrid = require('./TileGrid');
+import TileGrid,{TileGridPosition} from './TileGrid';
 import Matrix = require('./math/Matrix');
 import Object3D = require('./Object3D');
 
@@ -811,7 +811,7 @@ class Camera extends Object3D {
         var visible: boolean;
         while (leftLoopTime < LOOP_LIMIT) {
           leftLoopTime++;
-          grid = TileGrid.getTileGridByBrother(level, centerRow, leftColumn, MathUtils.LEFT, mathOptions);
+          grid = TileGrid.getTileGridByBrother(level, centerRow, leftColumn, TileGridPosition.LEFT, mathOptions);
           leftColumn = grid.column;
           visibleInfo = this._getTileVisibleInfo(grid.level, grid.row, grid.column, options);
           visible = checkVisible(visibleInfo);
@@ -828,7 +828,7 @@ class Camera extends Object3D {
         var rightColumn = centerColumn;
         while (rightLoopTime < LOOP_LIMIT) {
           rightLoopTime++;
-          grid = TileGrid.getTileGridByBrother(level, centerRow, rightColumn, MathUtils.RIGHT, mathOptions);
+          grid = TileGrid.getTileGridByBrother(level, centerRow, rightColumn, TileGridPosition.RIGHT, mathOptions);
           rightColumn = grid.column;
           visibleInfo = this._getTileVisibleInfo(grid.level, grid.row, grid.column, options);
           visible = checkVisible(visibleInfo);
@@ -856,7 +856,7 @@ class Camera extends Object3D {
     var bottomRow = centerGrid.row;
     while (bottomLoopTime < LOOP_LIMIT) {
       bottomLoopTime++;
-      grid = TileGrid.getTileGridByBrother(level, bottomRow, centerGrid.column, MathUtils.BOTTOM, mathOptions);
+      grid = TileGrid.getTileGridByBrother(level, bottomRow, centerGrid.column, TileGridPosition.BOTTOM, mathOptions);
       bottomRow = grid.row;
       rowResult = handleRowThis(grid.row, grid.column);
       if (rowResult.length > 0) {
@@ -872,7 +872,7 @@ class Camera extends Object3D {
     var topRow = centerGrid.row;
     while (topLoopTime < LOOP_LIMIT) {
       topLoopTime++;
-      grid = TileGrid.getTileGridByBrother(level, topRow, centerGrid.column, MathUtils.TOP, mathOptions);
+      grid = TileGrid.getTileGridByBrother(level, topRow, centerGrid.column, TileGridPosition.TOP, mathOptions);
       topRow = grid.row;
       rowResult = handleRowThis(grid.row, grid.column);
       if (rowResult.length > 0) {
@@ -888,6 +888,10 @@ class Camera extends Object3D {
     return result;
   }
 
+  private _getTileVerticeInfo(level: number, row: number, column: number){
+    ;
+  }
+
   //options: threshold
   private _getTileVisibleInfo(level: number, row: number, column: number, options: any = {}): any {
     if (!(level >= 0)) {
@@ -899,6 +903,8 @@ class Camera extends Object3D {
     if (!(column >= 0)) {
       throw "invalid column";
     }
+
+    //options中可以缓存计算过的点的信息
 
     var threshold = typeof options.threshold == "number" ? Math.abs(options.threshold) : 1;
     var result: any = {

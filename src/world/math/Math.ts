@@ -1,4 +1,5 @@
-///<amd-module name="world/math/Math"/>
+///<amd-module name="world/math/Math" />
+
 import Kernel = require('../Kernel');
 import Utils = require('../Utils');
 import Vertice = require('./Vertice');
@@ -56,22 +57,6 @@ const MathUtils = {
             value = -1;
         }
         return Math.acos(value);
-    },
-
-    /**
-     * 将其他进制的数字转换为10进制
-     * @param numSys 要准换的进制
-     * @param strNum 字符串形式的要转换的数据
-     * @returns {number} 整数的十进制数据
-     */
-    numerationSystemTo10(numSys: number, strNum: string) : number{
-        var sum = 0;
-        for(var i=0;i<strNum.length;i++){
-            var level = strNum.length-1-i;
-            var key = parseInt(strNum[i]);
-            sum += key * Math.pow(numSys,level);
-        }
-        return sum;
     },
 
     /**

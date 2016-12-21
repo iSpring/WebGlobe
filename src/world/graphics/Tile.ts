@@ -10,7 +10,7 @@ import TileGeometry = require('../geometries/TileGeometry');
 import Vertice = require('../geometries/MeshVertice');
 import Triangle = require('../geometries/Triangle');
 import SubTiledLayer = require('../layers/SubTiledLayer');
-import TileGrid = require('../TileGrid');
+import TileGrid from '../TileGrid';
 
 class TileInfo {
   //type如果是GLOBE_TILE，表示其buffer已经设置为一般形式

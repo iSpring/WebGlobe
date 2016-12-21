@@ -6,7 +6,7 @@ import GraphicGroup = require('../GraphicGroup');
 import SubTiledLayer = require('./SubTiledLayer');
 import Camera from '../Camera';
 import Tile = require("../graphics/Tile");
-import TileGrid = require('../TileGrid');
+import TileGrid from '../TileGrid';
 import Utils = require('../Utils');
 
 abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {

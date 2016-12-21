@@ -1,18 +1,21 @@
-///<amd-module name="world/TileGrid"/>
+///<amd-module name="world/TileGrid" />
 
 import Kernel = require('./Kernel');
 import Utils = require('./Utils');
 import MathUtils = require('./math/Math');
 
+export enum TileGridPosition{
+    LEFT_TOP,
+    RIGHT_TOP,
+    LEFT_BOTTOM,
+    RIGHT_BOTTOM,
+    LEFT,
+    RIGHT,
+    TOP,
+    BOTTOM
+}
+
 class TileGrid {
-    static LEFT_TOP = "LEFT_TOP";
-    static RIGHT_TOP = "RIGHT_TOP";
-    static LEFT_BOTTOM = "LEFT_BOTTOM";
-    static RIGHT_BOTTOM = "RIGHT_BOTTOM";
-    static LEFT = "LEFT";
-    static RIGHT = "RIGHT";
-    static TOP = "TOP";
-    static BOTTOM = "BOTTOM";
 
     constructor(public level: number, public row: number, public column: number) { }
 
@@ -21,19 +24,19 @@ class TileGrid {
     }
 
     getLeft(): TileGrid {
-        return TileGrid.getTileGridByBrother(this.level, this.row, this.column, MathUtils.LEFT);
+        return TileGrid.getTileGridByBrother(this.level, this.row, this.column, TileGridPosition.LEFT);
     }
 
     getRight(): TileGrid {
-        return TileGrid.getTileGridByBrother(this.level, this.row, this.column, MathUtils.RIGHT);
+        return TileGrid.getTileGridByBrother(this.level, this.row, this.column, TileGridPosition.RIGHT);
     }
 
     getTop(): TileGrid {
-        return TileGrid.getTileGridByBrother(this.level, this.row, this.column, MathUtils.TOP);
+        return TileGrid.getTileGridByBrother(this.level, this.row, this.column, TileGridPosition.TOP);
     }
 
     getBottom(): TileGrid {
-        return TileGrid.getTileGridByBrother(this.level, this.row, this.column, MathUtils.BOTTOM);
+        return TileGrid.getTileGridByBrother(this.level, this.row, this.column, TileGridPosition.BOTTOM);
     }
 
     getParent(): TileGrid {
@@ -52,23 +55,23 @@ class TileGrid {
      * @param position tile在父tile中的位置
      * @return {Object}
      */
-    static getTileGridByParent(parentLevel: number, parentRow: number, parentColumn: number, position: string): TileGrid {
+    static getTileGridByParent(parentLevel: number, parentRow: number, parentColumn: number, position: TileGridPosition): TileGrid {
         var level = parentLevel + 1;
         var row = -1;
         var column = -1;
-        if (position == TileGrid.LEFT_TOP) {
+        if (position === TileGridPosition.LEFT_TOP) {
             row = 2 * parentRow;
             column = 2 * parentColumn;
         }
-        else if (position == TileGrid.RIGHT_TOP) {
+        else if (position === TileGridPosition.RIGHT_TOP) {
             row = 2 * parentRow;
             column = 2 * parentColumn + 1;
         }
-        else if (position == TileGrid.LEFT_BOTTOM) {
+        else if (position === TileGridPosition.LEFT_BOTTOM) {
             row = 2 * parentRow + 1;
             column = 2 * parentColumn;
         }
-        else if (position == TileGrid.RIGHT_BOTTOM) {
+        else if (position === TileGridPosition.RIGHT_BOTTOM) {
             row = 2 * parentRow + 1;
             column = 2 * parentColumn + 1;
         }
@@ -80,42 +83,42 @@ class TileGrid {
 
     //返回切片在直接付切片中的位置
     static getTilePositionOfParent(level: number, row: number, column: number, parent?: TileGrid): any {
-        var position = "UNKNOWN";
+        var position:TileGridPosition = null;
         parent = parent || this.getTileGridAncestor(level - 1, level, row, column);
-        var ltTileGrid = this.getTileGridByParent(parent.level, parent.row, parent.column, this.LEFT_TOP);
-        if (ltTileGrid.row == row) {
+        var ltTileGrid = this.getTileGridByParent(parent.level, parent.row, parent.column, TileGridPosition.LEFT_TOP);
+        if (ltTileGrid.row === row) {
             //上面那一行
-            if (ltTileGrid.column == column) {
+            if (ltTileGrid.column === column) {
                 //处于左上角
-                position = this.LEFT_TOP;
+                position = TileGridPosition.LEFT_TOP;
             }
-            else if (ltTileGrid.column + 1 == column) {
+            else if (ltTileGrid.column + 1 === column) {
                 //处于右上角
-                position = this.RIGHT_TOP;
+                position = TileGridPosition.RIGHT_TOP;
             }
         }
-        else if (ltTileGrid.row + 1 == row) {
+        else if (ltTileGrid.row + 1 === row) {
             //下面那一行
-            if (ltTileGrid.column == column) {
+            if (ltTileGrid.column === column) {
                 //处于左下角
-                position = this.LEFT_BOTTOM;
+                position = TileGridPosition.LEFT_BOTTOM;
             }
-            else if (ltTileGrid.column + 1 == column) {
+            else if (ltTileGrid.column + 1 === column) {
                 //处于右下角
-                position = this.RIGHT_BOTTOM;
+                position = TileGridPosition.RIGHT_BOTTOM;
             }
         }
         return position;
     }
 
     //获取在某一level周边position的切片
-    static getTileGridByBrother(brotherLevel: number, brotherRow: number, brotherColumn: number, position: string, options?: any): TileGrid {
+    static getTileGridByBrother(brotherLevel: number, brotherRow: number, brotherColumn: number, position: TileGridPosition, options?: any): TileGrid {
         options = options || {};
         var result = new TileGrid(brotherLevel, brotherRow, brotherColumn);
 
         //TODO maxSize可优化 该level下row/column的最大数量
-        if (position === TileGrid.LEFT) {
-            if (brotherColumn == 0) {
+        if (position === TileGridPosition.LEFT) {
+            if (brotherColumn === 0) {
                 var maxSize = options.maxSize || Math.pow(2, brotherLevel);
                 result.column = maxSize - 1;
             }
@@ -123,17 +126,17 @@ class TileGrid {
                 result.column = brotherColumn - 1;
             }
         }
-        else if (position == TileGrid.RIGHT) {
+        else if (position === TileGridPosition.RIGHT) {
             var maxSize = options.maxSize || Math.pow(2, brotherLevel);
-            if (brotherColumn == maxSize - 1) {
+            if (brotherColumn === maxSize - 1) {
                 result.column = 0;
             }
             else {
                 result.column = brotherColumn + 1;
             }
         }
-        else if (position == TileGrid.TOP) {
-            if (brotherRow == 0) {
+        else if (position === TileGridPosition.TOP) {
+            if (brotherRow === 0) {
                 var maxSize = options.maxSize || Math.pow(2, brotherLevel);
                 result.row = maxSize - 1;
             }
@@ -141,9 +144,9 @@ class TileGrid {
                 result.row = brotherRow - 1;
             }
         }
-        else if (position == TileGrid.BOTTOM) {
+        else if (position === TileGridPosition.BOTTOM) {
             var maxSize = options.maxSize || Math.pow(2, brotherLevel);
-            if (brotherRow == maxSize - 1) {
+            if (brotherRow === maxSize - 1) {
                 result.row = 0;
             }
             else {
@@ -174,7 +177,7 @@ class TileGrid {
             var ancestorColumn = Math.floor(column / a);
             result = new TileGrid(ancestorLevel, ancestorRow, ancestorColumn);
         }
-        else if (ancestorLevel == level) {
+        else if (ancestorLevel === level) {
             result = new TileGrid(level, row, column);
         }
         return result;
@@ -199,4 +202,4 @@ class TileGrid {
     }
 }
 
-export = TileGrid;
+export default TileGrid;
