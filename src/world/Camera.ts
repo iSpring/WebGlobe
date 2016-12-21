@@ -98,6 +98,64 @@ class Camera extends Object3D {
     this._initCameraPosition();
   }
 
+  toJson():any{
+    function matrixToJson(mat: Matrix){
+      return mat ? mat.toJson() : null;
+    }
+    var json = {
+      matrix: matrixToJson(this.matrix),
+      isZeroPitch: this.isZeroPitch,
+      level: this.level,
+      realLevel: this.realLevel,
+      lastRealLevel: this.lastRealLevel,
+      lastMatrix: matrixToJson(this.lastMatrix),
+      lastFov: this.lastFov,
+      lastAspect: this.lastAspect,
+      lastNear: this.lastNear,
+      lastFar: this.lastFar,
+      viewMatrix: matrixToJson(this.viewMatrix),
+      projMatrix: matrixToJson(this.projMatrix),
+      projViewMatrix: matrixToJson(this.projViewMatrix),
+      matrixForDraw: matrixToJson(this.matrixForDraw),
+      viewMatrixForDraw: matrixToJson(this.viewMatrixForDraw),
+      projMatrixForDraw: matrixToJson(this.projMatrixForDraw),
+      projViewMatrixForDraw: matrixToJson(this.projViewMatrixForDraw),
+      animating: this.animating
+    };
+    return json;
+  }
+
+  toJsonString(){
+    return JSON.stringify(this.toJson());
+  }
+
+  fromJson(json: any){
+    this.matrix = Matrix.fromJson(json.matrix);
+    this.isZeroPitch = json.isZeroPitch;
+    this.level = json.level;
+    this.realLevel = json.realLevel;
+    this.lastRealLevel = json.lastRealLevel;
+    this.lastMatrix = Matrix.fromJson(json.lastMatrix);
+    this.lastFov = json.lastFov;
+    this.lastAspect = json.lastAspect;
+    this.lastNear = json.lastNear;
+    this.lastFar = json.lastFar;
+    this.viewMatrix = Matrix.fromJson(json.viewMatrix);
+    this.projMatrix = Matrix.fromJson(json.projMatrix);
+    this.projViewMatrix = Matrix.fromJson(json.projViewMatrix);
+    this.matrixForDraw = Matrix.fromJson(json.matrixForDraw);
+    this.viewMatrixForDraw = Matrix.fromJson(json.viewMatrixForDraw);
+    this.projMatrixForDraw = Matrix.fromJson(json.projMatrixForDraw);
+    this.projViewMatrixForDraw = Matrix.fromJson(json.projViewMatrixForDraw);
+    this.animating = json.animating;
+    this.update(true);
+    Kernel.globe.refresh(true);
+  }
+
+  fromJsonString(jsonStr: string){
+    this.fromJson(JSON.parse(jsonStr));
+  }
+
   private _setPerspectiveMatrix(fov: number = 45, aspect: number = 1, near: number = 1, far: number = 100): void {
     this._rawSetPerspectiveMatrix(fov, aspect, near, far);
     this._updateFar();
@@ -714,7 +772,7 @@ class Camera extends Object3D {
    * 3.形成的NDC四边形是顺时针方向
    */
   //获取level层级下的可见切片
-  //options:
+  //options: threshold
   getVisibleTilesByLevel(level: number, options: any = {}): TileGrid[] {
     if (!(level >= 0)) {
       throw "invalid level";

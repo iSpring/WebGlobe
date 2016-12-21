@@ -35,7 +35,7 @@ class Globe {
     this.scene.add(this.poiLayer);
     this.renderer.setIfAutoRefresh(true);
     EventUtils.initLayout();
-    this._tick();
+    // this._tick();
   }
 
   setTiledLayer(tiledLayer: TiledLayer) {
@@ -83,7 +83,7 @@ class Globe {
   }
 
   private _onBeforeRender(renderer: Renderer){
-    //this.refresh();
+    this.refresh();
   }
 
   private _tick() {

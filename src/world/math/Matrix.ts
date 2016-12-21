@@ -29,6 +29,32 @@ class Matrix{
       });
     }
 
+    toJson(){
+      //TypedArray不会被序列化成数组，而是序列化成对象，不要用map，可能会返回TypedArray
+      var elements:number[] = [];
+      Utils.forEach(this.elements, function(ele:number, i:number){
+        elements.push(ele);
+      });
+      return {
+        elements: elements
+      };
+    }
+
+    fromJson(json: any){
+      json.elements.forEach((ele: number, i: number) => {
+        this.elements[i] = ele;
+      });
+    }
+
+    static fromJson(json: any){
+      if(!json){
+        return null;
+      }
+      var mat = new Matrix();
+      mat.fromJson(json);
+      return mat;
+    }
+
     setElements(m11: number, m12: number, m13: number, m14: number,
                 m21: number, m22: number, m23: number, m24: number,
                 m31: number, m32: number, m33: number, m34: number,

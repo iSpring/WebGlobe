@@ -87,7 +87,7 @@ class SubTiledLayer extends GraphicGroup<Tile> {
 
     if (bAddNew) {
       //添加新增的切片
-      console.log(`level: ${this.level}, new added count: ${visibleTileGrids.length}`);
+      //console.log(`level: ${this.level}, new added count: ${visibleTileGrids.length}`);
       for (i = 0; i < visibleTileGrids.length; i++) {
         var tileGridInfo = visibleTileGrids[i];
         var args = {

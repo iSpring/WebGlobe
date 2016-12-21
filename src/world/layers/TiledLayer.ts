@@ -60,7 +60,7 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
       this.children[subLevel].updateTiles(levelsTileGrids[subLevel], addNew);
     }
 
-    //this._updateTileVisibility(currentLevel, lastLevel);
+    this._updateTileVisibility(currentLevel, lastLevel);
   }
 
   //根据传入的level更新SubTiledLayer的数量
