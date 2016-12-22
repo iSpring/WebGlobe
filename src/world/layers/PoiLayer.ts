@@ -84,7 +84,6 @@ class PoiLayer extends Graphic {
 
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-    // gl.depthFunc(gl.ALWAYS);
 
     //aPosition
     var locPosition = this.program.getAttribLocation('aPosition');
@@ -117,10 +116,9 @@ class PoiLayer extends Graphic {
 
     //释放当前绑定对象
     gl.disable(gl.BLEND);
-    gl.bindBuffer(gl.ARRAY_BUFFER, null);
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
-    gl.bindTexture(gl.TEXTURE_2D, null);
-    // gl.depthFunc(gl.LEQUAL);
+    // gl.bindBuffer(gl.ARRAY_BUFFER, null);
+    // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+    // gl.bindTexture(gl.TEXTURE_2D, null);
   }
 
   clear() {
