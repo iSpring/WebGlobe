@@ -149,7 +149,7 @@ class Camera extends Object3D {
     this.projViewMatrixForDraw = Matrix.fromJson(json.projViewMatrixForDraw);
     this.animating = json.animating;
     this.update(true);
-    Kernel.globe.refresh(true);
+    // Kernel.globe.refresh(true);
   }
 
   fromJsonString(jsonStr: string){
@@ -388,7 +388,7 @@ class Camera extends Object3D {
     //不要在this._updatePositionByLevel()方法中更新this.level，因为这会影响animateToLevel()方法
     this.level = level;
     this.realLevel = level;
-    Kernel.globe.refresh();
+    // Kernel.globe.refresh();
   }
 
   private _initCameraPosition() {
@@ -451,7 +451,7 @@ class Camera extends Object3D {
     //刷新
     this.isZeroPitch = newPitch === 0;
     this.matrix = matrix;
-    Kernel.globe.refresh();
+    // Kernel.globe.refresh();
   }
 
   //pitch表示Camera视线的倾斜角度，初始值为0，表示视线经过球心，单位为角度，范围是[0, this.maxPitch]

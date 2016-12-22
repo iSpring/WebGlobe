@@ -33,7 +33,7 @@ const EventModule = {
       this.canvas.height = document.body.clientHeight;
       if (Kernel.globe) {
         Kernel.globe.camera.setAspect(this.canvas.width / this.canvas.height);
-        Kernel.globe.refresh();
+        // Kernel.globe.refresh();
       }
     }
   },
