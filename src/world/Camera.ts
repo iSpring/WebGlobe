@@ -888,22 +888,6 @@ class Camera extends Object3D {
     return result;
   }
 
-  private _getTileVerticeInfo(tag: string, lon: number, lat: number, options: any): any{
-    if(options.hasOwnProperty(tag)){
-      return options[tag];
-    }
-    var verticeInWorld = MathUtils.geographicToCartesianCoord(lon, lat);
-    var verticeInNDC = this._convertVerticeFromWorldToNDC(verticeInWorld);
-    var visible = this._isWorldVerticeVisibleInCanvas(verticeInWorld, {
-      verticeInNDC: verticeInNDC,
-      threshold: options.threshold
-    });
-    return {
-      verticeInNDC: verticeInNDC,
-      visible: visible
-    };
-  }
-
   //options: threshold
   private _getTileVisibleInfo(level: number, row: number, column: number, options: any): any {
     if (!(level >= 0)) {
@@ -1035,6 +1019,108 @@ class Camera extends Object3D {
 
     return result;
   }
+
+  // private _getTileVerticeInfo(tag: string, lon: number, lat: number, threshold: number, options: any): any{
+  //   if(options.hasOwnProperty(tag)){
+  //     //console.info("use cache");
+  //     return options[tag];
+  //   }
+  //   var verticeInWorld = MathUtils.geographicToCartesianCoord(lon, lat);
+  //   var verticeInNDC = this._convertVerticeFromWorldToNDC(verticeInWorld);
+  //   var visible = this._isWorldVerticeVisibleInCanvas(verticeInWorld, {
+  //     verticeInNDC: verticeInNDC,
+  //     threshold: threshold
+  //   });
+  //   var result = {
+  //     lon: lon,
+  //     lat: lat,
+  //     verticeInWorld: verticeInWorld,
+  //     verticeInNDC: verticeInNDC,
+  //     visible: visible
+  //   };
+  //   options[tag] = result;
+  //   return result;
+  // }
+
+  // //options: threshold
+  // private _getTileVisibleInfo2(level: number, row: number, column: number, options: any): any {
+  //   if (!(level >= 0)) {
+  //     throw "invalid level";
+  //   }
+  //   if (!(row >= 0)) {
+  //     throw "invalid row";
+  //   }
+  //   if (!(column >= 0)) {
+  //     throw "invalid column";
+  //   }
+
+  //   //options中可以缓存计算过的点的信息
+
+  //   var threshold = typeof options.threshold === "number" ? Math.abs(options.threshold) : 1;
+  //   // options.threshold = threshold;
+
+  //   var result: any = {
+  //     lb: null,
+  //     lt: null,
+  //     rt: null,
+  //     rb: null,
+  //     Egeo: null,
+  //     visibleCount: 0,
+  //     clockwise: false,
+  //     width: null,
+  //     height: null,
+  //     area: null
+  //   };
+
+  //   result.Egeo = MathUtils.getTileGeographicEnvelopByGrid(level, row, column);
+  //   var tileMinLon = result.Egeo.minLon;
+  //   var tileMaxLon = result.Egeo.maxLon;
+  //   var tileMinLat = result.Egeo.minLat;
+  //   var tileMaxLat = result.Egeo.maxLat;
+
+  //   //左下角
+  //   result.lb = this._getTileVerticeInfo(`${level}_${row+1}_${column}`, tileMinLon, tileMinLat, threshold, options);
+  //   if (result.lb.visible) {
+  //     result.visibleCount++;
+  //   }
+
+  //   //左上角
+  //   result.lt = this._getTileVerticeInfo(`${level}_${row}_${column}`, tileMinLon, tileMaxLat, threshold, options);
+  //   if (result.lt.visible) {
+  //     result.visibleCount++;
+  //   }
+
+  //   //右上角
+  //   result.rt = this._getTileVerticeInfo(`${level}_${row}_${column+1}`, tileMaxLon, tileMaxLat, threshold, options);
+  //   if (result.rt.visible) {
+  //     result.visibleCount++;
+  //   }
+
+  //   //右下角
+  //   result.rb = this._getTileVerticeInfo(`${level}_${row+1}_${column+1}`, tileMaxLon, tileMinLat, threshold, options);
+  //   if (result.rb.visible) {
+  //     result.visibleCount++;
+  //   }
+
+  //   var ndcs: Vertice[] = [result.lb.verticeInNDC, result.lt.verticeInNDC, result.rt.verticeInNDC, result.rb.verticeInNDC];
+  //   //计算方向
+  //   var vector03 = Vector.verticeMinusVertice(ndcs[3], ndcs[0]);
+  //   vector03.z = 0;
+  //   var vector01 = Vector.verticeMinusVertice(ndcs[1], ndcs[0]);
+  //   vector01.z = 0;
+  //   var cross = vector03.cross(vector01);
+  //   result.clockwise = cross.z > 0;
+  //   //计算面积
+  //   var topWidth = Math.sqrt(Math.pow(ndcs[1].x - ndcs[2].x, 2) + Math.pow(ndcs[1].y - ndcs[2].y, 2)) * Kernel.canvas.width / 2;
+  //   var bottomWidth = Math.sqrt(Math.pow(ndcs[0].x - ndcs[3].x, 2) + Math.pow(ndcs[0].y - ndcs[3].y, 2)) * Kernel.canvas.width / 2;
+  //   result.width = Math.floor((topWidth + bottomWidth) / 2);
+  //   var leftHeight = Math.sqrt(Math.pow(ndcs[0].x - ndcs[1].x, 2) + Math.pow(ndcs[0].y - ndcs[1].y, 2)) * Kernel.canvas.height / 2;
+  //   var rightHeight = Math.sqrt(Math.pow(ndcs[2].x - ndcs[3].x, 2) + Math.pow(ndcs[2].y - ndcs[3].y, 2)) * Kernel.canvas.height / 2;
+  //   result.height = Math.floor((leftHeight + rightHeight) / 2);
+  //   result.area = result.width * result.height;
+
+  //   return result;
+  // }
 
   //地球一直是关于纵轴中心对称的，获取垂直方向上中心点信息
   private _getVerticalVisibleCenterInfo(): any {
