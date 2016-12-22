@@ -17,6 +17,8 @@ export enum TileGridPosition{
 
 class TileGrid {
 
+    private Egeo:any = null;//{minLon,minLat,maxLon,maxLat}
+
     private maxSize: number = 0;
 
     constructor(public level: number, public row: number, public column: number) {
@@ -25,6 +27,29 @@ class TileGrid {
 
     equals(other: TileGrid): boolean {
         return other && this.level === other.level && this.row === other.row && this.column === other.column;
+    }
+
+    getEgeo(){
+        if(!this.Egeo){
+            this.Egeo = MathUtils.getTileGeographicEnvelopByGrid(this.level, this.row, this.column);
+        }
+        return this.Egeo;
+    }
+
+    getLeftTopTag(){
+        return `${this.level}_${this.row}_${this.column}`;
+    }
+
+    getRightTopTag(){
+        return `${this.level}_${this.row}_${this.column+1}`;
+    }
+
+    getLeftBottomTag(){
+        return `${this.level}_${this.row+1}_${this.column}`;
+    }
+
+    getRightBottomTag(){
+        return `${this.level}_${this.row+1}_${this.column+1}`;
     }
 
     getLeft(): TileGrid {

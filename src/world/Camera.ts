@@ -888,12 +888,24 @@ class Camera extends Object3D {
     return result;
   }
 
-  private _getTileVerticeInfo(level: number, row: number, column: number){
-    ;
+  private _getTileVerticeInfo(tag: string, lon: number, lat: number, options: any): any{
+    if(options.hasOwnProperty(tag)){
+      return options[tag];
+    }
+    var verticeInWorld = MathUtils.geographicToCartesianCoord(lon, lat);
+    var verticeInNDC = this._convertVerticeFromWorldToNDC(verticeInWorld);
+    var visible = this._isWorldVerticeVisibleInCanvas(verticeInWorld, {
+      verticeInNDC: verticeInNDC,
+      threshold: options.threshold
+    });
+    return {
+      verticeInNDC: verticeInNDC,
+      visible: visible
+    };
   }
 
   //options: threshold
-  private _getTileVisibleInfo(level: number, row: number, column: number, options: any = {}): any {
+  private _getTileVisibleInfo(level: number, row: number, column: number, options: any): any {
     if (!(level >= 0)) {
       throw "invalid level";
     }
@@ -907,6 +919,8 @@ class Camera extends Object3D {
     //options中可以缓存计算过的点的信息
 
     var threshold = typeof options.threshold == "number" ? Math.abs(options.threshold) : 1;
+    options.threshold = threshold;
+
     var result: any = {
       lb: {
         lon: null,
