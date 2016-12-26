@@ -1,6 +1,7 @@
 ///<amd-module name="world/Event" />
 
 import Kernel = require("./Kernel");
+import Utils = require("./Utils");
 import MathUtils = require("./math/Math");
 import Vector = require("./math/Vector");
 import Camera from  "./Camera";
@@ -19,12 +20,16 @@ const EventModule = {
     this.canvas = canvas;
     this.onMouseMoveListener = this.onMouseMove.bind(this);
     window.addEventListener("resize", this.initLayout.bind(this));
-    this.canvas.addEventListener("mousedown", this.onMouseDown.bind(this));
-    this.canvas.addEventListener("mouseup", this.onMouseUp.bind(this));
-    this.canvas.addEventListener("dblclick", this.onDbClick.bind(this));
-    this.canvas.addEventListener("mousewheel", this.onMouseWheel.bind(this));
-    this.canvas.addEventListener("DOMMouseScroll", this.onMouseWheel.bind(this));
-    document.body.addEventListener("keydown", this.onKeyDown.bind(this));
+    if(Utils.isMobile()){
+
+    }else{
+      this.canvas.addEventListener("mousedown", this.onMouseDown.bind(this));
+      this.canvas.addEventListener("mouseup", this.onMouseUp.bind(this));
+      this.canvas.addEventListener("dblclick", this.onDbClick.bind(this));
+      this.canvas.addEventListener("mousewheel", this.onMouseWheel.bind(this));
+      this.canvas.addEventListener("DOMMouseScroll", this.onMouseWheel.bind(this));
+      document.body.addEventListener("keydown", this.onKeyDown.bind(this));
+    }
   },
 
   initLayout: function () {
