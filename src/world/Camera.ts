@@ -897,7 +897,7 @@ class Camera extends Object3D {
     return result;
   }
 
-  getTileGridsOfBoundPoints(level: number){
+  getTileGridsOfBoundPoints(level: number, filterRepeat: boolean){
     var tileGrids:TileGrid[] = [];
     var ndcs:number[][] = [[-1,-1],[1,-1],[-1,1],[1,1]];
     ndcs.forEach((ndcXY:number[]) => {
@@ -907,7 +907,7 @@ class Camera extends Object3D {
         tileGrids.push(tileGrid);
       }
     });
-    return tileGrids;
+    return filterRepeat ? Utils.filterRepeatArray(tileGrids) : tileGrids;
   }
 
   //options: threshold

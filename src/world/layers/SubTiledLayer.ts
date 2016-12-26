@@ -16,6 +16,20 @@ class SubTiledLayer extends GraphicGroup<Tile> {
     super();
   }
 
+  showAllTiles(){
+    this.visible = true;
+    this.children.forEach(function(tile){
+      tile.setVisible(true);
+    });
+  }
+
+  hideAllTiles(){
+    this.visible = false;
+    this.children.forEach(function(tile){
+      tile.setVisible(false);
+    });
+  }
+
   //重写GraphicGroup的add方法
   add(tile: Tile) {
     if (tile.tileInfo.level === this.level) {

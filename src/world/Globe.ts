@@ -107,10 +107,10 @@ class Globe {
     var newCameraCore = this.camera.getCameraCore();
     var isNeedRefresh = force || !newCameraCore.equals(this.cameraCore);
     this.cameraCore = newCameraCore;
-    if (!isNeedRefresh) {
-      return;
+    if (isNeedRefresh) {
+      this.tiledLayer.refresh();
     }
-    this.tiledLayer.refresh();
+    this.tiledLayer.updateTileVisibility();
   }
 
   getExtents(level?: number){

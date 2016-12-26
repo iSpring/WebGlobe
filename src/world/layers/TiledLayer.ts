@@ -51,7 +51,6 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
     //最大级别的level所对应的可见TileGrids
     var lastLevelTileGrids = camera.getVisibleTilesByLevel(lastLevel, options);
 
-
     this._updateSubLayerCount(lastLevel);
 
     var levelsTileGrids: TileGrid[][] = [];
@@ -73,7 +72,7 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
       this.children[subLevel].updateTiles(levelsTileGrids[subLevel], addNew);
     }
 
-    this._updateTileVisibility(currentLevel, lastLevel);
+    // this.updateTileVisibility(currentLevel, lastLevel);
   }
 
   //根据传入的level更新SubTiledLayer的数量
@@ -103,15 +102,36 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
     }
   }
 
-  private _updateTileVisibility(currentLevel: number, lastLevel: number) {
+  private _getReadyTile(tileGrid: TileGrid): Tile{
+    var level = tileGrid.level;
+    var row = tileGrid.row;
+    var column = tileGrid.column;
+    var tile = this.children[level].findTile(level, row, column);
+    if(level === 1){
+      return tile;
+    }else{
+      if(tile && tile.isReady()){
+        return tile;
+      }else{
+        return this._getReadyTile(tileGrid.getParent());
+      }
+    }
+  }
+
+  updateTileVisibility() {
+    var globe = Kernel.globe;
+    var currentLevel = globe.getLevel();
+    var lastLevel = globe.getLastLevel();
+
     this.children.forEach((subTiledLayer) => {
-      subTiledLayer.visible = true;
-      subTiledLayer.children.forEach(function (tile) {
-        tile.setVisible(true);
-      });
+      // subTiledLayer.visible = true;
+      // subTiledLayer.children.forEach(function (tile) {
+      //   tile.setVisible(true);
+      // });
+      subTiledLayer.showAllTiles();
     });
 
-    if (currentLevel < Kernel.EARTH_FULL_OVERLAP_SCREEN_LEVEL) {
+    /*if (currentLevel < Kernel.EARTH_FULL_OVERLAP_SCREEN_LEVEL) {
       return;
     }
 
@@ -135,7 +155,26 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
       });
     }
     var ancestorLevel = lastLevel - (this.imageRequestOptimizeDeltaLevel + 1);
-    this.children[ancestorLevel].visible = true;
+    this.children[ancestorLevel].visible = true;*/
+
+    var ancesorLevel = lastLevel - this.imageRequestOptimizeDeltaLevel - 1;
+    if(ancesorLevel >= 1){
+      var camera = Kernel.globe.camera;
+      var tileGrids = camera.getTileGridsOfBoundPoints(ancesorLevel, false);
+      if(tileGrids.length === 4){
+        tileGrids = Utils.filterRepeatArray(tileGrids);
+        for(var i: number = 0; i <= ancesorLevel; i++){
+          this.children[i].hideAllTiles();
+        }
+        tileGrids.forEach((tileGrid) => {
+          var tile = this._getReadyTile(tileGrid);
+          if(tile){
+            tile.setVisible(true);
+            tile.parent.visible = true;
+          }
+        });
+      }
+    }
   }
 
   onDraw(camera: Camera) {
