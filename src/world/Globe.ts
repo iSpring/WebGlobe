@@ -110,17 +110,7 @@ class Globe {
     if (!isNeedRefresh) {
       return;
     }
-    var currentLevel = this.getLevel();
-    var lastLevel = this.getLastLevel();
-    var options = {
-      threshold: 1
-    };
-    var pitch = this.camera.getPitch();
-    // options.threshold = Math.min(90 / (90 - pitch), 1.5);
-    options.threshold = 1;
-    //最大级别的level所对应的可见TileGrids
-    var lastLevelTileGrids = this.camera.getVisibleTilesByLevel(lastLevel, options);
-    this.tiledLayer.refresh(currentLevel, lastLevel, lastLevelTileGrids);
+    this.tiledLayer.refresh();
   }
 
   getExtents(level?: number){

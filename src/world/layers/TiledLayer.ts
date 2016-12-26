@@ -38,7 +38,20 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
     }
   }
 
-  refresh(currentLevel: number, lastLevel: number, lastLevelTileGrids: TileGrid[]) {
+  refresh() {
+    var globe = Kernel.globe;
+    var camera = globe.camera;
+    var currentLevel = globe.getLevel();
+    var lastLevel = globe.getLastLevel();
+    var options = {
+      threshold: 1
+    };
+    var pitch = camera.getPitch();
+    options.threshold = 1;// options.threshold = Math.min(90 / (90 - pitch), 1.5);
+    //最大级别的level所对应的可见TileGrids
+    var lastLevelTileGrids = camera.getVisibleTilesByLevel(lastLevel, options);
+
+
     this._updateSubLayerCount(lastLevel);
 
     var levelsTileGrids: TileGrid[][] = [];

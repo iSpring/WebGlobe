@@ -669,6 +669,15 @@ class Camera extends Object3D {
     return result;
   }
 
+  private _getPickLonLatByNDC(ndcX: number, ndcY: number): number[]{
+    var result:number[] = null;
+    var vertices = this._getPickCartesianCoordInEarthByNDC(ndcX, ndcY);
+    if(vertices.length > 0){
+      result = MathUtils.cartesianCoordToGeographic(vertices[0]);
+    }
+    return result;
+  }
+
   private _getPickCartesianCoordInEarthByNDC(ndcX: number, ndcY: number): Vertice[] {
     var pickDirection = this._getPickDirectionByNDC(ndcX, ndcY);
     var p = this.getPosition();
@@ -886,6 +895,19 @@ class Camera extends Object3D {
     console.timeEnd("getVisibleTilesByLevel");
 
     return result;
+  }
+
+  getTileGridsOfBoundPoints(level: number){
+    var tileGrids:TileGrid[] = [];
+    var ndcs:number[][] = [[-1,-1],[1,-1],[-1,1],[1,1]];
+    ndcs.forEach((ndcXY:number[]) => {
+      var lonlat = this._getPickLonLatByNDC(ndcXY[0], ndcXY[1]);
+      if(lonlat && lonlat.length > 0){
+        var tileGrid = TileGrid.getTileGridByGeo(lonlat[0], lonlat[1], level);
+        tileGrids.push(tileGrid);
+      }
+    });
+    return tileGrids;
   }
 
   //options: threshold
