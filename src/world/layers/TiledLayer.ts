@@ -160,7 +160,7 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
     var ancesorLevel = lastLevel - this.imageRequestOptimizeDeltaLevel - 1;
     if(ancesorLevel >= 1){
       var camera = Kernel.globe.camera;
-      var tileGrids = camera.getTileGridsOfBoundPoints(ancesorLevel, false);
+      var tileGrids = camera.getTileGridsOfBoundary(ancesorLevel, false);
       if(tileGrids.length === 4){
         tileGrids = Utils.filterRepeatArray(tileGrids);
         for(var i: number = 0; i <= ancesorLevel; i++){

@@ -21,7 +21,8 @@ const EventModule = {
     this.onMouseMoveListener = this.onMouseMove.bind(this);
     window.addEventListener("resize", this.initLayout.bind(this));
     if(Utils.isMobile()){
-
+      this.canvas.addEventListener("touchstart", this.onTouchStart.bind(this), false);
+      this.canvas.addEventListener("touchend", this.onTouchEnd.bind(this), false);
     }else{
       this.canvas.addEventListener("mousedown", this.onMouseDown.bind(this));
       this.canvas.addEventListener("mouseup", this.onMouseUp.bind(this));
@@ -33,7 +34,7 @@ const EventModule = {
   },
 
   initLayout: function () {
-    if (this.canvas instanceof HTMLCanvasElement) {
+    if (this.canvas) {
       this.canvas.width = document.body.clientWidth;
       this.canvas.height = document.body.clientHeight;
       if (Kernel.globe) {
@@ -54,29 +55,34 @@ const EventModule = {
     }
   },
 
-  onMouseDown(event: MouseEvent) {
-    var globe = Kernel.globe;
-    if (!globe || globe.isAnimating()) {
+  moveGeo(oldLon: number, oldLat: number, newLon: number, newLat: number) {
+    if (oldLon === newLon && oldLat === newLat) {
       return;
     }
+    var p1 = MathUtils.geographicToCartesianCoord(oldLon, oldLat);
+    var v1 = Vector.fromVertice(p1);
+    var p2 = MathUtils.geographicToCartesianCoord(newLon, newLat);
+    var v2 = Vector.fromVertice(p2);
+    var rotateVector = v1.cross(v2);
+    var rotateRadian = -Vector.getRadianOfTwoVectors(v1, v2);
+    Kernel.globe.camera.worldRotateByVector(rotateRadian, rotateVector);
+  },
+
+  _handleMouseDownOrTouchStart(offsetX: number, offsetY: number){
     this.bMouseDown = true;
-    this.previousX = event.layerX || event.offsetX;
-    this.previousY = event.layerY || event.offsetY;
+    this.previousX = offsetX;
+    this.previousY = offsetY;
     var pickResult = Kernel.globe.camera.getPickCartesianCoordInEarthByCanvas(this.previousX, this.previousY);
     if (pickResult.length > 0) {
       this.dragGeo = MathUtils.cartesianCoordToGeographic(pickResult[0]);
-      //console.log("单击点三维坐标:(" + pickResult[0].x + "," + pickResult[0].y + "," + pickResult[0].z + ");经纬度坐标:[" + this.dragGeo[0] + "," + this.dragGeo[1] + "]");
     }
-    this.canvas.addEventListener("mousemove", this.onMouseMoveListener, false);
   },
 
-  onMouseMove(event: MouseEvent) {
+  _handleMouseMoveOrTouchMove(currentX: number, currentY: number){
     var globe = Kernel.globe;
     if (!globe || globe.isAnimating() || !this.bMouseDown) {
       return;
     }
-    var currentX = event.layerX || event.offsetX;
-    var currentY = event.layerY || event.offsetY;
     var pickResult = globe.camera.getPickCartesianCoordInEarthByCanvas(currentX, currentY);
     if (pickResult.length > 0) {
       //鼠标在地球范围内
@@ -101,28 +107,65 @@ const EventModule = {
     }
   },
 
-  moveGeo(oldLon: number, oldLat: number, newLon: number, newLat: number) {
-    if (oldLon === newLon && oldLat === newLat) {
-      return;
-    }
-    var p1 = MathUtils.geographicToCartesianCoord(oldLon, oldLat);
-    var v1 = Vector.fromVertice(p1);
-    var p2 = MathUtils.geographicToCartesianCoord(newLon, newLat);
-    var v2 = Vector.fromVertice(p2);
-    var rotateVector = v1.cross(v2);
-    var rotateRadian = -Vector.getRadianOfTwoVectors(v1, v2);
-    var camera: Camera = Kernel.globe.camera;
-    camera.worldRotateByVector(rotateRadian, rotateVector);
-  },
-
-  onMouseUp() {
+  _handleMouseUpOrTouchEnd(){
     this.bMouseDown = false;
     this.previousX = -1;
     this.previousY = -1;
     this.dragGeo = null;
-    if (this.canvas instanceof HTMLCanvasElement) {
-      this.canvas.removeEventListener("mousemove", this.onMouseMoveListener, false);
+    if (this.canvas) {
       this.canvas.style.cursor = "default";
+    }
+  },
+
+  onMouseDown(event: MouseEvent) {
+    var globe = Kernel.globe;
+    if (!globe || globe.isAnimating()) {
+      return;
+    }
+    var previousX = event.layerX || event.offsetX;
+    var previousY = event.layerY || event.offsetY;
+    this._handleMouseDownOrTouchStart(previousX, previousY);
+    this.canvas.addEventListener("mousemove", this.onMouseMoveListener, false);
+  },
+
+  onMouseMove(event: MouseEvent) {
+    var currentX = event.layerX || event.offsetX;
+    var currentY = event.layerY || event.offsetY;
+    this._handleMouseMoveOrTouchMove(currentX, currentY);
+  },
+
+  onMouseUp() {
+    this._handleMouseUpOrTouchEnd();
+    if (this.canvas) {
+      this.canvas.removeEventListener("mousemove", this.onMouseMoveListener, false);
+    }
+  },
+
+  onTouchStart(event: TouchEvent){
+    var globe = Kernel.globe;
+    if (!globe || globe.isAnimating()) {
+      return;
+    }
+    if(event.targetTouches.length === 0){
+      return;
+    }
+    var touch = event.targetTouches[0];
+    var previousX = touch.pageX;
+    var previousY = touch.pageY;
+    this._handleMouseDownOrTouchStart(previousX, previousY);
+    this.canvas.addEventListener("touchmove", this.onTouchMove, false);
+  },
+
+  onTouchMove(event: MouseEvent){
+    var currentX = event.pageX;
+    var currentY = event.pageY;
+    this._handleMouseMoveOrTouchMove(currentX, currentY);
+  },
+
+  onTouchEnd(event: MouseEvent){
+    this._handleMouseUpOrTouchEnd();
+    if (this.canvas) {
+      this.canvas.removeEventListener("touchmove", this.onTouchMove, false);
     }
   },
 

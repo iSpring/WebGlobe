@@ -122,3 +122,5 @@
 0.3.8 在TiledLayer中为program中的uniform变量设置值，减少了WebGL命令的调用次数。
 
 0.3.9 用webpack代替gulp作为打包工具
+
+0.3.10 每次渲染之前都会检查Camera是否发生变化，如果变化则更新切片列表，并且保证Canvas八个角点都有保底的可见切片，不再从level1全部渲染切片，减少WebGL绘图命令

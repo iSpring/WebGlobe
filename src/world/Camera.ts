@@ -897,9 +897,18 @@ class Camera extends Object3D {
     return result;
   }
 
-  getTileGridsOfBoundPoints(level: number, filterRepeat: boolean){
+  getTileGridsOfBoundary(level: number, filterRepeat: boolean){
     var tileGrids:TileGrid[] = [];
-    var ndcs:number[][] = [[-1,-1],[1,-1],[-1,1],[1,1]];
+    var ndcs:number[][] = [
+      [-1, 1],//left top
+      [-1, 0],//left middle
+      [-1, -1],//left bottom
+      [1, 1],//right top
+      [1, 0],//right middle
+      [1, -1],//right bottom
+      [0, 1],//middle top
+      [0, -1]//middle bottom
+    ];
     ndcs.forEach((ndcXY:number[]) => {
       var lonlat = this._getPickLonLatByNDC(ndcXY[0], ndcXY[1]);
       if(lonlat && lonlat.length > 0){
