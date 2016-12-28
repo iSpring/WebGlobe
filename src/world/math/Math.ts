@@ -12,6 +12,15 @@ if(!(<any>Math).log2){
     (<any>Math).log2 = (value: number) => (Math.log(value) / Math.log(2));
 }
 
+const pow2Cache: any = {};
+(function (cache: any) {
+    cache[0] = 1;
+    for (var i: number = 1; i <= 20; i++) {
+        cache[i] = cache[i - 1] << 1;
+        cache[-i] = 1 / cache[i];
+    }
+})(pow2Cache);
+
 const MathUtils = {
     ONE_RADIAN_EQUAL_DEGREE:57.29577951308232,//180/Math.PI
     ONE_DEGREE_EQUAL_RADIAN:0.017453292519943295,//Math.PI/180
@@ -23,6 +32,15 @@ const MathUtils = {
     RIGHT:"RIGHT",
     TOP:"TOP",
     BOTTOM:"BOTTOM",
+
+    pow2(v: number) {
+        var s: string = v.toString();
+        if (pow2Cache.hasOwnProperty(s)) {
+            return pow2Cache[s];
+        } else {
+            return Math.pow(2, v);
+        }
+    },
 
     log2(value: number){
         return (<any>Math).log2(value);

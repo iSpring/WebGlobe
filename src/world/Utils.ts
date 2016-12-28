@@ -4,31 +4,11 @@ type ArrayVoidCallbackFunction = (value: any, index: number, arr: Array<any>) =>
 type ArrayBooleanCallbackFunction = (value: any, index: number, arr: any[]) => boolean;
 type ArrayAnyCallbackFunction = (value: any, index: number, arr: any[]) => any;
 
-const pow2Cache: any = {};
-(function (cache: any) {
-    cache[0] = 1;
-    for (var i: number = 1; i <= 20; i++) {
-        cache[i] = cache[i - 1] << 1;
-        cache[-i] = 1 / cache[i];
-    }
-
-    console.log(cache);
-})(pow2Cache);
-
 const Utils = {
     GREATER: "GREATER",
     GEQUAL: "GEQUAL",
     LESS: "LESS",
     LEQUAL: "LEQUAL",
-
-    pow2(v: number) {
-        var s: string = v.toString();
-        if (pow2Cache.hasOwnProperty(s)) {
-            return pow2Cache[s];
-        } else {
-            return Math.pow(2, v);
-        }
-    },
 
     isNumber(v: any): boolean {
         return typeof v == "number";
@@ -176,7 +156,5 @@ const Utils = {
         return !!window.navigator.userAgent.match(/Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone|IEMobile|Opera Mini/i);
     }
 };
-
-(<any>window).Utils = Utils;
 
 export = Utils;

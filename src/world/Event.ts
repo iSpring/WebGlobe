@@ -15,15 +15,24 @@ const EventModule = {
   previousX: -1,
   previousY: -1,
   onMouseMoveListener: <MouseMoveListener>null,
+  oldDate: <Date> null,
+  lastDate: <Date> null,
+  startDate: <Date> null,
+  endDate: <Date> null,
 
   bindEvents: function (canvas: HTMLCanvasElement) {
     this.canvas = canvas;
-    this.onMouseMoveListener = this.onMouseMove.bind(this);
+
     window.addEventListener("resize", this.initLayout.bind(this));
     if(Utils.isMobile()){
+      this.onMouseMoveListener = this.onTouchMove.bind(this);
       this.canvas.addEventListener("touchstart", this.onTouchStart.bind(this), false);
       this.canvas.addEventListener("touchend", this.onTouchEnd.bind(this), false);
+      this.canvas.addEventListener("dblclick", function(){
+        console.log("dblclick");
+      });
     }else{
+      this.onMouseMoveListener = this.onMouseMove.bind(this);
       this.canvas.addEventListener("mousedown", this.onMouseDown.bind(this));
       this.canvas.addEventListener("mouseup", this.onMouseUp.bind(this));
       this.canvas.addEventListener("dblclick", this.onDbClick.bind(this));
@@ -153,19 +162,23 @@ const EventModule = {
     var previousX = touch.pageX;
     var previousY = touch.pageY;
     this._handleMouseDownOrTouchStart(previousX, previousY);
-    this.canvas.addEventListener("touchmove", this.onTouchMove, false);
+    this.canvas.addEventListener("touchmove", this.onMouseMoveListener, false);
   },
 
-  onTouchMove(event: MouseEvent){
-    var currentX = event.pageX;
-    var currentY = event.pageY;
+  onTouchMove(event: TouchEvent){
+    if(event.targetTouches.length === 0){
+      return;
+    }
+    var touch = event.targetTouches[0];
+    var currentX = touch.pageX;
+    var currentY = touch.pageY;
     this._handleMouseMoveOrTouchMove(currentX, currentY);
   },
 
-  onTouchEnd(event: MouseEvent){
+  onTouchEnd(event: TouchEvent){
     this._handleMouseUpOrTouchEnd();
     if (this.canvas) {
-      this.canvas.removeEventListener("touchmove", this.onTouchMove, false);
+      this.canvas.removeEventListener("touchmove", this.onMouseMoveListener, false);
     }
   },
 
