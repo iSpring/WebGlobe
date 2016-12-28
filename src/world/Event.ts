@@ -4,7 +4,7 @@ import Kernel = require("./Kernel");
 import Utils = require("./Utils");
 import MathUtils = require("./math/Math");
 import Vector = require("./math/Vector");
-import Camera from  "./Camera";
+import Camera from "./Camera";
 
 type MouseMoveListener = (e: MouseEvent) => {};
 
@@ -15,23 +15,21 @@ const EventModule = {
   previousX: -1,
   previousY: -1,
   onMouseMoveListener: <MouseMoveListener>null,
-  oldDate: <Date> null,
-  lastDate: <Date> null,
-  startDate: <Date> null,
-  endDate: <Date> null,
+  oldDate: <number>-1,
+  lastDate: <number>-1,
+  startDate: <number>-1,
+  endDate: <number>-1,
 
   bindEvents: function (canvas: HTMLCanvasElement) {
     this.canvas = canvas;
+    this.endDate = this.startDate = this.lastDate = this.oldDate = Date.now();
 
     window.addEventListener("resize", this.initLayout.bind(this));
-    if(Utils.isMobile()){
+    if (Utils.isMobile()) {
       this.onMouseMoveListener = this.onTouchMove.bind(this);
       this.canvas.addEventListener("touchstart", this.onTouchStart.bind(this), false);
       this.canvas.addEventListener("touchend", this.onTouchEnd.bind(this), false);
-      this.canvas.addEventListener("dblclick", function(){
-        console.log("dblclick");
-      });
-    }else{
+    } else {
       this.onMouseMoveListener = this.onMouseMove.bind(this);
       this.canvas.addEventListener("mousedown", this.onMouseDown.bind(this));
       this.canvas.addEventListener("mouseup", this.onMouseUp.bind(this));
@@ -77,7 +75,7 @@ const EventModule = {
     Kernel.globe.camera.worldRotateByVector(rotateRadian, rotateVector);
   },
 
-  _handleMouseDownOrTouchStart(offsetX: number, offsetY: number){
+  _handleMouseDownOrTouchStart(offsetX: number, offsetY: number) {
     this.bMouseDown = true;
     this.previousX = offsetX;
     this.previousY = offsetY;
@@ -87,7 +85,7 @@ const EventModule = {
     }
   },
 
-  _handleMouseMoveOrTouchMove(currentX: number, currentY: number){
+  _handleMouseMoveOrTouchMove(currentX: number, currentY: number) {
     var globe = Kernel.globe;
     if (!globe || globe.isAnimating() || !this.bMouseDown) {
       return;
@@ -116,7 +114,7 @@ const EventModule = {
     }
   },
 
-  _handleMouseUpOrTouchEnd(){
+  _handleMouseUpOrTouchEnd() {
     this.bMouseDown = false;
     this.previousX = -1;
     this.previousY = -1;
@@ -150,12 +148,12 @@ const EventModule = {
     }
   },
 
-  onTouchStart(event: TouchEvent){
+  onTouchStart(event: TouchEvent) {
     var globe = Kernel.globe;
     if (!globe || globe.isAnimating()) {
       return;
     }
-    if(event.targetTouches.length === 0){
+    if (event.targetTouches.length === 0) {
       return;
     }
     var touch = event.targetTouches[0];
@@ -163,10 +161,11 @@ const EventModule = {
     var previousY = touch.pageY;
     this._handleMouseDownOrTouchStart(previousX, previousY);
     this.canvas.addEventListener("touchmove", this.onMouseMoveListener, false);
+    this.startDate = Date.now();
   },
 
-  onTouchMove(event: TouchEvent){
-    if(event.targetTouches.length === 0){
+  onTouchMove(event: TouchEvent) {
+    if (event.targetTouches.length === 0) {
       return;
     }
     var touch = event.targetTouches[0];
@@ -175,10 +174,25 @@ const EventModule = {
     this._handleMouseMoveOrTouchMove(currentX, currentY);
   },
 
-  onTouchEnd(event: TouchEvent){
+  onTouchEnd(event: TouchEvent) {
     this._handleMouseUpOrTouchEnd();
     if (this.canvas) {
       this.canvas.removeEventListener("touchmove", this.onMouseMoveListener, false);
+    }
+    this.endDate = Date.now();
+    var time = this.endDate - this.startDate;
+    //此处的200表示的是一次单击事件所需要的时间
+    if (time <= 200) {
+      var time2 = this.endDate - this.lastDate;
+      //此处的300表示的是一次双击事件中的两次单击事件相隔的时间
+      if (time2 < 300) {
+        //alert("双击,time:"+time+",time2:"+time2);
+        this.lastDate = this.oldDate;
+        Kernel.globe.zoomIn();
+      }
+      else {
+        this.lastDate = this.endDate;
+      }
     }
   },
 

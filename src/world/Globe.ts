@@ -63,6 +63,10 @@ class Globe {
     return currentLevel >= 0 ? (currentLevel + Kernel.DELTA_LEVEL_BETWEEN_LAST_LEVEL_AND_CURRENT_LEVEL) : -1;
   }
 
+  zoomIn(){
+    this.setLevel(this.getLevel() + 1);
+  }
+
   setLevel(level: number) {
     if (this.camera) {
       this.camera.setLevel(level);
@@ -80,6 +84,10 @@ class Globe {
         this.camera.animateToLevel(level);
       }
     }
+  }
+
+  animateIn(){
+    this.animateToLevel(this.getLevel() + 1);
   }
 
   private _onBeforeRender(renderer: Renderer){
