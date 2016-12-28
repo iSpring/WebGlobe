@@ -21,18 +21,10 @@ const pow2Cache: any = {};
     }
 })(pow2Cache);
 
-class MathUtils {
-    static ONE_RADIAN_EQUAL_DEGREE:number = 57.29577951308232;//180/Math.PI
-    static ONE_DEGREE_EQUAL_RADIAN:number = 0.017453292519943295;//Math.PI/180
-    static LEFT_TOP:string = "LEFT_TOP";
-    static RIGHT_TOP:string = "RIGHT_TOP";
-    static LEFT_BOTTOM:string = "LEFT_BOTTOM";
-    static RIGHT_BOTTOM:string = "RIGHT_BOTTOM";
-    static LEFT:string = "LEFT";
-    static RIGHT:string = "RIGHT";
-    static TOP:string = "TOP";
-    static BOTTOM:string = "BOTTOM";
+const ONE_RADIAN_EQUAL_DEGREE:number = 57.29577951308232;//=>180/Math.PI
+const ONE_DEGREE_EQUAL_RADIAN:number = 0.017453292519943295;//=>Math.PI/180
 
+class MathUtils {
     static pow2(v: number) {
         var s: string = v.toString();
         if (pow2Cache.hasOwnProperty(s)) {
@@ -456,7 +448,7 @@ class MathUtils {
      * @return {*}
      */
     static degreeToRadian(degree: number){
-        return degree * MathUtils.ONE_DEGREE_EQUAL_RADIAN;
+        return degree * ONE_DEGREE_EQUAL_RADIAN;
     }
 
     /**
@@ -465,7 +457,7 @@ class MathUtils {
      * @return {*}
      */
     static radianToDegree(radian: number){
-        return radian * MathUtils.ONE_RADIAN_EQUAL_DEGREE;
+        return radian * ONE_RADIAN_EQUAL_DEGREE;
     }
 
     /**
