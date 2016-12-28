@@ -2,7 +2,7 @@
 
 import Kernel = require('./Kernel');
 import Utils = require('./Utils');
-import MathUtils = require('./math/Math');
+import MathUtils = require('./math/Utils');
 
 export enum TileGridPosition{
     LEFT_TOP,

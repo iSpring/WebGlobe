@@ -1,7 +1,7 @@
 ///<amd-module name="world/Camera"/>
 import Kernel = require('./Kernel');
 import Utils = require('./Utils');
-import MathUtils = require('./math/Math');
+import MathUtils = require('./math/Utils');
 import Vertice = require('./math/Vertice');
 import Vector = require('./math/Vector');
 import Line = require('./math/Line');

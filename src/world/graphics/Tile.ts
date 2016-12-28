@@ -3,7 +3,7 @@ import Kernel = require('../Kernel');
 import Enum = require('../Enum');
 import Extent = require('../Extent');
 import Camera from '../Camera';
-import MathUtils = require('../math/Math');
+import MathUtils = require('../math/Utils');
 import MeshGraphic = require('../graphics/MeshGraphic');
 import TileMaterial = require('../materials/TileMaterial');
 import TileGeometry = require('../geometries/TileGeometry');

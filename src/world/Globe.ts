@@ -5,7 +5,7 @@ import Renderer = require("./Renderer");
 import Camera, { CameraCore } from "./Camera";
 import Scene = require("./Scene");
 import ImageUtils = require("./Image");
-import EventUtils = require("./Event");
+import EventHandler = require("./EventHandler");
 import Atmosphere = require("./graphics/Atmosphere");
 import TiledLayer = require("./layers/TiledLayer");
 import PoiLayer = require("./layers/PoiLayer");
@@ -19,6 +19,7 @@ class Globe {
   tiledLayer: TiledLayer = null;
   poiLayer: PoiLayer = null;
   private cameraCore: CameraCore = null;
+  private eventHandler: EventHandler = null;
 
   constructor(canvas: HTMLCanvasElement) {
     Kernel.globe = this;
@@ -34,7 +35,7 @@ class Globe {
     this.poiLayer = PoiLayer.getInstance();
     this.scene.add(this.poiLayer);
     this.renderer.setIfAutoRefresh(true);
-    EventUtils.initLayout();
+    this.eventHandler = new EventHandler(canvas);
     // this._tick();
   }
 

@@ -2,67 +2,67 @@
 
 import Kernel = require("./Kernel");
 import Utils = require("./Utils");
-import MathUtils = require("./math/Math");
+import MathUtils = require("./math/Utils");
 import Vector = require("./math/Vector");
 import Camera from "./Camera";
 
 type MouseMoveListener = (e: MouseEvent) => {};
 
-const EventModule = {
-  canvas: HTMLCanvasElement,
-  bMouseDown: false,
-  dragGeo: <any>null,
-  previousX: -1,
-  previousY: -1,
-  onMouseMoveListener: <MouseMoveListener>null,
-  oldDate: <number>-1,
-  lastDate: <number>-1,
-  startDate: <number>-1,
-  endDate: <number>-1,
+class EventHandler {
+  private down: boolean = false;
+  private dragGeo: any = null;
+  private previousX: number = -1;
+  private previousY: number = -1;
+  private onMouseMoveListener: MouseMoveListener = null;
+  private oldTime: number = -1;
+  private lastTime: number = -1;
+  private startTime: number = -1;
+  private endTime: number = -1;
 
-  bindEvents: function (canvas: HTMLCanvasElement) {
-    this.canvas = canvas;
-    this.endDate = this.startDate = this.lastDate = this.oldDate = Date.now();
+  constructor(private canvas: HTMLCanvasElement) {
+    this.endTime = this.startTime = this.lastTime = this.oldTime = Date.now();
+    this._bindEvents();
+    this._initLayout();
+  }
 
-    window.addEventListener("resize", this.initLayout.bind(this));
+  _bindEvents() {
+    window.addEventListener("resize", this._initLayout.bind(this));
     if (Utils.isMobile()) {
-      this.onMouseMoveListener = this.onTouchMove.bind(this);
-      this.canvas.addEventListener("touchstart", this.onTouchStart.bind(this), false);
-      this.canvas.addEventListener("touchend", this.onTouchEnd.bind(this), false);
+      this.onMouseMoveListener = this._onTouchMove.bind(this);
+      this.canvas.addEventListener("touchstart", this._onTouchStart.bind(this), false);
+      this.canvas.addEventListener("touchend", this._onTouchEnd.bind(this), false);
     } else {
-      this.onMouseMoveListener = this.onMouseMove.bind(this);
-      this.canvas.addEventListener("mousedown", this.onMouseDown.bind(this));
-      this.canvas.addEventListener("mouseup", this.onMouseUp.bind(this));
-      this.canvas.addEventListener("dblclick", this.onDbClick.bind(this));
-      this.canvas.addEventListener("mousewheel", this.onMouseWheel.bind(this));
-      this.canvas.addEventListener("DOMMouseScroll", this.onMouseWheel.bind(this));
-      document.body.addEventListener("keydown", this.onKeyDown.bind(this));
+      this.onMouseMoveListener = this._onMouseMove.bind(this);
+      this.canvas.addEventListener("mousedown", this._onMouseDown.bind(this));
+      this.canvas.addEventListener("mouseup", this._onMouseUp.bind(this));
+      this.canvas.addEventListener("dblclick", this._onDbClick.bind(this));
+      this.canvas.addEventListener("mousewheel", this._onMouseWheel.bind(this));
+      this.canvas.addEventListener("DOMMouseScroll", this._onMouseWheel.bind(this));
+      document.body.addEventListener("keydown", this._onKeyDown.bind(this));
     }
-  },
+  }
 
-  initLayout: function () {
-    if (this.canvas) {
-      this.canvas.width = document.body.clientWidth;
-      this.canvas.height = document.body.clientHeight;
-      if (Kernel.globe) {
-        Kernel.globe.camera.setAspect(this.canvas.width / this.canvas.height);
-        // Kernel.globe.refresh();
-      }
+  _initLayout() {
+    this.canvas.width = document.body.clientWidth;
+    this.canvas.height = document.body.clientHeight;
+    if (Kernel.globe) {
+      Kernel.globe.camera.setAspect(this.canvas.width / this.canvas.height);
+      // Kernel.globe.refresh();
     }
-  },
+  }
 
   //将地球表面的某一点移动到Canvas上
-  moveLonLatToCanvas(lon: number, lat: number, canvasX: number, canvasY: number) {
+  _moveLonLatToCanvas(lon: number, lat: number, canvasX: number, canvasY: number) {
     var pickResult = Kernel.globe.camera.getPickCartesianCoordInEarthByCanvas(canvasX, canvasY);
     if (pickResult.length > 0) {
       var newLonLat = MathUtils.cartesianCoordToGeographic(pickResult[0]);
       var newLon = newLonLat[0];
       var newLat = newLonLat[1];
-      this.moveGeo(lon, lat, newLon, newLat);
+      this._moveGeo(lon, lat, newLon, newLat);
     }
-  },
+  }
 
-  moveGeo(oldLon: number, oldLat: number, newLon: number, newLat: number) {
+  _moveGeo(oldLon: number, oldLat: number, newLon: number, newLat: number) {
     if (oldLon === newLon && oldLat === newLat) {
       return;
     }
@@ -73,21 +73,21 @@ const EventModule = {
     var rotateVector = v1.cross(v2);
     var rotateRadian = -Vector.getRadianOfTwoVectors(v1, v2);
     Kernel.globe.camera.worldRotateByVector(rotateRadian, rotateVector);
-  },
+  }
 
   _handleMouseDownOrTouchStart(offsetX: number, offsetY: number) {
-    this.bMouseDown = true;
+    this.down = true;
     this.previousX = offsetX;
     this.previousY = offsetY;
     var pickResult = Kernel.globe.camera.getPickCartesianCoordInEarthByCanvas(this.previousX, this.previousY);
     if (pickResult.length > 0) {
       this.dragGeo = MathUtils.cartesianCoordToGeographic(pickResult[0]);
     }
-  },
+  }
 
   _handleMouseMoveOrTouchMove(currentX: number, currentY: number) {
     var globe = Kernel.globe;
-    if (!globe || globe.isAnimating() || !this.bMouseDown) {
+    if (!globe || globe.isAnimating() || !this.down) {
       return;
     }
     var pickResult = globe.camera.getPickCartesianCoordInEarthByCanvas(currentX, currentY);
@@ -97,7 +97,7 @@ const EventModule = {
         //鼠标拖动过程中要显示底图
         //globe.showAllSubTiledLayerAndTiles();
         var newGeo = MathUtils.cartesianCoordToGeographic(pickResult[0]);
-        this.moveGeo(this.dragGeo[0], this.dragGeo[1], newGeo[0], newGeo[1]);
+        this._moveGeo(this.dragGeo[0], this.dragGeo[1], newGeo[0], newGeo[1]);
       } else {
         //进入地球内部
         this.dragGeo = MathUtils.cartesianCoordToGeographic(pickResult[0]);
@@ -112,19 +112,19 @@ const EventModule = {
       this.dragGeo = null;
       this.canvas.style.cursor = "default";
     }
-  },
+  }
 
   _handleMouseUpOrTouchEnd() {
-    this.bMouseDown = false;
+    this.down = false;
     this.previousX = -1;
     this.previousY = -1;
     this.dragGeo = null;
     if (this.canvas) {
       this.canvas.style.cursor = "default";
     }
-  },
+  }
 
-  onMouseDown(event: MouseEvent) {
+  _onMouseDown(event: MouseEvent) {
     var globe = Kernel.globe;
     if (!globe || globe.isAnimating()) {
       return;
@@ -133,22 +133,22 @@ const EventModule = {
     var previousY = event.layerY || event.offsetY;
     this._handleMouseDownOrTouchStart(previousX, previousY);
     this.canvas.addEventListener("mousemove", this.onMouseMoveListener, false);
-  },
+  }
 
-  onMouseMove(event: MouseEvent) {
+  _onMouseMove(event: MouseEvent) {
     var currentX = event.layerX || event.offsetX;
     var currentY = event.layerY || event.offsetY;
     this._handleMouseMoveOrTouchMove(currentX, currentY);
-  },
+  }
 
-  onMouseUp() {
+  _onMouseUp() {
     this._handleMouseUpOrTouchEnd();
     if (this.canvas) {
       this.canvas.removeEventListener("mousemove", this.onMouseMoveListener, false);
     }
-  },
+  }
 
-  onTouchStart(event: TouchEvent) {
+  _onTouchStart(event: TouchEvent) {
     var globe = Kernel.globe;
     if (!globe || globe.isAnimating()) {
       return;
@@ -161,10 +161,10 @@ const EventModule = {
     var previousY = touch.pageY;
     this._handleMouseDownOrTouchStart(previousX, previousY);
     this.canvas.addEventListener("touchmove", this.onMouseMoveListener, false);
-    this.startDate = Date.now();
-  },
+    this.startTime = Date.now();
+  }
 
-  onTouchMove(event: TouchEvent) {
+  _onTouchMove(event: TouchEvent) {
     if (event.targetTouches.length === 0) {
       return;
     }
@@ -172,31 +172,31 @@ const EventModule = {
     var currentX = touch.pageX;
     var currentY = touch.pageY;
     this._handleMouseMoveOrTouchMove(currentX, currentY);
-  },
+  }
 
-  onTouchEnd(event: TouchEvent) {
+  _onTouchEnd(event: TouchEvent) {
     this._handleMouseUpOrTouchEnd();
     if (this.canvas) {
       this.canvas.removeEventListener("touchmove", this.onMouseMoveListener, false);
     }
-    this.endDate = Date.now();
-    var time = this.endDate - this.startDate;
+    this.endTime = Date.now();
+    var time = this.endTime - this.startTime;
     //此处的200表示的是一次单击事件所需要的时间
     if (time <= 200) {
-      var time2 = this.endDate - this.lastDate;
+      var time2 = this.endTime - this.lastTime;
       //此处的300表示的是一次双击事件中的两次单击事件相隔的时间
       if (time2 < 300) {
         //alert("双击,time:"+time+",time2:"+time2);
-        this.lastDate = this.oldDate;
+        this.lastTime = this.oldTime;
         Kernel.globe.zoomIn();
       }
       else {
-        this.lastDate = this.endDate;
+        this.lastTime = this.endTime;
       }
     }
-  },
+  }
 
-  onDbClick(event: MouseEvent) {
+  _onDbClick(event: MouseEvent) {
     var globe = Kernel.globe;
     if (!globe || globe.isAnimating()) {
       return;
@@ -212,11 +212,11 @@ const EventModule = {
       var lon = lonlat[0];
       var lat = lonlat[1];
       globe.setLevel(globe.getLevel() + 1);
-      this.moveLonLatToCanvas(lon, lat, absoluteX, absoluteY);
+      this._moveLonLatToCanvas(lon, lat, absoluteX, absoluteY);
     }
-  },
+  }
 
-  onMouseWheel(event: MouseWheelEvent) {
+  _onMouseWheel(event: MouseWheelEvent) {
     var globe = Kernel.globe;
     if (!globe || globe.isAnimating()) {
       return;
@@ -238,13 +238,13 @@ const EventModule = {
       //globe.setLevel(newLevel);
       globe.animateToLevel(newLevel);
     }
-  },
+  }
 
   /**
    * 通过向上和向下的键盘按键调整Camera视线方向的倾斜角度pitch
    * 初始pitch值为0
    */
-  onKeyDown(event: KeyboardEvent) {
+  _onKeyDown(event: KeyboardEvent) {
     var globe = Kernel.globe;
     if (!globe || globe.isAnimating()) {
       return;
@@ -262,6 +262,6 @@ const EventModule = {
       camera.setDeltaPitch(-DELTA_PITCH);
     }
   }
-};
+}
 
-export = EventModule;
+export = EventHandler;

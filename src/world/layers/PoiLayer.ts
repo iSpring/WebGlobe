@@ -4,7 +4,7 @@ import Kernel = require('../Kernel');
 import Utils = require('../Utils');
 import Extent = require('../Extent');
 import Camera from '../Camera';
-import MathUtils = require('../math/Math');
+import MathUtils = require('../math/Utils');
 import Program = require('../Program');
 import Graphic = require('../graphics/Graphic');
 import PoiMaterial = require('../materials/PoiMaterial');

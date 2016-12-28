@@ -1,6 +1,6 @@
-///<amd-module name="world/Renderer"/>
+///<amd-module name="world/Renderer" />
+
 import Kernel = require("./Kernel");
-import EventUtils = require("./Event");
 import Scene = require("./Scene");
 import Camera from "./Camera";
 import { WebGLRenderingContextExtension, WebGLProgramExtension } from "./Definitions";
@@ -11,11 +11,9 @@ class Renderer {
   autoRefresh: boolean = false;
 
   constructor(
-    private canvas: HTMLCanvasElement, 
+    private canvas: HTMLCanvasElement,
     private onBeforeRender?: (renderer: Renderer) => void,
     private onAfterRender?: (renderer: Renderer) => void) {
-
-    EventUtils.bindEvents(canvas);
 
     var gl: WebGLRenderingContextExtension;
 
