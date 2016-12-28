@@ -19,20 +19,14 @@ Demo: https://ispring.github.io/WebGlobe/index.html
 ## Setup dev environment
  1. 项目有两个主要的分支：develop分支和master分支，develop是主分支，开发的代码都提交到该分支；master分支用于release，当develop分支中的代码比较稳定且有重要更新的时候，会将develop分支的代码merge到master分支，然后通过master分支进行发布新版本。
 
- 2. 项目采用TypeScript编写，编译成JavaScript运行，推荐使用[Visual Studio Code](http://code.visualstudio.com/)作为编辑器。
+ 2. 项目采用TypeScript编写，使用Webpack进行编译打包，编译成JavaScript运行，推荐使用[Visual Studio Code](http://code.visualstudio.com/)作为编辑器。
 
  3. 通过npm install -g typescript安装全局模块typescript。
 
  4. 在项目的根目录下执行npm install，安装所需模块。
 
- 5. 使用gulp进行编译打包，gulpfile中定义了多个task，并在package.json中定义了对应的npm scripts：
+ 5. package.json中定义了对应的npm scripts：
     - npm run clear 用于清除编译打包的结果
-    - npm run compile 用于将TypeScript版本的模块编译成JavaScript版本的AMD模块
-    - npm run bundle 用于将TypeScript版本的模块打包成一个JavaScript压缩文件
-    - npm run build 用于执行以上所有的task
-    - npm start 用于执行build
-
- 6. 通过index-src.html可以加载AMD格式的源码，方便调试；通过index-bundle.html可以加载打打包压缩后的JavaScript文件，减少了文件体积和网络请求数量，用于生产环境。
-
-
-
+    - npm run build:dev 对代码进行编译打包，代码没有压缩混淆，用于开发环境
+    - npm run build:prod 对代码进行编译打包，代码进行了压缩混淆，用于生产环境
+    - npm start 用于执行build:dev
