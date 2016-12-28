@@ -21,43 +21,43 @@ const pow2Cache: any = {};
     }
 })(pow2Cache);
 
-const MathUtils = {
-    ONE_RADIAN_EQUAL_DEGREE:57.29577951308232,//180/Math.PI
-    ONE_DEGREE_EQUAL_RADIAN:0.017453292519943295,//Math.PI/180
-    LEFT_TOP:"LEFT_TOP",
-    RIGHT_TOP:"RIGHT_TOP",
-    LEFT_BOTTOM:"LEFT_BOTTOM",
-    RIGHT_BOTTOM:"RIGHT_BOTTOM",
-    LEFT:"LEFT",
-    RIGHT:"RIGHT",
-    TOP:"TOP",
-    BOTTOM:"BOTTOM",
+class MathUtils {
+    static ONE_RADIAN_EQUAL_DEGREE:number = 57.29577951308232;//180/Math.PI
+    static ONE_DEGREE_EQUAL_RADIAN:number = 0.017453292519943295;//Math.PI/180
+    static LEFT_TOP:string = "LEFT_TOP";
+    static RIGHT_TOP:string = "RIGHT_TOP";
+    static LEFT_BOTTOM:string = "LEFT_BOTTOM";
+    static RIGHT_BOTTOM:string = "RIGHT_BOTTOM";
+    static LEFT:string = "LEFT";
+    static RIGHT:string = "RIGHT";
+    static TOP:string = "TOP";
+    static BOTTOM:string = "BOTTOM";
 
-    pow2(v: number) {
+    static pow2(v: number) {
         var s: string = v.toString();
         if (pow2Cache.hasOwnProperty(s)) {
             return pow2Cache[s];
         } else {
             return Math.pow(2, v);
         }
-    },
+    }
 
-    log2(value: number){
+    static log2(value: number){
         return (<any>Math).log2(value);
-    },
+    }
 
-    izZero(value: any) : boolean {
+    static izZero(value: any) : boolean {
         if(!Utils.isNumber(value)){
             throw "invalid value";
         }
         return Math.abs(value) < 0.000001;
-    },
+    }
 
-    isPowerOfTwo(value: number) {
+    static isPowerOfTwo(value: number) {
         return ( value & ( value - 1 ) ) === 0 && value !== 0;
-    },
+    }
 
-    asinSafely(value: number){
+    static asinSafely(value: number){
         if(value > 1){
             value = 1;
         }
@@ -65,9 +65,9 @@ const MathUtils = {
             value = -1;
         }
         return Math.asin(value);
-    },
+    }
 
-    acosSafely(value: number){
+    static acosSafely(value: number){
         if(value > 1){
             value = 1;
         }
@@ -75,7 +75,7 @@ const MathUtils = {
             value = -1;
         }
         return Math.acos(value);
-    },
+    }
 
     /**
      * 将其他进制的数字转换为10进制
@@ -83,7 +83,7 @@ const MathUtils = {
      * @param strNum 字符串形式的要转换的数据
      * @returns {number} 整数的十进制数据
      */
-    numerationSystemTo10(numSys: number, strNum: string) : number{
+    static numerationSystemTo10(numSys: number, strNum: string) : number{
         var sum = 0;
         for(var i=0;i<strNum.length;i++){
             var level = strNum.length-1-i;
@@ -91,7 +91,7 @@ const MathUtils = {
             sum += key * Math.pow(numSys,level);
         }
         return sum;
-    },
+    }
 
     /**
      * 将10进制的数字转换为其他进制
@@ -99,7 +99,7 @@ const MathUtils = {
      * @param num 要转换的十进制数字
      * @returns {string} 字符串形式的其他进制的数据
      */
-    numerationSystemFrom10 : function(numSys: number, num: number){
+    static numerationSystemFrom10(numSys: number, num: number){
         var tempResultArray:any[] = [];
         var quotient = Math.floor(num/numSys);
         var remainder = num%numSys;
@@ -113,7 +113,7 @@ const MathUtils = {
         tempResultArray.reverse();
         var strResult = tempResultArray.join("");
         return strResult;
-    },
+    }
 
     /**
      * 将数据从一个进制转换到另一个进制，输入和输出都是字符串
@@ -122,16 +122,16 @@ const MathUtils = {
      * @param strNumFrom
      * @returns {string}
      */
-    numerationSystemChange: function(numSysFrom: number,numSysTo:number,strNumFrom:string){
+    static numerationSystemChange(numSysFrom: number,numSysTo:number,strNumFrom:string){
         var temp10 = this.numerationSystemTo10(numSysFrom,strNumFrom);
         var strResult = this.numerationSystemFrom10(numSysTo,temp10);
         return strResult;
-    },
+    }
 
     /**
      * 计算三角形的面积
      */
-    getTriangleArea(v1: Vertice, v2: Vertice, v3: Vertice){
+    static getTriangleArea(v1: Vertice, v2: Vertice, v3: Vertice){
         var v1Copy = v1.clone();
         var v2Copy = v2.clone();
         var v3Copy = v3.clone();
@@ -141,7 +141,7 @@ const MathUtils = {
         var w = this.getLengthFromVerticeToVertice(v2Copy,v3Copy);
         var area = 0.5*w*h;
         return area;
-    },
+    }
 
     /**
      * 计算三维空间中两点之间的直线距离
@@ -149,13 +149,13 @@ const MathUtils = {
      * @param vertice2
      * @return {Number}
      */
-    getLengthFromVerticeToVertice(vertice1: Vertice, vertice2: Vertice){
+    static getLengthFromVerticeToVertice(vertice1: Vertice, vertice2: Vertice){
         var vertice1Copy = vertice1.clone();
         var vertice2Copy = vertice2.clone();
         var length2 = Math.pow(vertice1Copy.x-vertice2Copy.x,2) + Math.pow(vertice1Copy.y-vertice2Copy.y,2) + Math.pow(vertice1Copy.z-vertice2Copy.z,2);
         var length = Math.sqrt(length2);
         return length;
-    },
+    }
 
     /**
      * 已验证正确
@@ -164,7 +164,7 @@ const MathUtils = {
      * @param line 直线
      * @return {Number}
      */
-    getLengthFromVerticeToLine : function(vertice: Vertice, line: Line){
+    static getLengthFromVerticeToLine(vertice: Vertice, line: Line){
         var verticeCopy = vertice.clone();
         var lineCopy = line.clone();
         var x0 = verticeCopy.x;
@@ -183,7 +183,7 @@ const MathUtils = {
         var B = (z0-z1)*a-c*(x0-x1);
         var C = (x0-x1)*b-a*(y0-y1);
         return Math.sqrt(A*A+B*B+C*C);
-    },
+    }
 
     /**
      * 已验证正确
@@ -192,7 +192,7 @@ const MathUtils = {
      * @param plan 平面，包含A、B、C、D四个参数信息
      * @return {Number}
      */
-    getLengthFromVerticeToPlan(vertice: Vertice, plan: Plan){
+    static getLengthFromVerticeToPlan(vertice: Vertice, plan: Plan){
         var verticeCopy = vertice.clone();
         var planCopy = plan.clone();
         var x = verticeCopy.x;
@@ -206,7 +206,7 @@ const MathUtils = {
         var denominator = Math.sqrt(A*A+B*B+C*C);
         var length = numerator / denominator;
         return length;
-    },
+    }
 
     /**
      * 已验证正确
@@ -215,7 +215,7 @@ const MathUtils = {
      * @param plan
      * @return {World.Vertice}
      */
-    getVerticeVerticalIntersectPointWidthPlan(vertice: Vertice, plan: Plan){
+    static getVerticeVerticalIntersectPointWidthPlan(vertice: Vertice, plan: Plan){
         var verticeCopy = vertice.clone();
         var planCopy = plan.clone();
         var x0 = verticeCopy.x;
@@ -233,9 +233,9 @@ const MathUtils = {
         var z = k*c+z0;
         var intersectVertice = new Vertice(x,y,z);
         return intersectVertice;
-    },
+    }
 
-    getIntersectPointByLineAdPlan(line: Line, plan: Plan){
+    static getIntersectPointByLineAdPlan(line: Line, plan: Plan){
         var lineCopy = line.clone();
         var planCopy = plan.clone();
         lineCopy.vector.normalize();
@@ -255,7 +255,7 @@ const MathUtils = {
         var z = k*c+z0;
         var intersectVertice = new Vertice(x,y,z);
         return intersectVertice;
-    },
+    }
 
     /**
      * 已验证正确
@@ -263,7 +263,7 @@ const MathUtils = {
      * @param line 与地球求交的直线
      * @return {Array}
      */
-    getLineIntersectPointWithEarth(line: Line): Vertice[]{
+    static getLineIntersectPointWithEarth(line: Line): Vertice[]{
         var result:Vertice[] = [];
         var lineCopy = line.clone();
         var vertice = lineCopy.vertice;
@@ -323,7 +323,7 @@ const MathUtils = {
         }
 
         return result;
-    },
+    }
 
     /**
      * 计算过P点且垂直于向量V的平面
@@ -331,7 +331,7 @@ const MathUtils = {
      * @param direction 向量V
      * @return {Object} World.Plan 返回平面表达式中Ax+By+Cz+D=0的A、B、C、D的信息
      */
-    getCrossPlaneByLine(vertice: Vertice, direction: Vector): Plan{
+    static getCrossPlaneByLine(vertice: Vertice, direction: Vector): Plan{
         var verticeCopy = vertice.clone();
         var directionCopy = direction.clone();
         directionCopy.normalize();
@@ -344,11 +344,11 @@ const MathUtils = {
         var d = -(a*x0+b*y0+c*z0);
         var plan = new Plan(a,b,c,d);
         return plan;
-    },
+    }
 
     ///////////////////////////////////////////////////////////////////////////////////////////
     //点变换: Canvas->NDC
-    convertPointFromCanvasToNDC(canvasX: number, canvasY: number): number[]{
+    static convertPointFromCanvasToNDC(canvasX: number, canvasY: number): number[]{
         if(!(Utils.isNumber(canvasX))){
             throw "invalid canvasX";
         }
@@ -358,10 +358,10 @@ const MathUtils = {
         var ndcX = 2 * canvasX / Kernel.canvas.width - 1;
         var ndcY = 1 - 2 * canvasY / Kernel.canvas.height;
         return [ndcX, ndcY];
-    },
+    }
 
     //点变换: NDC->Canvas
-    convertPointFromNdcToCanvas(ndcX: number, ndcY: number): number[]{
+    static convertPointFromNdcToCanvas(ndcX: number, ndcY: number): number[]{
         if(!(Utils.isNumber(ndcX))){
             throw "invalid ndcX";
         }
@@ -371,7 +371,7 @@ const MathUtils = {
         var canvasX = (1 + ndcX) * Kernel.canvas.width / 2.0;
         var canvasY = (1 - ndcY) * Kernel.canvas.height / 2.0;
         return [canvasX, canvasY];
-    },
+    }
 
     /**将经纬度转换为笛卡尔空间直角坐标系中的x、y、z
      * @lon 经度(角度单位)
@@ -379,7 +379,7 @@ const MathUtils = {
      * @r optional 可选的地球半径
      * @p 笛卡尔坐标系中的坐标
      */
-    geographicToCartesianCoord(lon:number, lat: number, r: number = Kernel.EARTH_RADIUS): Vertice{
+    static geographicToCartesianCoord(lon:number, lat: number, r: number = Kernel.EARTH_RADIUS): Vertice{
         if(!(lon >= -(180 + 0.001) && lon <= (180 + 0.001))){
             throw "invalid lon";
         }
@@ -396,14 +396,14 @@ const MathUtils = {
         var y = r * sin2;
         var z = r *cos1 * cos2;
         return new Vertice(x, y, z);
-    },
+    }
 
     /**
      * 将笛卡尔空间直角坐标系中的坐标转换为经纬度，以角度表示
      * @param vertice
      * @return {Array}
      */
-    cartesianCoordToGeographic(vertice: Vertice): number[]{
+    static cartesianCoordToGeographic(vertice: Vertice): number[]{
         var verticeCopy = vertice.clone();
         var x = verticeCopy.x;
         var y = verticeCopy.y;
@@ -448,51 +448,51 @@ const MathUtils = {
         var degreeLat = this.radianToDegree(radianLat);
         var degreeLog = this.radianToDegree(radianLog);
         return [degreeLog, degreeLat];
-    },
+    }
 
     /**
      * 角度转弧度
      * @param degree
      * @return {*}
      */
-    degreeToRadian(degree: number){
-        return degree * this.ONE_DEGREE_EQUAL_RADIAN;
-    },
+    static degreeToRadian(degree: number){
+        return degree * MathUtils.ONE_DEGREE_EQUAL_RADIAN;
+    }
 
     /**
      * 弧度转角度
      * @param radian
      * @return {*}
      */
-    radianToDegree(radian: number){
-        return radian * this.ONE_RADIAN_EQUAL_DEGREE;
-    },
+    static radianToDegree(radian: number){
+        return radian * MathUtils.ONE_RADIAN_EQUAL_DEGREE;
+    }
 
     /**
      * 将投影坐标x转换为以弧度表示的经度
      * @param x 投影坐标x
      * @return {Number} 返回的经度信息以弧度表示
      */
-    webMercatorXToRadianLog(x: number){
+    static webMercatorXToRadianLog(x: number){
         return x / Kernel.EARTH_RADIUS;
-    },
+    }
 
     /**
      * 将投影坐标x转换为以角度表示的经度
      * @param x 投影坐标x
      * @return {*} 返回的经度信息以角度表示
      */
-    webMercatorXToDegreeLog(x: number): number{
+    static webMercatorXToDegreeLog(x: number): number{
         var radianLog = this.webMercatorXToRadianLog(x);
         return this.radianToDegree(radianLog);
-    },
+    }
 
     /**
      * 将投影坐标y转换为以弧度表示的纬度
      * @param y 投影坐标y
      * @return {Number} 返回的纬度信息以弧度表示
      */
-    webMercatorYToRadianLat(y: number): number{
+    static webMercatorYToRadianLat(y: number): number{
         if(!(Utils.isNumber(y))){
             throw "invalid y";
         }
@@ -501,17 +501,17 @@ const MathUtils = {
         var c = Math.atan(b);
         var radianLat = 2 * c - Math.PI/2;
         return radianLat;
-    },
+    }
 
     /**
      * 将投影坐标y转换为以角度表示的纬度
      * @param y 投影坐标y
      * @return {*} 返回的纬度信息以角度表示
      */
-    webMercatorYToDegreeLat(y: number): number{
+    static webMercatorYToDegreeLat(y: number): number{
         var radianLat = this.webMercatorYToRadianLat(y);
         return this.radianToDegree(radianLat);
-    },
+    }
 
     /**
      * 将投影坐标x、y转换成以弧度表示的经纬度
@@ -519,11 +519,11 @@ const MathUtils = {
      * @param y 投影坐标y
      * @return {Array} 返回的经纬度信息以弧度表示
      */
-    webMercatorToRadianGeographic(x: number, y: number): number[]{
+    static webMercatorToRadianGeographic(x: number, y: number): number[]{
         var radianLog = this.webMercatorXToRadianLog(x);
         var radianLat = this.webMercatorYToRadianLat(y);
         return [radianLog,radianLat];
-    },
+    }
 
     /**
      * 将投影坐标x、y转换成以角度表示的经纬度
@@ -531,43 +531,43 @@ const MathUtils = {
      * @param y 投影坐标y
      * @return {Array} 返回的经纬度信息以角度表示
      */
-    webMercatorToDegreeGeographic(x: number, y: number): number[]{
+    static webMercatorToDegreeGeographic(x: number, y: number): number[]{
         var degreeLog = this.webMercatorXToDegreeLog(x);
         var degreeLat = this.webMercatorYToDegreeLat(y);
         return [degreeLog,degreeLat];
-    },
+    }
 
     /**
      * 将以弧度表示的经度转换为投影坐标x
      * @param radianLog 以弧度表示的经度
      * @return {*} 投影坐标x
      */
-    radianLogToWebMercatorX(radianLog: number): number{
+    static radianLogToWebMercatorX(radianLog: number): number{
         if(!(Utils.isNumber(radianLog) && radianLog <= (Math.PI + 0.001) && radianLog >= -(Math.PI + 0.001))){
             throw "invalid radianLog";
         }
         return Kernel.EARTH_RADIUS * radianLog;
-    },
+    }
 
     /**
      * 将以角度表示的纬度转换为投影坐标y
      * @param degreeLog 以角度表示的经度
      * @return {*} 投影坐标x
      */
-    degreeLogToWebMercatorX(degreeLog: number): number{
+    static degreeLogToWebMercatorX(degreeLog: number): number{
         if(!(Utils.isNumber(degreeLog) && degreeLog <= (180 + 0.001) && degreeLog >= -(180 + 0.001))){
             throw "invalid degreeLog";
         }
         var radianLog = this.degreeToRadian(degreeLog);
         return this.radianLogToWebMercatorX(radianLog);
-    },
+    }
 
     /**
      * 将以弧度表示的纬度转换为投影坐标y
      * @param radianLat 以弧度表示的纬度
      * @return {Number} 投影坐标y
      */
-    radianLatToWebMercatorY(radianLat: number): number{
+    static radianLatToWebMercatorY(radianLat: number): number{
         if(!(radianLat <= (Math.PI / 2 + 0.001) && radianLat >= -(Math.PI / 2 + 0.001))){
             throw "invalid radianLat";
         }
@@ -576,20 +576,20 @@ const MathUtils = {
         var c = Math.log(b);
         var y = Kernel.EARTH_RADIUS * c;
         return y;
-    },
+    }
 
     /**
      * 将以角度表示的纬度转换为投影坐标y
      * @param degreeLat 以角度表示的纬度
      * @return {Number} 投影坐标y
      */
-    degreeLatToWebMercatorY(degreeLat: number): number{
+    static degreeLatToWebMercatorY(degreeLat: number): number{
         if(!(degreeLat <= (90 + 0.001) && degreeLat >= -(90 + 0.001))){
             throw "invalid degreeLat";
         }
         var radianLat = this.degreeToRadian(degreeLat);
         return this.radianLatToWebMercatorY(radianLat);
-    },
+    }
 
     /**
      * 将以弧度表示的经纬度转换为投影坐标
@@ -597,11 +597,11 @@ const MathUtils = {
      * @param radianLat 以弧度表示的纬度
      * @return {Array}  投影坐标x、y
      */
-    radianGeographicToWebMercator(radianLog: number, radianLat: number): number[]{
+    static radianGeographicToWebMercator(radianLog: number, radianLat: number): number[]{
         var x = this.radianLogToWebMercatorX(radianLog);
         var y = this.radianLatToWebMercatorY(radianLat);
         return [x, y];
-    },
+    }
 
     /**
      * 将以角度表示的经纬度转换为投影坐标
@@ -609,14 +609,14 @@ const MathUtils = {
      * @param degreeLat 以角度表示的纬度
      * @return {Array}
      */
-    degreeGeographicToWebMercator(degreeLog: number, degreeLat: number): number[]{
+    static degreeGeographicToWebMercator(degreeLog: number, degreeLat: number): number[]{
         var x = this.degreeLogToWebMercatorX(degreeLog);
         var y = this.degreeLatToWebMercatorY(degreeLat);
         return [x, y];
-    },
+    }
 
     //根据切片的level、row、column计算该切片所覆盖的投影区域的范围
-    getTileWebMercatorEnvelopeByGrid(level: number, row: number, column: number): any{
+    static getTileWebMercatorEnvelopeByGrid(level: number, row: number, column: number): any{
         var k = Kernel.MAX_PROJECTED_COORD;
         var size = 2 * k / Math.pow(2, level);
         var minX = -k + column * size;
@@ -630,10 +630,10 @@ const MathUtils = {
             "maxY":maxY
         };
         return Eproj;
-    },
+    }
 
     //根据切片的level、row、column计算该切片所覆盖的经纬度区域的范围,以经纬度表示返回结果
-    getTileGeographicEnvelopByGrid(level: number, row: number, column: number): any{
+    static getTileGeographicEnvelopByGrid(level: number, row: number, column: number): any{
         var Eproj = this.getTileWebMercatorEnvelopeByGrid(level, row, column);
         var pMin = this.webMercatorToDegreeGeographic(Eproj.minX, Eproj.minY);
         var pMax = this.webMercatorToDegreeGeographic(Eproj.maxX, Eproj.maxY);
@@ -644,10 +644,10 @@ const MathUtils = {
             "maxLat": pMax[1]
         };
         return Egeo;
-    },
+    }
 
     //根据切片的level、row、column计算该切片所覆盖的笛卡尔空间直角坐标系的范围,以x、y、z表示返回结果
-    getTileCartesianEnvelopByGrid(level: number, row: number, column: number): Object{
+    static getTileCartesianEnvelopByGrid(level: number, row: number, column: number): Object{
         var Egeo = this.getTileGeographicEnvelopByGrid(level,row,column);
         var minLon = Egeo.minLon;
         var minLat = Egeo.minLat;
@@ -668,7 +668,7 @@ const MathUtils = {
             "maxLat": maxLat
         };
         return Ecar;
-    },
+    }
 
     /**
      * 获取切片的中心点，以经纬度数组形式返回
@@ -677,7 +677,7 @@ const MathUtils = {
      * @param column
      * @return {Array}
      */
-    getGeographicTileCenter(level: number, row: number, column: number): number[]{
+    static getGeographicTileCenter(level: number, row: number, column: number): number[]{
         var Egeo = this.getTileGeographicEnvelopByGrid(level, row, column);
         var minLon = Egeo.minLon;
         var minLat = Egeo.minLat;
@@ -687,13 +687,13 @@ const MathUtils = {
         var centerLat = (minLat+maxLat)/2;//切片的纬度中心
         var lonlatTileCenter = [centerLon, centerLat];
         return lonlatTileCenter;
-    },
+    }
 
-    getCartesianTileCenter(level: number, row: number, column: number): Vertice{
+    static getCartesianTileCenter(level: number, row: number, column: number): Vertice{
         var lonLat = this.getGeographicTileCenter(level, row, column);
         var vertice = this.geographicToCartesianCoord(lonLat[0], lonLat[1]);
         return vertice;
-    },
+    }
 
     /**
      * 计算TRIANGLES的平均法向量
@@ -701,7 +701,7 @@ const MathUtils = {
      * @param ind 传入的顶点的索引数组 array
      * @return {Array} 返回每个顶点的平均法向量的数组
      */
-    calculateNormals(vs: number[], ind: number[]): number[]{
+    static calculateNormals(vs: number[], ind: number[]): number[]{
         var x = 0;
         var y = 1;
         var z = 2;
