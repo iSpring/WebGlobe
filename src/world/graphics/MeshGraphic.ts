@@ -98,9 +98,9 @@ class MeshGraphic extends Graphic {
         gl.drawElements(gl.TRIANGLES, count, gl.UNSIGNED_SHORT, 0);
 
         //释放当前绑定对象
-        gl.bindBuffer(gl.ARRAY_BUFFER, null);
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
-        gl.bindTexture(gl.TEXTURE_2D, null);
+        // gl.bindBuffer(gl.ARRAY_BUFFER, null);
+        // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+        // gl.bindTexture(gl.TEXTURE_2D, null);
     }
 }
 

@@ -1,12 +1,12 @@
 ///<amd-module name="world/Camera"/>
 import Kernel = require('./Kernel');
 import Utils = require('./Utils');
-import MathUtils = require('./math/Math');
+import MathUtils = require('./math/Utils');
 import Vertice = require('./math/Vertice');
 import Vector = require('./math/Vector');
 import Line = require('./math/Line');
 import Plan = require('./math/Plan');
-import TileGrid = require('./TileGrid');
+import TileGrid,{TileGridPosition} from './TileGrid';
 import Matrix = require('./math/Matrix');
 import Object3D = require('./Object3D');
 
@@ -96,6 +96,64 @@ class Camera extends Object3D {
     this.projMatrix = new Matrix();
     this._rawSetPerspectiveMatrix(this.fov, this.aspect, this.near, this.far);
     this._initCameraPosition();
+  }
+
+  toJson():any{
+    function matrixToJson(mat: Matrix){
+      return mat ? mat.toJson() : null;
+    }
+    var json = {
+      matrix: matrixToJson(this.matrix),
+      isZeroPitch: this.isZeroPitch,
+      level: this.level,
+      realLevel: this.realLevel,
+      lastRealLevel: this.lastRealLevel,
+      lastMatrix: matrixToJson(this.lastMatrix),
+      lastFov: this.lastFov,
+      lastAspect: this.lastAspect,
+      lastNear: this.lastNear,
+      lastFar: this.lastFar,
+      viewMatrix: matrixToJson(this.viewMatrix),
+      projMatrix: matrixToJson(this.projMatrix),
+      projViewMatrix: matrixToJson(this.projViewMatrix),
+      matrixForDraw: matrixToJson(this.matrixForDraw),
+      viewMatrixForDraw: matrixToJson(this.viewMatrixForDraw),
+      projMatrixForDraw: matrixToJson(this.projMatrixForDraw),
+      projViewMatrixForDraw: matrixToJson(this.projViewMatrixForDraw),
+      animating: this.animating
+    };
+    return json;
+  }
+
+  toJsonString(){
+    return JSON.stringify(this.toJson());
+  }
+
+  fromJson(json: any){
+    this.matrix = Matrix.fromJson(json.matrix);
+    this.isZeroPitch = json.isZeroPitch;
+    this.level = json.level;
+    this.realLevel = json.realLevel;
+    this.lastRealLevel = json.lastRealLevel;
+    this.lastMatrix = Matrix.fromJson(json.lastMatrix);
+    this.lastFov = json.lastFov;
+    this.lastAspect = json.lastAspect;
+    this.lastNear = json.lastNear;
+    this.lastFar = json.lastFar;
+    this.viewMatrix = Matrix.fromJson(json.viewMatrix);
+    this.projMatrix = Matrix.fromJson(json.projMatrix);
+    this.projViewMatrix = Matrix.fromJson(json.projViewMatrix);
+    this.matrixForDraw = Matrix.fromJson(json.matrixForDraw);
+    this.viewMatrixForDraw = Matrix.fromJson(json.viewMatrixForDraw);
+    this.projMatrixForDraw = Matrix.fromJson(json.projMatrixForDraw);
+    this.projViewMatrixForDraw = Matrix.fromJson(json.projViewMatrixForDraw);
+    this.animating = json.animating;
+    this.update(true);
+    // Kernel.globe.refresh(true);
+  }
+
+  fromJsonString(jsonStr: string){
+    this.fromJson(JSON.parse(jsonStr));
   }
 
   private _setPerspectiveMatrix(fov: number = 45, aspect: number = 1, near: number = 1, far: number = 100): void {
@@ -330,7 +388,7 @@ class Camera extends Object3D {
     //不要在this._updatePositionByLevel()方法中更新this.level，因为这会影响animateToLevel()方法
     this.level = level;
     this.realLevel = level;
-    Kernel.globe.refresh();
+    // Kernel.globe.refresh();
   }
 
   private _initCameraPosition() {
@@ -393,7 +451,7 @@ class Camera extends Object3D {
     //刷新
     this.isZeroPitch = newPitch === 0;
     this.matrix = matrix;
-    Kernel.globe.refresh();
+    // Kernel.globe.refresh();
   }
 
   //pitch表示Camera视线的倾斜角度，初始值为0，表示视线经过球心，单位为角度，范围是[0, this.maxPitch]
@@ -611,6 +669,15 @@ class Camera extends Object3D {
     return result;
   }
 
+  private _getPickLonLatByNDC(ndcX: number, ndcY: number): number[]{
+    var result:number[] = null;
+    var vertices = this._getPickCartesianCoordInEarthByNDC(ndcX, ndcY);
+    if(vertices.length > 0){
+      result = MathUtils.cartesianCoordToGeographic(vertices[0]);
+    }
+    return result;
+  }
+
   private _getPickCartesianCoordInEarthByNDC(ndcX: number, ndcY: number): Vertice[] {
     var pickDirection = this._getPickDirectionByNDC(ndcX, ndcY);
     var p = this.getPosition();
@@ -714,11 +781,12 @@ class Camera extends Object3D {
    * 3.形成的NDC四边形是顺时针方向
    */
   //获取level层级下的可见切片
-  //options:
+  //options: threshold
   getVisibleTilesByLevel(level: number, options: any = {}): TileGrid[] {
     if (!(level >= 0)) {
       throw "invalid level";
     }
+    console.time("getVisibleTilesByLevel");
     var result: TileGrid[] = [];
     //向左、向右、向上、向下最大的循环次数
     var LOOP_LIMIT = Math.min(10, Math.pow(2, level) - 1);
@@ -752,7 +820,7 @@ class Camera extends Object3D {
         var visible: boolean;
         while (leftLoopTime < LOOP_LIMIT) {
           leftLoopTime++;
-          grid = TileGrid.getTileGridByBrother(level, centerRow, leftColumn, MathUtils.LEFT, mathOptions);
+          grid = TileGrid.getTileGridByBrother(level, centerRow, leftColumn, TileGridPosition.LEFT, mathOptions);
           leftColumn = grid.column;
           visibleInfo = this._getTileVisibleInfo(grid.level, grid.row, grid.column, options);
           visible = checkVisible(visibleInfo);
@@ -769,7 +837,7 @@ class Camera extends Object3D {
         var rightColumn = centerColumn;
         while (rightLoopTime < LOOP_LIMIT) {
           rightLoopTime++;
-          grid = TileGrid.getTileGridByBrother(level, centerRow, rightColumn, MathUtils.RIGHT, mathOptions);
+          grid = TileGrid.getTileGridByBrother(level, centerRow, rightColumn, TileGridPosition.RIGHT, mathOptions);
           rightColumn = grid.column;
           visibleInfo = this._getTileVisibleInfo(grid.level, grid.row, grid.column, options);
           visible = checkVisible(visibleInfo);
@@ -797,7 +865,7 @@ class Camera extends Object3D {
     var bottomRow = centerGrid.row;
     while (bottomLoopTime < LOOP_LIMIT) {
       bottomLoopTime++;
-      grid = TileGrid.getTileGridByBrother(level, bottomRow, centerGrid.column, MathUtils.BOTTOM, mathOptions);
+      grid = TileGrid.getTileGridByBrother(level, bottomRow, centerGrid.column, TileGridPosition.BOTTOM, mathOptions);
       bottomRow = grid.row;
       rowResult = handleRowThis(grid.row, grid.column);
       if (rowResult.length > 0) {
@@ -813,7 +881,7 @@ class Camera extends Object3D {
     var topRow = centerGrid.row;
     while (topLoopTime < LOOP_LIMIT) {
       topLoopTime++;
-      grid = TileGrid.getTileGridByBrother(level, topRow, centerGrid.column, MathUtils.TOP, mathOptions);
+      grid = TileGrid.getTileGridByBrother(level, topRow, centerGrid.column, TileGridPosition.TOP, mathOptions);
       topRow = grid.row;
       rowResult = handleRowThis(grid.row, grid.column);
       if (rowResult.length > 0) {
@@ -824,11 +892,35 @@ class Camera extends Object3D {
       }
     }
 
+    console.timeEnd("getVisibleTilesByLevel");
+
     return result;
   }
 
+  getTileGridsOfBoundary(level: number, filterRepeat: boolean){
+    var tileGrids:TileGrid[] = [];
+    var ndcs:number[][] = [
+      [-1, 1],//left top
+      [-1, 0],//left middle
+      [-1, -1],//left bottom
+      [1, 1],//right top
+      [1, 0],//right middle
+      [1, -1],//right bottom
+      [0, 1],//middle top
+      [0, -1]//middle bottom
+    ];
+    ndcs.forEach((ndcXY:number[]) => {
+      var lonlat = this._getPickLonLatByNDC(ndcXY[0], ndcXY[1]);
+      if(lonlat && lonlat.length > 0){
+        var tileGrid = TileGrid.getTileGridByGeo(lonlat[0], lonlat[1], level);
+        tileGrids.push(tileGrid);
+      }
+    });
+    return filterRepeat ? Utils.filterRepeatArray(tileGrids) : tileGrids;
+  }
+
   //options: threshold
-  private _getTileVisibleInfo(level: number, row: number, column: number, options: any = {}): any {
+  private _getTileVisibleInfo(level: number, row: number, column: number, options: any): any {
     if (!(level >= 0)) {
       throw "invalid level";
     }
@@ -839,7 +931,11 @@ class Camera extends Object3D {
       throw "invalid column";
     }
 
+    //options中可以缓存计算过的点的信息
+
     var threshold = typeof options.threshold == "number" ? Math.abs(options.threshold) : 1;
+    options.threshold = threshold;
+
     var result: any = {
       lb: {
         lon: null,
@@ -954,6 +1050,108 @@ class Camera extends Object3D {
 
     return result;
   }
+
+  // private _getTileVerticeInfo(tag: string, lon: number, lat: number, threshold: number, options: any): any{
+  //   if(options.hasOwnProperty(tag)){
+  //     //console.info("use cache");
+  //     return options[tag];
+  //   }
+  //   var verticeInWorld = MathUtils.geographicToCartesianCoord(lon, lat);
+  //   var verticeInNDC = this._convertVerticeFromWorldToNDC(verticeInWorld);
+  //   var visible = this._isWorldVerticeVisibleInCanvas(verticeInWorld, {
+  //     verticeInNDC: verticeInNDC,
+  //     threshold: threshold
+  //   });
+  //   var result = {
+  //     lon: lon,
+  //     lat: lat,
+  //     verticeInWorld: verticeInWorld,
+  //     verticeInNDC: verticeInNDC,
+  //     visible: visible
+  //   };
+  //   options[tag] = result;
+  //   return result;
+  // }
+
+  // //options: threshold
+  // private _getTileVisibleInfo2(level: number, row: number, column: number, options: any): any {
+  //   if (!(level >= 0)) {
+  //     throw "invalid level";
+  //   }
+  //   if (!(row >= 0)) {
+  //     throw "invalid row";
+  //   }
+  //   if (!(column >= 0)) {
+  //     throw "invalid column";
+  //   }
+
+  //   //options中可以缓存计算过的点的信息
+
+  //   var threshold = typeof options.threshold === "number" ? Math.abs(options.threshold) : 1;
+  //   // options.threshold = threshold;
+
+  //   var result: any = {
+  //     lb: null,
+  //     lt: null,
+  //     rt: null,
+  //     rb: null,
+  //     Egeo: null,
+  //     visibleCount: 0,
+  //     clockwise: false,
+  //     width: null,
+  //     height: null,
+  //     area: null
+  //   };
+
+  //   result.Egeo = MathUtils.getTileGeographicEnvelopByGrid(level, row, column);
+  //   var tileMinLon = result.Egeo.minLon;
+  //   var tileMaxLon = result.Egeo.maxLon;
+  //   var tileMinLat = result.Egeo.minLat;
+  //   var tileMaxLat = result.Egeo.maxLat;
+
+  //   //左下角
+  //   result.lb = this._getTileVerticeInfo(`${level}_${row+1}_${column}`, tileMinLon, tileMinLat, threshold, options);
+  //   if (result.lb.visible) {
+  //     result.visibleCount++;
+  //   }
+
+  //   //左上角
+  //   result.lt = this._getTileVerticeInfo(`${level}_${row}_${column}`, tileMinLon, tileMaxLat, threshold, options);
+  //   if (result.lt.visible) {
+  //     result.visibleCount++;
+  //   }
+
+  //   //右上角
+  //   result.rt = this._getTileVerticeInfo(`${level}_${row}_${column+1}`, tileMaxLon, tileMaxLat, threshold, options);
+  //   if (result.rt.visible) {
+  //     result.visibleCount++;
+  //   }
+
+  //   //右下角
+  //   result.rb = this._getTileVerticeInfo(`${level}_${row+1}_${column+1}`, tileMaxLon, tileMinLat, threshold, options);
+  //   if (result.rb.visible) {
+  //     result.visibleCount++;
+  //   }
+
+  //   var ndcs: Vertice[] = [result.lb.verticeInNDC, result.lt.verticeInNDC, result.rt.verticeInNDC, result.rb.verticeInNDC];
+  //   //计算方向
+  //   var vector03 = Vector.verticeMinusVertice(ndcs[3], ndcs[0]);
+  //   vector03.z = 0;
+  //   var vector01 = Vector.verticeMinusVertice(ndcs[1], ndcs[0]);
+  //   vector01.z = 0;
+  //   var cross = vector03.cross(vector01);
+  //   result.clockwise = cross.z > 0;
+  //   //计算面积
+  //   var topWidth = Math.sqrt(Math.pow(ndcs[1].x - ndcs[2].x, 2) + Math.pow(ndcs[1].y - ndcs[2].y, 2)) * Kernel.canvas.width / 2;
+  //   var bottomWidth = Math.sqrt(Math.pow(ndcs[0].x - ndcs[3].x, 2) + Math.pow(ndcs[0].y - ndcs[3].y, 2)) * Kernel.canvas.width / 2;
+  //   result.width = Math.floor((topWidth + bottomWidth) / 2);
+  //   var leftHeight = Math.sqrt(Math.pow(ndcs[0].x - ndcs[1].x, 2) + Math.pow(ndcs[0].y - ndcs[1].y, 2)) * Kernel.canvas.height / 2;
+  //   var rightHeight = Math.sqrt(Math.pow(ndcs[2].x - ndcs[3].x, 2) + Math.pow(ndcs[2].y - ndcs[3].y, 2)) * Kernel.canvas.height / 2;
+  //   result.height = Math.floor((leftHeight + rightHeight) / 2);
+  //   result.area = result.width * result.height;
+
+  //   return result;
+  // }
 
   //地球一直是关于纵轴中心对称的，获取垂直方向上中心点信息
   private _getVerticalVisibleCenterInfo(): any {

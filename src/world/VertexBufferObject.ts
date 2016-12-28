@@ -1,11 +1,20 @@
-﻿///<amd-module name="world/VertexBufferObject"/>
+﻿///<amd-module name="world/VertexBufferObject" />
+
 import Kernel = require("./Kernel");
+const maxBufferSize:number = 50;
+const buffers:WebGLBuffer[] = [];
 
 class VertexBufferObject{
 	buffer: WebGLBuffer;
 
 	constructor(public target: number){
 		//target: ARRAY_BUFFER or ELEMENT_ARRAY_BUFFER
+		// if(buffers.length > 0){
+		// 	console.info("reuse WebGLBuffer");
+		//   	this.buffer = buffers.pop();
+		// }else{
+		// 	this.buffer = Kernel.gl.createBuffer();
+		// }
 		this.buffer = Kernel.gl.createBuffer();
 	}
 
@@ -33,6 +42,11 @@ class VertexBufferObject{
 
 	destroy(){
 		if(this.buffer){
+			// if(buffers.length < maxBufferSize){
+			// 	buffers.push(this.buffer);
+			// }else{
+			// 	Kernel.gl.deleteBuffer(this.buffer);
+			// }
 			Kernel.gl.deleteBuffer(this.buffer);
 		}
 		this.buffer = null;

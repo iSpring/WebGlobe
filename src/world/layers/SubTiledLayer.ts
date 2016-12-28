@@ -3,8 +3,8 @@
 import Kernel = require('../Kernel');
 import Utils = require('../Utils');
 import Extent = require('../Extent');
-import MathUtils = require('../math/Math');
-import TileGrid = require('../TileGrid');
+import MathUtils = require('../math/Utils');
+import TileGrid from '../TileGrid';
 import GraphicGroup = require('../GraphicGroup');
 import Tile = require('../graphics/Tile');
 import TiledLayer = require('./TiledLayer');
@@ -14,6 +14,20 @@ class SubTiledLayer extends GraphicGroup<Tile> {
 
   constructor(public level: number) {
     super();
+  }
+
+  showAllTiles(){
+    this.visible = true;
+    this.children.forEach(function(tile){
+      tile.setVisible(true);
+    });
+  }
+
+  hideAllTiles(){
+    this.visible = false;
+    this.children.forEach(function(tile){
+      tile.setVisible(false);
+    });
   }
 
   //重写GraphicGroup的add方法
@@ -87,7 +101,7 @@ class SubTiledLayer extends GraphicGroup<Tile> {
 
     if (bAddNew) {
       //添加新增的切片
-      console.log(`level: ${this.level}, new added count: ${visibleTileGrids.length}`);
+      //console.log(`level: ${this.level}, new added count: ${visibleTileGrids.length}`);
       for (i = 0; i < visibleTileGrids.length; i++) {
         var tileGridInfo = visibleTileGrids[i];
         var args = {
@@ -103,7 +117,7 @@ class SubTiledLayer extends GraphicGroup<Tile> {
     }
   }
 
-  checkIfLoaded() {
+  checkIfAllTilesLoaded() {
     for (var i = 0; i < this.children.length; i++) {
       var tile = this.children[i];
       if (tile) {
@@ -122,6 +136,12 @@ class SubTiledLayer extends GraphicGroup<Tile> {
 
   getExtents(): Extent[]{
     return this.children.map((item) => item.getExtent());
+  }
+
+  getShouldDrawTilesCount(){
+    return this.visible ? this.children.filter((tile)=>{
+      return tile.visible && tile.isReady();
+    }).length : 0;
   }
 }
 

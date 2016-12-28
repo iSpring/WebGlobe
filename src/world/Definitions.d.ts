@@ -29,6 +29,6 @@ export interface Drawable{
     id: number;
     parent: GraphicGroup<Drawable>;
     draw(camera: Camera): void;
-    shouldDraw(): boolean;
+    shouldDraw(camera: Camera): boolean;
     destroy(): void;
 }

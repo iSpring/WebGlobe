@@ -5,7 +5,7 @@ import Renderer = require("./Renderer");
 import Camera, { CameraCore } from "./Camera";
 import Scene = require("./Scene");
 import ImageUtils = require("./Image");
-import EventUtils = require("./Event");
+import EventHandler = require("./EventHandler");
 import Atmosphere = require("./graphics/Atmosphere");
 import TiledLayer = require("./layers/TiledLayer");
 import PoiLayer = require("./layers/PoiLayer");
@@ -19,10 +19,11 @@ class Globe {
   tiledLayer: TiledLayer = null;
   poiLayer: PoiLayer = null;
   private cameraCore: CameraCore = null;
+  private eventHandler: EventHandler = null;
 
   constructor(canvas: HTMLCanvasElement) {
     Kernel.globe = this;
-    this.renderer = new Renderer(canvas);
+    this.renderer = new Renderer(canvas, this._onBeforeRender.bind(this));
     this.scene = new Scene();
     var radio = canvas.width / canvas.height;
     this.camera = new Camera(30, radio, 1, Kernel.EARTH_RADIUS * 2);
@@ -34,8 +35,8 @@ class Globe {
     this.poiLayer = PoiLayer.getInstance();
     this.scene.add(this.poiLayer);
     this.renderer.setIfAutoRefresh(true);
-    EventUtils.initLayout();
-    this._tick();
+    this.eventHandler = new EventHandler(canvas);
+    // this._tick();
   }
 
   setTiledLayer(tiledLayer: TiledLayer) {
@@ -58,6 +59,15 @@ class Globe {
     return this.camera ? this.camera.getLevel() : -1;
   }
 
+  getLastLevel(){
+    var currentLevel = this.getLevel();
+    return currentLevel >= 0 ? (currentLevel + Kernel.DELTA_LEVEL_BETWEEN_LAST_LEVEL_AND_CURRENT_LEVEL) : -1;
+  }
+
+  zoomIn(){
+    this.setLevel(this.getLevel() + 1);
+  }
+
   setLevel(level: number) {
     if (this.camera) {
       this.camera.setLevel(level);
@@ -77,17 +87,25 @@ class Globe {
     }
   }
 
-  private _tick() {
-    try {
-      //如果refresh方法出现异常而且没有捕捉，那么就会导致无法继续设置setTimeout，从而无法进一步更新切片
-      this.refresh();
-    } catch (e) {
-      console.error(e);
-    }
-    setTimeout(() => {
-      this._tick();
-    }, this.REFRESH_INTERVAL);
+  animateIn(){
+    this.animateToLevel(this.getLevel() + 1);
   }
+
+  private _onBeforeRender(renderer: Renderer){
+    this.refresh();
+  }
+
+  // private _tick() {
+  //   try {
+  //     //如果refresh方法出现异常而且没有捕捉，那么就会导致无法继续设置setTimeout，从而无法进一步更新切片
+  //     this.refresh();
+  //   } catch (e) {
+  //     console.error(e);
+  //   }
+  //   setTimeout(() => {
+  //     this._tick();
+  //   }, this.REFRESH_INTERVAL);
+  // }
 
   refresh(force: boolean = false) {
     if (!this.tiledLayer || !this.scene || !this.camera) {
@@ -98,18 +116,10 @@ class Globe {
     var newCameraCore = this.camera.getCameraCore();
     var isNeedRefresh = force || !newCameraCore.equals(this.cameraCore);
     this.cameraCore = newCameraCore;
-    if (!isNeedRefresh) {
-      return;
+    if (isNeedRefresh) {
+      this.tiledLayer.refresh();
     }
-    var lastLevel = this.getLevel() + 3;
-    var options = {
-      threshold: 1
-    };
-    var pitch = this.camera.getPitch();
-    options.threshold = Math.min(90 / (90 - pitch), 1.5);
-    //最大级别的level所对应的可见TileGrids
-    var lastLevelTileGrids = this.camera.getVisibleTilesByLevel(lastLevel, options);
-    this.tiledLayer.refresh(lastLevel, lastLevelTileGrids);
+    this.tiledLayer.updateTileVisibility();
   }
 
   getExtents(level?: number){

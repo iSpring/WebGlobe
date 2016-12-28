@@ -6,10 +6,11 @@ import GraphicGroup = require('../GraphicGroup');
 import SubTiledLayer = require('./SubTiledLayer');
 import Camera from '../Camera';
 import Tile = require("../graphics/Tile");
-import TileGrid = require('../TileGrid');
+import TileGrid from '../TileGrid';
 import Utils = require('../Utils');
 
 abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
+  readonly imageRequestOptimizeDeltaLevel = 2;
 
   constructor() {
     super();
@@ -37,7 +38,19 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
     }
   }
 
-  refresh(lastLevel: number, lastLevelTileGrids: TileGrid[]) {
+  refresh() {
+    var globe = Kernel.globe;
+    var camera = globe.camera;
+    var currentLevel = globe.getLevel();
+    var lastLevel = globe.getLastLevel();
+    var options = {
+      threshold: 1
+    };
+    var pitch = camera.getPitch();
+    options.threshold = 1;// options.threshold = Math.min(90 / (90 - pitch), 1.5);
+    //最大级别的level所对应的可见TileGrids
+    var lastLevelTileGrids = camera.getVisibleTilesByLevel(lastLevel, options);
+
     this._updateSubLayerCount(lastLevel);
 
     var levelsTileGrids: TileGrid[][] = [];
@@ -55,8 +68,112 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
     console.log("----------------------------------------------------------");
 
     for (subLevel = 2; subLevel <= lastLevel; subLevel++) {
-      var addNew = lastLevel === subLevel || (lastLevel - subLevel) > 2;
+      var addNew = lastLevel === subLevel || (lastLevel - subLevel) > this.imageRequestOptimizeDeltaLevel;
       this.children[subLevel].updateTiles(levelsTileGrids[subLevel], addNew);
+    }
+
+    // this.updateTileVisibility(currentLevel, lastLevel);
+  }
+
+  //根据传入的level更新SubTiledLayer的数量
+  private _updateSubLayerCount(level: number) {
+    var subLayerCount = this.children.length;
+    var deltaLevel = level + 1 - subLayerCount;
+    var i: number, subLayer: SubTiledLayer;
+    if (deltaLevel > 0) {
+      //需要增加子图层
+      for (i = 0; i < deltaLevel; i++) {
+        subLayer = new SubTiledLayer(i + subLayerCount);
+        this.add(subLayer);
+      }
+    } else if (deltaLevel < 0) {
+      //需要删除多余的子图层
+      deltaLevel *= -1;
+      for (i = 0; i < deltaLevel; i++) {
+        var removeLevel = this.children.length - 1;
+        //第0级和第1级不删除
+        if (removeLevel >= 2) {
+          subLayer = this.children[removeLevel];
+          this.remove(subLayer);
+        } else {
+          break;
+        }
+      }
+    }
+  }
+
+  private _getReadyTile(tileGrid: TileGrid): Tile{
+    var level = tileGrid.level;
+    var row = tileGrid.row;
+    var column = tileGrid.column;
+    var tile = this.children[level].findTile(level, row, column);
+    if(level === 1){
+      return tile;
+    }else{
+      if(tile && tile.isReady()){
+        return tile;
+      }else{
+        return this._getReadyTile(tileGrid.getParent());
+      }
+    }
+  }
+
+  updateTileVisibility() {
+    var globe = Kernel.globe;
+    var currentLevel = globe.getLevel();
+    var lastLevel = globe.getLastLevel();
+
+    this.children.forEach((subTiledLayer) => {
+      // subTiledLayer.visible = true;
+      // subTiledLayer.children.forEach(function (tile) {
+      //   tile.setVisible(true);
+      // });
+      subTiledLayer.showAllTiles();
+    });
+
+    /*if (currentLevel < Kernel.EARTH_FULL_OVERLAP_SCREEN_LEVEL) {
+      return;
+    }
+
+    if (lastLevel - (this.imageRequestOptimizeDeltaLevel + 1) < 1) {
+      return;
+    }
+
+    var allLoadedTilesLevel = -1;
+    for (var subLevel = (lastLevel - this.imageRequestOptimizeDeltaLevel - 1); subLevel >= 0; subLevel--) {
+      // if (lastLevel === subLevel || (lastLevel - subLevel) > this.imageRequestOptimizeDeltaLevel) {
+
+      // }
+      if (this.children[subLevel].checkIfAllTilesLoaded()) {
+        allLoadedTilesLevel = subLevel;
+        break;
+      }
+    }
+    if (allLoadedTilesLevel >= 0) {
+      this.children.forEach((subTiledLayer) => {
+        subTiledLayer.visible = subTiledLayer.level >= allLoadedTilesLevel;
+      });
+    }
+    var ancestorLevel = lastLevel - (this.imageRequestOptimizeDeltaLevel + 1);
+    this.children[ancestorLevel].visible = true;*/
+
+    var ancesorLevel = lastLevel - this.imageRequestOptimizeDeltaLevel - 1;
+    if(ancesorLevel >= 1){
+      var camera = Kernel.globe.camera;
+      var tileGrids = camera.getTileGridsOfBoundary(ancesorLevel, false);
+      if(tileGrids.length === 8){
+        tileGrids = Utils.filterRepeatArray(tileGrids);
+        for(var i: number = 0; i <= ancesorLevel; i++){
+          this.children[i].hideAllTiles();
+        }
+        tileGrids.forEach((tileGrid) => {
+          var tile = this._getReadyTile(tileGrid);
+          if(tile){
+            tile.setVisible(true);
+            tile.parent.visible = true;
+          }
+        });
+      }
     }
   }
 
@@ -118,32 +235,23 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
   //根据切片的层级以及行列号获取图片的url,抽象方法，供子类实现
   abstract getTileUrl(level: number, row: number, column: number): string
 
-  //根据传入的level更新SubTiledLayer的数量
-  private _updateSubLayerCount(level: number) {
-    var subLayerCount = this.children.length;
-    var deltaLevel = level + 1 - subLayerCount;
-    var i: number, subLayer: SubTiledLayer;
-    if (deltaLevel > 0) {
-      //需要增加子图层
-      for (i = 0; i < deltaLevel; i++) {
-        subLayer = new SubTiledLayer(i + subLayerCount);
-        this.add(subLayer);
-      }
-    } else if (deltaLevel < 0) {
-      //需要删除多余的子图层
-      deltaLevel *= -1;
-      for (i = 0; i < deltaLevel; i++) {
-        var removeLevel = this.children.length - 1;
-        //第0级和第1级不删除
-        if (removeLevel >= 2) {
-          subLayer = this.children[removeLevel];
-          this.remove(subLayer);
-        } else {
-          break;
-        }
-      }
-    }
+  logVisibleTiles() {
+    console.info('--------------------------logVisibleTiles start----------------------------------');
+    var result: any[] = [];
+    this.children.forEach((subLayer) => {
+      var allCount = subLayer.children.length;
+      var visibleCount = subLayer.getShouldDrawTilesCount();
+      result.push({
+        level: subLayer.level,
+        allCount: allCount,
+        visibleCount: visibleCount
+      });
+      //console.log(`level:${subLayer.level}, tile count: ${count}`);
+    });
+    console.table(result);
+    console.info('--------------------------logVisibleTiles end----------------------------------');
   }
 }
+
 
 export = TiledLayer;

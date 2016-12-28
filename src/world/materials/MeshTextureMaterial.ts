@@ -1,6 +1,6 @@
 ﻿///<amd-module name="world/materials/MeshTextureMaterial"/>
 import Kernel = require("../Kernel");
-import MathUtils = require("../math/Math");
+import MathUtils = require("../math/Utils");
 import Material = require("./Material");
 import ImageUtils = require('../Image');
 
