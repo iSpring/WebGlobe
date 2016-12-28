@@ -161,7 +161,7 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
     if(ancesorLevel >= 1){
       var camera = Kernel.globe.camera;
       var tileGrids = camera.getTileGridsOfBoundary(ancesorLevel, false);
-      if(tileGrids.length === 4){
+      if(tileGrids.length === 8){
         tileGrids = Utils.filterRepeatArray(tileGrids);
         for(var i: number = 0; i <= ancesorLevel; i++){
           this.children[i].hideAllTiles();
