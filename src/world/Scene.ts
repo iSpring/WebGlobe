@@ -1,4 +1,5 @@
-///<amd-module name="world/Scene"/>
+///<amd-module name="world/Scene" />
+
 import {Drawable} from './Definitions.d';
 import GraphicGroup = require('./GraphicGroup');
 import TiledLayer = require("./layers/TiledLayer");

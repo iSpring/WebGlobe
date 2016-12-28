@@ -1,6 +1,6 @@
-///<amd-module name="world/graphics/Tile"/>
+///<amd-module name="world/graphics/Tile" />
+
 import Kernel = require('../Kernel');
-import Enum = require('../Enum');
 import Extent = require('../Extent');
 import Camera from '../Camera';
 import MathUtils = require('../math/Utils');
@@ -13,10 +13,6 @@ import SubTiledLayer = require('../layers/SubTiledLayer');
 import TileGrid from '../TileGrid';
 
 class TileInfo {
-  //type如果是GLOBE_TILE，表示其buffer已经设置为一般形式
-  //type如果是TERRAIN_TILE，表示其buffer已经设置为高程形式
-  //type如果是UNKNOWN，表示buffer没设置
-  type: number = Enum.UNKNOWN;
   minLon: number = null;
   minLat: number = null;
   maxLon: number = null;
@@ -32,10 +28,7 @@ class TileInfo {
 
   constructor(public level: number, public row: number, public column: number, public url: string) {
     this._setTileInfo();
-    if (this.type == Enum.UNKNOWN) {
-      //初始type为UNKNOWN，还未初始化buffer，应该显示为GlobeTile
-      this._handleGlobeTile();
-    }
+    this._handleGlobeTile();
     this.material = new TileMaterial(this.level, this.url);
   }
 
@@ -59,7 +52,6 @@ class TileInfo {
 
   //处理球面的切片
   _handleGlobeTile() {
-    this.type = Enum.GLOBE_TILE;
     var BASE_LEVEL = Kernel.BASE_LEVEL;
     if (this.level < BASE_LEVEL) {
       var changeLevel = BASE_LEVEL - this.level;
