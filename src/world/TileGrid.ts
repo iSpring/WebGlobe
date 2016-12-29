@@ -15,6 +15,8 @@ export enum TileGridPosition{
     BOTTOM
 }
 
+const maxLatitudeOfWebMercator = MathUtils.webMercatorYToDegreeLat(Kernel.MAX_PROJECTED_COORD);
+
 class TileGrid {
 
     private Egeo:any = null;//{minLon,minLat,maxLon,maxLat}
@@ -212,13 +214,17 @@ class TileGrid {
         return result;
     }
 
+    static isValidLatitude(lat: number){
+        return lat >= -maxLatitudeOfWebMercator && lat <= maxLatitudeOfWebMercator;
+    }
+
     static getTileGridByGeo(lon: number, lat: number, level: number): TileGrid {
         if (!(lon >= -180 && lon <= 180)) {
-            throw "invalid lon";
+            throw `invalid lon: ${lon}`;
         }
-        if (!(lat >= -90 && lat <= 90)) {
-            throw "invalid lat";
-        }
+        // if (!this.isValidLatitude(lat)) {
+        //     throw `invalid lat: ${lat}`;
+        // }
         var coordWebMercator = MathUtils.degreeGeographicToWebMercator(lon, lat);
         var x = coordWebMercator[0];
         var y = coordWebMercator[1];

@@ -852,8 +852,13 @@ class Camera extends Object3D {
       return result;
     }
 
+    var centerGrid: TileGrid = null;
     var verticalCenterInfo = this._getVerticalVisibleCenterInfo();
-    var centerGrid = TileGrid.getTileGridByGeo(verticalCenterInfo.lon, verticalCenterInfo.lat, level);
+    if(TileGrid.isValidLatitude(verticalCenterInfo.lat)){
+      centerGrid = TileGrid.getTileGridByGeo(verticalCenterInfo.lon, verticalCenterInfo.lat, level);
+    }else{
+      centerGrid = new TileGrid(level, 0, 0);
+    }
     var handleRowThis = handleRow.bind(this);
 
     var rowResult = handleRowThis(centerGrid.row, centerGrid.column);
