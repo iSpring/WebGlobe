@@ -1,4 +1,5 @@
-///<amd-module name="world/layers/BingTiledLayer"/>
+///<amd-module name="world/layers/BingTiledLayer" />
+
 import MathUtils = require('../math/Utils');
 import TiledLayer = require('./TiledLayer');
 
@@ -39,7 +40,7 @@ class BingTiledLayer extends TiledLayer{
     var sum = level + row + column;
     var serverIdx = sum % 8; //0,1,2,3,4,5,6,7
     //var styles = ['a','r','h']
-    url = `//ecn.t${serverIdx}.tiles.virtualearth.net/tiles/h${strMerge4}.jpeg?g=1239&mkt=en-us`;
+    url = `//ecn.t${serverIdx}.tiles.virtualearth.net/tiles/a${strMerge4}.jpeg?g=1239&mkt=en-us`;
     return url;
   }
 

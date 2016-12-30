@@ -92,19 +92,7 @@ class MathUtils {
      * @returns {string} 字符串形式的其他进制的数据
      */
     static numerationSystemFrom10(numSys: number, num: number){
-        var tempResultArray:any[] = [];
-        var quotient = Math.floor(num/numSys);
-        var remainder = num%numSys;
-        tempResultArray.push(remainder);
-        while(quotient != 0){
-            num = quotient;
-            quotient = Math.floor(num/numSys);
-            remainder = num%numSys;
-            tempResultArray.push(remainder);
-        }
-        tempResultArray.reverse();
-        var strResult = tempResultArray.join("");
-        return strResult;
+        return num.toString(numSys);
     }
 
     /**
@@ -114,7 +102,7 @@ class MathUtils {
      * @param strNumFrom
      * @returns {string}
      */
-    static numerationSystemChange(numSysFrom: number,numSysTo:number,strNumFrom:string){
+    static numerationSystemChange(numSysFrom: number, numSysTo:number, strNumFrom:string){
         var temp10 = this.numerationSystemTo10(numSysFrom,strNumFrom);
         var strResult = this.numerationSystemFrom10(numSysTo,temp10);
         return strResult;
