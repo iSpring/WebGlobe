@@ -65,8 +65,6 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
       parentTileGrids = Utils.filterRepeatArray(parentTileGrids);
     }
 
-    console.log("----------------------------------------------------------");
-
     for (subLevel = 2; subLevel <= lastLevel; subLevel++) {
       var addNew = lastLevel === subLevel || (lastLevel - subLevel) > this.imageRequestOptimizeDeltaLevel;
       this.children[subLevel].updateTiles(levelsTileGrids[subLevel], addNew);
@@ -124,10 +122,6 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
     var lastLevel = globe.getLastLevel();
 
     this.children.forEach((subTiledLayer) => {
-      // subTiledLayer.visible = true;
-      // subTiledLayer.children.forEach(function (tile) {
-      //   tile.setVisible(true);
-      // });
       subTiledLayer.showAllTiles();
     });
 

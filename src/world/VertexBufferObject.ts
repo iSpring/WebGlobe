@@ -9,12 +9,12 @@ class VertexBufferObject{
 
 	constructor(public target: number){
 		//target: ARRAY_BUFFER or ELEMENT_ARRAY_BUFFER
-		// if(buffers.length > 0){
-		// 	console.info("reuse WebGLBuffer");
-		//   	this.buffer = buffers.pop();
-		// }else{
-		// 	this.buffer = Kernel.gl.createBuffer();
-		// }
+		if(buffers.length > 0){
+			// console.info("reuse WebGLBuffer");
+		  	this.buffer = buffers.pop();
+		}else{
+			this.buffer = Kernel.gl.createBuffer();
+		}
 		this.buffer = Kernel.gl.createBuffer();
 	}
 
@@ -22,9 +22,9 @@ class VertexBufferObject{
 		Kernel.gl.bindBuffer(this.target, this.buffer);
 	}
 
-	unbind(){
-		Kernel.gl.bindBuffer(this.target, null);
-	}
+	// unbind(){
+	// 	Kernel.gl.bindBuffer(this.target, null);
+	// }
 
 	bufferData(data: number[], usage: number, hasBinded: boolean = false){
 		if(!hasBinded){
@@ -42,11 +42,11 @@ class VertexBufferObject{
 
 	destroy(){
 		if(this.buffer){
-			// if(buffers.length < maxBufferSize){
-			// 	buffers.push(this.buffer);
-			// }else{
-			// 	Kernel.gl.deleteBuffer(this.buffer);
-			// }
+			if(buffers.length < maxBufferSize){
+				buffers.push(this.buffer);
+			}else{
+				Kernel.gl.deleteBuffer(this.buffer);
+			}
 			Kernel.gl.deleteBuffer(this.buffer);
 		}
 		this.buffer = null;
