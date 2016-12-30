@@ -1,5 +1,11 @@
-///<amd-module name="world/layers/OsmTiledLayer"/>
+///<amd-module name="world/layers/OsmTiledLayer" />
 import TiledLayer = require('./TiledLayer');
+
+//http://www.openstreetmap.org/
+
+enum styles{
+  Standard
+}
 
 class OsmTiledLayer extends TiledLayer {
 
@@ -10,7 +16,7 @@ class OsmTiledLayer extends TiledLayer {
     var url = `//${server}.tile.openstreetmap.org/${level}/${column}/${row}.png`;
     return url;
   }
-  
+
 }
 
 export = OsmTiledLayer;
