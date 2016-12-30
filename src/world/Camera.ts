@@ -786,7 +786,7 @@ class Camera extends Object3D {
     if (!(level >= 0)) {
       throw "invalid level";
     }
-    console.time("getVisibleTilesByLevel");
+    // console.time("getVisibleTilesByLevel");
     var result: TileGrid[] = [];
     //向左、向右、向上、向下最大的循环次数
     var LOOP_LIMIT = Math.min(10, Math.pow(2, level) - 1);
@@ -897,7 +897,7 @@ class Camera extends Object3D {
       }
     }
 
-    console.timeEnd("getVisibleTilesByLevel");
+    // console.timeEnd("getVisibleTilesByLevel");
 
     return result;
   }

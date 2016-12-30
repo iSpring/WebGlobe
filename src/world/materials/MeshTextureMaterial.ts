@@ -107,7 +107,7 @@ class MeshTextureMaterial extends Material {
             gl.deleteTexture(this.texture);
         }
         if(this.image && !this.ready){
-            console.log(`Cancel load image ${this.image.src}`);
+            // console.log(`Cancel load image ${this.image.src}`);
             this.image.src = "";
         }
         this.ready = false;

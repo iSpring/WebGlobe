@@ -236,7 +236,6 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
   abstract getTileUrl(level: number, row: number, column: number): string
 
   logVisibleTiles() {
-    console.info('--------------------------logVisibleTiles start----------------------------------');
     var result: any[] = [];
     this.children.forEach((subLayer) => {
       var allCount = subLayer.children.length;
@@ -246,10 +245,8 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
         allCount: allCount,
         visibleCount: visibleCount
       });
-      //console.log(`level:${subLayer.level}, tile count: ${count}`);
     });
     console.table(result);
-    console.info('--------------------------logVisibleTiles end----------------------------------');
   }
 }
 
