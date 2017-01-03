@@ -12,7 +12,7 @@ import Utils = require('../Utils');
 abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
   readonly imageRequestOptimizeDeltaLevel = 2;
 
-  constructor() {
+  constructor(protected style: string = "") {
     super();
 
     //添加第0级的子图层
