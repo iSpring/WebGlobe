@@ -1,6 +1,6 @@
 ﻿import Globe = require('./world/Globe');
 import TiledLayer = require('./world/layers/TiledLayer');
-import OsmTiledLayer = require('./world/layers/OsmTiledLayer');
+import OsmTiledLayer,{OsmStyle} from './world/layers/OsmTiledLayer';
 import BingTiledLayer = require('./world/layers/BingTiledLayer');
 import SosoTiledLayer = require('./world/layers/SosoTiledLayer');
 
@@ -18,7 +18,7 @@ var mapSelectorChange = function () {
             newTiledLayer = new BingTiledLayer();
             break;
         case "osm":
-            newTiledLayer = new OsmTiledLayer();
+            newTiledLayer = new OsmTiledLayer(OsmStyle.Humanitarian);
             break;
         case "soso":
             newTiledLayer = new SosoTiledLayer();
