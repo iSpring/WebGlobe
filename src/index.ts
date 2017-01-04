@@ -1,5 +1,6 @@
 ﻿import Globe = require('./world/Globe');
 import TiledLayer = require('./world/layers/TiledLayer');
+import GoogleTiledLayer = require('./world/layers/GoogleTiledLayer');
 import OsmTiledLayer from './world/layers/OsmTiledLayer';
 import BingTiledLayer = require('./world/layers/BingTiledLayer');
 import SosoTiledLayer = require('./world/layers/SosoTiledLayer');
@@ -14,6 +15,9 @@ var mapSelectorChange = function () {
     var newTiledLayer: TiledLayer = null;
     var value = mapSelector.value;
     switch (value) {
+        case "google":
+            newTiledLayer = new GoogleTiledLayer();
+            break;
         case "bing":
             newTiledLayer = new BingTiledLayer();
             break;

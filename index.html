@@ -1,25 +1,26 @@
 ﻿<!doctype html>
 <html>
 
-    <head>
-        <title>WebGlobe</title>
-        <meta http-equiv="Content-Type" content="text/html" />
-        <meta name="charset" content="utf-8" />
-		<meta name = "viewport" content = "user-scalable=no, width=device-width">
-        <link rel="stylesheet" type="text/css" href="index.css" />
-    </head>
+<head>
+    <title>WebGlobe</title>
+    <meta http-equiv="Content-Type" content="text/html" />
+    <meta name="charset" content="utf-8" />
+    <meta name="viewport" content="user-scalable=no, width=device-width">
+    <link rel="stylesheet" type="text/css" href="index.css" />
+</head>
 
-    <body onselectstart="return false;">
-        <select id="mapSelector">
+<body onselectstart="return false;">
+    <select id="mapSelector">
             <option value="osm">OpenStreetMap</option>
+            <option value="google">Google Map</option>
             <option value="soso">腾讯地图</option>
             <option value="bing">Bing Map</option>
         </select>
-        <canvas id="canvasId" width="1000" height="1000"></canvas>
-        <a id="blog" target="_blank" href="http://github.com/iSpring">
-            <img src="images/iSpring.png" />
-        </a>
-    </body>
-	<script type="text/javascript" src="buildOutput/bundle.js"></script>
+    <canvas id="canvasId" width="1000" height="1000"></canvas>
+    <a id="blog" target="_blank" href="http://github.com/iSpring">
+        <img src="images/iSpring.png" />
+    </a>
+</body>
+<script type="text/javascript" src="buildOutput/bundle.js"></script>
 
 </html>
