@@ -62,7 +62,7 @@ class PoiLayer extends Graphic {
     super(null, material);
     this.pois = [];
     this.vbo = new VertexBufferObject(Kernel.gl.ARRAY_BUFFER);
-    this._addPoi(116.408540, 39.902350, "", "", "", "")
+    this._addPoi(116.408540, 39.902350, "3161565500563468633", "首都大酒店", "北京市东城区前门东大街3号", "")
   }
 
   static getInstance() {
