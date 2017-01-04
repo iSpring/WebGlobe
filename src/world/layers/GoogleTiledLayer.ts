@@ -2,27 +2,43 @@
 
 import TiledLayer = require('./TiledLayer');
 
-type Style = "Standard" | "Cycle" | "Transport" | "Humanitarian";
+//http://www.google.cn/maps
+//http://ditu.bigemap.com/
+//http://map.earthol.com/
+//http://www.265.me/
+
+type Style = "Default" | "Satellite";
 
 class GoogleTiledLayer extends TiledLayer{
 
+  private idx:number = 0;
+
+  constructor(style: Style = "Default"){
+    super(style);
+  }
+
   getTileUrl(level: number, row: number, column: number) {
-    // var sum = level + row + column;
-    // var idx = 1 + sum % 3;
-    // var idx = 0;
-    // return `//mt${idx}.google.cn/vt/lyrs=m@212000000&hl=zh-CN&gl=CN&src=app&x=${column}&y=${row}&z=${level}&s=Galil`;
-    return `//mt0.google.cn/vt/hl=zh-CN&gl=CN&x=${column}&y=${row}&z=${level}`;
+    if(this.idx === undefined){
+      this.idx = 0;
+    }
+    
+    var url:string = "";
 
-    //http://mt2.google.cn/vt/lyrs=m@365000000&hl=zh-CN&gl=cn&x=11&y=5&z=4
+    if(this.style === "Satellite"){
+      //http://mt0.google.cn/maps/vt?lyrs=s%40709&hl=zh-CN&gl=CN&&x=0&y=4&z=4
+      url = `//mt${this.idx}.google.cn/maps/vt?lyrs=s%40709&hl=zh-CN&gl=CN&&x=${column}&y=${row}&z=${level}`;
+    }else{
+      // return `//mt${idx}.google.cn/vt/lyrs=m@212000000&hl=zh-CN&gl=CN&src=app&x=${column}&y=${row}&z=${level}&s=Galil`;
+      url = `//mt${this.idx}.google.cn/vt/hl=zh-CN&gl=CN&x=${column}&y=${row}&z=${level}`;
+    }
 
-    //http://ditu.bigemap.com/
-    //http://ditu.bigemap.com/getTiles.php?x=12&y=6&z=4&type=satellite
-    // return `//ditu.bigemap.com/getTiles.php?x=${column}&y=${row}&z=${level}&type=satellite`;
+    this.idx++;
 
-    //http://map.earthol.com/
-    //http://www.265.me/
-    //http://mt0.google.cn/maps/vt?lyrs=s%40709&hl=zh-CN&gl=CN&&x=0&y=4&z=4
-    // return `//mt0.google.cn/maps/vt?lyrs=s%40709&hl=zh-CN&gl=CN&&x=${column}&y=${row}&z=${level}`;
+    if(this.idx >= 4){
+      this.idx = 0;
+    }
+
+    return url;
   }
 
 }

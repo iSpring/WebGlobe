@@ -16,7 +16,7 @@ var mapSelectorChange = function () {
     var value = mapSelector.value;
     switch (value) {
         case "google":
-            newTiledLayer = new GoogleTiledLayer();
+            newTiledLayer = new GoogleTiledLayer("Satellite");
             break;
         case "bing":
             newTiledLayer = new BingTiledLayer();
