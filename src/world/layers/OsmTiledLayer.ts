@@ -18,16 +18,14 @@ export default class OsmTiledLayer extends TiledLayer {
     if(this.idx === undefined){
       this.idx = 0;
     }
-    
+
     var url:string = '';
-    
+
     var server = ["a", "b", "c"][this.idx];
-    
+
     if(this.style === "Cycle"){
-      //?apikey=6170aad10dfd42a38d4d8c709a536f38
       url = `//${server}.tile.thunderforest.com/cycle/${level}/${column}/${row}.png`;
     }else if(this.style === "Transport"){
-      //?apikey=6170aad10dfd42a38d4d8c709a536f38
       url = `//${server}.tile.thunderforest.com/transport/${level}/${column}/${row}.png`;
     }else if(this.style === "Humanitarian"){
       url = `//tile-${server}.openstreetmap.fr/hot/${level}/${column}/${row}.png`;
