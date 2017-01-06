@@ -1,13 +1,13 @@
 ///<amd-module name="world/layers/TiledLayer" />
 
+import Camera from '../Camera';
+import Utils = require('../Utils');
+import TileGrid from '../TileGrid';
 import Kernel = require('../Kernel');
 import Extent = require('../Extent');
+import Tile = require("../graphics/Tile");
 import GraphicGroup = require('../GraphicGroup');
 import SubTiledLayer = require('./SubTiledLayer');
-import Camera from '../Camera';
-import Tile = require("../graphics/Tile");
-import TileGrid from '../TileGrid';
-import Utils = require('../Utils');
 
 abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
   readonly imageRequestOptimizeDeltaLevel = 2;
@@ -67,7 +67,7 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
 
     for (subLevel = 2; subLevel <= lastLevel; subLevel++) {
       var addNew = lastLevel === subLevel || (lastLevel - subLevel) > this.imageRequestOptimizeDeltaLevel;
-      this.children[subLevel].updateTiles(levelsTileGrids[subLevel], addNew);
+      this.children[subLevel].updateTiles(subLevel, levelsTileGrids[subLevel], addNew);
     }
 
     // this.updateTileVisibility(currentLevel, lastLevel);
@@ -190,17 +190,11 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
     var locSampler = program.getUniformLocation('uSampler');
     gl.uniform1i(locSampler, 0);
 
-
     //此处将深度测试设置为ALWAYS是为了解决两个不同层级的切片在拖动时一起渲染会导致屏闪的问题
     gl.depthFunc(gl.ALWAYS);
     super.onDraw(camera);
     //将深度测试恢复成LEQUAL
     gl.depthFunc(gl.LEQUAL);
-  }
-
-  add(subTiledLayer: SubTiledLayer) {
-    super.add(subTiledLayer);
-    subTiledLayer.tiledLayer = this;
   }
 
   getExtent(level?: number) {
@@ -226,7 +220,15 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
     return url;
   }
 
-  //根据切片的层级以及行列号获取图片的url,抽象方法，供子类实现
+  getLastLevelVisibleTileGrids(){
+    var tileGrids: TileGrid[] = null;
+    var subTiledLayer = this.children[this.children.length - 1];
+    if(subTiledLayer){
+      tileGrids = subTiledLayer.getVisibleTileGrids();
+    }
+    return tileGrids;
+  }
+
   abstract getTileUrl(level: number, row: number, column: number): string
 
   logVisibleTiles() {
@@ -235,7 +237,7 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
       var allCount = subLayer.children.length;
       var visibleCount = subLayer.getShouldDrawTilesCount();
       result.push({
-        level: subLayer.level,
+        level: subLayer.getLevel(),
         allCount: allCount,
         visibleCount: visibleCount
       });

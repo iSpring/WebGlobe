@@ -1,4 +1,5 @@
-///<amd-module name="world/Globe"/>
+///<amd-module name="world/Globe" />
+
 import Kernel = require("./Kernel");
 import Utils = require("./Utils");
 import Renderer = require("./Renderer");
@@ -6,8 +7,9 @@ import Camera, { CameraCore } from "./Camera";
 import Scene = require("./Scene");
 import ImageUtils = require("./Image");
 import EventHandler = require("./EventHandler");
-import Atmosphere = require("./graphics/Atmosphere");
+import TrafficLayer from "./layers/TrafficLayer";
 import TiledLayer = require("./layers/TiledLayer");
+import Atmosphere = require("./graphics/Atmosphere");
 import PoiLayer = require("./layers/PoiLayer");
 
 class Globe {
@@ -17,6 +19,7 @@ class Globe {
   scene: Scene = null;
   camera: Camera = null;
   tiledLayer: TiledLayer = null;
+  trafficLayer: TrafficLayer = null;
   poiLayer: PoiLayer = null;
   private cameraCore: CameraCore = null;
   private eventHandler: EventHandler = null;
@@ -30,10 +33,14 @@ class Globe {
     this.renderer.setScene(this.scene);
     this.renderer.setCamera(this.camera);
     this.setLevel(0);
+
+    this.trafficLayer = new TrafficLayer();
+    this.scene.add(this.trafficLayer);
     var atmosphere = Atmosphere.getInstance();
     this.scene.add(atmosphere);
     this.poiLayer = PoiLayer.getInstance();
     this.scene.add(this.poiLayer);
+
     this.renderer.setIfAutoRefresh(true);
     this.eventHandler = new EventHandler(canvas);
     // this._tick();
@@ -120,6 +127,10 @@ class Globe {
       this.tiledLayer.refresh();
     }
     this.tiledLayer.updateTileVisibility();
+    if(this.trafficLayer.visible){
+      var lastLevelTileGrids = this.tiledLayer.getLastLevelVisibleTileGrids();
+      this.trafficLayer.updateTiles(this.getLastLevel(), lastLevelTileGrids);
+    }
   }
 
   getExtents(level?: number){

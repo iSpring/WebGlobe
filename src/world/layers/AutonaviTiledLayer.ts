@@ -1,17 +1,28 @@
-///<amd-module name="world/layers/AutonaviTiledLayer"/>
+///<amd-module name="world/layers/AutonaviTiledLayer" />
+
 import Kernel = require('../Kernel');
 import TiledLayer = require('./TiledLayer');
 
 class AutonaviTiledLayer extends TiledLayer{
 
+  private idx:number = 1;
+
   getTileUrl(level: number, row: number, column: number) {
-    //使用代理
-    var sum = level + row + column;
-    var serverIdx = 1 + sum % 4; //1、2、3、4
-    var url = `//webrd0${serverIdx}.is.autonavi.com/appmaptile?x=${column}&y=${row}&z=${level}&lang=zh_cn&size=1&scale=1&style=8`;
-    return this.wrapUrlWithProxy(url);
+    if(this.idx === undefined){
+      this.idx = 1;
+    }
+
+    var url = `//webrd0${this.idx}.is.autonavi.com/appmaptile?x=${column}&y=${row}&z=${level}&lang=zh_cn&size=1&scale=1&style=8`;
+
+    this.idx++;
+
+    if(this.idx >= 5){
+      this.idx = 1;
+    }
+
+    return url;
   }
-  
+
 }
 
 export = AutonaviTiledLayer;

@@ -10,10 +10,13 @@ import Tile = require('../graphics/Tile');
 import TiledLayer = require('./TiledLayer');
 
 class SubTiledLayer extends GraphicGroup<Tile> {
-  tiledLayer: TiledLayer = null;
 
-  constructor(public level: number) {
+  constructor(private level: number) {
     super();
+  }
+
+  getLevel(){
+    return this.level;
   }
 
   showAllTiles(){
@@ -30,7 +33,6 @@ class SubTiledLayer extends GraphicGroup<Tile> {
     });
   }
 
-  //重写GraphicGroup的add方法
   add(tile: Tile) {
     if (tile.tileInfo.level === this.level) {
       super.add(tile);
@@ -38,13 +40,6 @@ class SubTiledLayer extends GraphicGroup<Tile> {
     }
   }
 
-  //重写GraphicGroup的destroy方法
-  destroy() {
-    super.destroy();
-    this.tiledLayer = null;
-  }
-
-  //根据level、row、column查找tile，可以供调试用
   findTile(level: number, row: number, column: number) {
     var length = this.children.length;
     for (var i = 0; i < length; i++) {
@@ -57,7 +52,9 @@ class SubTiledLayer extends GraphicGroup<Tile> {
   }
 
   //根据传入的tiles信息进行更新其children
-  updateTiles(visibleTileGrids: TileGrid[], bAddNew: boolean) {
+  updateTiles(level:number, visibleTileGrids: TileGrid[], addNew: boolean) {
+    this.level = level;
+
     //检查visibleTileGrids中是否存在指定的切片信息
     function checkTileExist(tileArray: TileGrid[], lev: number, row: number, col: number): any {
       var result = {
@@ -99,7 +96,7 @@ class SubTiledLayer extends GraphicGroup<Tile> {
       }
     }
 
-    if (bAddNew) {
+    if (addNew) {
       //添加新增的切片
       //console.log(`level: ${this.level}, new added count: ${visibleTileGrids.length}`);
       for (i = 0; i < visibleTileGrids.length; i++) {
@@ -110,11 +107,18 @@ class SubTiledLayer extends GraphicGroup<Tile> {
           column: tileGridInfo.column,
           url: ""
         };
-        args.url = this.tiledLayer.getTileUrl(args.level, args.row, args.column);
+        args.url = this.getTileUrl(args.level, args.row, args.column);
         tile = Tile.getInstance(args.level, args.row, args.column, args.url);
         this.add(tile);
       }
     }
+  }
+
+  protected getTileUrl(level: number, row: number, column: number): string{
+    if(this.parent && typeof (<any>this.parent).getTileUrl === "function"){
+      return (<any>this.parent).getTileUrl(level, row, column);
+    }
+    return "";
   }
 
   checkIfAllTilesLoaded() {
@@ -136,6 +140,18 @@ class SubTiledLayer extends GraphicGroup<Tile> {
 
   getExtents(): Extent[]{
     return this.children.map((item) => item.getExtent());
+  }
+
+  getVisibleTileGrids(){
+    var tileGrids:TileGrid[] = [];
+    if(this.visible){
+      this.children.forEach(function(tile: Tile){
+        if(tile.visible){
+          tileGrids.push(new TileGrid(tile.tileInfo.level, tile.tileInfo.row, tile.tileInfo.column));
+        }
+      });
+    }
+    return tileGrids;
   }
 
   getShouldDrawTilesCount(){
