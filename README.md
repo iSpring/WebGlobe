@@ -1,6 +1,6 @@
  <p align="center">
   <a target="_blank" href="https://ispring.github.io/WebGlobe/index.html">
-    <img src="https://github.com/iSpring/WebGlobe/blob/master/screenshot.png">
+    <img src="https://github.com/iSpring/WebGlobe/blob/develop/webglobe.png">
   </a>
   <p align="center">A WebGL virtual globe and map engine</p>
 </p>
