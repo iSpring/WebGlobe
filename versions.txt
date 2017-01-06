@@ -128,3 +128,5 @@
 0.3.11 修复了0.3.10里面的一个bug
 
 0.3.12 使得GoogleTiledLayer可以使用，并且为GoogleTiledLayer和OsmTiledLayer增加了多种Style
+
+0.3.13 添加LabelLayer和AutonaviLabelLayer，叠加GoogleTiledLayer，取得了较好的效果

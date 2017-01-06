@@ -11,8 +11,8 @@ import SosoTiledLayer = require('./world/layers/SosoTiledLayer');
     (<any>window).globe = globe;
 
     var stylesObj:any = {
-        osm: ["Default", "Cycle", "Transport", "Humanitarian"],
-        google: ["Default", "Satellite"],
+        google: ["Satellite", "Default"],
+        osm: ["Default", "Cycle", "Transport", "Humanitarian"],        
         bing: ["Default"],
         soso: ["Default"]
     };
