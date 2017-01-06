@@ -15,16 +15,23 @@ body {
     cursor: default;
 }
 
-#mapSelector {
+.select-div {
     position: absolute;
-    top: 20px;
     left: 20px;
+    color: #4CAF50;
+    font-weight: bold;
 }
 
-#styleSelector {
-    position: absolute;
+.map-select-div {
+    top: 20px;
+}
+
+.style-select-div {
     top: 50px;
-    left: 20px;
+}
+
+.select-div select {
+    margin-left: 10px;
 }
 
 #canvasId {
