@@ -42,7 +42,7 @@ class Renderer {
     }
 
     Kernel.gl.clear(Kernel.gl.COLOR_BUFFER_BIT | Kernel.gl.DEPTH_BUFFER_BIT);
-    gl.clearColor(255, 255, 255, 1.0);
+    gl.clearColor(0, 0, 0, 1);
 
     gl.enable(gl.DEPTH_TEST);
     gl.depthFunc(gl.LEQUAL);
