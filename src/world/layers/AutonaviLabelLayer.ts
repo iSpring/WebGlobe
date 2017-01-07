@@ -20,7 +20,8 @@ class AutonaviLabelLayer extends LabelLayer {
             this.idx = 1;
         }
 
-        var url = `//wprd0${this.idx}.is.autonavi.com/appmaptile?x=${column}&y=${row}&z=${level}&lang=zh_cn&size=1&scl=1&style=8&type=11`;
+        //Chrome doesn't trust the SSL certificate of autonavi.com.
+        var url = `http://wprd0${this.idx}.is.autonavi.com/appmaptile?x=${column}&y=${row}&z=${level}&lang=zh_cn&size=1&scl=1&style=8&type=11`;
 
         this.idx++;
 
