@@ -14,6 +14,7 @@ import PoiLayer = require("./layers/PoiLayer");
 
 class Globe {
   private readonly REFRESH_INTERVAL: number = 100; //Globe自动刷新时间间隔，以毫秒为单位
+  private lastRefreshTimestamp: number = -1;
   // private idTimeOut: number = -1; //refresh自定刷新的timeOut的handle
   renderer: Renderer = null;
   scene: Scene = null;
@@ -21,7 +22,7 @@ class Globe {
   tiledLayer: TiledLayer = null;
   labelLayer: LabelLayer = null;
   poiLayer: PoiLayer = null;
-  private cameraCore: CameraCore = null;
+  private lastRefreshCameraCore: CameraCore = null;
   private eventHandler: EventHandler = null;
 
   constructor(canvas: HTMLCanvasElement) {
@@ -118,14 +119,28 @@ class Globe {
     if (!this.tiledLayer || !this.scene || !this.camera) {
       return;
     }
+    var timestamp = Date.now();
     //先更新camera中的各种矩阵
     this.camera.update(force);
     var newCameraCore = this.camera.getCameraCore();
-    var isNeedRefresh = force || !newCameraCore.equals(this.cameraCore);
-    this.cameraCore = newCameraCore;
+    // var isNeedRefresh = force || !newCameraCore.equals(this.cameraCore);
+    var isNeedRefresh = false;
+    if(force){
+      isNeedRefresh = true;
+    }else{
+      if(newCameraCore.equals(this.lastRefreshCameraCore)){
+        isNeedRefresh = false;
+      }else{
+        isNeedRefresh = timestamp - this.lastRefreshTimestamp >= this.REFRESH_INTERVAL;
+      }
+    }
+    
     if (isNeedRefresh) {
+      this.lastRefreshTimestamp = timestamp;
+      this.lastRefreshCameraCore = newCameraCore;
       this.tiledLayer.refresh();
     }
+    
     this.tiledLayer.updateTileVisibility();
     if(this.labelLayer.visible){
       var lastLevelTileGrids = this.tiledLayer.getLastLevelVisibleTileGrids();
