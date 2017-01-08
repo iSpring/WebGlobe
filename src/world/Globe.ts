@@ -13,7 +13,7 @@ import Atmosphere = require("./graphics/Atmosphere");
 import PoiLayer = require("./layers/PoiLayer");
 
 class Globe {
-  private readonly REFRESH_INTERVAL: number = 100; //Globe自动刷新时间间隔，以毫秒为单位
+  private readonly REFRESH_INTERVAL: number = 150; //Globe自动刷新时间间隔，以毫秒为单位
   private lastRefreshTimestamp: number = -1;
   // private idTimeOut: number = -1; //refresh自定刷新的timeOut的handle
   renderer: Renderer = null;
@@ -24,6 +24,8 @@ class Globe {
   poiLayer: PoiLayer = null;
   private lastRefreshCameraCore: CameraCore = null;
   private eventHandler: EventHandler = null;
+  private allRefreshCount:number = 0;
+  private realRefreshCount:number = 0;
 
   constructor(canvas: HTMLCanvasElement) {
     Kernel.globe = this;
@@ -115,10 +117,15 @@ class Globe {
   //   }, this.REFRESH_INTERVAL);
   // }
 
+  logRefreshInfo(){
+    console.log(this.realRefreshCount, this.allRefreshCount, this.realRefreshCount / this.allRefreshCount);
+  }
+
   refresh(force: boolean = false) {
     if (!this.tiledLayer || !this.scene || !this.camera) {
       return;
     }
+    this.allRefreshCount++;
     var timestamp = Date.now();
     //先更新camera中的各种矩阵
     this.camera.update(force);
@@ -136,6 +143,7 @@ class Globe {
     }
     
     if (isNeedRefresh) {
+      this.realRefreshCount++;
       this.lastRefreshTimestamp = timestamp;
       this.lastRefreshCameraCore = newCameraCore;
       this.tiledLayer.refresh();
