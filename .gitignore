@@ -1,4 +1,3 @@
 /node_modules
 /buildOutput
 /src/**/*.js
-./index.html
