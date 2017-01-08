@@ -1,8 +1,9 @@
 var path = require('path');
 var webpack = require('webpack');
+var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-    entry: path.resolve(__dirname, "src/index.ts"),
+    entry: path.resolve(__dirname, "./index.ts"),
     output: {
         path: path.resolve(__dirname, "buildOutput"),
         filename: "bundle.js"
@@ -15,7 +16,14 @@ module.exports = {
             { test: /\.tsx?$/, loader: "ts-loader" }
         ]
     },
-    plugins: []
+    plugins: [
+        new HtmlWebpackPlugin({
+            filename: '../index.html',
+            template: '!!ejs!./template.html',
+            hash: true,
+            inject: 'body'
+        })
+    ]
 };
 
 if(process.env.NODE_ENV === 'production'){
