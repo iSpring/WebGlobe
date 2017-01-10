@@ -90,7 +90,7 @@ class Globe {
 
   animateToLevel(level: number, cb?: ()=>void) {
     if (!this.isAnimating()) {
-      level = level > Kernel.MAX_LEVEL ? Kernel.MAX_LEVEL : level; //超过最大的渲染级别就不渲染
+      level = level > Kernel.MAX_LEVEL ? Kernel.MAX_LEVEL : level;
       if (level !== this.getLevel()) {
         this.camera.animateToLevel(level, cb);
       }

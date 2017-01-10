@@ -1,4 +1,4 @@
-///<amd-module name="world/Event" />
+///<amd-module name="world/EventHandler" />
 
 import Kernel = require("./Kernel");
 import Utils = require("./Utils");
@@ -6,14 +6,11 @@ import MathUtils = require("./math/Utils");
 import Vector = require("./math/Vector");
 import Camera from "./Camera";
 
-// type MouseMoveListener = (e: MouseEvent) => {};
-
 class EventHandler {
   private down: boolean = false;
   private dragGeo: any = null;
   private previousX: number = -1;
   private previousY: number = -1;
-  // private onMouseMoveListener: MouseMoveListener = null;
   private twoTouchDistance: number = -1;
   private oldTime: number = -1;
   private lastTime: number = -1;
