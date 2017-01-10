@@ -1,44 +1,44 @@
 {
-  "name": "webglobe",
-  "version": "0.3.13",
-  "description": "A WebGL virtual globe and map engine.",
-  "main": "require.js",
-  "scripts": {
-    "clear": "rimraf buildOutput",
-    "prebuild:dev": "npm run clear",
-    "build:dev": "cross-env NODE_ENV=development webpack --progress --colors",
-    "prebuild:prod": "npm run clear",
-    "build:prod": "cross-env NODE_ENV=production webpack --progress --colors",
-    "start": "npm run build:dev"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/iSpring/WebGlobe.git"
-  },
-  "keywords": [
-    "WebGL",
-    "Map",
-    "Globe",
-    "Earth",
-    "3D",
-    "HTML5"
-  ],
-  "author": "iSpring",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/iSpring/WebGlobe/issues"
-  },
-  "homepage": "https://github.com/iSpring/WebGlobe#readme",
-  "devDependencies": {
-    "cross-env": "^3.1.3",
-    "ejs-loader": "^0.3.0",
-    "html-webpack-plugin": "^2.26.0",
-    "rimraf": "^2.5.4",
-    "ts-loader": "^1.3.3",
-    "typescript": "^2.0.3",
-    "webpack": "^1.14.0"
-  },
-  "dependencies": {
-    "es6-promise": "^4.0.5"
-  }
+    "name": "webglobe",
+    "version": "0.3.14",
+    "description": "A WebGL virtual globe and map engine.",
+    "main": "require.js",
+    "scripts": {
+        "clear": "rimraf buildOutput",
+        "prebuild:dev": "npm run clear",
+        "build:dev": "cross-env NODE_ENV=development webpack --progress --colors",
+        "prebuild:prod": "npm run clear",
+        "build:prod": "cross-env NODE_ENV=production webpack --progress --colors",
+        "start": "npm run build:dev"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/iSpring/WebGlobe.git"
+    },
+    "keywords": [
+        "WebGL",
+        "Map",
+        "Globe",
+        "Earth",
+        "3D",
+        "HTML5"
+    ],
+    "author": "iSpring",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/iSpring/WebGlobe/issues"
+    },
+    "homepage": "https://github.com/iSpring/WebGlobe#readme",
+    "devDependencies": {
+        "cross-env": "^3.1.3",
+        "ejs-loader": "^0.3.0",
+        "html-webpack-plugin": "^2.26.0",
+        "rimraf": "^2.5.4",
+        "ts-loader": "^1.3.3",
+        "typescript": "^2.0.3",
+        "webpack": "^1.14.0"
+    },
+    "dependencies": {
+        "es6-promise": "^4.0.5"
+    }
 }

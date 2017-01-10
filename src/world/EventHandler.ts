@@ -6,14 +6,15 @@ import MathUtils = require("./math/Utils");
 import Vector = require("./math/Vector");
 import Camera from "./Camera";
 
-type MouseMoveListener = (e: MouseEvent) => {};
+// type MouseMoveListener = (e: MouseEvent) => {};
 
 class EventHandler {
   private down: boolean = false;
   private dragGeo: any = null;
   private previousX: number = -1;
   private previousY: number = -1;
-  private onMouseMoveListener: MouseMoveListener = null;
+  // private onMouseMoveListener: MouseMoveListener = null;
+  private twoTouchDistance: number = -1;
   private oldTime: number = -1;
   private lastTime: number = -1;
   private startTime: number = -1;
@@ -28,17 +29,17 @@ class EventHandler {
   _bindEvents() {
     window.addEventListener("resize", this._initLayout.bind(this));
     if (Utils.isMobile()) {
-      this.onMouseMoveListener = this._onTouchMove.bind(this);
       this.canvas.addEventListener("touchstart", this._onTouchStart.bind(this), false);
       this.canvas.addEventListener("touchend", this._onTouchEnd.bind(this), false);
+      this.canvas.addEventListener("touchmove", this._onTouchMove.bind(this), false);
     } else {
-      this.onMouseMoveListener = this._onMouseMove.bind(this);
-      this.canvas.addEventListener("mousedown", this._onMouseDown.bind(this));
-      this.canvas.addEventListener("mouseup", this._onMouseUp.bind(this));
-      this.canvas.addEventListener("dblclick", this._onDbClick.bind(this));
-      this.canvas.addEventListener("mousewheel", this._onMouseWheel.bind(this));
-      this.canvas.addEventListener("DOMMouseScroll", this._onMouseWheel.bind(this));
-      document.body.addEventListener("keydown", this._onKeyDown.bind(this));
+      this.canvas.addEventListener("mousedown", this._onMouseDown.bind(this), false);
+      this.canvas.addEventListener("mouseup", this._onMouseUp.bind(this), false);
+      this.canvas.addEventListener("mousemove", this._onMouseMove.bind(this), false);
+      this.canvas.addEventListener("dblclick", this._onDbClick.bind(this), false);
+      this.canvas.addEventListener("mousewheel", this._onMouseWheel.bind(this), false);
+      this.canvas.addEventListener("DOMMouseScroll", this._onMouseWheel.bind(this), false);
+      document.body.addEventListener("keydown", this._onKeyDown.bind(this), false);
     }
   }
 
@@ -51,7 +52,6 @@ class EventHandler {
     }
   }
 
-  //将地球表面的某一点移动到Canvas上
   _moveLonLatToCanvas(lon: number, lat: number, canvasX: number, canvasY: number) {
     var pickResult = Kernel.globe.camera.getPickCartesianCoordInEarthByCanvas(canvasX, canvasY);
     if (pickResult.length > 0) {
@@ -92,21 +92,19 @@ class EventHandler {
     }
     var pickResult = globe.camera.getPickCartesianCoordInEarthByCanvas(currentX, currentY);
     if (pickResult.length > 0) {
-      //鼠标在地球范围内
+      //mouse in Earth
       if (this.dragGeo) {
-        //鼠标拖动过程中要显示底图
-        //globe.showAllSubTiledLayerAndTiles();
         var newGeo = MathUtils.cartesianCoordToGeographic(pickResult[0]);
         this._moveGeo(this.dragGeo[0], this.dragGeo[1], newGeo[0], newGeo[1]);
       } else {
-        //进入地球内部
+        //go to Earth part
         this.dragGeo = MathUtils.cartesianCoordToGeographic(pickResult[0]);
       }
       this.previousX = currentX;
       this.previousY = currentY;
       this.canvas.style.cursor = "pointer";
     } else {
-      //鼠标超出地球范围
+      //mouse out of Earth
       this.previousX = -1;
       this.previousY = -1;
       this.dragGeo = null;
@@ -132,10 +130,15 @@ class EventHandler {
     var previousX = event.layerX || event.offsetX;
     var previousY = event.layerY || event.offsetY;
     this._handleMouseDownOrTouchStart(previousX, previousY);
-    this.canvas.addEventListener("mousemove", this.onMouseMoveListener, false);
   }
 
   _onMouseMove(event: MouseEvent) {
+    if(!this.down){
+      return;
+    }
+    if(Kernel.globe.isAnimating()){
+      return;
+    }
     var currentX = event.layerX || event.offsetX;
     var currentY = event.layerY || event.offsetY;
     this._handleMouseMoveOrTouchMove(currentX, currentY);
@@ -143,57 +146,6 @@ class EventHandler {
 
   _onMouseUp() {
     this._handleMouseUpOrTouchEnd();
-    if (this.canvas) {
-      this.canvas.removeEventListener("mousemove", this.onMouseMoveListener, false);
-    }
-  }
-
-  _onTouchStart(event: TouchEvent) {
-    var globe = Kernel.globe;
-    if (!globe || globe.isAnimating()) {
-      return;
-    }
-    if (event.targetTouches.length === 0) {
-      return;
-    }
-    var touch = event.targetTouches[0];
-    var previousX = touch.pageX;
-    var previousY = touch.pageY;
-    this._handleMouseDownOrTouchStart(previousX, previousY);
-    this.canvas.addEventListener("touchmove", this.onMouseMoveListener, false);
-    this.startTime = Date.now();
-  }
-
-  _onTouchMove(event: TouchEvent) {
-    if (event.targetTouches.length === 0) {
-      return;
-    }
-    var touch = event.targetTouches[0];
-    var currentX = touch.pageX;
-    var currentY = touch.pageY;
-    this._handleMouseMoveOrTouchMove(currentX, currentY);
-  }
-
-  _onTouchEnd(event: TouchEvent) {
-    this._handleMouseUpOrTouchEnd();
-    if (this.canvas) {
-      this.canvas.removeEventListener("touchmove", this.onMouseMoveListener, false);
-    }
-    this.endTime = Date.now();
-    var time = this.endTime - this.startTime;
-    //此处的200表示的是一次单击事件所需要的时间
-    if (time <= 200) {
-      var time2 = this.endTime - this.lastTime;
-      //此处的300表示的是一次双击事件中的两次单击事件相隔的时间
-      if (time2 < 300) {
-        //alert("双击,time:"+time+",time2:"+time2);
-        this.lastTime = this.oldTime;
-        Kernel.globe.zoomIn();
-      }
-      else {
-        this.lastTime = this.endTime;
-      }
-    }
   }
 
   _onDbClick(event: MouseEvent) {
@@ -225,7 +177,6 @@ class EventHandler {
     var deltaLevel = 0;
     var delta: number;
     if (event.wheelDelta) {
-      //非Firefox
       delta = event.wheelDelta;
       deltaLevel = parseInt(<any>(delta / 120));
     } else if (event.detail) {
@@ -240,10 +191,6 @@ class EventHandler {
     }
   }
 
-  /**
-   * 通过向上和向下的键盘按键调整Camera视线方向的倾斜角度pitch
-   * 初始pitch值为0
-   */
   _onKeyDown(event: KeyboardEvent) {
     var globe = Kernel.globe;
     if (!globe || globe.isAnimating()) {
@@ -253,15 +200,138 @@ class EventHandler {
     var DELTA_PITCH = 2;
     var camera = globe.camera;
     var keyNum = event.keyCode !== undefined ? event.keyCode : event.which;
-    //上、下、左、右:38、40、37、39
+    //up、down、left、right:38、40、37、39
     if (keyNum === 38) {
-      //向上键
+      //up
       camera.setDeltaPitch(DELTA_PITCH);
     } else if (keyNum === 40) {
-      //向下键
+      //down
       camera.setDeltaPitch(-DELTA_PITCH);
     }
   }
+
+  //--------------------------------------------------------------------------------------
+
+  _onTouchZero(){
+    this.twoTouchDistance = -1;
+    this._handleMouseUpOrTouchEnd();
+    this.endTime = Date.now();
+    var time = this.endTime - this.startTime;
+    if (time <= 200) {
+      var time2 = this.endTime - this.lastTime;
+      if (time2 < 300) {
+        this.lastTime = this.oldTime;
+        Kernel.globe.zoomIn();
+      }else {
+        this.lastTime = this.endTime;
+      }
+    }
+  }
+
+  _onTouchOne(event: TouchEvent){
+    this.twoTouchDistance = -1;
+    var touch = event.targetTouches[0];
+    var previousX = touch.pageX;
+    var previousY = touch.pageY;
+    this._handleMouseDownOrTouchStart(previousX, previousY);
+    this.startTime = Date.now();
+  }
+
+  _onTouchTwo(event: TouchEvent){
+    this.down = true;
+    this.previousX = -1;
+    this.previousY = -1;
+    this.dragGeo = null;
+    var touch1 = event.targetTouches[0];
+    var x1 = touch1.pageX;
+    var y1 = touch1.pageY;
+    var touch2 = event.targetTouches[1];
+    var x2 = touch2.pageX;
+    var y2 = touch2.pageY;
+    this.twoTouchDistance = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+  }
+
+  _onTouchMulti(){
+    this.down = true;
+    this.previousX = -1;
+    this.previousY = -1;
+    this.dragGeo = null;
+    this.twoTouchDistance = -1;
+  }
+
+  _onTouchStart(event: TouchEvent) {
+    var globe = Kernel.globe;
+    if (!globe || globe.isAnimating()) {
+      return;
+    }
+
+    var touchCount = event.targetTouches.length;
+    if (touchCount === 0) {
+      this._onTouchZero();
+    }else if(touchCount === 1){
+      this._onTouchOne(event);
+    }else if(touchCount === 2){
+      this._onTouchTwo(event);
+    }else{
+      this._onTouchMulti();
+    }
+  }
+
+  _onTouchMoveOne(event: TouchEvent){
+    var touch = event.targetTouches[0];
+    var currentX = touch.pageX;
+    var currentY = touch.pageY;
+    this._handleMouseMoveOrTouchMove(currentX, currentY);
+  }
+
+  _onTouchMoveTwo(event: TouchEvent){
+    var touch1 = event.targetTouches[0];
+    var x1 = touch1.pageX;
+    var y1 = touch1.pageY;
+    var touch2 = event.targetTouches[1];
+    var x2 = touch2.pageX;
+    var y2 = touch2.pageY;
+    var twoTouchDistance = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+    var radio = twoTouchDistance / this.twoTouchDistance;
+    if(radio >= 1.3){
+      Kernel.globe.animateIn(()=>{
+        this.twoTouchDistance = twoTouchDistance;
+      });
+    }else if(radio <= 0.7){
+      Kernel.globe.animateOut(()=>{
+        this.twoTouchDistance = twoTouchDistance;
+      });
+    }
+  }
+
+  _onTouchMove(event: TouchEvent) {
+    if(!this.down){
+      return;
+    }
+    if(Kernel.globe.isAnimating()){
+      return;
+    }
+    var touchCount = event.targetTouches.length;
+    if(touchCount === 1){
+      this._onTouchMoveOne(event);
+    }else if(touchCount === 2){
+      this._onTouchMoveTwo(event);
+    }
+  }
+
+  _onTouchEnd(event: TouchEvent) {
+    var touchCount = event.targetTouches.length;
+    if (touchCount === 0) {
+      this._onTouchZero();
+    }else if(touchCount === 1){
+      this._onTouchOne(event);
+    }else if(touchCount === 2){
+      this._onTouchTwo(event);
+    }else{
+      this._onTouchMulti();
+    }
+  }
+
 }
 
 export = EventHandler;

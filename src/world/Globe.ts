@@ -88,17 +88,21 @@ class Globe {
     return this.camera.isAnimating();
   }
 
-  animateToLevel(level: number) {
+  animateToLevel(level: number, cb?: ()=>void) {
     if (!this.isAnimating()) {
       level = level > Kernel.MAX_LEVEL ? Kernel.MAX_LEVEL : level; //超过最大的渲染级别就不渲染
       if (level !== this.getLevel()) {
-        this.camera.animateToLevel(level);
+        this.camera.animateToLevel(level, cb);
       }
     }
   }
 
-  animateIn(){
-    this.animateToLevel(this.getLevel() + 1);
+  animateOut(cb?: ()=>void){
+    this.animateToLevel(this.getLevel() - 1, cb);
+  }
+
+  animateIn(cb?: ()=>void){
+    this.animateToLevel(this.getLevel() + 1, cb);
   }
 
   private _onBeforeRender(renderer: Renderer){
@@ -141,14 +145,14 @@ class Globe {
         isNeedRefresh = timestamp - this.lastRefreshTimestamp >= this.REFRESH_INTERVAL;
       }
     }
-    
+
     if (isNeedRefresh) {
       this.realRefreshCount++;
       this.lastRefreshTimestamp = timestamp;
       this.lastRefreshCameraCore = newCameraCore;
       this.tiledLayer.refresh();
     }
-    
+
     this.tiledLayer.updateTileVisibility();
     if(this.labelLayer.visible){
       var lastLevelTileGrids = this.tiledLayer.getLastLevelVisibleTileGrids();

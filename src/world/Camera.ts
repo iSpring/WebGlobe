@@ -547,7 +547,7 @@ class Camera extends Object3D {
     return this.animating;
   }
 
-  animateToLevel(newLevel: number): void {
+  animateToLevel(newLevel: number, cb?: ()=>void): void {
     if (this.isAnimating()) {
       return;
     }
@@ -580,6 +580,9 @@ class Camera extends Object3D {
         this.animating = false;
         this.realLevel = newLevel;
         this.setLevel(newLevel);
+        if(cb){
+          cb();
+        }
       } else {
         this.realLevel += deltaLevel;
         var p = this.getPosition();
