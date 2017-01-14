@@ -1,6 +1,4 @@
-﻿///<amd-module name="world/Program" />
-
-import Kernel = require("./Kernel");
+﻿import Kernel = require("./Kernel");
 import Graphic = require("./graphics/Graphic");
 
 class Program{

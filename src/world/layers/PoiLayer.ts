@@ -1,5 +1,3 @@
-///<amd-module name="world/layers/PoiLayer" />
-
 import Kernel = require('../Kernel');
 import Utils = require('../Utils');
 import Extent = require('../Extent');

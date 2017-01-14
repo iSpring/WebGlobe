@@ -1,5 +1,3 @@
-///<amd-module name="world/Renderer" />
-
 import Kernel = require("./Kernel");
 import Scene = require("./Scene");
 import Camera from "./Camera";

@@ -1,6 +1,4 @@
-﻿///<amd-module name="world/graphics/Graphic"/>
-
-import Kernel = require('../Kernel');
+﻿import Kernel = require('../Kernel');
 import {Drawable} from '../Definitions.d';
 import Geometry = require('../geometries/Geometry');
 import Material = require('../materials/Material');

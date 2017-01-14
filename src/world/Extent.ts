@@ -1,5 +1,3 @@
-///<amd-module name="world/Extent" />
-
 import TileGrid from './TileGrid';
 
 class Extent{

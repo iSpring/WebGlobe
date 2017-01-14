@@ -1,5 +1,3 @@
-///<amd-module name="world/layers/LabelLayer" />
-
 import Camera from '../Camera';
 import TileGrid from '../TileGrid';
 import Kernel = require('../Kernel');

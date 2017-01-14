@@ -1,5 +1,3 @@
-///<amd-module name="world/math/Vertice"/>
-
 class Vertice{
     constructor(public x = 0, public y = 0, public z = 0){}
 

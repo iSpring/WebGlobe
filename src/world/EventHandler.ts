@@ -1,5 +1,3 @@
-///<amd-module name="world/EventHandler" />
-
 import Kernel = require("./Kernel");
 import Utils = require("./Utils");
 import MathUtils = require("./math/Utils");

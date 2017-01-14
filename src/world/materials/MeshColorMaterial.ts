@@ -1,5 +1,4 @@
-﻿///<amd-module name="world/materials/MeshColorMaterial"/>
-import Material = require("./Material");
+﻿import Material = require("./Material");
 
 class MeshColorMaterial extends Material {
     type: string = "";

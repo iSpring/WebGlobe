@@ -1,4 +1,3 @@
-///<amd-module name="world/math/Vector"/>
 import Vertice = require('./Vertice');
 
 class Vector{

@@ -1,5 +1,3 @@
-///<amd-module name="world/math/Matrix"/>
-
 import Utils = require('../Utils');
 import Vertice = require('./Vertice');
 import Vector = require('./Vector');

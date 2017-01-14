@@ -12,7 +12,7 @@ import SosoTiledLayer = require('./src/world/layers/SosoTiledLayer');
 
     var stylesObj:any = {
         google: ["Satellite", "Default"],
-        osm: ["Default", "Cycle", "Transport", "Humanitarian"],        
+        osm: ["Default", "Cycle", "Transport", "Humanitarian"],
         bing: ["Default"],
         soso: ["Default"]
     };

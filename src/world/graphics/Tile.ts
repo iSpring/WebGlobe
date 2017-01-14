@@ -1,5 +1,3 @@
-///<amd-module name="world/graphics/Tile" />
-
 import Kernel = require('../Kernel');
 import Extent = require('../Extent');
 import Camera from '../Camera';

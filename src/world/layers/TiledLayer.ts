@@ -1,5 +1,3 @@
-///<amd-module name="world/layers/TiledLayer" />
-
 import Camera from '../Camera';
 import Utils = require('../Utils');
 import TileGrid from '../TileGrid';

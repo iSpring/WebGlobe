@@ -1,5 +1,3 @@
-///<amd-module name="world/Utils" />
-
 type ArrayVoidCallbackFunction = (value: any, index: number, arr: Array<any>) => void;
 type ArrayBooleanCallbackFunction = (value: any, index: number, arr: any[]) => boolean;
 type ArrayAnyCallbackFunction = (value: any, index: number, arr: any[]) => any;

@@ -1,6 +1,4 @@
-﻿///<amd-module name="world/GraphicGroup"/>
-
-import Kernel = require('./Kernel');
+﻿import Kernel = require('./Kernel');
 import {Drawable} from './Definitions.d';
 import Graphic = require('./graphics/Graphic');
 import Camera from "./Camera";

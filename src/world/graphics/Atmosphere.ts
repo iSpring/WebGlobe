@@ -1,5 +1,3 @@
-///<amd-module name="world/graphics/Atmosphere"/>
-
 import Kernel = require("../Kernel");
 import MeshGraphic = require('./MeshGraphic');
 import AtmosphereGeometry = require("../geometries/Atmosphere");

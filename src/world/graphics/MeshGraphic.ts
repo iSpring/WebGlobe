@@ -1,6 +1,4 @@
-﻿///<amd-module name="world/graphics/MeshGraphic"/>
-
-import Kernel = require("../Kernel");
+﻿import Kernel = require("../Kernel");
 import Program = require("../Program");
 import Graphic = require("./Graphic");
 import Mesh = require("../geometries/Mesh");

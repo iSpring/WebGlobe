@@ -1,4 +1,3 @@
-///<amd-module name="world/Camera"/>
 import Kernel = require('./Kernel');
 import Utils = require('./Utils');
 import MathUtils = require('./math/Utils');

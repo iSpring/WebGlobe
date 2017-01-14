@@ -1,5 +1,3 @@
-///<amd-module name="world/materials/PoiMaterial"/>
-
 import MeshTextureMaterial = require("./MeshTextureMaterial");
 
 type ImageType = string | HTMLImageElement;

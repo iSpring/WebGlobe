@@ -1,6 +1,4 @@
-﻿///<amd-module name="world/VertexBufferObject" />
-
-import Kernel = require("./Kernel");
+﻿import Kernel = require("./Kernel");
 const maxBufferSize:number = 50;
 const buffers:WebGLBuffer[] = [];
 

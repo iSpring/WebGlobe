@@ -1,6 +1,4 @@
-﻿///<amd-module name="world/geometries/Box"/>
-
-import Vertice = require("./MeshVertice");
+﻿import Vertice = require("./MeshVertice");
 import Triangle = require("./Triangle");
 import Mesh = require("./Mesh");
 

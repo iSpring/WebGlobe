@@ -1,5 +1,3 @@
-///<amd-module name="world/geometries/Marker"/>
-
 import Kernel = require("../Kernel");
 import Geometry = require('./Geometry');
 import VertexBufferObject = require("../VertexBufferObject");
@@ -12,7 +10,7 @@ class Marker implements Geometry{
         this.vbo = new VertexBufferObject(Kernel.gl.ARRAY_BUFFER);
         this.vbo.bind();
 		this.vbo.bufferData([x,y,z], Kernel.gl.STATIC_DRAW, true);
-		this.vbo.unbind();
+		// this.vbo.unbind();
     }
 
     destroy(){

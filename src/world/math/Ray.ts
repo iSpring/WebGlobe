@@ -1,4 +1,3 @@
-///<amd-module name="world/math/Ray"/>
 import Vertice = require('./Vertice');
 import Vector = require('./Vector');
 

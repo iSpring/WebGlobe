@@ -1,5 +1,3 @@
-///<amd-module name="world/layers/OsmTiledLayer" />
-
 import TiledLayer = require('./TiledLayer');
 
 //http://www.openstreetmap.org/

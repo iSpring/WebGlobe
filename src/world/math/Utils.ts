@@ -1,5 +1,3 @@
-///<amd-module name="world/math/Math" />
-
 import Kernel = require('../Kernel');
 import Utils = require('../Utils');
 import Vertice = require('./Vertice');
