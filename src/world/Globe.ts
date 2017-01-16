@@ -5,8 +5,10 @@ import Camera, { CameraCore } from "./Camera";
 import Scene = require("./Scene");
 import ImageUtils = require("./Image");
 import EventHandler = require("./EventHandler");
-import LabelLayer from "./layers/AutonaviLabelLayer";
 import TiledLayer = require("./layers/TiledLayer");
+import GoogleTiledLayer = require("./layers/GoogleTiledLayer");
+import LabelLayer from "./layers/LabelLayer";
+import AutonaviLabelLayer from "./layers/AutonaviLabelLayer";
 import Atmosphere = require("./graphics/Atmosphere");
 import PoiLayer = require("./layers/PoiLayer");
 
@@ -35,7 +37,7 @@ class Globe {
     this.renderer.setCamera(this.camera);
     this.setLevel(0);
 
-    this.labelLayer = new LabelLayer();
+    this.labelLayer = new AutonaviLabelLayer();
     this.scene.add(this.labelLayer);
     var atmosphere = Atmosphere.getInstance();
     this.scene.add(atmosphere);
@@ -44,6 +46,9 @@ class Globe {
 
     this.renderer.setIfAutoRefresh(true);
     this.eventHandler = new EventHandler(canvas);
+
+    var tiledLayer = new GoogleTiledLayer("Satellite");
+    this.setTiledLayer(tiledLayer);
     // this._tick();
   }
 
@@ -152,9 +157,12 @@ class Globe {
     }
 
     this.tiledLayer.updateTileVisibility();
-    if(this.labelLayer.visible){
-      var lastLevelTileGrids = this.tiledLayer.getLastLevelVisibleTileGrids();
-      this.labelLayer.updateTiles(this.getLastLevel(), lastLevelTileGrids);
+
+    if(this.labelLayer){
+      if(this.labelLayer.visible){
+        var lastLevelTileGrids = this.tiledLayer.getLastLevelVisibleTileGrids();
+        this.labelLayer.updateTiles(this.getLastLevel(), lastLevelTileGrids);
+      }
     }
   }
 

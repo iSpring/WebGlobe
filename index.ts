@@ -10,7 +10,7 @@ import SosoTiledLayer = require('./src/world/layers/SosoTiledLayer');
     var globe = new Globe(canvas);
     (<any>window).globe = globe;
 
-    var stylesObj:any = {
+    /*var stylesObj:any = {
         google: ["Satellite", "Default"],
         osm: ["Default", "Cycle", "Transport", "Humanitarian"],
         bing: ["Default"],
@@ -69,6 +69,6 @@ import SosoTiledLayer = require('./src/world/layers/SosoTiledLayer');
         (<any>styleSelector).onchange();
     };
 
-    (<any>mapSelector).onchange();
+    (<any>mapSelector).onchange();*/
 
 })();
