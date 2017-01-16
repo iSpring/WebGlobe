@@ -9,6 +9,8 @@ import TiledLayer = require("./layers/TiledLayer");
 import GoogleTiledLayer = require("./layers/GoogleTiledLayer");
 import LabelLayer from "./layers/LabelLayer";
 import AutonaviLabelLayer from "./layers/AutonaviLabelLayer";
+import TrafficLayer from "./layers/TrafficLayer";
+import SosoTrafficLayer from "./layers/SosoTrafficLayer";
 import Atmosphere = require("./graphics/Atmosphere");
 import PoiLayer = require("./layers/PoiLayer");
 
@@ -21,6 +23,7 @@ class Globe {
   camera: Camera = null;
   tiledLayer: TiledLayer = null;
   labelLayer: LabelLayer = null;
+  trafficLayer: TrafficLayer = null;
   poiLayer: PoiLayer = null;
   private lastRefreshCameraCore: CameraCore = null;
   private eventHandler: EventHandler = null;
@@ -39,6 +42,8 @@ class Globe {
 
     this.labelLayer = new AutonaviLabelLayer();
     this.scene.add(this.labelLayer);
+    // this.trafficLayer = new SosoTrafficLayer();
+    // this.scene.add(this.trafficLayer);
     var atmosphere = Atmosphere.getInstance();
     this.scene.add(atmosphere);
     this.poiLayer = PoiLayer.getInstance();
@@ -158,10 +163,15 @@ class Globe {
 
     this.tiledLayer.updateTileVisibility();
 
-    if(this.labelLayer){
-      if(this.labelLayer.visible){
-        var lastLevelTileGrids = this.tiledLayer.getLastLevelVisibleTileGrids();
+    var a = !!(this.labelLayer && this.labelLayer.visible);
+    var b = !!(this.trafficLayer && this.trafficLayer.visible);
+    if(a || b){
+      var lastLevelTileGrids = this.tiledLayer.getLastLevelVisibleTileGrids();
+      if(a){
         this.labelLayer.updateTiles(this.getLastLevel(), lastLevelTileGrids);
+      }
+      if(b){
+        this.trafficLayer.updateTiles(this.getLastLevel(), lastLevelTileGrids);
       }
     }
   }
