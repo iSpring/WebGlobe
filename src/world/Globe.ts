@@ -11,6 +11,7 @@ import LabelLayer from "./layers/LabelLayer";
 import AutonaviLabelLayer from "./layers/AutonaviLabelLayer";
 import TrafficLayer from "./layers/TrafficLayer";
 import SosoTrafficLayer from "./layers/SosoTrafficLayer";
+import QihuTrafficLayer from "./layers/QihuTrafficLayer";
 import Atmosphere = require("./graphics/Atmosphere");
 import PoiLayer = require("./layers/PoiLayer");
 
@@ -42,8 +43,9 @@ class Globe {
 
     this.labelLayer = new AutonaviLabelLayer();
     this.scene.add(this.labelLayer);
+    // this.trafficLayer = new QihuTrafficLayer();
     // this.trafficLayer = new SosoTrafficLayer();
-    // this.scene.add(this.trafficLayer);
+    this.scene.add(this.trafficLayer);
     var atmosphere = Atmosphere.getInstance();
     this.scene.add(atmosphere);
     this.poiLayer = PoiLayer.getInstance();

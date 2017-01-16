@@ -212,10 +212,7 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
   }
 
   protected wrapUrlWithProxy(url: string): string {
-    if (Kernel.proxy) {
-      return Kernel.proxy + "?" + url;
-    }
-    return url;
+    return Utils.wrapUrlWithProxy(url);
   }
 
   getLastLevelVisibleTileGrids(){

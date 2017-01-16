@@ -1,3 +1,5 @@
+import Kernel = require('./Kernel');
+
 type ArrayVoidCallbackFunction = (value: any, index: number, arr: Array<any>) => void;
 type ArrayBooleanCallbackFunction = (value: any, index: number, arr: any[]) => boolean;
 type ArrayAnyCallbackFunction = (value: any, index: number, arr: any[]) => any;
@@ -128,6 +130,13 @@ class Utils {
 
     static isMobile(): boolean {
         return !!window.navigator.userAgent.match(/Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone|IEMobile|Opera Mini/i);
+    }
+
+    static wrapUrlWithProxy(url: string): string{
+        if (Kernel.proxy) {
+            return Kernel.proxy + "?" + url;
+        }
+        return url;
     }
 };
 
