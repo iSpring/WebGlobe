@@ -18,7 +18,6 @@ import PoiLayer = require("./layers/PoiLayer");
 class Globe {
   private readonly REFRESH_INTERVAL: number = 150; //Globe自动刷新时间间隔，以毫秒为单位
   private lastRefreshTimestamp: number = -1;
-  // private idTimeOut: number = -1; //refresh自定刷新的timeOut的handle
   renderer: Renderer = null;
   scene: Scene = null;
   camera: Camera = null;
@@ -31,12 +30,12 @@ class Globe {
   private allRefreshCount:number = 0;
   private realRefreshCount:number = 0;
 
-  constructor(canvas: HTMLCanvasElement) {
+  constructor(canvas: HTMLCanvasElement, lonlat: number[] = [116.3975, 39.9085]) {
     Kernel.globe = this;
     this.renderer = new Renderer(canvas, this._onBeforeRender.bind(this));
     this.scene = new Scene();
     var radio = canvas.width / canvas.height;
-    this.camera = new Camera(30, radio, 1, Kernel.EARTH_RADIUS * 2);
+    this.camera = new Camera(30, radio, 1, Kernel.EARTH_RADIUS * 2, lonlat);
     this.renderer.setScene(this.scene);
     this.renderer.setCamera(this.camera);
     this.setLevel(0);
