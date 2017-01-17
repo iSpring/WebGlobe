@@ -43,7 +43,8 @@ class Globe {
 
     this.labelLayer = new AutonaviLabelLayer();
     this.scene.add(this.labelLayer);
-    // this.trafficLayer = new QihuTrafficLayer();
+    this.trafficLayer = new QihuTrafficLayer();
+    this.trafficLayer.visible = false;
     // this.trafficLayer = new SosoTrafficLayer();
     this.scene.add(this.trafficLayer);
     var atmosphere = Atmosphere.getInstance();
@@ -73,6 +74,30 @@ class Globe {
     this.tiledLayer = tiledLayer;
     this.scene.add(this.tiledLayer, true);
     this.refresh(true);
+  }
+
+  showLabelLayer(){
+    if(this.labelLayer){
+      this.labelLayer.visible = true;
+    }
+  }
+
+  hideLabelLayer(){
+    if(this.labelLayer){
+      this.labelLayer.visible = false;
+    }
+  }
+
+  showTrafficLayer(){
+    if(this.trafficLayer){
+      this.trafficLayer.visible = true;
+    }
+  }
+
+  hideTrafficLayer(){
+    if(this.trafficLayer){
+      this.trafficLayer.visible = false;
+    }
   }
 
   getLevel() {

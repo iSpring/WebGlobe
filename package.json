@@ -1,6 +1,6 @@
 {
     "name": "webglobe",
-    "version": "0.3.15",
+    "version": "0.3.16",
     "description": "A WebGL virtual globe and map engine.",
     "main": "require.js",
     "scripts": {

@@ -134,3 +134,5 @@
 0.3.14 在移动端浏览器上面可以通过手势缩放
 
 0.3.15 添加了TrafficLayer、SosoTrafficLayer、QihuTrafficLayer，可以查看实时交通
+
+0.3.16 使得QihuTrafficLayer可以运行
