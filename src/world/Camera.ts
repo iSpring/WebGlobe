@@ -87,14 +87,14 @@ class Camera extends Object3D {
   //this.far可以动态计算
   //this.aspect在Viewport改变后重新计算
   //this.fov可以调整以实现缩放效果
-  constructor(private fov:number = 45, private aspect:number = 1, private near:number = 1, private far:number = 100, lonlat:number[] = [0, 0]) {
+  constructor(private fov:number = 45, private aspect:number = 1, private near:number = 1, private far:number = 100, level:number = 0, lonlat:number[] = [0, 0]) {
     super();
     this.initFov = this.fov;
     this.lastMatrix = new Matrix();
     this.lastMatrix.setUniqueValue(0);
     this.projMatrix = new Matrix();
     this._rawSetPerspectiveMatrix(this.fov, this.aspect, this.near, this.far);
-    this._initCameraPosition(lonlat[0], lonlat[1]);
+    this._initCameraPosition(level, lonlat[0], lonlat[1]);
   }
 
   toJson():any{
@@ -390,15 +390,14 @@ class Camera extends Object3D {
     // Kernel.globe.refresh();
   }
 
-  private _initCameraPosition(lon:number, lat:number) {
-    var initLevel = 0;
-    var length = this._getTheoryDistanceFromCamera2EarthSurface(initLevel) + Kernel.EARTH_RADIUS; //level等级下摄像机应该到球心的距离
+  private _initCameraPosition(level: number, lon:number, lat:number) {
+    var length = this._getTheoryDistanceFromCamera2EarthSurface(0) + Kernel.EARTH_RADIUS; //level等级下摄像机应该到球心的距离
     var initPosition = MathUtils.geographicToCartesianCoord(lon, lat, length);
     var origin = new Vertice(0, 0, 0);
     var vector = this.getLightDirection().getOpposite();
     vector.setLength(length);
-    // var newPosition = vector.getVertice();
     this._look(initPosition, origin);
+    this.setLevel(level);
   }
 
   //设置观察到的层级，不要在该方法中修改this.level的值

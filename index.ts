@@ -7,7 +7,7 @@ import SosoTiledLayer = require('./src/world/layers/SosoTiledLayer');
 
 (function () {
     var canvas = <HTMLCanvasElement>document.getElementById("canvasId");
-    var globe = new Globe(canvas);
+    var globe = new Globe(canvas, 13);
     (<any>window).globe = globe;
 
     /*var stylesObj:any = {

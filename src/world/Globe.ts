@@ -10,7 +10,6 @@ import GoogleTiledLayer = require("./layers/GoogleTiledLayer");
 import LabelLayer from "./layers/LabelLayer";
 import AutonaviLabelLayer from "./layers/AutonaviLabelLayer";
 import TrafficLayer from "./layers/TrafficLayer";
-import SosoTrafficLayer from "./layers/SosoTrafficLayer";
 import QihuTrafficLayer from "./layers/QihuTrafficLayer";
 import Atmosphere = require("./graphics/Atmosphere");
 import PoiLayer = require("./layers/PoiLayer");
@@ -30,21 +29,19 @@ class Globe {
   private allRefreshCount:number = 0;
   private realRefreshCount:number = 0;
 
-  constructor(canvas: HTMLCanvasElement, lonlat: number[] = [116.3975, 39.9085]) {
+  constructor(canvas: HTMLCanvasElement, level:number = 0, lonlat: number[] = [116.3975, 39.9085]) {
     Kernel.globe = this;
     this.renderer = new Renderer(canvas, this._onBeforeRender.bind(this));
     this.scene = new Scene();
     var radio = canvas.width / canvas.height;
-    this.camera = new Camera(30, radio, 1, Kernel.EARTH_RADIUS * 2, lonlat);
+    this.camera = new Camera(30, radio, 1, Kernel.EARTH_RADIUS * 2, level, lonlat);
     this.renderer.setScene(this.scene);
     this.renderer.setCamera(this.camera);
-    this.setLevel(0);
 
     this.labelLayer = new AutonaviLabelLayer();
     this.scene.add(this.labelLayer);
     this.trafficLayer = new QihuTrafficLayer();
     this.trafficLayer.visible = false;
-    // this.trafficLayer = new SosoTrafficLayer();
     this.scene.add(this.trafficLayer);
     var atmosphere = Atmosphere.getInstance();
     this.scene.add(atmosphere);
