@@ -21,7 +21,7 @@ class EventHandler {
     this._initLayout();
   }
 
-  _bindEvents() {
+  private _bindEvents() {
     window.addEventListener("resize", this._initLayout.bind(this));
     if (Utils.isMobile()) {
       this.canvas.addEventListener("touchstart", this._onTouchStart.bind(this), false);
@@ -38,7 +38,7 @@ class EventHandler {
     }
   }
 
-  _initLayout() {
+  private _initLayout() {
     this.canvas.width = document.body.clientWidth;
     this.canvas.height = document.body.clientHeight;
     if (Kernel.globe) {
@@ -47,7 +47,7 @@ class EventHandler {
     }
   }
 
-  _moveLonLatToCanvas(lon: number, lat: number, canvasX: number, canvasY: number) {
+  moveLonLatToCanvas(lon: number, lat: number, canvasX: number, canvasY: number) {
     var pickResult = Kernel.globe.camera.getPickCartesianCoordInEarthByCanvas(canvasX, canvasY);
     if (pickResult.length > 0) {
       var newLonLat = MathUtils.cartesianCoordToGeographic(pickResult[0]);
@@ -57,7 +57,7 @@ class EventHandler {
     }
   }
 
-  _moveGeo(oldLon: number, oldLat: number, newLon: number, newLat: number) {
+  private _moveGeo(oldLon: number, oldLat: number, newLon: number, newLat: number) {
     if (oldLon === newLon && oldLat === newLat) {
       return;
     }
@@ -70,7 +70,7 @@ class EventHandler {
     Kernel.globe.camera.worldRotateByVector(rotateRadian, rotateVector);
   }
 
-  _handleMouseDownOrTouchStart(offsetX: number, offsetY: number) {
+  private _handleMouseDownOrTouchStart(offsetX: number, offsetY: number) {
     this.down = true;
     this.previousX = offsetX;
     this.previousY = offsetY;
@@ -80,7 +80,7 @@ class EventHandler {
     }
   }
 
-  _handleMouseMoveOrTouchMove(currentX: number, currentY: number) {
+  private _handleMouseMoveOrTouchMove(currentX: number, currentY: number) {
     var globe = Kernel.globe;
     if (!globe || globe.isAnimating() || !this.down) {
       return;
@@ -107,7 +107,7 @@ class EventHandler {
     }
   }
 
-  _handleMouseUpOrTouchEnd() {
+  private _handleMouseUpOrTouchEnd() {
     this.down = false;
     this.previousX = -1;
     this.previousY = -1;
@@ -117,7 +117,7 @@ class EventHandler {
     }
   }
 
-  _onMouseDown(event: MouseEvent) {
+  private _onMouseDown(event: MouseEvent) {
     var globe = Kernel.globe;
     if (!globe || globe.isAnimating()) {
       return;
@@ -127,7 +127,7 @@ class EventHandler {
     this._handleMouseDownOrTouchStart(previousX, previousY);
   }
 
-  _onMouseMove(event: MouseEvent) {
+  private _onMouseMove(event: MouseEvent) {
     if(!this.down){
       return;
     }
@@ -139,11 +139,11 @@ class EventHandler {
     this._handleMouseMoveOrTouchMove(currentX, currentY);
   }
 
-  _onMouseUp() {
+  private _onMouseUp() {
     this._handleMouseUpOrTouchEnd();
   }
 
-  _onDbClick(event: MouseEvent) {
+  private _onDbClick(event: MouseEvent) {
     var globe = Kernel.globe;
     if (!globe || globe.isAnimating()) {
       return;
@@ -159,11 +159,11 @@ class EventHandler {
       var lon = lonlat[0];
       var lat = lonlat[1];
       globe.setLevel(globe.getLevel() + 1);
-      this._moveLonLatToCanvas(lon, lat, absoluteX, absoluteY);
+      this.moveLonLatToCanvas(lon, lat, absoluteX, absoluteY);
     }
   }
 
-  _onMouseWheel(event: MouseWheelEvent) {
+  private _onMouseWheel(event: MouseWheelEvent) {
     var globe = Kernel.globe;
     if (!globe || globe.isAnimating()) {
       return;
@@ -186,7 +186,7 @@ class EventHandler {
     }
   }
 
-  _onKeyDown(event: KeyboardEvent) {
+  private _onKeyDown(event: KeyboardEvent) {
     var globe = Kernel.globe;
     if (!globe || globe.isAnimating()) {
       return;
@@ -207,7 +207,7 @@ class EventHandler {
 
   //--------------------------------------------------------------------------------------
 
-  _onTouchZero(){
+  private _onTouchZero(){
     this.twoTouchDistance = -1;
     this._handleMouseUpOrTouchEnd();
     this.endTime = Date.now();
@@ -223,7 +223,7 @@ class EventHandler {
     }
   }
 
-  _onTouchOne(event: TouchEvent){
+  private _onTouchOne(event: TouchEvent){
     this.twoTouchDistance = -1;
     var touch = event.targetTouches[0];
     var previousX = touch.pageX;
@@ -232,7 +232,7 @@ class EventHandler {
     this.startTime = Date.now();
   }
 
-  _onTouchTwo(event: TouchEvent){
+  private _onTouchTwo(event: TouchEvent){
     this.down = true;
     this.previousX = -1;
     this.previousY = -1;
@@ -246,7 +246,7 @@ class EventHandler {
     this.twoTouchDistance = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
   }
 
-  _onTouchMulti(){
+  private _onTouchMulti(){
     this.down = true;
     this.previousX = -1;
     this.previousY = -1;
@@ -254,7 +254,7 @@ class EventHandler {
     this.twoTouchDistance = -1;
   }
 
-  _onTouchStart(event: TouchEvent) {
+  private _onTouchStart(event: TouchEvent) {
     var globe = Kernel.globe;
     if (!globe || globe.isAnimating()) {
       return;
@@ -272,14 +272,14 @@ class EventHandler {
     }
   }
 
-  _onTouchMoveOne(event: TouchEvent){
+  private _onTouchMoveOne(event: TouchEvent){
     var touch = event.targetTouches[0];
     var currentX = touch.pageX;
     var currentY = touch.pageY;
     this._handleMouseMoveOrTouchMove(currentX, currentY);
   }
 
-  _onTouchMoveTwo(event: TouchEvent){
+  private _onTouchMoveTwo(event: TouchEvent){
     var touch1 = event.targetTouches[0];
     var x1 = touch1.pageX;
     var y1 = touch1.pageY;
@@ -299,7 +299,7 @@ class EventHandler {
     }
   }
 
-  _onTouchMove(event: TouchEvent) {
+  private _onTouchMove(event: TouchEvent) {
     if(!this.down){
       return;
     }
@@ -314,7 +314,7 @@ class EventHandler {
     }
   }
 
-  _onTouchEnd(event: TouchEvent) {
+  private _onTouchEnd(event: TouchEvent) {
     var touchCount = event.targetTouches.length;
     if (touchCount === 0) {
       this._onTouchZero();

@@ -14,6 +14,8 @@ import QihuTrafficLayer from "./layers/QihuTrafficLayer";
 import Atmosphere = require("./graphics/Atmosphere");
 import PoiLayer = require("./layers/PoiLayer");
 
+const initLevel = Utils.isMobile() ? 8 : 0;
+
 class Globe {
   private readonly REFRESH_INTERVAL: number = 150; //Globe自动刷新时间间隔，以毫秒为单位
   private lastRefreshTimestamp: number = -1;
@@ -29,7 +31,7 @@ class Globe {
   private allRefreshCount:number = 0;
   private realRefreshCount:number = 0;
 
-  constructor(canvas: HTMLCanvasElement, level:number = 0, lonlat: number[] = [116.3975, 39.9085]) {
+  constructor(private canvas: HTMLCanvasElement, level:number = initLevel, lonlat: number[] = [116.3975, 39.9085]) {
     Kernel.globe = this;
     this.renderer = new Renderer(canvas, this._onBeforeRender.bind(this));
     this.scene = new Scene();
@@ -54,6 +56,18 @@ class Globe {
     var tiledLayer = new GoogleTiledLayer("Satellite");
     this.setTiledLayer(tiledLayer);
     // this._tick();
+
+    if(Utils.isMobile() && window.navigator.geolocation){
+      window.navigator.geolocation.getCurrentPosition((position: Position) => {
+        var lon = position.coords.longitude;
+        var lat = position.coords.latitude;
+        this.eventHandler.moveLonLatToCanvas(lon, lat, this.canvas.width / 2, this.canvas.height / 2);
+        var mobileLevel = 13;
+        if(this.getLevel() < mobileLevel){
+          this.setLevel(mobileLevel);
+        }
+      });
+    }
   }
 
   setTiledLayer(tiledLayer: TiledLayer) {

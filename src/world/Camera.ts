@@ -95,6 +95,7 @@ class Camera extends Object3D {
     this.projMatrix = new Matrix();
     this._rawSetPerspectiveMatrix(this.fov, this.aspect, this.near, this.far);
     this._initCameraPosition(level, lonlat[0], lonlat[1]);
+    this.update(true);
   }
 
   toJson():any{
