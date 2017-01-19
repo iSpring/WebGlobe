@@ -61,6 +61,7 @@ class Globe {
       window.navigator.geolocation.getCurrentPosition((position: Position) => {
         var lon = position.coords.longitude;
         var lat = position.coords.latitude;
+        this.poiLayer.addPoi(lon, lat, "", "", "", "");
         this.eventHandler.moveLonLatToCanvas(lon, lat, this.canvas.width / 2, this.canvas.height / 2);
         var mobileLevel = 13;
         if(this.getLevel() < mobileLevel){
