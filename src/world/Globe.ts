@@ -7,8 +7,10 @@ import ImageUtils = require("./Image");
 import EventHandler = require("./EventHandler");
 import TiledLayer = require("./layers/TiledLayer");
 import GoogleTiledLayer = require("./layers/GoogleTiledLayer");
+import AutonaviTiledLayer = require("./layers/AutonaviTiledLayer");
 import LabelLayer from "./layers/LabelLayer";
 import AutonaviLabelLayer from "./layers/AutonaviLabelLayer";
+import GoogleLabelLayer from "./layers/GoogleLabelLayer";
 import TrafficLayer from "./layers/TrafficLayer";
 import QihuTrafficLayer from "./layers/QihuTrafficLayer";
 import Atmosphere = require("./graphics/Atmosphere");
@@ -41,10 +43,11 @@ class Globe {
     this.renderer.setCamera(this.camera);
 
     this.labelLayer = new AutonaviLabelLayer();
+    // this.labelLayer = new GoogleLabelLayer();
     this.scene.add(this.labelLayer);
-    this.trafficLayer = new QihuTrafficLayer();
-    this.trafficLayer.visible = false;
-    this.scene.add(this.trafficLayer);
+    // this.trafficLayer = new QihuTrafficLayer();
+    // this.trafficLayer.visible = false;
+    // this.scene.add(this.trafficLayer);
     var atmosphere = Atmosphere.getInstance();
     this.scene.add(atmosphere);
     this.poiLayer = PoiLayer.getInstance();
@@ -54,6 +57,7 @@ class Globe {
     this.eventHandler = new EventHandler(canvas);
 
     var tiledLayer = new GoogleTiledLayer("Satellite");
+    // var tiledLayer = new AutonaviTiledLayer("Satellite");
     this.setTiledLayer(tiledLayer);
     // this._tick();
 
