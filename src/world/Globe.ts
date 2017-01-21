@@ -1,5 +1,6 @@
 import Kernel = require("./Kernel");
 import Utils = require("./Utils");
+import Location,{LocationData} from "./Location";
 import Renderer = require("./Renderer");
 import Camera, { CameraCore } from "./Camera";
 import Scene = require("./Scene");
@@ -70,15 +71,35 @@ class Globe {
     //     this.showLocation(lon, lat);
     //   });
     // }
+
+    Utils.subscribe('location', (data:LocationData) => {
+      console.log(data);
+      this.showLocation(data);
+    });
+    Location.getRobustLocation();
+    Location.getLocation();
+    Location.watchPosition();
   }
 
-  showLocation(lon: number, lat: number){
+  showLocation(locationData: LocationData){
+    var lon = locationData.lng;
+    var lat = locationData.lat;
+    this.poiLayer.clear();
     this.poiLayer.addPoi(lon, lat, "", "", "", "");
     this.eventHandler.moveLonLatToCanvas(lon, lat, this.canvas.width / 2, this.canvas.height / 2);
-    var mobileLevel = 13;
-    if(this.getLevel() < mobileLevel){
-      this.setLevel(mobileLevel);
+    var accuracy = locationData.accuracy;
+    var level:number = 8;
+    if(accuracy <= 100){
+      level = 13;
+    }else if(accuracy <= 1000){
+      level = 10;
+    }else{
+      level = 8;
     }
+    // if(this.getLevel() < level){
+    //   this.setLevel(level);
+    // }
+    this.setLevel(level);
   }
 
   setTiledLayer(tiledLayer: TiledLayer) {

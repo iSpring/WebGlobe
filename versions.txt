@@ -136,3 +136,5 @@
 0.3.15 添加了TrafficLayer、SosoTrafficLayer、QihuTrafficLayer，可以查看实时交通
 
 0.3.16 使得QihuTrafficLayer可以运行
+
+0.3.17 添加Location模块，监听位置变化
