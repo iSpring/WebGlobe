@@ -56,22 +56,28 @@ class Globe {
     this.renderer.setIfAutoRefresh(true);
     this.eventHandler = new EventHandler(canvas);
 
-    var tiledLayer = new GoogleTiledLayer("Satellite");
-    // var tiledLayer = new AutonaviTiledLayer("Satellite");
+    // var tiledLayer = new GoogleTiledLayer("Satellite");
+    var tiledLayer = new AutonaviTiledLayer("Satellite");
     this.setTiledLayer(tiledLayer);
     // this._tick();
 
-    if(Utils.isMobile() && window.navigator.geolocation){
-      window.navigator.geolocation.getCurrentPosition((position: Position) => {
-        var lon = position.coords.longitude;
-        var lat = position.coords.latitude;
-        this.poiLayer.addPoi(lon, lat, "", "", "", "");
-        this.eventHandler.moveLonLatToCanvas(lon, lat, this.canvas.width / 2, this.canvas.height / 2);
-        var mobileLevel = 13;
-        if(this.getLevel() < mobileLevel){
-          this.setLevel(mobileLevel);
-        }
-      });
+    // if(Utils.isMobile() && window.navigator.geolocation){
+    //   window.navigator.geolocation.getCurrentPosition((position: Position) => {
+    //     // var str = `accuracy:${position.coords.accuracy},heading:${position.coords.heading},speed:${position.coords.speed}`;
+    //     // alert(str);
+    //     var lon = position.coords.longitude;
+    //     var lat = position.coords.latitude;
+    //     this.showLocation(lon, lat);
+    //   });
+    // }
+  }
+
+  showLocation(lon: number, lat: number){
+    this.poiLayer.addPoi(lon, lat, "", "", "", "");
+    this.eventHandler.moveLonLatToCanvas(lon, lat, this.canvas.width / 2, this.canvas.height / 2);
+    var mobileLevel = 13;
+    if(this.getLevel() < mobileLevel){
+      this.setLevel(mobileLevel);
     }
   }
 

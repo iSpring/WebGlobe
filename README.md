@@ -1,4 +1,4 @@
- <p align="center">
+<p align="center">
   <a target="_blank" href="https://ispring.github.io/WebGlobe/index.html">
     <img src="https://github.com/iSpring/WebGlobe/blob/develop/webglobe.png">
   </a>

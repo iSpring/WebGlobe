@@ -34,5 +34,17 @@
         <img src="images/iSpring.png" />
     </a>
 </body>
-
+<iframe id="geoPage" width=0 height=0 frameborder=0  style="display:none;" scrolling="no" src="https://apis.map.qq.com/tools/geolocation?key=YLZBZ-XDPKU-LWMV6-2WNPB-PL5W5-H6BGL&referer=WebGlobe"></iframe>
+<script type="text/javascript">
+window.addEventListener('message', function(event) {
+    // 接收位置信息
+    var loc = event.data; 
+    if(loc){
+        alert(JSON.stringify(loc));
+        window.globe.showLocation(loc.lng, loc.lat);
+    }else{
+        alert("定位失败");
+    }
+}, false); 
+</script>
 </html>
