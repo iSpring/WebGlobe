@@ -8,9 +8,9 @@
         "outDir": "buildOutput/amd"
     },
     "include": [
-        "**/*.ts"
+        "src/**/*.ts"
     ],
     "exclude": [
-        "./node_modules"
+        "node_modules"
     ]
 }

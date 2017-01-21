@@ -20,7 +20,7 @@ const targetOrigin:string = 'https://apis.map.qq.com';
 
 var iframe = document.createElement("iframe");
 
-class Location{
+class LocationService{
     private static init(){
         window.addEventListener('message', function(event){
             var data:LocationData = event.data;
@@ -55,6 +55,6 @@ class Location{
     }
 }
 
-(Location as any).init();
+(LocationService as any).init();
 
-export default Location;
+export default LocationService;

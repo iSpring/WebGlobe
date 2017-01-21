@@ -1,6 +1,6 @@
 import Kernel = require("./Kernel");
 import Utils = require("./Utils");
-import Location,{LocationData} from "./Location";
+import LocationService,{LocationData} from "./LocationService";
 import Renderer = require("./Renderer");
 import Camera, { CameraCore } from "./Camera";
 import Scene = require("./Scene");
@@ -76,9 +76,9 @@ class Globe {
       console.log(data);
       this.showLocation(data);
     });
-    Location.getRobustLocation();
-    Location.getLocation();
-    Location.watchPosition();
+    LocationService.getRobustLocation();
+    LocationService.getLocation();
+    LocationService.watchPosition();
   }
 
   showLocation(locationData: LocationData){
