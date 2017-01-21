@@ -1,8 +1,11 @@
 import Kernel = require('./Kernel');
 
-type ArrayVoidCallbackFunction = (value: any, index: number, arr: Array<any>) => void;
-type ArrayBooleanCallbackFunction = (value: any, index: number, arr: any[]) => boolean;
-type ArrayAnyCallbackFunction = (value: any, index: number, arr: any[]) => any;
+type ArrayVoidCallback = (value: any, index: number, arr: Array<any>) => void;
+type ArrayBooleanCallback = (value: any, index: number, arr: any[]) => boolean;
+type ArrayAnyCallback = (value: any, index: number, arr: any[]) => any;
+type TopicCallback = (data:any) => void;
+
+const topic:{[key:string]:TopicCallback[]} = {}; 
 
 class Utils {
 
@@ -61,23 +64,23 @@ class Utils {
         return typeof v === 'function';
     }
 
-    static forEach(arr: ArrayLike<any>, func: ArrayVoidCallbackFunction): void {
+    static forEach(arr: ArrayLike<any>, func: ArrayVoidCallback): void {
         return this.isFunction((<any>arr).forEach) ? (<any>arr).forEach(func) : Array.prototype.forEach.call(arr, func);
     }
 
-    static filter(arr: ArrayLike<any>, func: ArrayBooleanCallbackFunction): any[] {
+    static filter(arr: ArrayLike<any>, func: ArrayBooleanCallback): any[] {
         return this.isFunction((<any>arr).filter) ? (<any>arr).filter(func) : Array.prototype.filter.call(arr, func);
     }
 
-    static map(arr: ArrayLike<any>, func: ArrayAnyCallbackFunction): any[] {
+    static map(arr: ArrayLike<any>, func: ArrayAnyCallback): any[] {
         return this.isFunction((<any>arr).map) ? (<any>arr).map(func) : Array.prototype.map.call(arr, func);
     }
 
-    static some(arr: ArrayLike<any>, func: ArrayBooleanCallbackFunction): boolean {
+    static some(arr: ArrayLike<any>, func: ArrayBooleanCallback): boolean {
         return this.isFunction((<any>arr).some) ? (<any>arr).some(func) : Array.prototype.some.call(arr, func);
     }
 
-    static every(arr: ArrayLike<any>, func: ArrayBooleanCallbackFunction): boolean {
+    static every(arr: ArrayLike<any>, func: ArrayBooleanCallback): boolean {
         return this.isFunction((<any>arr).every) ? (<any>arr).every(func) : Array.prototype.every.call(arr, func);
     }
 
@@ -137,6 +140,22 @@ class Utils {
             return Kernel.proxy + "?" + url;
         }
         return url;
+    }
+
+    static subscribe(topicName: string, callback: TopicCallback){
+        if(!topic[topicName]){
+            topic[topicName] = [];
+        }
+        topic[topicName].push(callback);
+    }
+
+    static publish(topicName: string, data: any){
+        var callbacks = topic[topicName];
+        if(callbacks && callbacks.length > 0){
+            callbacks.forEach(function(callback: TopicCallback){
+                callback(data);
+            });
+        }
     }
 };
 
