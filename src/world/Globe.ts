@@ -43,8 +43,8 @@ class Globe {
     this.renderer.setScene(this.scene);
     this.renderer.setCamera(this.camera);
 
-    // this.labelLayer = new AutonaviLabelLayer();
-    this.labelLayer = new GoogleLabelLayer();
+    this.labelLayer = new AutonaviLabelLayer();
+    // this.labelLayer = new GoogleLabelLayer();
     this.scene.add(this.labelLayer);
     // this.trafficLayer = new QihuTrafficLayer();
     // this.trafficLayer.visible = false;
@@ -60,7 +60,6 @@ class Globe {
     var tiledLayer = new GoogleTiledLayer("Satellite");
     // var tiledLayer = new AutonaviTiledLayer("Satellite");
     this.setTiledLayer(tiledLayer);
-    // this._tick();
 
     // if(Utils.isMobile() && window.navigator.geolocation){
     //   window.navigator.geolocation.getCurrentPosition((position: Position) => {

@@ -6,7 +6,7 @@ import LabelLayer from './LabelLayer';
 //http://map.earthol.com/
 //http://www.265.me/
 
-type Style = "Default" | "Satellite";
+type Style = "Default" | "Satellite" | "Road" | "RoadOnly" | "Terrain" | "TerrainOnly";
 
 export class GoogleTiledLayer extends TiledLayer{
 
@@ -21,15 +21,45 @@ export class GoogleTiledLayer extends TiledLayer{
       this.idx = 0;
     }
 
-    var url:string = "";
+    /*
+    h = roads only
+    m = standard roadmap
+    p = terrain
+    r = somehow altered roadmap
+    s = satellite only
+    t = terrain only
+    y = hybrid
+    */
 
-    if(this.style === "Satellite"){
-      //http://mt0.google.cn/maps/vt?lyrs=s%40709&hl=zh-CN&gl=CN&&x=0&y=4&z=4
-      url = `//mt${this.idx}.google.cn/maps/vt?lyrs=s%40709&hl=zh-CN&gl=CN&&x=${column}&y=${row}&z=${level}`;
-    }else{
-      // return `//mt${idx}.google.cn/vt/lyrs=m@212000000&hl=zh-CN&gl=CN&src=app&x=${column}&y=${row}&z=${level}&s=Galil`;
-      url = `//mt${this.idx}.google.cn/vt/hl=zh-CN&gl=CN&x=${column}&y=${row}&z=${level}`;
+    // if(this.style === "Satellite"){
+    //   //http://mt0.google.cn/maps/vt?lyrs=s%40709&hl=zh-CN&gl=CN&&x=0&y=4&z=4
+    //   url = `//mt${this.idx}.google.cn/maps/vt?lyrs=s%40709&hl=zh-CN&gl=CN&&x=${column}&y=${row}&z=${level}`;
+    // }else{
+    //   // return `//mt${idx}.google.cn/vt/lyrs=m@212000000&hl=zh-CN&gl=CN&src=app&x=${column}&y=${row}&z=${level}&s=Galil`;
+    //   url = `//mt${this.idx}.google.cn/vt/hl=zh-CN&gl=CN&x=${column}&y=${row}&z=${level}`;
+    // }
+
+    var lyrs: string = "y";
+
+    switch(this.style){
+      case "Satellite":
+        lyrs = "s";
+        break;
+      case "Road":
+        lyrs = "m";
+        break;
+      case "RoadOnly":
+        lyrs = "h";
+        break;
+      case "Terrain":
+        lyrs = "p";
+        break;
+      case "TerrainOnly":
+        lyrs = "t";
+        break;
     }
+
+    var url:string = `//mt${this.idx}.google.cn/maps/vt?lyrs=${lyrs}&hl=zh-CN&gl=CN&&x=${column}&y=${row}&z=${level}`;
 
     this.idx++;
 
