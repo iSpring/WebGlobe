@@ -62,10 +62,10 @@ class Camera extends Object3D {
   //定义抬头时，旋转角为正值
   private isZeroPitch: boolean = true;//表示当前Camera视线有没有发生倾斜
 
-  private level: number = -1; //当前渲染等级
-  private realLevel: number = -2;//可能是正数，可能是非整数，非整数表示缩放动画过程中的level
+  private renderingLevel: number = -1; //当前渲染等级
+  private realRenderingLevel: number = -2;//可能是正数，可能是非整数，非整数表示缩放动画过程中的level
+  private lastRenderingRealLevel: number = -3;//上次render()时所用到的this.realLevel
 
-  private lastRealLevel: number = -3;//上次render()时所用到的this.realLevel
   private lastMatrix: Matrix;//上次render()时的this.matrix
   private lastFov: number = -1;
   private lastAspect: number = -1;
@@ -105,9 +105,9 @@ class Camera extends Object3D {
     var json = {
       matrix: matrixToJson(this.matrix),
       isZeroPitch: this.isZeroPitch,
-      level: this.level,
-      realLevel: this.realLevel,
-      lastRealLevel: this.lastRealLevel,
+      level: this.renderingLevel,
+      realLevel: this.realRenderingLevel,
+      lastRealLevel: this.lastRenderingRealLevel,
       lastMatrix: matrixToJson(this.lastMatrix),
       lastFov: this.lastFov,
       lastAspect: this.lastAspect,
@@ -132,9 +132,9 @@ class Camera extends Object3D {
   fromJson(json: any){
     this.matrix = Matrix.fromJson(json.matrix);
     this.isZeroPitch = json.isZeroPitch;
-    this.level = json.level;
-    this.realLevel = json.realLevel;
-    this.lastRealLevel = json.lastRealLevel;
+    this.renderingLevel = json.level;
+    this.realRenderingLevel = json.realLevel;
+    this.lastRenderingRealLevel = json.lastRealLevel;
     this.lastMatrix = Matrix.fromJson(json.lastMatrix);
     this.lastFov = json.lastFov;
     this.lastAspect = json.lastAspect;
@@ -236,13 +236,13 @@ class Camera extends Object3D {
     this.lastAspect = this.aspect;
     this.lastNear = this.near;
     this.lastFar = this.far;
-    this.lastRealLevel = this.realLevel;
+    this.lastRenderingRealLevel = this.realRenderingLevel;
     this.lastMatrix.setMatrixByOther(this.matrix);
     return updated;
   }
 
   getCameraCore(){
-    return new CameraCore(this.fov, this.aspect, this.near, this.far, this.realLevel, this.matrix.clone());
+    return new CameraCore(this.fov, this.aspect, this.near, this.far, this.realRenderingLevel, this.matrix.clone());
   }
 
   private _isNeedUpdate(): boolean{
@@ -250,7 +250,7 @@ class Camera extends Object3D {
            (this.aspect !== this.lastAspect) ||
            (this.near !== this.lastNear) ||
            (this.far !== this.lastFar) ||
-           (this.realLevel !== this.lastRealLevel) ||
+           (this.realRenderingLevel !== this.lastRenderingRealLevel) ||
            (!this.matrix.equals(this.lastMatrix));
   }
 
@@ -295,7 +295,7 @@ class Camera extends Object3D {
   //返回更新后的fov值，如果返回结果 < 0，说明无需更新fov
   private _updatePositionAndFov(cameraMatrix: Matrix): number {
     //是否满足near值，和fov没有关系，和position有关，但是改变position的话，fov也要相应变动以满足对应的缩放效果
-    const currentLevel = this.animating ? this.realLevel : this.level;
+    const currentLevel = this.animating ? this.realRenderingLevel : this.renderingLevel;
 
     //safeLevel不是整数
     var safeLevel = this._getSafeThresholdLevelForNear();
@@ -373,7 +373,7 @@ class Camera extends Object3D {
   }
 
   getLevel(): number {
-    return this.level;
+    return this.renderingLevel;
   }
 
   setLevel(level: number): void {
@@ -381,13 +381,13 @@ class Camera extends Object3D {
       throw "invalid level:" + level;
     }
     level = level > Kernel.MAX_LEVEL ? Kernel.MAX_LEVEL : level; //超过最大的渲染级别就不渲染
-    if (level === this.level) {
+    if (level === this.renderingLevel) {
       return;
     }
     var isLevelChanged = this._updatePositionByLevel(level, this.matrix);
     //不要在this._updatePositionByLevel()方法中更新this.level，因为这会影响animateToLevel()方法
-    this.level = level;
-    this.realLevel = level;
+    this.renderingLevel = level;
+    this.realRenderingLevel = level;
     // Kernel.globe.refresh();
   }
 
@@ -446,7 +446,7 @@ class Camera extends Object3D {
     //旋转
     matrix.localRotateX(deltaRadian);
     //更新matrix的position
-    this._updatePositionByLevel(this.level, matrix);
+    this._updatePositionByLevel(this.renderingLevel, matrix);
 
     //刷新
     this.isZeroPitch = newPitch === 0;
@@ -566,9 +566,9 @@ class Camera extends Object3D {
     var deltaX = (newPosition.x - oldPosition.x) / count;
     var deltaY = (newPosition.y - oldPosition.y) / count;
     var deltaZ = (newPosition.z - oldPosition.z) / count;
-    var deltaLevel = (newLevel - this.level) / count;
+    var deltaLevel = (newLevel - this.renderingLevel) / count;
     var start: number = -1;
-    this.realLevel = this.level;
+    this.realRenderingLevel = this.renderingLevel;
     this.animating = true;
 
     var callback = (timestap: number) => {
@@ -578,13 +578,13 @@ class Camera extends Object3D {
       var a = timestap - start;
       if (a >= span) {
         this.animating = false;
-        this.realLevel = newLevel;
+        this.realRenderingLevel = newLevel;
         this.setLevel(newLevel);
         if(cb){
           cb();
         }
       } else {
-        this.realLevel += deltaLevel;
+        this.realRenderingLevel += deltaLevel;
         var p = this.getPosition();
         this.setPosition(new Vertice(p.x + deltaX, p.y + deltaY, p.z + deltaZ));
         requestAnimationFrame(callback);
