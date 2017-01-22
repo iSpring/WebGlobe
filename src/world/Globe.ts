@@ -57,8 +57,8 @@ class Globe {
     this.renderer.setIfAutoRefresh(true);
     this.eventHandler = new EventHandler(canvas);
 
-    // var tiledLayer = new GoogleTiledLayer("Satellite");
-    var tiledLayer = new AutonaviTiledLayer("Satellite");
+    var tiledLayer = new GoogleTiledLayer("Satellite");
+    // var tiledLayer = new AutonaviTiledLayer("Satellite");
     this.setTiledLayer(tiledLayer);
     // this._tick();
 

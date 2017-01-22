@@ -156,7 +156,9 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
       if(tileGrids.length === 8){
         tileGrids = Utils.filterRepeatArray(tileGrids);
         for(var i: number = 0; i <= ancesorLevel; i++){
-          this.children[i].hideAllTiles();
+          if(this.children[i]){
+            this.children[i].hideAllTiles();
+          }
         }
         tileGrids.forEach((tileGrid) => {
           var tile = this._getReadyTile(tileGrid);
