@@ -15,30 +15,11 @@ body {
     cursor: default;
 }
 
-.select-div {
-    position: absolute;
-    left: 20px;
-    color: #4CAF50;
-    font-weight: bold;
-}
-
-.map-select-div {
-    top: 20px;
-}
-
-.style-select-div {
-    top: 50px;
-}
-
-.select-div select {
-    margin-left: 10px;
-}
-
 #canvasId {
     cursor: default;
 }
 
-#blog {
+#about-me {
     position: absolute;
     right: 0;
     bottom: 0;

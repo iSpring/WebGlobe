@@ -71,7 +71,7 @@ class Globe {
     //   });
     // }
 
-    if(Utils.isMobile()){
+    //if(Utils.isMobile()){
       Utils.subscribe('location', (data:LocationData) => {
         console.log(data);
         this.showLocation(data);
@@ -79,7 +79,7 @@ class Globe {
       LocationService.getRobustLocation();
       LocationService.getLocation();
       LocationService.watchPosition();
-    }
+    //}
   }
 
   showLocation(locationData: LocationData){
