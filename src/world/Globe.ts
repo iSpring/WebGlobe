@@ -7,15 +7,15 @@ import Scene = require("./Scene");
 import ImageUtils = require("./Image");
 import EventHandler = require("./EventHandler");
 import TiledLayer = require("./layers/TiledLayer");
-import GoogleTiledLayer = require("./layers/GoogleTiledLayer");
-import AutonaviTiledLayer = require("./layers/AutonaviTiledLayer");
+import {GoogleTiledLayer, GoogleLabelLayer} from "./layers/Google";
+import {AutonaviTiledLayer, AutonaviLabelLayer} from  "./layers/Autonavi";
 import LabelLayer from "./layers/LabelLayer";
-import AutonaviLabelLayer from "./layers/AutonaviLabelLayer";
-import GoogleLabelLayer from "./layers/GoogleLabelLayer";
 import TrafficLayer from "./layers/TrafficLayer";
-import QihuTrafficLayer from "./layers/QihuTrafficLayer";
+import {QihuTrafficLayer} from "./layers/Qihu";
 import Atmosphere = require("./graphics/Atmosphere");
 import PoiLayer = require("./layers/PoiLayer");
+// import AutonaviLabelLayer from "./layers/AutonaviLabelLayer";
+// import GoogleLabelLayer from "./layers/GoogleLabelLayer";
 
 const initLevel = Utils.isMobile() ? 8 : 0;
 

@@ -1,4 +1,5 @@
 import TiledLayer = require('./TiledLayer');
+import LabelLayer from './LabelLayer';
 
 //http://www.google.cn/maps
 //http://ditu.bigemap.com/
@@ -7,7 +8,7 @@ import TiledLayer = require('./TiledLayer');
 
 type Style = "Default" | "Satellite";
 
-class GoogleTiledLayer extends TiledLayer{
+export class GoogleTiledLayer extends TiledLayer{
 
   private idx:number = 0;
 
@@ -19,7 +20,7 @@ class GoogleTiledLayer extends TiledLayer{
     if(this.idx === undefined){
       this.idx = 0;
     }
-    
+
     var url:string = "";
 
     if(this.style === "Satellite"){
@@ -39,6 +40,31 @@ class GoogleTiledLayer extends TiledLayer{
     return url;
   }
 
-}
+};
 
-export = GoogleTiledLayer;
+
+
+//http://ditu.bigemap.com/
+
+export class GoogleLabelLayer extends LabelLayer {
+    private idx: number = 0;
+
+    getTileUrl(level: number, row: number, column: number): string {
+
+
+        if (this.idx === undefined) {
+            this.idx = 0;
+        }
+
+        //http://mt3.google.cn/vt/imgtp=png32&lyrs=h@365000000&hl=zh-CN&gl=cn&x=3376&y=1553&z=12&s=Galil
+        var url = `//mt${this.idx}.google.cn/vt/imgtp=png32&lyrs=h@365000000&hl=zh-CN&gl=cn&x=${column}&y=${row}&z=${level}&s=Galil`;
+
+        this.idx++;
+
+        if (this.idx >= 4) {
+            this.idx = 0;
+        }
+
+        return url;
+    }
+};

@@ -1,6 +1,6 @@
 import TiledLayer = require("./TiledLayer");
 import NokiaTiledLayer = require("./NokiaTiledLayer");
-import GoogleTiledLayer = require("./GoogleTiledLayer");
+import {GoogleTiledLayer} from "./Google";
 import OsmTiledLayer = require("./OsmTiledLayer");
 
 class BlendTiledLayer extends TiledLayer {

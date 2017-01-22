@@ -1,9 +1,9 @@
 ﻿import Globe = require('./src/world/Globe');
-import TiledLayer = require('./src/world/layers/TiledLayer');
-import GoogleTiledLayer = require('./src/world/layers/GoogleTiledLayer');
-import OsmTiledLayer from './src/world/layers/OsmTiledLayer';
-import BingTiledLayer = require('./src/world/layers/BingTiledLayer');
-import SosoTiledLayer = require('./src/world/layers/SosoTiledLayer');
+// import TiledLayer = require('./src/world/layers/TiledLayer');
+// import {GoogleTiledLayer} from './src/world/layers/Google';
+// import OsmTiledLayer from './src/world/layers/OsmTiledLayer';
+// import BingTiledLayer = require('./src/world/layers/BingTiledLayer');
+// import {SosoTiledLayer} from './src/world/layers/Soso';
 
 (function () {
     var canvas = <HTMLCanvasElement>document.getElementById("canvasId");
