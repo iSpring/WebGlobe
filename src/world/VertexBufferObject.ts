@@ -1,5 +1,5 @@
 ﻿import Kernel = require("./Kernel");
-const maxBufferSize:number = 50;
+const maxBufferSize:number = 200;
 const buffers:WebGLBuffer[] = [];
 
 class VertexBufferObject{

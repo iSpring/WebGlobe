@@ -71,13 +71,15 @@ class Globe {
     //   });
     // }
 
-    Utils.subscribe('location', (data:LocationData) => {
-      console.log(data);
-      this.showLocation(data);
-    });
-    LocationService.getRobustLocation();
-    LocationService.getLocation();
-    LocationService.watchPosition();
+    if(Utils.isMobile()){
+      Utils.subscribe('location', (data:LocationData) => {
+        console.log(data);
+        this.showLocation(data);
+      });
+      LocationService.getRobustLocation();
+      LocationService.getLocation();
+      LocationService.watchPosition();
+    }
   }
 
   showLocation(locationData: LocationData){
