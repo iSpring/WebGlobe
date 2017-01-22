@@ -49,7 +49,7 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
     //最大级别的level所对应的可见TileGrids
     var lastLevelTileGrids = camera.getVisibleTilesByLevel(lastLevel, options);
 
-    this._updateSubLayerCount(lastLevel);
+    // this.updateSubLayerCount();
 
     var levelsTileGrids: TileGrid[][] = [];
     var parentTileGrids = lastLevelTileGrids;
@@ -68,13 +68,14 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
       this.children[subLevel].updateTiles(subLevel, levelsTileGrids[subLevel], addNew);
     }
 
-    // this.updateTileVisibility(currentLevel, lastLevel);
+    // this.updateTileVisibility();
   }
 
   //根据传入的level更新SubTiledLayer的数量
-  private _updateSubLayerCount(level: number) {
+  updateSubLayerCount() {
+    var lastLevel: number = Kernel.globe.getLastLevel();
     var subLayerCount = this.children.length;
-    var deltaLevel = level + 1 - subLayerCount;
+    var deltaLevel = lastLevel + 1 - subLayerCount;
     var i: number, subLayer: SubTiledLayer;
     if (deltaLevel > 0) {
       //需要增加子图层
@@ -156,9 +157,7 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
       if(tileGrids.length === 8){
         tileGrids = Utils.filterRepeatArray(tileGrids);
         for(var i: number = 0; i <= ancesorLevel; i++){
-          if(this.children[i]){
-            this.children[i].hideAllTiles();
-          }
+          this.children[i].hideAllTiles();
         }
         tileGrids.forEach((tileGrid) => {
           var tile = this._getReadyTile(tileGrid);

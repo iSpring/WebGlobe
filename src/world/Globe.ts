@@ -43,8 +43,8 @@ class Globe {
     this.renderer.setScene(this.scene);
     this.renderer.setCamera(this.camera);
 
-    this.labelLayer = new AutonaviLabelLayer();
-    // this.labelLayer = new GoogleLabelLayer();
+    // this.labelLayer = new AutonaviLabelLayer();
+    this.labelLayer = new GoogleLabelLayer();
     this.scene.add(this.labelLayer);
     // this.trafficLayer = new QihuTrafficLayer();
     // this.trafficLayer.visible = false;
@@ -222,6 +222,8 @@ class Globe {
         isNeedRefresh = timestamp - this.lastRefreshTimestamp >= this.REFRESH_INTERVAL;
       }
     }
+
+    this.tiledLayer.updateSubLayerCount();
 
     if (isNeedRefresh) {
       this.realRefreshCount++;
