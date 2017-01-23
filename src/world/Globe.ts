@@ -151,6 +151,10 @@ class Globe {
     return currentLevel >= 0 ? (currentLevel + Kernel.DELTA_LEVEL_BETWEEN_LAST_LEVEL_AND_CURRENT_LEVEL) : -1;
   }
 
+  getBestDisplayLevel(){
+    return this.camera.getBestDisplayLevel();
+  }
+
   zoomIn(){
     this.setLevel(this.getLevel() + 1);
   }
