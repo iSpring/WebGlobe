@@ -146,7 +146,7 @@ class Globe {
     return this.camera ? this.camera.getLevel() : -1;
   }
 
-  getRealLevel(){
+  getLastLevel(){
     var currentLevel = this.getLevel();
     return currentLevel >= 0 ? (currentLevel + Kernel.DELTA_LEVEL_BETWEEN_LAST_LEVEL_AND_CURRENT_LEVEL) : -1;
   }
@@ -239,10 +239,10 @@ class Globe {
     if(a || b){
       var lastLevelTileGrids = this.tiledLayer.getLastLevelVisibleTileGrids();
       if(a){
-        this.labelLayer.updateTiles(this.getRealLevel(), lastLevelTileGrids);
+        this.labelLayer.updateTiles(this.getLastLevel(), lastLevelTileGrids);
       }
       if(b){
-        this.trafficLayer.updateTiles(this.getRealLevel(), lastLevelTileGrids);
+        this.trafficLayer.updateTiles(this.getLastLevel(), lastLevelTileGrids);
       }
     }
   }

@@ -144,7 +144,7 @@ class PoiLayer extends Graphic {
     this.clear();
     this.keyword = keyword;
     var globe = Kernel.globe;
-    var level = globe.getRealLevel();
+    var level = globe.getLastLevel();
     var extents = globe.getExtents(level);
     extents.forEach((extent: Extent) => {
       PoiLayer.search(keyword, level, extent.getMinLon(), extent.getMinLat(), extent.getMaxLon(), extent.getMaxLat(), (response) => {
