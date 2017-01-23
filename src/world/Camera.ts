@@ -63,6 +63,7 @@ class Camera extends Object3D {
   private isZeroPitch: boolean = true;//表示当前Camera视线有没有发生倾斜
 
   private resolution: number = -1;//屏幕1px代表的空间中的距离
+  private bestDisplayLevelFloat: number = -1;//浮点数
 
   private level: number = -1; //当前渲染等级
   private realLevel: number = -2;//可能是正数，可能是非整数，非整数表示缩放动画过程中的level
@@ -383,6 +384,7 @@ class Camera extends Object3D {
   }
 
   private _updateResolution(){
+    //计算resolution
     var p = this.matrix.getPosition();
     var dir = Vector.fromVertice(p);
     var line = new Line(p, dir);
@@ -397,6 +399,11 @@ class Camera extends Object3D {
     var pickResult2 = this.getPickCartesianCoordInEarthByCanvas(canvasX2, canvasY2);
     var p2 = pickResult2[0];
     this.resolution = MathUtils.getLengthFromVerticeToVertice(p1, p2);
+
+    //计算bestDisplayLevel
+    var pow2value = Kernel.MAX_RESOLUTION / this.resolution;
+    this.bestDisplayLevelFloat = MathUtils.log2(pow2value);
+    return this.bestDisplayLevelFloat;
   }
 
   getRealResolution(){
@@ -409,9 +416,7 @@ class Camera extends Object3D {
   }
 
   getBestDisplayLevel(){
-    var pow2value = Kernel.MAX_RESOLUTION / this.resolution;
-    var level = MathUtils.log2(pow2value);
-    return level;
+    return Math.round(this.bestDisplayLevelFloat);
   }
 
   getLevel(): number {
