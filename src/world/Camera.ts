@@ -64,8 +64,8 @@ class Camera extends Object3D {
 
   private level: number = -1; //当前渲染等级
   private realLevel: number = -2;//可能是正数，可能是非整数，非整数表示缩放动画过程中的level
-
   private lastRealLevel: number = -3;//上次render()时所用到的this.realLevel
+
   private lastMatrix: Matrix;//上次render()时的this.matrix
   private lastFov: number = -1;
   private lastAspect: number = -1;
@@ -154,6 +154,37 @@ class Camera extends Object3D {
 
   fromJsonString(jsonStr: string){
     this.fromJson(JSON.parse(jsonStr));
+  }
+
+  getRealResolution(){
+    var resolution = this.getResolution();
+    var realResolution = MathUtils.getRealValueInWorld(resolution);
+    return realResolution;
+  }
+
+  getResolution(){
+    var p = this.matrix.getPosition();
+    var dir = Vector.fromVertice(p);
+    var line = new Line(p, dir);
+    var pickResult1 = this._getPickCartesianCoordInEarthByLine(line);
+    var p1 = pickResult1[0];
+    var ndc1 = this._convertVerticeFromWorldToNDC(p1);
+    var canvasXY1 = MathUtils.convertPointFromNdcToCanvas(ndc1.x, ndc1.y);
+    var canvasX1 = canvasXY1[0];
+    var canvasY1 = canvasXY1[1];
+    var canvasX2 = canvasX1 + 1;
+    var canvasY2 = canvasY1 + 1;
+    var pickResult2 = this.getPickCartesianCoordInEarthByCanvas(canvasX2, canvasY2);
+    var p2 = pickResult2[0];
+    var distance = MathUtils.getLengthFromVerticeToVertice(p1, p2);
+    return distance;
+  }
+
+  getBestDisplayLevel(){
+    var resolution = this.getResolution();
+    var pow2value = Kernel.MAX_RESOLUTION / resolution;
+    var level = MathUtils.log2(pow2value);
+    return level;
   }
 
   private _setPerspectiveMatrix(fov: number = 45, aspect: number = 1, near: number = 1, far: number = 100): void {

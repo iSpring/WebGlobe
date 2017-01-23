@@ -117,38 +117,11 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
 
   updateTileVisibility() {
     var globe = Kernel.globe;
-    var currentLevel = globe.getLevel();
     var lastLevel = globe.getLastLevel();
 
     this.children.forEach((subTiledLayer) => {
       subTiledLayer.showAllTiles();
     });
-
-    /*if (currentLevel < Kernel.EARTH_FULL_OVERLAP_SCREEN_LEVEL) {
-      return;
-    }
-
-    if (lastLevel - (this.imageRequestOptimizeDeltaLevel + 1) < 1) {
-      return;
-    }
-
-    var allLoadedTilesLevel = -1;
-    for (var subLevel = (lastLevel - this.imageRequestOptimizeDeltaLevel - 1); subLevel >= 0; subLevel--) {
-      // if (lastLevel === subLevel || (lastLevel - subLevel) > this.imageRequestOptimizeDeltaLevel) {
-
-      // }
-      if (this.children[subLevel].checkIfAllTilesLoaded()) {
-        allLoadedTilesLevel = subLevel;
-        break;
-      }
-    }
-    if (allLoadedTilesLevel >= 0) {
-      this.children.forEach((subTiledLayer) => {
-        subTiledLayer.visible = subTiledLayer.level >= allLoadedTilesLevel;
-      });
-    }
-    var ancestorLevel = lastLevel - (this.imageRequestOptimizeDeltaLevel + 1);
-    this.children[ancestorLevel].visible = true;*/
 
     var ancesorLevel = lastLevel - this.imageRequestOptimizeDeltaLevel - 1;
     if(ancesorLevel >= 1){
