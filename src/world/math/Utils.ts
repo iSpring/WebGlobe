@@ -23,6 +23,10 @@ const ONE_RADIAN_EQUAL_DEGREE:number = 57.29577951308232;//=>180/Math.PI
 const ONE_DEGREE_EQUAL_RADIAN:number = 0.017453292519943295;//=>Math.PI/180
 
 class MathUtils {
+    static getRealValueInWorld(virtualValue: number){
+        return virtualValue / Kernel.SCALE_FACTOR;
+    }
+
     static pow2(v: number) {
         var s: string = v.toString();
         if (pow2Cache.hasOwnProperty(s)) {

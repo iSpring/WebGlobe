@@ -14,8 +14,6 @@ import TrafficLayer from "./layers/TrafficLayer";
 import {QihuTrafficLayer} from "./layers/Qihu";
 import Atmosphere = require("./graphics/Atmosphere");
 import PoiLayer = require("./layers/PoiLayer");
-// import AutonaviLabelLayer from "./layers/AutonaviLabelLayer";
-// import GoogleLabelLayer from "./layers/GoogleLabelLayer";
 
 const initLevel = Utils.isMobile() ? 8 : 0;
 
@@ -36,6 +34,7 @@ class Globe {
 
   constructor(private canvas: HTMLCanvasElement, level:number = initLevel, lonlat: number[] = [116.3975, 39.9085]) {
     Kernel.globe = this;
+    Kernel.canvas = canvas;
     this.renderer = new Renderer(canvas, this._onBeforeRender.bind(this));
     this.scene = new Scene();
     var radio = canvas.width / canvas.height;
@@ -71,7 +70,7 @@ class Globe {
     //   });
     // }
 
-    //if(Utils.isMobile()){
+    if(Utils.isMobile()){
       Utils.subscribe('location', (data:LocationData) => {
         console.log(data);
         this.showLocation(data);
@@ -79,7 +78,7 @@ class Globe {
       LocationService.getRobustLocation();
       LocationService.getLocation();
       LocationService.watchPosition();
-    //}
+    }
   }
 
   showLocation(locationData: LocationData){
