@@ -62,6 +62,8 @@ class Camera extends Object3D {
   //定义抬头时，旋转角为正值
   private isZeroPitch: boolean = true;//表示当前Camera视线有没有发生倾斜
 
+  private resolution: number = -1;//屏幕1px代表的空间中的距离
+
   private level: number = -1; //当前渲染等级
   private realLevel: number = -2;//可能是正数，可能是非整数，非整数表示缩放动画过程中的level
   private lastRealLevel: number = -3;//上次render()时所用到的this.realLevel
@@ -95,7 +97,7 @@ class Camera extends Object3D {
     this.projMatrix = new Matrix();
     this._rawSetPerspectiveMatrix(this.fov, this.aspect, this.near, this.far);
     this._initCameraPosition(level, lonlat[0], lonlat[1]);
-    this.update(true);
+    this._updateCore(true);
   }
 
   toJson():any{
@@ -148,43 +150,12 @@ class Camera extends Object3D {
     this.projMatrixForDraw = Matrix.fromJson(json.projMatrixForDraw);
     this.projViewMatrixForDraw = Matrix.fromJson(json.projViewMatrixForDraw);
     this.animating = json.animating;
-    this.update(true);
+    this._updateCore(true);
     // Kernel.globe.refresh(true);
   }
 
   fromJsonString(jsonStr: string){
     this.fromJson(JSON.parse(jsonStr));
-  }
-
-  getRealResolution(){
-    var resolution = this.getResolution();
-    var realResolution = MathUtils.getRealValueInWorld(resolution);
-    return realResolution;
-  }
-
-  getResolution(){
-    var p = this.matrix.getPosition();
-    var dir = Vector.fromVertice(p);
-    var line = new Line(p, dir);
-    var pickResult1 = this._getPickCartesianCoordInEarthByLine(line);
-    var p1 = pickResult1[0];
-    var ndc1 = this._convertVerticeFromWorldToNDC(p1);
-    var canvasXY1 = MathUtils.convertPointFromNdcToCanvas(ndc1.x, ndc1.y);
-    var canvasX1 = canvasXY1[0];
-    var canvasY1 = canvasXY1[1];
-    var canvasX2 = canvasX1 + 1;
-    var canvasY2 = canvasY1 + 1;
-    var pickResult2 = this.getPickCartesianCoordInEarthByCanvas(canvasX2, canvasY2);
-    var p2 = pickResult2[0];
-    var distance = MathUtils.getLengthFromVerticeToVertice(p1, p2);
-    return distance;
-  }
-
-  getBestDisplayLevel(){
-    var resolution = this.getResolution();
-    var pow2value = Kernel.MAX_RESOLUTION / resolution;
-    var level = MathUtils.log2(pow2value);
-    return level;
   }
 
   private _setPerspectiveMatrix(fov: number = 45, aspect: number = 1, near: number = 1, far: number = 100): void {
@@ -255,13 +226,21 @@ class Camera extends Object3D {
     return far;
   }
 
+  update(force: boolean = false): boolean{
+    var shouldUpdate = this._updateCore(force);
+    if(shouldUpdate){
+      //更新空间分辨率
+      this._updateResolution();
+    }
+    return shouldUpdate;
+  }
+
   //更新各种矩阵，理论上只在用户交互的时候调用就可以
-  update(force: boolean = false): boolean {
-    var updated = false;
-    if(force || this._isNeedUpdate()){
+  private _updateCore(force: boolean = false): boolean {
+    var shouldUpdate = force || this._isNeedUpdate();
+    if(shouldUpdate){
       this._normalUpdate();
       this._updateProjViewMatrixForDraw();
-      updated = true;
     }
     this.lastFov = this.fov;
     this.lastAspect = this.aspect;
@@ -269,7 +248,7 @@ class Camera extends Object3D {
     this.lastFar = this.far;
     this.lastRealLevel = this.realLevel;
     this.lastMatrix.setMatrixByOther(this.matrix);
-    return updated;
+    return shouldUpdate;
   }
 
   getCameraCore(){
@@ -403,6 +382,38 @@ class Camera extends Object3D {
     return newFov;
   }
 
+  private _updateResolution(){
+    var p = this.matrix.getPosition();
+    var dir = Vector.fromVertice(p);
+    var line = new Line(p, dir);
+    var pickResult1 = this._getPickCartesianCoordInEarthByLine(line);
+    var p1 = pickResult1[0];
+    var ndc1 = this._convertVerticeFromWorldToNDC(p1);
+    var canvasXY1 = MathUtils.convertPointFromNdcToCanvas(ndc1.x, ndc1.y);
+    var canvasX1 = canvasXY1[0];
+    var canvasY1 = canvasXY1[1];
+    var canvasX2 = canvasX1 + 1;
+    var canvasY2 = canvasY1 + 1;
+    var pickResult2 = this.getPickCartesianCoordInEarthByCanvas(canvasX2, canvasY2);
+    var p2 = pickResult2[0];
+    this.resolution = MathUtils.getLengthFromVerticeToVertice(p1, p2);
+  }
+
+  getRealResolution(){
+    var realResolution = MathUtils.getRealValueInWorld(this.resolution);
+    return realResolution;
+  }
+
+  getResolution(){
+    return this.resolution;
+  }
+
+  getBestDisplayLevel(){
+    var pow2value = Kernel.MAX_RESOLUTION / this.resolution;
+    var level = MathUtils.log2(pow2value);
+    return level;
+  }
+
   getLevel(): number {
     return this.level;
   }
@@ -527,7 +538,7 @@ class Camera extends Object3D {
   //计算拾取射线与地球的交点，以笛卡尔空间直角坐标系坐标数组的形式返回
   //该方法需要projViewMatrixForDraw系列矩阵进行计算
   getPickCartesianCoordInEarthByCanvas(canvasX: number, canvasY: number): Vertice[] {
-    this.update();
+    this._updateCore();
 
     //暂存projViewMatrix系列矩阵
     var matrix = this.matrix;
