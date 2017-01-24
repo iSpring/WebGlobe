@@ -138,3 +138,5 @@
 0.3.16 使得QihuTrafficLayer可以运行
 
 0.3.17 添加Location模块，监听位置变化
+
+0.3.18 在Camera中增加了resolution相关的方法，并可以通过Camera.getBestDisplayLevel()方法获取当前摄像机位置下最优的显示层级的切片
