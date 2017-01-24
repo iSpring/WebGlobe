@@ -395,7 +395,7 @@ class Camera extends Object3D {
     var canvasX1 = canvasXY1[0];
     var canvasY1 = canvasXY1[1];
     var canvasX2 = canvasX1 + 1;
-    var canvasY2 = canvasY1 + 1;
+    var canvasY2 = canvasY1;
     var pickResult2 = this.getPickCartesianCoordInEarthByCanvas(canvasX2, canvasY2);
     var p2 = pickResult2[0];
     this.resolution = MathUtils.getLengthFromVerticeToVertice(p1, p2);
@@ -417,6 +417,10 @@ class Camera extends Object3D {
 
   getBestDisplayLevel(){
     return Math.round(this.bestDisplayLevelFloat);
+  }
+
+  getBestDisplayLevelFloat(){
+    return this.bestDisplayLevelFloat;
   }
 
   getLevel(): number {
