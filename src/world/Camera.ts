@@ -108,6 +108,8 @@ class Camera extends Object3D {
     var json = {
       matrix: matrixToJson(this.matrix),
       isZeroPitch: this.isZeroPitch,
+      resolution: this.resolution,
+      bestDisplayLevelFloat: this.bestDisplayLevelFloat,
       level: this.level,
       realLevel: this.realLevel,
       lastRealLevel: this.lastRealLevel,
@@ -135,6 +137,8 @@ class Camera extends Object3D {
   fromJson(json: any){
     this.matrix = Matrix.fromJson(json.matrix);
     this.isZeroPitch = json.isZeroPitch;
+    this.resolution = json.resolution;
+    this.bestDisplayLevelFloat = json.bestDisplayLevelFloat;
     this.level = json.level;
     this.realLevel = json.realLevel;
     this.lastRealLevel = json.lastRealLevel;
@@ -440,6 +444,13 @@ class Camera extends Object3D {
     this.level = level;
     this.realLevel = level;
     // Kernel.globe.refresh();
+  }
+
+  calculateInitDistanceToOrigin(factor:number = 1){
+    var size = Math.min(Kernel.canvas.width, Kernel.canvas.height) * factor;
+    var α = MathUtils.degreeToRadian(this.fov / 2);
+    var initDistanceToOrigin = Kernel.EARTH_RADIUS / Math.sin(α);
+    return initDistanceToOrigin;
   }
 
   private _initCameraPosition(level: number, lon:number, lat:number) {
