@@ -92,6 +92,8 @@ class Camera extends Object3D {
   private projMatrixForDraw: Matrix;
   private projViewMatrixForDraw: Matrix;//实际传递给shader的矩阵是projViewMatrixForDraw，而不是projViewMatrix
 
+  private lonlatsOfBoundary:number[][] = null;
+
   private animating: boolean = false;
 
   //this.near一旦初始化之后就不应该再修改
@@ -100,6 +102,7 @@ class Camera extends Object3D {
   //this.fov可以调整以实现缩放效果
   constructor(private fov:number = 45, private aspect:number = 1, private near:number = 1, private far:number = 100, level:number = 3, lonlat:number[] = [0, 0]) {
     super();
+    this.lonlatsOfBoundary = [];
     this.initFov = this.fov;
     this.lastMatrix = new Matrix();
     this.lastMatrix.setUniqueValue(0);
@@ -107,6 +110,17 @@ class Camera extends Object3D {
     this._rawSetPerspectiveMatrix(this.fov, this.aspect, this.near, this.far);
     this._initCameraPosition(level, lonlat[0], lonlat[1]);
     this.update(true);
+  }
+
+  isEarthFullOverlapScreen(){
+    return this.lonlatsOfBoundary.length === 8;
+  }
+
+  getTileGridsOfBoundary(level:number, filterRepeat: boolean){
+    var tileGridsOfBoundary: TileGrid[] = this.lonlatsOfBoundary.map((lonlat)=>{
+      return TileGrid.getTileGridByGeo(lonlat[0], lonlat[1], level);
+    });
+    return filterRepeat ? Utils.filterRepeatArray(tileGridsOfBoundary) : tileGridsOfBoundary;
   }
 
   toJson():any{
@@ -240,16 +254,11 @@ class Camera extends Object3D {
 
   update(force: boolean = false): boolean{
     var shouldUpdate = this._updateCore(force);
-    // if(shouldUpdate){
-    //   this._updateResolution();
-    // }
+    if(shouldUpdate){
+      this._updateTileGridsOfBoundary();
+    }
     return shouldUpdate;
   }
-
-  // private _updateResolution(){
-  //   this.resolution = this._calculateResolutionByLevel(this.level);
-  //   this.resolutionInWorld = MathUtils.getRealValueInWorld(this.resolution);
-  // }
 
   //更新各种矩阵，理论上只在用户交互的时候调用就可以
   private _updateCore(force: boolean = false): boolean {
@@ -265,6 +274,27 @@ class Camera extends Object3D {
     this.lastFloatLevel = this.floatLevel;
     this.lastMatrix.setMatrixByOther(this.matrix);
     return shouldUpdate;
+  }
+
+  private _updateTileGridsOfBoundary(){
+    var lonlatsOfBoundary:number[][] = [];
+    var ndcs:number[][] = [
+      [-1, 1],//left top
+      [-1, 0],//left middle
+      [-1, -1],//left bottom
+      [1, 1],//right top
+      [1, 0],//right middle
+      [1, -1],//right bottom
+      [0, 1],//middle top
+      [0, -1]//middle bottom
+    ];
+    ndcs.forEach((ndcXY:number[]) => {
+      var lonlat = this._getPickLonLatByNDC(ndcXY[0], ndcXY[1]);
+      if(lonlat && lonlat.length > 0){
+        lonlatsOfBoundary.push(lonlat);
+      }
+    });
+    this.lonlatsOfBoundary = lonlatsOfBoundary;
   }
 
   getCameraCore(){
@@ -1032,28 +1062,6 @@ class Camera extends Object3D {
     // console.timeEnd("getVisibleTilesByLevel");
 
     return result;
-  }
-
-  getTileGridsOfBoundary(level: number, filterRepeat: boolean){
-    var tileGrids:TileGrid[] = [];
-    var ndcs:number[][] = [
-      [-1, 1],//left top
-      [-1, 0],//left middle
-      [-1, -1],//left bottom
-      [1, 1],//right top
-      [1, 0],//right middle
-      [1, -1],//right bottom
-      [0, 1],//middle top
-      [0, -1]//middle bottom
-    ];
-    ndcs.forEach((ndcXY:number[]) => {
-      var lonlat = this._getPickLonLatByNDC(ndcXY[0], ndcXY[1]);
-      if(lonlat && lonlat.length > 0){
-        var tileGrid = TileGrid.getTileGridByGeo(lonlat[0], lonlat[1], level);
-        tileGrids.push(tileGrid);
-      }
-    });
-    return filterRepeat ? Utils.filterRepeatArray(tileGrids) : tileGrids;
   }
 
   //options: threshold

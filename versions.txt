@@ -148,3 +148,5 @@
 0.4.1 将renderingLevel重命名为level，将set/getRenderingLevel()重命名为set/getLevel()
 
 0.4.2 重命名Camera中的相关方法
+
+0.4.3 向Camera添加isEarthFullOverlapScreen()等方法
