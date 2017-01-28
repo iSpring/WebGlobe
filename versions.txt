@@ -150,3 +150,5 @@
 0.4.2 重命名Camera中的相关方法
 
 0.4.3 向Camera添加isEarthFullOverlapScreen()等方法
+
+0.4.4 默认显示当前位置

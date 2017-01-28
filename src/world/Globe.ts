@@ -1,17 +1,17 @@
 import Kernel = require("./Kernel");
 import Utils = require("./Utils");
-import LocationService,{LocationData} from "./LocationService";
+import LocationService, { LocationData } from "./LocationService";
 import Renderer = require("./Renderer");
 import Camera, { CameraCore } from "./Camera";
 import Scene = require("./Scene");
 import ImageUtils = require("./Image");
 import EventHandler = require("./EventHandler");
 import TiledLayer = require("./layers/TiledLayer");
-import {GoogleTiledLayer, GoogleLabelLayer} from "./layers/Google";
-import {AutonaviTiledLayer, AutonaviLabelLayer} from  "./layers/Autonavi";
+import { GoogleTiledLayer, GoogleLabelLayer } from "./layers/Google";
+import { AutonaviTiledLayer, AutonaviLabelLayer } from "./layers/Autonavi";
 import LabelLayer from "./layers/LabelLayer";
 import TrafficLayer from "./layers/TrafficLayer";
-import {QihuTrafficLayer} from "./layers/Qihu";
+import { QihuTrafficLayer } from "./layers/Qihu";
 import Atmosphere = require("./graphics/Atmosphere");
 import PoiLayer = require("./layers/PoiLayer");
 
@@ -32,12 +32,12 @@ class Globe {
   private lastRefreshTimestamp: number = -1;
   private lastRefreshCameraCore: CameraCore = null;
   private eventHandler: EventHandler = null;
-  private allRefreshCount:number = 0;
-  private realRefreshCount:number = 0;
-  private beforeRenderCallbacks:RenderCallback[] = [];
-  private afterRenderCallbacks:RenderCallback[] = [];
+  private allRefreshCount: number = 0;
+  private realRefreshCount: number = 0;
+  private beforeRenderCallbacks: RenderCallback[] = [];
+  private afterRenderCallbacks: RenderCallback[] = [];
 
-  constructor(private canvas: HTMLCanvasElement, level:number = initLevel, lonlat: number[] = [116.3975, 39.9085]) {
+  constructor(private canvas: HTMLCanvasElement, level: number = initLevel, lonlat: number[] = [116.3975, 39.9085]) {
     Kernel.globe = this;
     Kernel.canvas = canvas;
     this.renderer = new Renderer(canvas, this._onBeforeRender.bind(this), this._onAfterRender.bind(this));
@@ -75,39 +75,36 @@ class Globe {
     //   });
     // }
 
-    // if(Utils.isMobile()){
-    //   Utils.subscribe('location', (data:LocationData) => {
-    //     console.log(data);
-    //     this.afterRenderCallbacks.push(() => {
-    //       this.showLocation(data);
-    //     });
-    //   });
-    //   LocationService.getRobustLocation();
-    //   LocationService.getLocation();
-    //   LocationService.watchPosition();
-    // }
+    Utils.subscribe('location', (data: LocationData) => {
+      console.info(data);
+      this.afterRenderCallbacks.push(() => {
+        this.showLocation(data);
+      });
+    });
+    LocationService.getRobustLocation();
+    LocationService.getLocation();
+    // LocationService.watchPosition();
   }
 
-  showLocation(locationData: LocationData){
+  showLocation(locationData: LocationData) {
     var lon = locationData.lng;
     var lat = locationData.lat;
-    this.poiLayer.clear();
-    this.poiLayer.addPoi(lon, lat, "", "", "", "");
+    // this.poiLayer.clear();
+    // this.poiLayer.addPoi(lon, lat, "", "", "", "");
     this.eventHandler.moveLonLatToCanvas(lon, lat, this.canvas.width / 2, this.canvas.height / 2);
     var accuracy = locationData.accuracy;
-    var level:number = 8;
-    if(accuracy <= 100){
+    var level: number = 8;
+    if (accuracy <= 100) {
       level = 16;
-    }else if(accuracy <= 1000){
+    } else if (accuracy <= 1000) {
       level = 13;
-    }else{
+    } else {
       level = 11;
     }
     this.setLevel(level);
   }
 
   setTiledLayer(tiledLayer: TiledLayer) {
-    // clearTimeout(this.idTimeOut);
     //在更换切片图层的类型时清空缓存的图片
     ImageUtils.clear();
     if (this.tiledLayer) {
@@ -122,35 +119,35 @@ class Globe {
     this.refresh(true);
   }
 
-  showLabelLayer(){
-    if(this.labelLayer){
+  showLabelLayer() {
+    if (this.labelLayer) {
       this.labelLayer.visible = true;
     }
   }
 
-  hideLabelLayer(){
-    if(this.labelLayer){
+  hideLabelLayer() {
+    if (this.labelLayer) {
       this.labelLayer.visible = false;
     }
   }
 
-  showTrafficLayer(){
-    if(this.trafficLayer){
+  showTrafficLayer() {
+    if (this.trafficLayer) {
       this.trafficLayer.visible = true;
     }
   }
 
-  hideTrafficLayer(){
-    if(this.trafficLayer){
+  hideTrafficLayer() {
+    if (this.trafficLayer) {
       this.trafficLayer.visible = false;
     }
   }
 
-  getLevel(){
+  getLevel() {
     return this.camera.getLevel();
   }
 
-  zoomIn(){
+  zoomIn() {
     this.setLevel(this.getLevel() + 1);
   }
 
@@ -164,35 +161,34 @@ class Globe {
     return this.camera.isAnimating();
   }
 
-  animateToLevel(level: number, cb?: ()=>void) {
+  animateToLevel(level: number, cb?: () => void) {
     if (!this.isAnimating()) {
-      if(level < Kernel.MIN_LEVEL){
+      if (level < Kernel.MIN_LEVEL) {
         level = Kernel.MIN_LEVEL;
       }
-      if(level > Kernel.MAX_LEVEL){
+      if (level > Kernel.MAX_LEVEL) {
         level = Kernel.MAX_LEVEL;
       }
-      // level = level > Kernel.MAX_LEVEL ? Kernel.MAX_LEVEL : level;
       if (level !== this.getLevel()) {
         this.camera.animateToLevel(level, cb);
       }
     }
   }
 
-  animateOut(cb?: ()=>void){
+  animateOut(cb?: () => void) {
     this.animateToLevel(this.getLevel() - 1, cb);
   }
 
-  animateIn(cb?: ()=>void){
+  animateIn(cb?: () => void) {
     this.animateToLevel(this.getLevel() + 1, cb);
   }
 
-  private _onBeforeRender(renderer: Renderer){
+  private _onBeforeRender(renderer: Renderer) {
     // this.beforeRenderCallbacks.forEach((callback) => callback());
     this.refresh();
   }
 
-  private _onAfterRender(render: Renderer){
+  private _onAfterRender(render: Renderer) {
     this.afterRenderCallbacks.forEach((callback) => callback());
     this.afterRenderCallbacks = [];
   }
@@ -209,7 +205,7 @@ class Globe {
   //   }, this.REFRESH_INTERVAL);
   // }
 
-  logRefreshInfo(){
+  logRefreshInfo() {
     console.log(this.realRefreshCount, this.allRefreshCount, this.realRefreshCount / this.allRefreshCount);
   }
 
@@ -224,19 +220,19 @@ class Globe {
       return;
     }
 
-    if(this.debugStopRefreshTiles){
+    if (this.debugStopRefreshTiles) {
       return;
     }
-    
+
     var newCameraCore = this.camera.getCameraCore();
     // var isNeedRefresh = force || !newCameraCore.equals(this.cameraCore);
     var isNeedRefresh = false;
-    if(force){
+    if (force) {
       isNeedRefresh = true;
-    }else{
-      if(newCameraCore.equals(this.lastRefreshCameraCore)){
+    } else {
+      if (newCameraCore.equals(this.lastRefreshCameraCore)) {
         isNeedRefresh = false;
-      }else{
+      } else {
         isNeedRefresh = timestamp - this.lastRefreshTimestamp >= this.REFRESH_INTERVAL;
       }
     }
@@ -254,18 +250,18 @@ class Globe {
 
     var a = !!(this.labelLayer && this.labelLayer.visible);
     var b = !!(this.trafficLayer && this.trafficLayer.visible);
-    if(a || b){
+    if (a || b) {
       var lastLevelTileGrids = this.tiledLayer.getLastLevelVisibleTileGrids();
-      if(a){
+      if (a) {
         this.labelLayer.updateTiles(this.getLevel(), lastLevelTileGrids);
       }
-      if(b){
+      if (b) {
         this.trafficLayer.updateTiles(this.getLevel(), lastLevelTileGrids);
       }
     }
   }
 
-  getExtents(level?: number){
+  getExtents(level?: number) {
     return this.tiledLayer.getExtents(level);
   }
 
