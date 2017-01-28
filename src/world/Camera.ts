@@ -57,7 +57,6 @@ const realResolutionCache:any = {};
     realResolutionCache[i] = Kernel.MAX_REAL_RESOLUTION / Math.pow(2, i);
   }
 })();
-console.log(realResolutionCache);
 
 class Camera extends Object3D {
   private readonly initFov: number;

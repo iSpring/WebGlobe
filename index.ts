@@ -5,4 +5,5 @@ import Globe = require("./src/world/Globe");
     var canvas = <HTMLCanvasElement>document.getElementById("canvasId");
     var globe = new Globe(canvas);
     (<any>window).globe = globe;
+    (<any>window).kernel = Kernel;
 })();
