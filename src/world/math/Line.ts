@@ -1,4 +1,3 @@
-///<amd-module name="world/math/Line"/>
 import Vertice = require('./Vertice');
 import Vector = require('./Vector');
 

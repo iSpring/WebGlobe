@@ -1,34 +1,32 @@
-﻿///<amd-module name="world/GraphicGroup"/>
-import Kernel = require("./Kernel");
-import Graphic = require("./graphics/Graphic");
+﻿import Kernel = require('./Kernel');
+import {Drawable} from './Definitions.d';
+import Graphic = require('./graphics/Graphic');
 import Camera from "./Camera";
 
-type Drawable = Graphic | GraphicGroup;
-
-class GraphicGroup{
+class GraphicGroup<T extends Drawable> implements Drawable {
     id: number;
-    parent: GraphicGroup;
-    children: Drawable[];
+    parent: GraphicGroup<T>;
+    children: T[];
     visible: boolean = true;
 
-    constructor(){
+    constructor() {
         this.id = ++Kernel.idCounter;
         this.children = [];
     }
 
-    add(g: Drawable, first: boolean = false){
-        if(first){
+    add(g: T, first: boolean = false) {
+        if (first) {
             this.children.unshift(g);
-        }else{
+        } else {
             this.children.push(g);
         }
         g.parent = this;
     }
 
-    remove(g: Drawable): boolean{
+    remove(g: T): boolean {
         var result = false;
         var findResult = this.findGraphicById(g.id);
-        if(findResult){
+        if (findResult) {
             g.destroy();
             this.children.splice(findResult.index, 1);
             g = null;
@@ -37,25 +35,25 @@ class GraphicGroup{
         return result;
     }
 
-    clear(){
-        var i = 0, length = this.children.length, g:Drawable = null;
-        for(; i < length; i++){
+    clear() {
+        var i = 0, length = this.children.length, g: Drawable = null;
+        for (; i < length; i++) {
             g = this.children[i];
             g.destroy();
         }
         this.children = [];
     }
 
-    destroy(){
+    destroy() {
         this.parent = null;
         this.clear();
     }
 
-    findGraphicById(graphicId: number){
-        var i = 0, length = this.children.length, g:Drawable = null;
-        for(; i < length; i++){
+    findGraphicById(graphicId: number) {
+        var i = 0, length = this.children.length, g: Drawable = null;
+        for (; i < length; i++) {
             g = this.children[i];
-            if(g.id === graphicId){
+            if (g.id === graphicId) {
                 return {
                     index: i,
                     graphic: g
@@ -65,18 +63,22 @@ class GraphicGroup{
         return null;
     }
 
-    isDrawable(){
-        return this.visible;
+    shouldDraw() {
+        return this.visible && this.children.length > 0;
     }
 
-    draw(camera: Camera){
-        if(this.isDrawable()){
-            this.children.forEach(function(g: Drawable){
-                if(g.isDrawable()){
-                    g.draw(camera);
-                }
-            });
+    draw(camera: Camera) {
+        if (this.shouldDraw()) {
+            this.onDraw(camera);
         }
+    }
+
+    protected onDraw(camera: Camera) {
+        this.children.forEach(function (g: Drawable) {
+            if (g.shouldDraw(camera)) {
+                g.draw(camera);
+            }
+        });
     }
 }
 

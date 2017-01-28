@@ -1,6 +1,4 @@
-﻿///<amd-module name="world/graphics/MeshGraphic"/>
-
-import Kernel = require("../Kernel");
+﻿import Kernel = require("../Kernel");
 import Program = require("../Program");
 import Graphic = require("./Graphic");
 import Mesh = require("../geometries/Mesh");
@@ -49,29 +47,31 @@ class MeshGraphic extends Graphic {
         return this.isGeometryReady() && super.isReady();
     }
 
-    createProgram(): Program{
-        return new Program(this.getProgramType(), vs, fs);
+    static findProgram(): Program{
+        return Program.findProgram(vs, fs);
     }
 
-    _drawTextureMaterial(program: any) {
+    createProgram(): Program{
+        return Program.getProgram(vs, fs);
+    }
+
+    protected updateShaderUniforms(camera: Camera){
+        //uPMVMatrix
         var gl = Kernel.gl;
+        var pmvMatrix = camera.getProjViewMatrixForDraw().multiplyMatrix(this.geometry.getMatrix());
+        var locPMVMatrix = this.program.getUniformLocation('uPMVMatrix');
+        gl.uniformMatrix4fv(locPMVMatrix, false, pmvMatrix.getFloat32Array());
 
-        //set aUV
-        var locUV = program.getAttribLocation('aUV');
-        program.enableVertexAttribArray('aUV');
-        this.geometry.uvbo.bind();
-        gl.vertexAttribPointer(locUV, 2, gl.FLOAT, false, 0, 0);
-
-        //set uSampler
-        var locSampler = program.getUniformLocation('uSampler');
+        //uSampler
         gl.activeTexture(gl.TEXTURE0);
-        //world.Cache.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, this.material.texture);
+        var locSampler = this.program.getUniformLocation('uSampler');
         gl.uniform1i(locSampler, 0);
     }
 
-    onDraw(camera: Camera) {
+    protected onDraw(camera: Camera) {
         var gl = Kernel.gl;
+
+        this.updateShaderUniforms(camera);
 
         //aPosition
         var locPosition = this.program.getAttribLocation('aPosition');
@@ -79,12 +79,14 @@ class MeshGraphic extends Graphic {
         this.geometry.vbo.bind();
         gl.vertexAttribPointer(locPosition, 3, gl.FLOAT, false, 0, 0);
 
-        //uPMVMatrix
-        var pmvMatrix = camera.getProjViewMatrixForDraw().multiplyMatrix(this.geometry.getMatrix());
-        var locPMVMatrix = this.program.getUniformLocation('uPMVMatrix');
-        gl.uniformMatrix4fv(locPMVMatrix, false, pmvMatrix.elements);
+        //set aUV
+        var locUV = this.program.getAttribLocation('aUV');
+        this.program.enableVertexAttribArray('aUV');
+        this.geometry.uvbo.bind();
+        gl.vertexAttribPointer(locUV, 2, gl.FLOAT, false, 0, 0);
 
-        this._drawTextureMaterial(this.program);
+        //set uSampler
+        gl.bindTexture(gl.TEXTURE_2D, this.material.texture);
 
         //设置索引，但不用往shader中赋值
         this.geometry.ibo.bind();
@@ -94,9 +96,9 @@ class MeshGraphic extends Graphic {
         gl.drawElements(gl.TRIANGLES, count, gl.UNSIGNED_SHORT, 0);
 
         //释放当前绑定对象
-        gl.bindBuffer(gl.ARRAY_BUFFER, null);
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
-        gl.bindTexture(gl.TEXTURE_2D, null);
+        // gl.bindBuffer(gl.ARRAY_BUFFER, null);
+        // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+        // gl.bindTexture(gl.TEXTURE_2D, null);
     }
 }
 

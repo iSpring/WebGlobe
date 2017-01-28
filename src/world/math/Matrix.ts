@@ -1,26 +1,56 @@
-///<amd-module name="world/math/Matrix"/>
+import Utils = require('../Utils');
 import Vertice = require('./Vertice');
 import Vector = require('./Vector');
 
 class Matrix{
 
-    public elements: Float32Array;
+    private elements: Float64Array;
 
     constructor(m11 = 1, m12 = 0, m13 = 0, m14 = 0,
                 m21 = 0, m22 = 1, m23 = 0, m24 = 0,
                 m31 = 0, m32 = 0, m33 = 1, m34 = 0,
                 m41 = 0, m42 = 0, m43 = 0, m44 = 1){
-      this.elements = new Float32Array(16);
+      this.elements = new Float64Array(16);
       this.setElements(m11, m12, m13, m14, m21, m22, m23, m24, m31, m32, m33, m34, m41, m42, m43, m44);
+    }
+
+    getFloat32Array(): Float32Array {
+      return new Float32Array(this.elements);
     }
 
     equals(matrix: Matrix): boolean{
       if(this === matrix){
         return true;
       }
-      return this.elements.every((ele: number, index: number) => {
+      return Utils.every(this.elements, (ele: number, index: number) => {
         return ele === matrix.elements[index];
       });
+    }
+
+    toJson(){
+      //TypedArray不会被序列化成数组，而是序列化成对象，不要用map，可能会返回TypedArray
+      var elements:number[] = [];
+      Utils.forEach(this.elements, function(ele:number, i:number){
+        elements.push(ele);
+      });
+      return {
+        elements: elements
+      };
+    }
+
+    fromJson(json: any){
+      json.elements.forEach((ele: number, i: number) => {
+        this.elements[i] = ele;
+      });
+    }
+
+    static fromJson(json: any){
+      if(!json){
+        return null;
+      }
+      var mat = new Matrix();
+      mat.fromJson(json);
+      return mat;
     }
 
     setElements(m11: number, m12: number, m13: number, m14: number,
@@ -212,9 +242,11 @@ class Matrix{
     }
 
     setUniqueValue(value: number){
-      this.elements.forEach((ele, index) => {
-        this.elements[index] = value;
-      });
+      //TypeArray of IE11 doesn't support forEach method
+      var length = this.elements.length;
+      for(var i = 0; i < length; i++){
+        this.elements[i] = value;
+      }
     }
 
     /**
@@ -290,7 +322,7 @@ class Matrix{
     }
 
     hasNaN():boolean{
-      return this.elements.some(function(v){
+      return Utils.some(this.elements, function(v){
         return isNaN(v);
       });
     }

@@ -1,6 +1,4 @@
-﻿///<amd-module name="world/geometries/Atmosphere"/>
-
-import Kernel = require("../Kernel");
+﻿import Kernel = require("../Kernel");
 import MeshVertice = require("./MeshVertice");
 import Triangle = require("./Triangle");
 import Mesh = require("./Mesh");

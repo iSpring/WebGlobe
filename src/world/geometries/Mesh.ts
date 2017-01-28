@@ -1,5 +1,4 @@
-﻿///<amd-module name="world/geometries/Mesh"/>
-import Kernel = require("../Kernel");
+﻿import Kernel = require("../Kernel");
 import Vertice = require("./MeshVertice");
 import Triangle = require("./Triangle");
 import Object3D = require("../Object3D");
@@ -36,7 +35,7 @@ class Mesh extends Object3D {
 			}
 			this.vbo.bind();
 			this.vbo.bufferData(vboData, Kernel.gl.STATIC_DRAW, true);
-			this.vbo.unbind();
+			// this.vbo.unbind();
 		}
 		return this.vbo;
 	}
@@ -57,7 +56,7 @@ class Mesh extends Object3D {
 			}
 			this.ibo.bind();
 			this.ibo.bufferData(iboData, Kernel.gl.STATIC_DRAW, true);
-			this.ibo.unbind();
+			// this.ibo.unbind();
 		}
 		return this.ibo;
 	}
@@ -78,7 +77,7 @@ class Mesh extends Object3D {
 			}
 			this.nbo.bind();
 			this.nbo.bufferData(nboData, Kernel.gl.STATIC_DRAW, true);
-			this.nbo.unbind();
+			// this.nbo.unbind();
 		}
 		return this.nbo;
 	}
@@ -98,7 +97,7 @@ class Mesh extends Object3D {
 			}
 			this.uvbo.bind();
 			this.uvbo.bufferData(uvboData, Kernel.gl.STATIC_DRAW, true);
-			this.uvbo.unbind();
+			// this.uvbo.unbind();
 		}
 		return this.uvbo;
 	}
@@ -119,7 +118,7 @@ class Mesh extends Object3D {
 			}
 			this.cbo.bind();
 			this.cbo.bufferData(cboData, Kernel.gl.STATIC_DRAW, true);
-			this.cbo.unbind();
+			// this.cbo.unbind();
 		}
 		return this.cbo;
 	}

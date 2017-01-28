@@ -1,4 +1,3 @@
-///<amd-module name="world/math/Plan"/>
 class Plan{
     constructor(public A: number, public B: number, public C: number, public D: number){
     }

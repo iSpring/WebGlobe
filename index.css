@@ -3,7 +3,8 @@
     padding: 0;
 }
 
-html,body{
+html,
+body {
     width: 100%;
     height: 100%;
 }
@@ -14,17 +15,11 @@ body {
     cursor: default;
 }
 
-#mapSelector {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-}
-
 #canvasId {
     cursor: default;
 }
 
-#blog {
+#about-me {
     position: absolute;
     right: 0;
     bottom: 0;

@@ -1,19 +1,16 @@
-///<amd-module name="world/graphics/Tile"/>
 import Kernel = require('../Kernel');
-import Enum = require('../Enum');
-import MathUtils = require('../math/Math');
+import Extent = require('../Extent');
+import Camera from '../Camera';
+import MathUtils = require('../math/Utils');
 import MeshGraphic = require('../graphics/MeshGraphic');
 import TileMaterial = require('../materials/TileMaterial');
-import TileGeometry = require("../geometries/TileGeometry");
-import Vertice = require("../geometries/MeshVertice");
-import Triangle = require("../geometries/Triangle");
-import SubTiledLayer = require("../layers/SubTiledLayer");
+import TileGeometry = require('../geometries/TileGeometry');
+import Vertice = require('../geometries/MeshVertice');
+import Triangle = require('../geometries/Triangle');
+import SubTiledLayer = require('../layers/SubTiledLayer');
+import TileGrid from '../TileGrid';
 
 class TileInfo {
-  //type如果是GLOBE_TILE，表示其buffer已经设置为一般形式
-  //type如果是TERRAIN_TILE，表示其buffer已经设置为高程形式
-  //type如果是UNKNOWN，表示buffer没设置
-  type: number = Enum.UNKNOWN;
   minLon: number = null;
   minLat: number = null;
   maxLon: number = null;
@@ -23,17 +20,13 @@ class TileInfo {
   maxX: number = null;
   maxY: number = null;
   segment: number = 1;
-  elevationInfo: any = null;
   geometry: TileGeometry;
   material: TileMaterial;
   visible: boolean;
 
   constructor(public level: number, public row: number, public column: number, public url: string) {
     this._setTileInfo();
-    if (this.type == Enum.UNKNOWN) {
-      //初始type为UNKNOWN，还未初始化buffer，应该显示为GlobeTile
-      this._handleGlobeTile();
-    }
+    this._handleGlobeTile();
     this.material = new TileMaterial(this.level, this.url);
   }
 
@@ -57,9 +50,9 @@ class TileInfo {
 
   //处理球面的切片
   _handleGlobeTile() {
-    this.type = Enum.GLOBE_TILE;
-    if (this.level < Kernel.BASE_LEVEL) {
-      var changeLevel = Kernel.BASE_LEVEL - this.level;
+    var BASE_LEVEL = Kernel.BASE_LEVEL;
+    if (this.level < BASE_LEVEL) {
+      var changeLevel = BASE_LEVEL - this.level;
       this.segment = Math.pow(2, changeLevel);
     } else {
       this.segment = 1;
@@ -80,7 +73,7 @@ class TileInfo {
     var deltaX = (this.maxX - this.minX) / this.segment;
     var deltaY = (this.maxY - this.minY) / this.segment;
     var deltaTextureCoord = 1.0 / this.segment;
-    var changeElevation = this.type === Enum.TERRAIN_TILE && this.elevationInfo;
+    var changeElevation = 0;//this.type === Enum.TERRAIN_TILE && this.elevationInfo;
     //level不同设置的半径也不同
     var levelDeltaR = 0;//this.level * 2;
     //对WebMercator投影进行等间距划分格网
@@ -161,11 +154,19 @@ class Tile extends MeshGraphic {
     return new Tile(tileInfo.geometry, tileInfo.material, tileInfo);
   }
 
-  isDrawable(){
-    return this.tileInfo.visible　&& super.isDrawable();
+  protected updateShaderUniforms(camera: Camera){
   }
 
-  //重写Object3D的destroy方法
+  getExtent(){
+    var tileInfo = this.tileInfo;
+    var tileGrid = new TileGrid(tileInfo.level, tileInfo.row, tileInfo.column);
+    return new Extent(this.tileInfo.minLon, this.tileInfo.minLat, this.tileInfo.maxLon, this.tileInfo.maxLat, tileGrid);
+  }
+
+  shouldDraw(camera: Camera){
+    return this.tileInfo.visible　&& super.shouldDraw(camera);
+  }
+
   destroy() {
     super.destroy();
     this.subTiledLayer = null;

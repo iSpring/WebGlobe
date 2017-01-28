@@ -1,5 +1,4 @@
-﻿///<amd-module name="world/geometries/MeshVertice"/>
-class MeshVertice{
+﻿class MeshVertice{
 	p:number[];
 	n:number[];
 	uv:number[];

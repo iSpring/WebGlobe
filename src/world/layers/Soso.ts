@@ -1,8 +1,9 @@
-///<amd-module name="world/layers/SosoTiledLayer"/>
+import Utils = require('../Utils');
 import TiledLayer = require('./TiledLayer');
+import TrafficLayer from './TrafficLayer';
 
-class SosoTiledLayer extends TiledLayer {
-  
+export class SosoTiledLayer extends TiledLayer {
+
   getTileUrl(level: number, row: number, column: number): string {
     if(level >= 10){
       return this._getPoliticalUrl(level, row, column);
@@ -52,6 +53,32 @@ class SosoTiledLayer extends TiledLayer {
     //need proxy
     return this.wrapUrlWithProxy(url);
   }
-}
+};
 
-export = SosoTiledLayer;
+
+export class SosoTrafficLayer extends TrafficLayer {
+    private idx: number = 1;
+    private readonly domains: string[] = ["rtt2", "rtt2a", "rtt2b", "rtt2c"];
+    protected minLevel: number = 11;
+
+    getTileUrl(level: number, row: number, column: number): string {
+
+        if (this.idx === undefined) {
+            this.idx = 0;
+        }
+
+        row = Math.pow(2, level) - row - 1;
+
+        //http://rtt2.map.qq.com/rtt/?z=11&x=1687&y=1270&timeKey148454126
+        var timestamp = Math.floor(Date.now() / 10000);
+        var url = `//${this.domains[this.idx]}.map.qq.com/rtt/?z=${level}&x=${column}&y=${row}&timeKey${timestamp}`;
+
+        this.idx++;
+
+        if (this.idx >= 4) {
+            this.idx = 0;
+        }
+
+        return Utils.wrapUrlWithProxy(url);
+    }
+};

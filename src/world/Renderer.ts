@@ -1,6 +1,4 @@
-///<amd-module name="world/Renderer"/>
 import Kernel = require("./Kernel");
-import EventUtils = require("./Event");
 import Scene = require("./Scene");
 import Camera from "./Camera";
 import { WebGLRenderingContextExtension, WebGLProgramExtension } from "./Definitions";
@@ -10,8 +8,10 @@ class Renderer {
   camera: Camera = null;
   autoRefresh: boolean = false;
 
-  constructor(canvas: HTMLCanvasElement) {
-    EventUtils.bindEvents(canvas);
+  constructor(
+    private canvas: HTMLCanvasElement,
+    private onBeforeRender?: (renderer: Renderer) => void,
+    private onAfterRender?: (renderer: Renderer) => void) {
 
     var gl: WebGLRenderingContextExtension;
 
@@ -35,13 +35,12 @@ class Renderer {
     initWebGL(canvas);
 
     if (!gl) {
-      alert("浏览器不支持WebGL或将WebGL禁用!");
       console.debug("浏览器不支持WebGL或将WebGL禁用!");
       return;
     }
 
     Kernel.gl.clear(Kernel.gl.COLOR_BUFFER_BIT | Kernel.gl.DEPTH_BUFFER_BIT);
-    gl.clearColor(255, 255, 255, 1.0);
+    gl.clearColor(0, 0, 0, 1);
 
     gl.enable(gl.DEPTH_TEST);
     gl.depthFunc(gl.LEQUAL);
@@ -56,14 +55,21 @@ class Renderer {
 
   render(scene: Scene, camera: Camera) {
     var gl = Kernel.gl;
-    gl.viewport(0, 0, Kernel.canvas.width, Kernel.canvas.height);
+    var canvas = Kernel.canvas;
+    gl.viewport(0, 0, canvas.width, canvas.height);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.clearColor(0, 0, 0, 1);
-    gl.enable(gl.DEPTH_TEST);
-    gl.depthFunc(gl.LEQUAL);
-    gl.depthMask(true);
+    // gl.enable(gl.DEPTH_TEST);
+    // gl.depthFunc(gl.LEQUAL);
+    // gl.depthMask(true);
     camera.update();
+    if(this.onBeforeRender){
+      this.onBeforeRender(this);
+    }
     scene.draw(camera);
+    if(this.onAfterRender){
+      this.onAfterRender(this);
+    }
   }
 
   setScene(scene: Scene) {

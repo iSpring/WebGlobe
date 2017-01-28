@@ -1,5 +1,3 @@
-///<amd-module name="world/graphics/Atmosphere"/>
-
 import Kernel = require("../Kernel");
 import MeshGraphic = require('./MeshGraphic');
 import AtmosphereGeometry = require("../geometries/Atmosphere");
@@ -17,6 +15,10 @@ class Atmosphere extends MeshGraphic {
         var imageUrl = "/WebGlobe/src/world/images/atmosphere.png";
         var material = new MeshTextureMaterial(imageUrl, false);
         return new Atmosphere(geometry, material);
+    }
+
+    shouldDraw(camera: Camera){
+        return !camera.isEarthFullOverlapScreen() && super.shouldDraw(camera);
     }
 
     onDraw(camera: Camera){

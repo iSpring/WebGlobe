@@ -1,4 +1,3 @@
-///<amd-module name="world/Image"/>
 interface ImageHashMap{
   [key: string] : HTMLImageElement;
 }

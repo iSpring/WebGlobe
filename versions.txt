@@ -108,3 +108,47 @@
 0.3.3 优化了Globe.refresh()方法，只有发生用户交互的情况下才重新计算可见切片。
 
 0.3.4 增加了Atmosphere效果。
+
+0.3.5 优化了切片加载的算法：
+      1. 当MeshTextureMaterial执行destroy的时候，取消掉原有的图片请求；
+      2. 当缩放的时候，不会请求父级别以及父父级别的切片。比如缩放到第15级的时候，不再请求第13和14级的切片，但是会请求12级及以前的切片，减少了图片请求的数量。
+
+0.3.6 使得PoiLayer能基本搜索POI并将其显示；
+      为IE11等浏览器添加ES6方法的polyfill；
+      在Matrix中用Float64Array存储数据，并同时提供getFloat32Array()方法以便给Shader传递Float32Array类型的数据（Shader不支持Float64Array）。
+
+0.3.7 删除Poi类，并让PoiLayer继承自Graphic，每次OnDraw()的时候将所有poi点的坐标动态赋值给buffer，大幅减少了绘图命令的调用，提高了FPS。
+
+0.3.8 在TiledLayer中为program中的uniform变量设置值，减少了WebGL命令的调用次数。
+
+0.3.9 用webpack代替gulp作为打包工具
+
+0.3.10 每次渲染之前都会检查Camera是否发生变化，如果变化则更新切片列表，并且保证Canvas八个角点都有保底的可见切片，不再从level1全部渲染切片，减少WebGL绘图命令
+
+0.3.11 修复了0.3.10里面的一个bug
+
+0.3.12 使得GoogleTiledLayer可以使用，并且为GoogleTiledLayer和OsmTiledLayer增加了多种Style
+
+0.3.13 添加LabelLayer和AutonaviLabelLayer，叠加GoogleTiledLayer，取得了较好的效果
+
+0.3.14 在移动端浏览器上面可以通过手势缩放
+
+0.3.15 添加了TrafficLayer、SosoTrafficLayer、QihuTrafficLayer，可以查看实时交通
+
+0.3.16 使得QihuTrafficLayer可以运行
+
+0.3.17 添加Location模块，监听位置变化
+
+0.3.18 在Camera中增加了resolution相关的方法，并可以通过Camera.getBestDisplayLevel()方法获取当前摄像机位置下最优的显示层级的切片
+
+0.4.0 1. 去除了level和lastLevel的概念，只保留一个概念：renderingLevel，renderingLevel即相当于之前的lastLevel，表示最后渲染切片的级别；
+      2. 增加了calculateDistance2EarthOriginByResolution()和calculateResolutionAndBestDisplayLevelByDistance2EarthOrigin()等相关方法，
+         并依据这些方法完成Camera位置与renderingLevel之间的映射
+
+0.4.1 将renderingLevel重命名为level，将set/getRenderingLevel()重命名为set/getLevel()
+
+0.4.2 重命名Camera中的相关方法
+
+0.4.3 向Camera添加isEarthFullOverlapScreen()等方法
+
+0.4.4 默认显示当前位置

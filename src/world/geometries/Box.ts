@@ -1,6 +1,4 @@
-﻿///<amd-module name="world/geometries/Box"/>
-
-import Vertice = require("./MeshVertice");
+﻿import Vertice = require("./MeshVertice");
 import Triangle = require("./Triangle");
 import Mesh = require("./Mesh");
 
@@ -20,10 +18,10 @@ class Box extends Mesh {
 
 		/*
 					  B1---- B3
-					/ |		/ |
+					/ |     / |
 					F1----F3  |
 					| B2- |--B4
-					|/	  | /
+					|/    | /
 					F2----F4
 		*/
 
