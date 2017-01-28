@@ -39,15 +39,14 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
   refresh() {
     var globe = Kernel.globe;
     var camera = globe.camera;
-    var currentLevel = globe.getLevel();
-    var lastLevel = globe.getLastLevel();
+    var renderingLevel = globe.getRenderingLevel();
     var options = {
       threshold: 1
     };
     var pitch = camera.getPitch();
     options.threshold = 1;// options.threshold = Math.min(90 / (90 - pitch), 1.5);
     //最大级别的level所对应的可见TileGrids
-    var lastLevelTileGrids = camera.getVisibleTilesByLevel(lastLevel, options);
+    var lastLevelTileGrids = camera.getVisibleTilesByLevel(renderingLevel, options);
 
     // this.updateSubLayerCount();
 
@@ -55,7 +54,7 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
     var parentTileGrids = lastLevelTileGrids;
     var subLevel: number;
 
-    for (subLevel = lastLevel; subLevel >= 2; subLevel--) {
+    for (subLevel = renderingLevel; subLevel >= 2; subLevel--) {
       levelsTileGrids[subLevel] = parentTileGrids;//此行代码表示第subLevel层级的可见切片
       parentTileGrids = parentTileGrids.map(function (item) {
         return item.getParent();
@@ -63,8 +62,8 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
       parentTileGrids = Utils.filterRepeatArray(parentTileGrids);
     }
 
-    for (subLevel = 2; subLevel <= lastLevel; subLevel++) {
-      var addNew = lastLevel === subLevel || (lastLevel - subLevel) > this.imageRequestOptimizeDeltaLevel;
+    for (subLevel = 2; subLevel <= renderingLevel; subLevel++) {
+      var addNew = renderingLevel === subLevel || (renderingLevel - subLevel) > this.imageRequestOptimizeDeltaLevel;
       this.children[subLevel].updateTiles(subLevel, levelsTileGrids[subLevel], addNew);
     }
 
@@ -73,9 +72,9 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
 
   //根据传入的level更新SubTiledLayer的数量
   updateSubLayerCount() {
-    var lastLevel: number = Kernel.globe.getLastLevel();
+    var renderingLevel: number = Kernel.globe.getRenderingLevel();
     var subLayerCount = this.children.length;
-    var deltaLevel = lastLevel + 1 - subLayerCount;
+    var deltaLevel = renderingLevel + 1 - subLayerCount;
     var i: number, subLayer: SubTiledLayer;
     if (deltaLevel > 0) {
       //需要增加子图层
@@ -117,13 +116,13 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
 
   updateTileVisibility() {
     var globe = Kernel.globe;
-    var lastLevel = globe.getLastLevel();
+    var renderingLevel = globe.getRenderingLevel();
 
     this.children.forEach((subTiledLayer) => {
       subTiledLayer.showAllTiles();
     });
 
-    var ancesorLevel = lastLevel - this.imageRequestOptimizeDeltaLevel - 1;
+    var ancesorLevel = renderingLevel - this.imageRequestOptimizeDeltaLevel - 1;
     if(ancesorLevel >= 1){
       var camera = Kernel.globe.camera;
       var tileGrids = camera.getTileGridsOfBoundary(ancesorLevel, false);

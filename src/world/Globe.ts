@@ -97,16 +97,13 @@ class Globe {
     var accuracy = locationData.accuracy;
     var level:number = 8;
     if(accuracy <= 100){
-      level = 13;
+      level = 16;
     }else if(accuracy <= 1000){
-      level = 10;
+      level = 13;
     }else{
-      level = 8;
+      level = 11;
     }
-    // if(this.getLevel() < level){
-    //   this.setLevel(level);
-    // }
-    this.setLevel(level);
+    this.setRenderingLevel(level);
   }
 
   setTiledLayer(tiledLayer: TiledLayer) {
@@ -149,22 +146,17 @@ class Globe {
     }
   }
 
-  getLevel() {
-    return this.camera ? this.camera.getLevel() : -1;
-  }
-
-  getLastLevel(){
-    var currentLevel = this.getLevel();
-    return currentLevel >= 0 ? (currentLevel + Kernel.DELTA_LEVEL_BETWEEN_LAST_LEVEL_AND_CURRENT_LEVEL) : -1;
+  getRenderingLevel(){
+    return this.camera.getRenderingLevel();
   }
 
   zoomIn(){
-    this.setLevel(this.getLevel() + 1);
+    this.setRenderingLevel(this.getRenderingLevel() + 1);
   }
 
-  setLevel(level: number) {
+  setRenderingLevel(level: number) {
     if (this.camera) {
-      this.camera.setLevel(level);
+      this.camera.setRenderingLevel(level);
     }
   }
 
@@ -174,19 +166,25 @@ class Globe {
 
   animateToLevel(level: number, cb?: ()=>void) {
     if (!this.isAnimating()) {
-      level = level > Kernel.MAX_LEVEL ? Kernel.MAX_LEVEL : level;
-      if (level !== this.getLevel()) {
+      if(level < Kernel.MIN_RENDERING_LEVEL){
+        level = Kernel.MIN_RENDERING_LEVEL;
+      }
+      if(level > Kernel.MAX_RENDERING_LEVEL){
+        level = Kernel.MAX_RENDERING_LEVEL;
+      }
+      // level = level > Kernel.MAX_LEVEL ? Kernel.MAX_LEVEL : level;
+      if (level !== this.getRenderingLevel()) {
         this.camera.animateToLevel(level, cb);
       }
     }
   }
 
   animateOut(cb?: ()=>void){
-    this.animateToLevel(this.getLevel() - 1, cb);
+    this.animateToLevel(this.getRenderingLevel() - 1, cb);
   }
 
   animateIn(cb?: ()=>void){
-    this.animateToLevel(this.getLevel() + 1, cb);
+    this.animateToLevel(this.getRenderingLevel() + 1, cb);
   }
 
   private _onBeforeRender(renderer: Renderer){
@@ -259,10 +257,10 @@ class Globe {
     if(a || b){
       var lastLevelTileGrids = this.tiledLayer.getLastLevelVisibleTileGrids();
       if(a){
-        this.labelLayer.updateTiles(this.getLastLevel(), lastLevelTileGrids);
+        this.labelLayer.updateTiles(this.getRenderingLevel(), lastLevelTileGrids);
       }
       if(b){
-        this.trafficLayer.updateTiles(this.getLastLevel(), lastLevelTileGrids);
+        this.trafficLayer.updateTiles(this.getRenderingLevel(), lastLevelTileGrids);
       }
     }
   }
