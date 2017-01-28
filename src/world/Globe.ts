@@ -15,11 +15,11 @@ import {QihuTrafficLayer} from "./layers/Qihu";
 import Atmosphere = require("./graphics/Atmosphere");
 import PoiLayer = require("./layers/PoiLayer");
 
-const initLevel = Utils.isMobile() ? 8 : 0;
+const initLevel = 0;// Utils.isMobile() ? 8 : 0;
+
+type RenderCallback = () => void;
 
 class Globe {
-  private readonly REFRESH_INTERVAL: number = 150; //Globe自动刷新时间间隔，以毫秒为单位
-  private lastRefreshTimestamp: number = -1;
   renderer: Renderer = null;
   scene: Scene = null;
   camera: Camera = null;
@@ -27,15 +27,20 @@ class Globe {
   labelLayer: LabelLayer = null;
   trafficLayer: TrafficLayer = null;
   poiLayer: PoiLayer = null;
+  debugStopRefreshTiles: boolean = false;
+  private readonly REFRESH_INTERVAL: number = 150; //Globe自动刷新时间间隔，以毫秒为单位
+  private lastRefreshTimestamp: number = -1;
   private lastRefreshCameraCore: CameraCore = null;
   private eventHandler: EventHandler = null;
   private allRefreshCount:number = 0;
   private realRefreshCount:number = 0;
+  private beforeRenderCallbacks:RenderCallback[] = [];
+  private afterRenderCallbacks:RenderCallback[] = [];
 
   constructor(private canvas: HTMLCanvasElement, level:number = initLevel, lonlat: number[] = [116.3975, 39.9085]) {
     Kernel.globe = this;
     Kernel.canvas = canvas;
-    this.renderer = new Renderer(canvas, this._onBeforeRender.bind(this));
+    this.renderer = new Renderer(canvas, this._onBeforeRender.bind(this), this._onAfterRender.bind(this));
     this.scene = new Scene();
     var radio = canvas.width / canvas.height;
     this.camera = new Camera(30, radio, 1, Kernel.EARTH_RADIUS * 2, level, lonlat);
@@ -70,15 +75,17 @@ class Globe {
     //   });
     // }
 
-    if(Utils.isMobile()){
-      Utils.subscribe('location', (data:LocationData) => {
-        console.log(data);
-        this.showLocation(data);
-      });
-      LocationService.getRobustLocation();
-      LocationService.getLocation();
-      LocationService.watchPosition();
-    }
+    // if(Utils.isMobile()){
+    //   Utils.subscribe('location', (data:LocationData) => {
+    //     console.log(data);
+    //     this.afterRenderCallbacks.push(() => {
+    //       this.showLocation(data);
+    //     });
+    //   });
+    //   LocationService.getRobustLocation();
+    //   LocationService.getLocation();
+    //   LocationService.watchPosition();
+    // }
   }
 
   showLocation(locationData: LocationData){
@@ -151,10 +158,6 @@ class Globe {
     return currentLevel >= 0 ? (currentLevel + Kernel.DELTA_LEVEL_BETWEEN_LAST_LEVEL_AND_CURRENT_LEVEL) : -1;
   }
 
-  getBestDisplayLevel(){
-    return this.camera.getBestDisplayLevel();
-  }
-
   zoomIn(){
     this.setLevel(this.getLevel() + 1);
   }
@@ -187,7 +190,13 @@ class Globe {
   }
 
   private _onBeforeRender(renderer: Renderer){
+    // this.beforeRenderCallbacks.forEach((callback) => callback());
     this.refresh();
+  }
+
+  private _onAfterRender(render: Renderer){
+    this.afterRenderCallbacks.forEach((callback) => callback());
+    this.afterRenderCallbacks = [];
   }
 
   // private _tick() {
@@ -207,13 +216,20 @@ class Globe {
   }
 
   refresh(force: boolean = false) {
+    this.allRefreshCount++;
+    var timestamp = Date.now();
+
+    //先更新camera中的各种矩阵
+    this.camera.update(force);
+
     if (!this.tiledLayer || !this.scene || !this.camera) {
       return;
     }
-    this.allRefreshCount++;
-    var timestamp = Date.now();
-    //先更新camera中的各种矩阵
-    this.camera.update(force);
+
+    if(this.debugStopRefreshTiles){
+      return;
+    }
+    
     var newCameraCore = this.camera.getCameraCore();
     // var isNeedRefresh = force || !newCameraCore.equals(this.cameraCore);
     var isNeedRefresh = false;
