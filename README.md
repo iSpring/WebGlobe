@@ -31,4 +31,4 @@ Demo: https://ispring.github.io/WebGlobe/index.html
 
  5. 开发过程中，在WebGlobe根目录下执行npm start即可进行打包编译
  
- 6. 有问题的话欢迎大家提issue或者到 https://gitter.im/iSpring/WebGlobe 进行讨论，这样更方便沟通。
+ 6. 有问题的话欢迎大家提issue或者到 https://gitter.im/iSpring/WebGlobe 进行讨论
