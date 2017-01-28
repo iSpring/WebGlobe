@@ -166,11 +166,11 @@ class Globe {
 
   animateToLevel(level: number, cb?: ()=>void) {
     if (!this.isAnimating()) {
-      if(level < Kernel.MIN_RENDERING_LEVEL){
-        level = Kernel.MIN_RENDERING_LEVEL;
+      if(level < Kernel.MIN_LEVEL){
+        level = Kernel.MIN_LEVEL;
       }
-      if(level > Kernel.MAX_RENDERING_LEVEL){
-        level = Kernel.MAX_RENDERING_LEVEL;
+      if(level > Kernel.MAX_LEVEL){
+        level = Kernel.MAX_LEVEL;
       }
       // level = level > Kernel.MAX_LEVEL ? Kernel.MAX_LEVEL : level;
       if (level !== this.getLevel()) {

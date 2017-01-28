@@ -14,14 +14,15 @@ class Kernel{
     static canvas:HTMLCanvasElement = null;
     static globe:Globe = null;
     static idCounter:number = 0; //Object3D对象的唯一标识
-    static readonly version:string = "0.4.1";
+    static readonly version:string = "0.4.2";
     static readonly SCALE_FACTOR:number = SCALE_FACTOR;
     static readonly EARTH_RADIUS:number = EARTH_RADIUS;
     static readonly MAX_RESOLUTION:number = MAX_RESOLUTION;
+    static readonly MAX_REAL_RESOLUTION: number = MAX_REAL_RESOLUTION;
     static readonly MAX_PROJECTED_COORD:number = MAX_PROJECTED_COORD;
     static readonly BASE_LEVEL:number = 6; //渲染的基准层级，从该层级开始segment为1
-    static readonly MAX_RENDERING_LEVEL:number = 18;
-    static readonly MIN_RENDERING_LEVEL:number = 0;
+    static readonly MAX_LEVEL:number = 18;
+    static readonly MIN_LEVEL:number = 0;
     static readonly EARTH_FULL_OVERLAP_SCREEN_LEVEL:number = 6;//从该层级开始，地球全部铺满Canvas
     static readonly proxy:string = "";
 }
