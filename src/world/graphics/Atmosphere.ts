@@ -18,7 +18,7 @@ class Atmosphere extends MeshGraphic {
     }
 
     shouldDraw(camera: Camera){
-        return camera.getRenderingLevel() < Kernel.EARTH_FULL_OVERLAP_SCREEN_LEVEL && super.shouldDraw(camera);
+        return camera.getLevel() < Kernel.EARTH_FULL_OVERLAP_SCREEN_LEVEL && super.shouldDraw(camera);
     }
 
     onDraw(camera: Camera){

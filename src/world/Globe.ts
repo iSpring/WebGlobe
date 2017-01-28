@@ -15,7 +15,7 @@ import {QihuTrafficLayer} from "./layers/Qihu";
 import Atmosphere = require("./graphics/Atmosphere");
 import PoiLayer = require("./layers/PoiLayer");
 
-const initLevel = 0;// Utils.isMobile() ? 8 : 0;
+const initLevel = Utils.isMobile() ? 11 : 3;
 
 type RenderCallback = () => void;
 
@@ -103,7 +103,7 @@ class Globe {
     }else{
       level = 11;
     }
-    this.setRenderingLevel(level);
+    this.setLevel(level);
   }
 
   setTiledLayer(tiledLayer: TiledLayer) {
@@ -146,17 +146,17 @@ class Globe {
     }
   }
 
-  getRenderingLevel(){
-    return this.camera.getRenderingLevel();
+  getLevel(){
+    return this.camera.getLevel();
   }
 
   zoomIn(){
-    this.setRenderingLevel(this.getRenderingLevel() + 1);
+    this.setLevel(this.getLevel() + 1);
   }
 
-  setRenderingLevel(level: number) {
+  setLevel(level: number) {
     if (this.camera) {
-      this.camera.setRenderingLevel(level);
+      this.camera.setLevel(level);
     }
   }
 
@@ -173,18 +173,18 @@ class Globe {
         level = Kernel.MAX_RENDERING_LEVEL;
       }
       // level = level > Kernel.MAX_LEVEL ? Kernel.MAX_LEVEL : level;
-      if (level !== this.getRenderingLevel()) {
+      if (level !== this.getLevel()) {
         this.camera.animateToLevel(level, cb);
       }
     }
   }
 
   animateOut(cb?: ()=>void){
-    this.animateToLevel(this.getRenderingLevel() - 1, cb);
+    this.animateToLevel(this.getLevel() - 1, cb);
   }
 
   animateIn(cb?: ()=>void){
-    this.animateToLevel(this.getRenderingLevel() + 1, cb);
+    this.animateToLevel(this.getLevel() + 1, cb);
   }
 
   private _onBeforeRender(renderer: Renderer){
@@ -257,10 +257,10 @@ class Globe {
     if(a || b){
       var lastLevelTileGrids = this.tiledLayer.getLastLevelVisibleTileGrids();
       if(a){
-        this.labelLayer.updateTiles(this.getRenderingLevel(), lastLevelTileGrids);
+        this.labelLayer.updateTiles(this.getLevel(), lastLevelTileGrids);
       }
       if(b){
-        this.trafficLayer.updateTiles(this.getRenderingLevel(), lastLevelTileGrids);
+        this.trafficLayer.updateTiles(this.getLevel(), lastLevelTileGrids);
       }
     }
   }
