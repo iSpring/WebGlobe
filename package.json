@@ -25,6 +25,9 @@
     "HTML5"
   ],
   "author": "iSpring",
+  "engines": {
+    "node": ">=6.0.0"
+  },
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/iSpring/WebGlobe/issues"
