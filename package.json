@@ -4,7 +4,7 @@
   "description": "A WebGL virtual globe and map engine.",
   "main": "require.js",
   "scripts": {
-    "clear": "rimraf buildOutput",
+    "clear": "rimraf buildOutput && rimraf index.html",
     "prebuild:dev": "npm run clear",
     "build:dev": "cross-env NODE_ENV=development webpack --progress --colors",
     "prebuild:prod": "npm run clear",
