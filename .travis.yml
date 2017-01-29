@@ -1,6 +1,6 @@
 ﻿language: node_js
 node_js:
-  - "6.1.x"
+  - 'v6'
 install:
   - npm install
 script:
