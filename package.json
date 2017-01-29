@@ -9,7 +9,8 @@
     "build:dev": "cross-env NODE_ENV=development webpack --progress --colors",
     "prebuild:prod": "npm run clear",
     "build:prod": "cross-env NODE_ENV=production webpack --progress --colors",
-    "start": "npm run build:dev"
+    "start": "npm run build:dev",
+    "test": "npm start"
   },
   "repository": {
     "type": "git",
