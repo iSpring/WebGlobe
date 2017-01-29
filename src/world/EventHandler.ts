@@ -151,14 +151,14 @@ class EventHandler {
     var absoluteX = event.layerX || event.offsetX;
     var absoluteY = event.layerY || event.offsetY;
     var pickResult = globe.camera.getPickCartesianCoordInEarthByCanvas(absoluteX, absoluteY);
-    // globe.setRenderingLevel(globe.getLevel() + 1);
+    // globe.setLevel(globe.getLevel() + 1);
     globe.zoomIn();
     if (pickResult.length >= 1) {
       var pickVertice = pickResult[0];
       var lonlat = MathUtils.cartesianCoordToGeographic(pickVertice);
       var lon = lonlat[0];
       var lat = lonlat[1];
-      // globe.setRenderingLevel(globe.getLevel() + 1);
+      // globe.setLevel(globe.getLevel() + 1);
       globe.zoomIn();
       this.moveLonLatToCanvas(lon, lat, absoluteX, absoluteY);
     }
@@ -180,7 +180,7 @@ class EventHandler {
       delta = event.detail;
       deltaLevel = -parseInt(<any>(delta / 3));
     }
-    var newLevel = globe.getRenderingLevel() + deltaLevel;
+    var newLevel = globe.getLevel() + deltaLevel;
     if (newLevel >= 0) {
       //globe.setLevel(newLevel);
       globe.animateToLevel(newLevel);

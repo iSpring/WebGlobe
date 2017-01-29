@@ -10,7 +10,7 @@ import Matrix = require('./math/Matrix');
 import Object3D = require('./Object3D');
 
 export class CameraCore{
-  constructor(private fov: number, private aspect: number, private near: number, private far: number, private realLevel: number, private matrix: Matrix){
+  constructor(private fov: number, private aspect: number, private near: number, private far: number, private floatLevel: number, private matrix: Matrix){
 
   }
 
@@ -30,8 +30,8 @@ export class CameraCore{
     return this.far;
   }
 
-  getRealLeavel(){
-    return this.realLevel;
+  getFloatLevel(){
+    return this.floatLevel;
   }
 
   getMatrix(){
@@ -46,10 +46,17 @@ export class CameraCore{
            this.aspect === other.getAspect() &&
            this.near === other.getNear() &&
            this.far === other.getFar() &&
-           this.realLevel === other.getRealLeavel() &&
+           this.floatLevel === other.getFloatLevel() &&
            this.matrix.equals(other.getMatrix());
   }
 }
+
+const realResolutionCache:any = {};
+(function(){
+  for(var i = 0; i <= Kernel.MAX_LEVEL; i++){
+    realResolutionCache[i] = Kernel.MAX_REAL_RESOLUTION / Math.pow(2, i);
+  }
+})();
 
 class Camera extends Object3D {
   private readonly initFov: number;
@@ -63,13 +70,12 @@ class Camera extends Object3D {
   //定义抬头时，旋转角为正值
   private isZeroPitch: boolean = true;//表示当前Camera视线有没有发生倾斜
 
-  private resolution: number = -1;//屏幕1px代表的空间中的距离
-  private bestDisplayLevelFloat: number = -1;//浮点数
+  // private resolution: number = -1;//屏幕1px在空间中的距离
+  // private resolutionInWorld: number = -1;//屏幕1px在实际世界中的距离
 
-  private renderingLevel: number = -1;//当前渲染等级
-
-  private realLevel: number = -2;//可能是正数，可能是非整数，非整数表示缩放动画过程中的level
-  private lastRealLevel: number = -3;//上次render()时所用到的this.realLevel
+  private level: number = -1;//当前渲染等级
+  private floatLevel: number = -2;//可能是正数，可能是非整数，非整数表示缩放动画过程中的level
+  private lastFloatLevel: number = -3;//上次render()时所用到的this.realLevel
 
   private lastMatrix: Matrix;//上次render()时的this.matrix
   private lastFov: number = -1;
@@ -86,14 +92,17 @@ class Camera extends Object3D {
   private projMatrixForDraw: Matrix;
   private projViewMatrixForDraw: Matrix;//实际传递给shader的矩阵是projViewMatrixForDraw，而不是projViewMatrix
 
+  private lonlatsOfBoundary:number[][] = null;
+
   private animating: boolean = false;
 
   //this.near一旦初始化之后就不应该再修改
   //this.far可以动态计算
   //this.aspect在Viewport改变后重新计算
   //this.fov可以调整以实现缩放效果
-  constructor(private fov:number = 45, private aspect:number = 1, private near:number = 1, private far:number = 100, level:number = 0, lonlat:number[] = [0, 0]) {
+  constructor(private fov:number = 45, private aspect:number = 1, private near:number = 1, private far:number = 100, level:number = 3, lonlat:number[] = [0, 0]) {
     super();
+    this.lonlatsOfBoundary = [];
     this.initFov = this.fov;
     this.lastMatrix = new Matrix();
     this.lastMatrix.setUniqueValue(0);
@@ -103,6 +112,17 @@ class Camera extends Object3D {
     this.update(true);
   }
 
+  isEarthFullOverlapScreen(){
+    return this.lonlatsOfBoundary.length === 8;
+  }
+
+  getTileGridsOfBoundary(level:number, filterRepeat: boolean){
+    var tileGridsOfBoundary: TileGrid[] = this.lonlatsOfBoundary.map((lonlat)=>{
+      return TileGrid.getTileGridByGeo(lonlat[0], lonlat[1], level);
+    });
+    return filterRepeat ? Utils.filterRepeatArray(tileGridsOfBoundary) : tileGridsOfBoundary;
+  }
+
   toJson():any{
     function matrixToJson(mat: Matrix){
       return mat ? mat.toJson() : null;
@@ -110,11 +130,9 @@ class Camera extends Object3D {
     var json = {
       matrix: matrixToJson(this.matrix),
       isZeroPitch: this.isZeroPitch,
-      resolution: this.resolution,
-      bestDisplayLevelFloat: this.bestDisplayLevelFloat,
-      // level: this.level,
-      realLevel: this.realLevel,
-      lastRealLevel: this.lastRealLevel,
+      level: this.level,
+      floatLevel: this.floatLevel,
+      lastFloatLevel: this.lastFloatLevel,
       lastMatrix: matrixToJson(this.lastMatrix),
       lastFov: this.lastFov,
       lastAspect: this.lastAspect,
@@ -139,11 +157,9 @@ class Camera extends Object3D {
   fromJson(json: any){
     this.matrix = Matrix.fromJson(json.matrix);
     this.isZeroPitch = json.isZeroPitch;
-    this.resolution = json.resolution;
-    this.bestDisplayLevelFloat = json.bestDisplayLevelFloat;
-    // this.level = json.level;
-    this.realLevel = json.realLevel;
-    this.lastRealLevel = json.lastRealLevel;
+    this.level = json.level;
+    this.floatLevel = json.floatLevel;
+    this.lastFloatLevel = json.lastFloatLevel;
     this.lastMatrix = Matrix.fromJson(json.lastMatrix);
     this.lastFov = json.lastFov;
     this.lastAspect = json.lastAspect;
@@ -157,7 +173,7 @@ class Camera extends Object3D {
     this.projMatrixForDraw = Matrix.fromJson(json.projMatrixForDraw);
     this.projViewMatrixForDraw = Matrix.fromJson(json.projViewMatrixForDraw);
     this.animating = json.animating;
-    this._updateCore(true);
+    this.update(true);
     // Kernel.globe.refresh(true);
   }
 
@@ -217,9 +233,9 @@ class Camera extends Object3D {
       throw "invalid aspect:" + aspect;
     }
     this._setPerspectiveMatrix(this.fov, aspect, this.near, this.far);
-    //Canvas的尺寸发生变化时，我们需要调用方法setRenderingLevel()更新Camera的位置，
-    //因为setRenderingLevel方法依赖Canvas的高度进行计算
-    this.setRenderingLevel(this.renderingLevel, true);
+    //Canvas的尺寸发生变化时，我们需要调用方法setLevel()更新Camera的位置，
+    //因为setLevel方法依赖Canvas的高度进行计算
+    this.setLevel(this.level, true);
   }
 
   private _updateFar(): void {
@@ -238,10 +254,9 @@ class Camera extends Object3D {
 
   update(force: boolean = false): boolean{
     var shouldUpdate = this._updateCore(force);
-    // if(shouldUpdate){
-    //   //更新空间分辨率
-    //   this.calculateXYResolutionAndBestDisplayLevel();
-    // }
+    if(shouldUpdate){
+      this._updateTileGridsOfBoundary();
+    }
     return shouldUpdate;
   }
 
@@ -256,13 +271,34 @@ class Camera extends Object3D {
     this.lastAspect = this.aspect;
     this.lastNear = this.near;
     this.lastFar = this.far;
-    this.lastRealLevel = this.realLevel;
+    this.lastFloatLevel = this.floatLevel;
     this.lastMatrix.setMatrixByOther(this.matrix);
     return shouldUpdate;
   }
 
+  private _updateTileGridsOfBoundary(){
+    var lonlatsOfBoundary:number[][] = [];
+    var ndcs:number[][] = [
+      [-1, 1],//left top
+      [-1, 0],//left middle
+      [-1, -1],//left bottom
+      [1, 1],//right top
+      [1, 0],//right middle
+      [1, -1],//right bottom
+      [0, 1],//middle top
+      [0, -1]//middle bottom
+    ];
+    ndcs.forEach((ndcXY:number[]) => {
+      var lonlat = this._getPickLonLatByNDC(ndcXY[0], ndcXY[1]);
+      if(lonlat && lonlat.length > 0){
+        lonlatsOfBoundary.push(lonlat);
+      }
+    });
+    this.lonlatsOfBoundary = lonlatsOfBoundary;
+  }
+
   getCameraCore(){
-    return new CameraCore(this.fov, this.aspect, this.near, this.far, this.realLevel, this.matrix.clone());
+    return new CameraCore(this.fov, this.aspect, this.near, this.far, this.floatLevel, this.matrix.clone());
   }
 
   private _isNeedUpdate(): boolean{
@@ -270,7 +306,7 @@ class Camera extends Object3D {
            (this.aspect !== this.lastAspect) ||
            (this.near !== this.lastNear) ||
            (this.far !== this.lastFar) ||
-           (this.realLevel !== this.lastRealLevel) ||
+           (this.floatLevel !== this.lastFloatLevel) ||
            (!this.matrix.equals(this.lastMatrix));
   }
 
@@ -315,7 +351,7 @@ class Camera extends Object3D {
   //返回更新后的fov值，如果返回结果 < 0，说明无需更新fov
   private _updatePositionAndFov(cameraMatrix: Matrix): number {
     //是否满足near值，和fov没有关系，和position有关，但是改变position的话，fov也要相应变动以满足对应的缩放效果
-    const currentLevel = this.animating ? this.realLevel : this.renderingLevel;
+    const currentLevel = this.animating ? this.floatLevel : this.level;
 
     //safeLevel不是整数
     var safeLevel = this._getSafeThresholdLevelForNear();
@@ -340,11 +376,8 @@ class Camera extends Object3D {
   //比如第10级满足near，第11级不满足near，那么返回10
   private _getSafeThresholdLevelForNear() {
     var thresholdNear = this.near * this.nearFactor;
-    // var pow2level = this.baseTheoryDistanceFromCamera2EarthSurface / thresholdNear;
-    // var level = MathUtils.log2(pow2level);
-    // return level;
-    var result = this.calculateResolutionAndBestDisplayLevelByDistance2EarthSurface(thresholdNear);
-    var level = result[0];
+    var result = this._calculateResolutionAndBestDisplayLevelByDistance2EarthSurface(thresholdNear);
+    var level = result[1];
     return level;
   }
 
@@ -386,7 +419,7 @@ class Camera extends Object3D {
   }
 
   //resolution,level
-  measureXYResolutionAndBestDisplayLevel():any{
+  measureXYResolutionAndBestDisplayLevel(): any{
     //计算resolution
     var p = this.matrix.getPosition();
     var dir = Vector.fromVertice(p);
@@ -424,27 +457,50 @@ class Camera extends Object3D {
     };
   }
 
-  // calculateResolutionAndBestDisplayLevel1(){
-  //   var offsetPixel: number = 10;
-  //   var L = this.getDistance2EarthOrigin();
-  //   var α = MathUtils.degreeToRadian(this.fov / 2);
-  //   var k1 = offsetPixel * 2 / Kernel.canvas.height * Math.tan(α);
-  //   var k1k1 = k1 * k1;
-  //   var a = k1k1 + 1;
-  //   var b = 2 * k1k1 * L;
-  //   var c = k1k1 * L * L - Kernel.EARTH_RADIUS * Kernel.EARTH_RADIUS;
-  //   var Δ = b * b - 4 * a * c;
-  //   var x = (-b - Math.sqrt(Δ)) / (2 * a);
-  //   var y = k1 * (x + L);
-  //   var k2 = y / x;
-  //   var α2 = Math.atan(Math.abs(k2));
-  //   var resolution = α2 * Kernel.EARTH_RADIUS / offsetPixel * this.resolutionFactor2;
-  //   var bestDisplayLevelFloat = this.calculateLevelByResolution(resolution);
-  //   return {
-  //     resolution: resolution,
-  //     bestDisplayLevelFloat: bestDisplayLevelFloat
-  //   };
-  // }
+  //[resolution,level]
+  calculateCurrentResolutionAndBestDisplayLevel(){
+    var distance2EarthOrigin = this.getDistance2EarthOrigin();
+    return this._calculateResolutionAndBestDisplayLevelByDistance2EarthOrigin(distance2EarthOrigin);
+  }
+
+  //L=>[resolution,level]
+  private _calculateResolutionAndBestDisplayLevelByDistance2EarthOrigin(distance2EarthOrigin: number){
+    var α2 = MathUtils.degreeToRadian(this.fov / 2);
+    var α1 = Math.atan(2 / Kernel.canvas.height * Math.tan(α2));
+    var δ = Math.asin(distance2EarthOrigin * Math.sin(α1) / Kernel.EARTH_RADIUS);
+    var β = δ - α1;
+    var resolution = β * Kernel.EARTH_RADIUS * this.resolutionFactor2;
+    var bestDisplayLevelFloat = this._calculateLevelByResolution(resolution);
+    return [resolution, bestDisplayLevelFloat];
+  }
+
+  //D=>[resolution,level]
+  private _calculateResolutionAndBestDisplayLevelByDistance2EarthSurface(distance2EarthSurface: number){
+    var distance2EarthOrigin = distance2EarthSurface + Kernel.EARTH_RADIUS;
+    return this._calculateResolutionAndBestDisplayLevelByDistance2EarthOrigin(distance2EarthOrigin);
+  }
+
+  //level=>D
+  private _calculateDistance2EarthSurfaceByBestDisplayLevel(level: number){
+    return this._calculateDistance2EarthOriginByBestDisplayLevel(level) - Kernel.EARTH_RADIUS;
+  }
+
+  //level=>L
+  private _calculateDistance2EarthOriginByBestDisplayLevel(level: number){
+    var resolution = this._calculateResolutionByLevel(level);
+    return this._calculateDistance2EarthOriginByResolution(resolution);
+  }
+
+  //resolution=>L
+  private _calculateDistance2EarthOriginByResolution(resolution: number){
+    resolution /= this.resolutionFactor2;
+    var α2 = MathUtils.degreeToRadian(this.fov / 2);
+    var α1 = Math.atan(2 / Kernel.canvas.height * Math.tan(α2));
+    var β = resolution / Kernel.EARTH_RADIUS;
+    var δ = α1 + β;
+    var distance2EarthOrigin = Kernel.EARTH_RADIUS * Math.sin(δ) / Math.sin(α1);
+    return distance2EarthOrigin;
+  }
 
   private _calculateLevelByResolution(resolution: number){
     var pow2value = Kernel.MAX_RESOLUTION / resolution;
@@ -456,84 +512,35 @@ class Camera extends Object3D {
     return Kernel.MAX_RESOLUTION / Math.pow(2, level);
   }
 
-  //level,resolution
-  calculateCurrentResolutionAndBestDisplayLevel(){
-    var distance2EarthOrigin = this.getDistance2EarthOrigin();
-    return this.calculateResolutionAndBestDisplayLevelByDistance2EarthOrigin(distance2EarthOrigin);
+  //屏幕1px在实际世界中的距离
+  getResolutionInWorld(): number{
+    if(realResolutionCache.hasOwnProperty(this.level)){
+      return realResolutionCache[this.level];
+    }else{
+      return Kernel.MAX_REAL_RESOLUTION / Math.pow(2, this.level);
+    }    
   }
 
-  //L=>level,resolution
-  calculateResolutionAndBestDisplayLevelByDistance2EarthOrigin(distance2EarthOrigin: number){
-    var α2 = MathUtils.degreeToRadian(this.fov / 2);
-    var α1 = Math.atan(2 / Kernel.canvas.height * Math.tan(α2));
-    var δ = Math.asin(distance2EarthOrigin * Math.sin(α1) / Kernel.EARTH_RADIUS);
-    var β = δ - α1;
-    var resolution = β * Kernel.EARTH_RADIUS * this.resolutionFactor2;
-    var bestDisplayLevelFloat = this._calculateLevelByResolution(resolution);
-    return [bestDisplayLevelFloat, resolution];
+  getLevel(): number {
+    return this.level;
   }
 
-  //D=>level,resolution
-  calculateResolutionAndBestDisplayLevelByDistance2EarthSurface(distance2EarthSurface: number){
-    var distance2EarthOrigin = distance2EarthSurface + Kernel.EARTH_RADIUS;
-    return this.calculateResolutionAndBestDisplayLevelByDistance2EarthOrigin(distance2EarthOrigin);
-  }
-
-  //level=>D
-  calculateDistance2EarthSurfaceByBestDisplayLevel(level: number){
-    return this.calculateDistance2EarthOriginByBestDisplayLevel(level) - Kernel.EARTH_RADIUS;
-  }
-
-  //level=>L
-  calculateDistance2EarthOriginByBestDisplayLevel(level: number){
-    var resolution = this._calculateResolutionByLevel(level);
-    return this.calculateDistance2EarthOriginByResolution(resolution);
-  }
-
-  //resolution=>L
-  calculateDistance2EarthOriginByResolution(resolution: number){
-    resolution /= this.resolutionFactor2;
-    var α2 = MathUtils.degreeToRadian(this.fov / 2);
-    var α1 = Math.atan(2 / Kernel.canvas.height * Math.tan(α2));
-    var β = resolution / Kernel.EARTH_RADIUS;
-    var δ = α1 + β;
-    var distance2EarthOrigin = Kernel.EARTH_RADIUS * Math.sin(δ) / Math.sin(α1);
-    return distance2EarthOrigin;
-  }
-
-  // getRealResolution(){
-  //   var realResolution = MathUtils.getRealValueInWorld(this.resolution);
-  //   return realResolution;
-  // }
-
-  // getResolution(){
-  //   return this.resolution;
-  // }
-
-  // getBestDisplayLevelFloat(){
-  //   return this.bestDisplayLevelFloat;
-  // }
-
-  getRenderingLevel(): number {
-    return this.renderingLevel;
-  }
-
-  setRenderingLevel(level: number, force: boolean = false): void {
+  setLevel(level: number, force: boolean = false): void {
     if (!(Utils.isNonNegativeInteger(level))) {
       throw "invalid level:" + level;
     }
-    if(level < Kernel.MIN_RENDERING_LEVEL){
-      level = Kernel.MIN_RENDERING_LEVEL;
+    if(level < Kernel.MIN_LEVEL){
+      level = Kernel.MIN_LEVEL;
     }
-    if(level > Kernel.MAX_RENDERING_LEVEL){
-      level = Kernel.MAX_RENDERING_LEVEL;
+    if(level > Kernel.MAX_LEVEL){
+      level = Kernel.MAX_LEVEL;
     }
-    if (level !== this.renderingLevel || force) {
+    if (level !== this.level || force) {
       //不要在this._updatePositionByLevel()方法中更新this.level，因为这会影响animateToLevel()方法
       var isLevelChanged = this._updatePositionByLevel(level, this.matrix);
-      this.renderingLevel = level;
-      this.realLevel = level;
-    }    
+      this.level = level;
+      this.floatLevel = level;
+    }
   }
 
   // calculateInitDistanceToOrigin(factor:number = 1){
@@ -544,13 +551,13 @@ class Camera extends Object3D {
   // }
 
   private _initCameraPosition(level: number, lon:number, lat:number) {
-    var initDistanceToOrigin = this.calculateDistance2EarthOriginByBestDisplayLevel(level);
+    var initDistanceToOrigin = this._calculateDistance2EarthOriginByBestDisplayLevel(level);
     var initPosition = MathUtils.geographicToCartesianCoord(lon, lat, initDistanceToOrigin);
     var origin = new Vertice(0, 0, 0);
     var vector = this.getLightDirection().getOpposite();
     vector.setLength(initDistanceToOrigin);
     this._look(initPosition, origin);
-    this.setRenderingLevel(level);
+    this.setLevel(level);
   }
 
   //设置观察到的层级，不要在该方法中修改this.level的值
@@ -561,7 +568,7 @@ class Camera extends Object3D {
       throw "no intersect";
     }
     var intersect = intersects[0];
-    var theoryDistance2Interscet = this.calculateDistance2EarthSurfaceByBestDisplayLevel(level);
+    var theoryDistance2Interscet = this._calculateDistance2EarthSurfaceByBestDisplayLevel(level);
     var vector = cameraMatrix.getVectorZ();
     vector.setLength(theoryDistance2Interscet);
     var newCameraPosition = Vector.verticePlusVector(intersect, vector);
@@ -598,7 +605,7 @@ class Camera extends Object3D {
     //旋转
     matrix.localRotateX(deltaRadian);
     //更新matrix的position
-    this._updatePositionByLevel(this.renderingLevel, matrix);
+    this._updatePositionByLevel(this.level, matrix);
 
     //刷新
     this.isZeroPitch = newPitch === 0;
@@ -718,9 +725,9 @@ class Camera extends Object3D {
     var deltaX = (newPosition.x - oldPosition.x) / count;
     var deltaY = (newPosition.y - oldPosition.y) / count;
     var deltaZ = (newPosition.z - oldPosition.z) / count;
-    var deltaLevel = (newLevel - this.renderingLevel) / count;
+    var deltaLevel = (newLevel - this.level) / count;
     var start: number = -1;
-    this.realLevel = this.renderingLevel;
+    this.floatLevel = this.level;
     this.animating = true;
 
     var callback = (timestap: number) => {
@@ -730,13 +737,13 @@ class Camera extends Object3D {
       var a = timestap - start;
       if (a >= span) {
         this.animating = false;
-        this.realLevel = newLevel;
-        this.setRenderingLevel(newLevel);
+        this.floatLevel = newLevel;
+        this.setLevel(newLevel);
         if(cb){
           cb();
         }
       } else {
-        this.realLevel += deltaLevel;
+        this.floatLevel += deltaLevel;
         var p = this.getPosition();
         this.setPosition(new Vertice(p.x + deltaX, p.y + deltaY, p.z + deltaZ));
         requestAnimationFrame(callback);
@@ -1055,28 +1062,6 @@ class Camera extends Object3D {
     // console.timeEnd("getVisibleTilesByLevel");
 
     return result;
-  }
-
-  getTileGridsOfBoundary(level: number, filterRepeat: boolean){
-    var tileGrids:TileGrid[] = [];
-    var ndcs:number[][] = [
-      [-1, 1],//left top
-      [-1, 0],//left middle
-      [-1, -1],//left bottom
-      [1, 1],//right top
-      [1, 0],//right middle
-      [1, -1],//right bottom
-      [0, 1],//middle top
-      [0, -1]//middle bottom
-    ];
-    ndcs.forEach((ndcXY:number[]) => {
-      var lonlat = this._getPickLonLatByNDC(ndcXY[0], ndcXY[1]);
-      if(lonlat && lonlat.length > 0){
-        var tileGrid = TileGrid.getTileGridByGeo(lonlat[0], lonlat[1], level);
-        tileGrids.push(tileGrid);
-      }
-    });
-    return filterRepeat ? Utils.filterRepeatArray(tileGrids) : tileGrids;
   }
 
   //options: threshold

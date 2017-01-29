@@ -144,3 +144,11 @@
 0.4.0 1. 去除了level和lastLevel的概念，只保留一个概念：renderingLevel，renderingLevel即相当于之前的lastLevel，表示最后渲染切片的级别；
       2. 增加了calculateDistance2EarthOriginByResolution()和calculateResolutionAndBestDisplayLevelByDistance2EarthOrigin()等相关方法，
          并依据这些方法完成Camera位置与renderingLevel之间的映射
+
+0.4.1 将renderingLevel重命名为level，将set/getRenderingLevel()重命名为set/getLevel()
+
+0.4.2 重命名Camera中的相关方法
+
+0.4.3 向Camera添加isEarthFullOverlapScreen()等方法
+
+0.4.4 默认显示当前位置
