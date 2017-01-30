@@ -4,13 +4,13 @@
   "description": "A WebGL virtual globe and map engine.",
   "main": "require.js",
   "scripts": {
-    "clear": "rimraf buildOutput && rimraf index.html",
-    "prebuild:dev": "npm run clear",
+    "clean": "rimraf buildOutput && rimraf index.html",
+    "prebuild:dev": "npm run clean",
     "build:dev": "cross-env NODE_ENV=development webpack --progress --colors",
-    "prebuild:prod": "npm run clear",
+    "prebuild:prod": "npm run clean",
     "build:prod": "cross-env NODE_ENV=production webpack --progress --colors",
     "start": "npm run build:dev",
-    "test": "npm start"
+    "test": "cross-env NODE_ENV=development webpack --progress --colors --ci"
   },
   "repository": {
     "type": "git",
@@ -26,7 +26,7 @@
   ],
   "author": "iSpring",
   "engines": {
-    "node": ">=4"
+    "node": ">=6.0.0"
   },
   "license": "ISC",
   "bugs": {
@@ -34,6 +34,7 @@
   },
   "homepage": "https://github.com/iSpring/WebGlobe#readme",
   "devDependencies": {
+    "chalk": "^1.1.3",
     "cross-env": "^3.1.3",
     "css-loader": "^0.26.1",
     "ejs-loader": "^0.3.0",
