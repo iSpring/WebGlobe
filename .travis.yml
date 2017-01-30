@@ -1,7 +1,12 @@
 ﻿language: node_js
+
 node_js:
-  - "node"
+  - 'stable'
+  - 'v7'
+  - 'v6'
+
 install:
   - npm install
+
 script:
   - npm run test
