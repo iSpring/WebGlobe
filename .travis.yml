@@ -1,12 +1,10 @@
 ﻿language: node_js
 
 node_js:
-  - 'node'
-  - '7'
   - '6'
 
 before_install:
-  - npm cache clean
+  - nvm install 6
 
 install:
   - npm install
