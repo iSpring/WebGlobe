@@ -1,0 +1,10 @@
+language: node_js
+
+before_install:
+  - nvm install 6
+
+install:
+  - npm install
+
+script:
+  - npm run test
