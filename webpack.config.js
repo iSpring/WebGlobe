@@ -23,7 +23,18 @@ module.exports = {
             template: '!!ejs!./template.html',
             hash: true,
             inject: 'body'
-        })
+        }),
+        function(){
+            this.plugin("done", function(stats){
+                var errors = stats.compilation.errors;
+                if(errors && errors.length > 0){
+                    errors.forEach(function(err){
+                        console.info(err.rawMessage);
+                    });
+                    process.exit(1);
+                }
+            });
+        }
     ]
 };
 
