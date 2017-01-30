@@ -44,6 +44,7 @@ class Globe {
     this.scene = new Scene();
     var radio = canvas.width / canvas.height;
     this.camera = new Camera(30, radio, 1, Kernel.EARTH_RADIUS * 2, level, lonlat);
+    console.log(this.camera.level);
     this.renderer.setScene(this.scene);
     this.renderer.setCamera(this.camera);
 
