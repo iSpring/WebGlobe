@@ -24,7 +24,7 @@ Demo: https://ispring.github.io/WebGlobe/index.html
  3. 在项目的根目录下执行npm install，安装所需模块。
 
  4. package.json中定义了npm scripts：
-    - npm run clear 用于清除编译打包的结果
+    - npm run clean 用于清除编译打包的结果
     - npm run build:dev 对代码进行编译打包，代码没有压缩混淆，用于开发环境
     - npm run build:prod 对代码进行编译打包，代码进行了压缩混淆，用于生产环境
     - npm start 用于执行build:dev
