@@ -1,9 +1,12 @@
 ﻿language: node_js
 
 node_js:
-  - 'stable'
-  - 'v7'
-  - 'v6'
+  - 'node'
+  - '7'
+  - '6'
+
+before_install:
+  - npm cache clean
 
 install:
   - npm install
