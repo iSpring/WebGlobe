@@ -12,17 +12,17 @@
 [![Release](https://img.shields.io/badge/release-0.4.4-blue.svg)](https://github.com/iSpring/WebGlobe/releases)
 [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/iSpring/WebGlobe)
 
-[![Browser](https://img.shields.io/badge/Chrome-8+-1DA362.svg)](http://caniuse.com/#search=WebGL)
-[![Browser](https://img.shields.io/badge/Firefox-4+-E77827.svg)](http://caniuse.com/#search=WebGL)
-[![Browser](https://img.shields.io/badge/IE-11+-00BCF2.svg)](http://caniuse.com/#search=WebGL)
-[![Browser](https://img.shields.io/badge/Edge-12+-2F78BD.svg)](http://caniuse.com/#search=WebGL)
-[![Browser](https://img.shields.io/badge/Safari-5.1+-07C0F2.svg)](http://caniuse.com/#search=WebGL)
-[![Browser](https://img.shields.io/badge/Opera-12.1+-E23232.svg)](http://caniuse.com/#search=WebGL)
+[![Chrome 8+](https://img.shields.io/badge/Chrome-8+-1DA362.svg)](http://caniuse.com/#search=WebGL)
+[![Firefox 4+](https://img.shields.io/badge/Firefox-4+-E77827.svg)](http://caniuse.com/#search=WebGL)
+[![IE11](https://img.shields.io/badge/IE-11+-00BCF2.svg)](http://caniuse.com/#search=WebGL)
+[![Edge12+](https://img.shields.io/badge/Edge-12+-2F78BD.svg)](http://caniuse.com/#search=WebGL)
+[![Safari 5.1+](https://img.shields.io/badge/Safari-5.1+-07C0F2.svg)](http://caniuse.com/#search=WebGL)
+[![Opera 12.1+](https://img.shields.io/badge/Opera-12.1+-E23232.svg)](http://caniuse.com/#search=WebGL)
 
-[![Browser](https://img.shields.io/badge/Chrome%20for%20Android-25+-1DA362.svg)](http://caniuse.com/#search=WebGL)
-[![Browser](https://img.shields.io/badge/Firefox%20Mobile-4+-E77827.svg)](http://caniuse.com/#search=WebGL)
-[![Browser](https://img.shields.io/badge/Safari%20Mobile-8.1+-07C0F2.svg)](http://caniuse.com/#search=WebGL)
-[![Browser](https://img.shields.io/badge/Opera%20Mobile-12+-E23232.svg)](http://caniuse.com/#search=WebGL)
+[![Chrome for Android 25+](https://img.shields.io/badge/Chrome%20for%20Android-25+-1DA362.svg)](http://caniuse.com/#search=WebGL)
+[![Firefox Mobile 4+](https://img.shields.io/badge/Firefox%20Mobile-4+-E77827.svg)](http://caniuse.com/#search=WebGL)
+[![Safari Mobile 8.1+](https://img.shields.io/badge/Safari%20Mobile-8.1%2B-07C0F2.svg)](http://caniuse.com/#search=WebGL)
+[![Opera Mobile 12+](https://img.shields.io/badge/Opera%20Mobile-12+-E23232.svg)](http://caniuse.com/#search=WebGL)
 
 
 WebGlobe是基于HTML5原生WebGL实现的轻量级Google Earth三维地图引擎，支持Google地图、微软Bing地图、OpenStreetMap等。
