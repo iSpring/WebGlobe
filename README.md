@@ -19,6 +19,12 @@
 [![Browser](https://img.shields.io/badge/Safari-5.1+-07C0F2.svg)](http://caniuse.com/#search=WebGL)
 [![Browser](https://img.shields.io/badge/Opera-12.1+-E23232.svg)](http://caniuse.com/#search=WebGL)
 
+[![Browser](https://img.shields.io/badge/Chrome%20for%20Android-25+-1DA362.svg)](http://caniuse.com/#search=WebGL)
+[![Browser](https://img.shields.io/badge/Firefox%20Mobile-4+-E77827.svg)](http://caniuse.com/#search=WebGL)
+[![Browser](https://img.shields.io/badge/Safari%20Mobile-8.1+-07C0F2.svg)](http://caniuse.com/#search=WebGL)
+[![Browser](https://img.shields.io/badge/Opera%20Mobile-12+-E23232.svg)](http://caniuse.com/#search=WebGL)
+
+
 WebGlobe是基于HTML5原生WebGL实现的轻量级Google Earth三维地图引擎，支持Google地图、微软Bing地图、OpenStreetMap等。
 
 没有使用第三方框架，无需插件，所有支持WebGL的浏览器均可使用。效率高，内存占用少。会持续完善，目标是使其成为三维在线地图服务网站。
