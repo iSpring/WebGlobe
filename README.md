@@ -9,6 +9,7 @@
 
 ## WebGlobe
 [![Build Status](https://travis-ci.org/iSpring/WebGlobe.svg?branch=develop)](https://travis-ci.org/iSpring/WebGlobe)
+[![Release](https://img.shields.io/badge/release-0.4.4-blue.svg)](https://github.com/iSpring/WebGlobe/releases)
 [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/iSpring/WebGlobe)
 
 WebGlobe是基于HTML5原生WebGL实现的轻量级Google Earth三维地图引擎，支持Google地图、微软Bing地图、OpenStreetMap等。
