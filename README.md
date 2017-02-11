@@ -25,15 +25,22 @@
 [![Opera Mobile 12+](https://img.shields.io/badge/Opera%20Mobile-12+-E23232.svg)](http://caniuse.com/#search=WebGL)
 
 
-WebGlobe是基于HTML5原生WebGL实现的轻量级Google Earth三维地图引擎，支持Google地图、微软Bing地图、OpenStreetMap等。
-
-没有使用第三方框架，无需插件，所有支持WebGL的浏览器均可使用。效率高，内存占用少。会持续完善，目标是使其成为三维在线地图服务网站。
+WebGlobe是基于HTML5原生WebGL实现的轻量级Google Earth三维地图引擎。
 
 Demo: https://ispring.github.io/WebGlobe/index.html
 
 **如果觉得不错，欢迎Star和Fork！**
 
-## Setup dev environment
+## Features
+ 1. 没有使用第三方框架，无需插件，所有支持WebGL的浏览器均可使用。
+ 
+ 2. 支持Google、高德、微软Bing、腾讯、360、OpenStreetMap等底图服务。
+
+ 3. 支持影像图、行政图以及实施交通图。
+
+ 4. 支持移动浏览器并对移动浏览器做了优化。
+
+## Getting Started
  1. 项目有两个主要的分支：develop分支和master分支，develop是主分支，开发的代码都提交到该分支；master分支用于release，当develop分支中的代码比较稳定且有重要更新的时候，会将develop分支的代码merge到master分支，然后通过master分支进行发布新版本。
 
  2. 项目采用TypeScript编写，使用Webpack进行编译打包，编译成JavaScript运行，推荐使用[Visual Studio Code](http://code.visualstudio.com/)作为编辑器。
