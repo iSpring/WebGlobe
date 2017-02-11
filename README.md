@@ -40,6 +40,8 @@ Demo: https://ispring.github.io/WebGlobe/index.html
 
  4. 支持移动浏览器并对移动浏览器做了优化。
 
+ 5. 轻量级，编译压缩后不足100KB。
+
 ## Getting Started
  1. 项目有两个主要的分支：develop分支和master分支，develop是主分支，开发的代码都提交到该分支；master分支用于release，当develop分支中的代码比较稳定且有重要更新的时候，会将develop分支的代码merge到master分支，然后通过master分支进行发布新版本。
 
