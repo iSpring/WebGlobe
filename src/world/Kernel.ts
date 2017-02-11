@@ -1,5 +1,5 @@
 import {WebGLRenderingContextExtension} from './Definitions';
-import Globe = require("./Globe");
+import {Globe} from "./Globe";
 import Renderer = require("./Renderer");
 
 const REAL_EARTH_RADIUS = 6378137;

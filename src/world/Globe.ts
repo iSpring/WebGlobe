@@ -15,11 +15,19 @@ import { QihuTrafficLayer } from "./layers/Qihu";
 import Atmosphere = require("./graphics/Atmosphere");
 import PoiLayer = require("./layers/PoiLayer");
 
-const initLevel = Utils.isMobile() ? 11 : 3;
+const initLevel:number = Utils.isMobile() ? 11 : 3;
+
+const initLonlat:number[] = [116.3975, 39.9085];
 
 type RenderCallback = () => void;
 
-class Globe {
+export class GlobeOptions{
+  satellite: boolean = true;
+  level: number = initLevel;
+  lonlat: number[] = initLonlat;
+}
+
+export class Globe {
   renderer: Renderer = null;
   scene: Scene = null;
   camera: Camera = null;
@@ -37,19 +45,34 @@ class Globe {
   private beforeRenderCallbacks: RenderCallback[] = [];
   private afterRenderCallbacks: RenderCallback[] = [];
 
-  constructor(private canvas: HTMLCanvasElement, level: number = initLevel, lonlat: number[] = [116.3975, 39.9085]) {
+  constructor(private canvas: HTMLCanvasElement, options?: GlobeOptions) {
     Kernel.globe = this;
     Kernel.canvas = canvas;
+    if(!options){
+      options = new GlobeOptions();
+    }
+    if(!(options.level >= Kernel.MIN_LEVEL && options.level <= Kernel.MAX_LEVEL)){
+      options.level = initLevel;
+    }
+    if(!options.lonlat){
+      options.lonlat = initLonlat;
+    }
     this.renderer = new Renderer(canvas, this._onBeforeRender.bind(this), this._onAfterRender.bind(this));
     this.scene = new Scene();
     var radio = canvas.width / canvas.height;
-    this.camera = new Camera(30, radio, 1, Kernel.EARTH_RADIUS * 2, level, lonlat);
+    this.camera = new Camera(30, radio, 1, Kernel.EARTH_RADIUS * 2, options.level, options.lonlat);
     this.renderer.setScene(this.scene);
     this.renderer.setCamera(this.camera);
 
-    this.labelLayer = new AutonaviLabelLayer();
-    // this.labelLayer = new GoogleLabelLayer();
-    this.scene.add(this.labelLayer);
+    if(options.satellite){
+      this.setTiledLayer(new GoogleTiledLayer("Satellite"));
+      this.labelLayer = new AutonaviLabelLayer();
+      // this.labelLayer = new GoogleLabelLayer();
+      this.scene.add(this.labelLayer);
+    }else{
+      this.setTiledLayer(new AutonaviTiledLayer());
+    }
+    
     // this.trafficLayer = new QihuTrafficLayer();
     // this.trafficLayer.visible = false;
     // this.scene.add(this.trafficLayer);
@@ -60,10 +83,6 @@ class Globe {
 
     this.renderer.setIfAutoRefresh(true);
     this.eventHandler = new EventHandler(canvas);
-
-    var tiledLayer = new GoogleTiledLayer("Satellite");
-    // var tiledLayer = new AutonaviTiledLayer("Satellite");
-    this.setTiledLayer(tiledLayer);
 
     // if(Utils.isMobile() && window.navigator.geolocation){
     //   window.navigator.geolocation.getCurrentPosition((position: Position) => {
@@ -86,7 +105,7 @@ class Globe {
     // LocationService.watchPosition();
   }
 
-  showLocation(locationData: LocationData) {
+  private showLocation(locationData: LocationData) {
     var lon = locationData.lng;
     var lat = locationData.lat;
     // this.poiLayer.clear();
@@ -104,7 +123,7 @@ class Globe {
     this.setLevel(level);
   }
 
-  setTiledLayer(tiledLayer: TiledLayer) {
+  private setTiledLayer(tiledLayer: TiledLayer) {
     //在更换切片图层的类型时清空缓存的图片
     ImageUtils.clear();
     if (this.tiledLayer) {
@@ -265,6 +284,4 @@ class Globe {
     return this.tiledLayer.getExtents(level);
   }
 
-}
-
-export = Globe;
+};

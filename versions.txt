@@ -154,3 +154,5 @@
 0.4.4 默认显示当前位置
 
 0.4.5 添加Travis CI服务，在每次push代码的时候进行测试，在README.md中添加了各种Badge
+
+0.4.6 增加了GlobeOptions类，为Globe构造函数传递参数
