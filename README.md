@@ -57,6 +57,6 @@ Demo: https://ispring.github.io/WebGlobe/index.html
 
  5. 开发过程中，在WebGlobe根目录下执行npm start即可进行打包编译。
 
- 6. 接入持续集成服务[Travis CI](https://travis-ci.org/iSpring/WebGlobe),保证代码质量。
+ 6. 接入持续集成服务[Travis CI](https://travis-ci.org/iSpring/WebGlobe)，保证代码质量。
  
  7. 有问题的话欢迎大家提issue或者到[Gitter](https://gitter.im/iSpring/WebGlobe)中进行讨论。
