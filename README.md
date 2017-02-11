@@ -55,6 +55,8 @@ Demo: https://ispring.github.io/WebGlobe/index.html
     - npm run build:prod 对代码进行编译打包，代码进行了压缩混淆，用于生产环境
     - npm start 用于执行build:dev
 
- 5. 开发过程中，在WebGlobe根目录下执行npm start即可进行打包编译
+ 5. 开发过程中，在WebGlobe根目录下执行npm start即可进行打包编译。
+
+ 6. 接入持续集成服务[Travis CI](https://travis-ci.org/iSpring/WebGlobe),保证代码质量。
  
- 6. 有问题的话欢迎大家提issue或者到 https://gitter.im/iSpring/WebGlobe 进行讨论
+ 7. 有问题的话欢迎大家提issue或者到[Gitter](https://gitter.im/iSpring/WebGlobe)中进行讨论。
