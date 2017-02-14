@@ -4,7 +4,7 @@ import TiledLayer = require('./TiledLayer');
 
 type Style = "Default" | "Cycle" | "Transport" | "Humanitarian";
 
-export default class OsmTiledLayer extends TiledLayer {
+export class OsmTiledLayer extends TiledLayer {
 
   private idx:number = 0;
 

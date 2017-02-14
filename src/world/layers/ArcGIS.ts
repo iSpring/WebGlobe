@@ -1,7 +1,7 @@
 import Kernel = require("../Kernel");
 import TiledLayer = require("./TiledLayer");
 
-class ArcGISTiledLayer extends TiledLayer{
+export class ArcGISTiledLayer extends TiledLayer{
   constructor(public url: string){
     super();
   }
@@ -10,6 +10,4 @@ class ArcGISTiledLayer extends TiledLayer{
     var url = `${this.url}/tile/${level}/${row}/${column}`;
     return this.wrapUrlWithProxy(url);
   }
-}
-
-export = ArcGISTiledLayer;
+};

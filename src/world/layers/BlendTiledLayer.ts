@@ -1,9 +1,9 @@
 import TiledLayer = require("./TiledLayer");
-import NokiaTiledLayer = require("./NokiaTiledLayer");
+import {NokiaTiledLayer} from "./Nokia";
 import {GoogleTiledLayer} from "./Google";
-import OsmTiledLayer = require("./OsmTiledLayer");
+import {OsmTiledLayer} from "./OpenStreetMap";
 
-class BlendTiledLayer extends TiledLayer {
+export default class BlendTiledLayer extends TiledLayer {
 
   getTileUrl(level: number, row: number, column: number): string {
     var array:any[] = [NokiaTiledLayer, GoogleTiledLayer, OsmTiledLayer];
@@ -14,5 +14,3 @@ class BlendTiledLayer extends TiledLayer {
   }
 
 }
-
-export = BlendTiledLayer;

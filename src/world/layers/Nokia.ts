@@ -1,6 +1,6 @@
 import TiledLayer = require('./TiledLayer');
 
-class NokiaTiledLayer extends TiledLayer{
+export class NokiaTiledLayer extends TiledLayer{
 
   getTileUrl(level: number, row: number, column: number): string {
     var sum = level + row + column;
@@ -9,7 +9,5 @@ class NokiaTiledLayer extends TiledLayer{
     var url = `//${idx}.base.maps.api.here.com/maptile/2.1/maptile/f1f4a211b3/normal.day/${level}/${column}/${row}/512/png8?app_id=xWVIueSv6JL0aJ5xqTxb&app_code=djPZyynKsbTjIUDOBcHZ2g&lg=eng&ppi=72&pview=DEF`;
     return url;
   }
-  
-}
 
-export = NokiaTiledLayer;
+}

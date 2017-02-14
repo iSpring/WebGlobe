@@ -2,7 +2,7 @@ import MathUtils = require('../math/Utils');
 import TiledLayer = require('./TiledLayer');
 
 //Bing地图
-class BingTiledLayer extends TiledLayer{
+export class BingTiledLayer extends TiledLayer{
 
   getTileUrl(level: number, row: number, column: number): string {
     var url = "";
@@ -42,6 +42,4 @@ class BingTiledLayer extends TiledLayer{
     return url;
   }
 
-}
-
-export = BingTiledLayer;
+};
