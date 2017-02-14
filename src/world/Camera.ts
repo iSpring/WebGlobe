@@ -1,5 +1,6 @@
 import Kernel = require('./Kernel');
 import Utils = require('./Utils');
+import {EventEmitter} from './Events';
 import MathUtils = require('./math/Utils');
 import Vertice = require('./math/Vertice');
 import Vector = require('./math/Vector');
@@ -96,12 +97,15 @@ class Camera extends Object3D {
 
   private animating: boolean = false;
 
+  private eventEmitter: EventEmitter = null;
+
   //this.near一旦初始化之后就不应该再修改
   //this.far可以动态计算
   //this.aspect在Viewport改变后重新计算
   //this.fov可以调整以实现缩放效果
   constructor(private fov:number = 45, private aspect:number = 1, private near:number = 1, private far:number = 100, level:number = 3, lonlat:number[] = [0, 0]) {
     super();
+    this.eventEmitter = new EventEmitter();
     this.lonlatsOfBoundary = [];
     this.initFov = this.fov;
     this.lastMatrix = new Matrix();
@@ -110,6 +114,10 @@ class Camera extends Object3D {
     this._rawSetPerspectiveMatrix(this.fov, this.aspect, this.near, this.far);
     this._initCameraPosition(level, lonlat[0], lonlat[1]);
     this.update(true);
+  }
+
+  getEventEmitter(){
+    return this.eventEmitter;
   }
 
   isEarthFullOverlapScreen(){
@@ -518,7 +526,7 @@ class Camera extends Object3D {
       return realResolutionCache[this.level];
     }else{
       return Kernel.MAX_REAL_RESOLUTION / Math.pow(2, this.level);
-    }    
+    }
   }
 
   getLevel(): number {
