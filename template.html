@@ -13,30 +13,36 @@
     <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
     <meta http-equiv="pragma" content="no-cache" />
     <link rel="shortcut icon" href="images/logo.png" />
+    <script id="statistics" type="text/javascript"></script>
     <script type="text/javascript">
-        var reg = /^https:\/\/ispring.github.io\/WebGlobe\/($|index.html)/ig;
-        if (reg.test(window.location.href)) {
-            var search = window.location.search;
-            if (search) {
-                var paramsObj = {};
-                var kvs = search.replace("?", "").split("&");
-                var splits = null;
-                for (var i = 0; i < kvs.length; i++) {
-                    splits = kvs[i].split("=");
-                    if (splits.length === 2) {
-                        paramsObj[splits[0]] = splits[1];
+        (function() {
+            var reg = /^https:\/\/ispring.github.io\/WebGlobe\/($|index.html)/ig;
+            if (reg.test(window.location.href)) {
+                window._hmt = window._hmt || [];
+                var statisticsScript = document.querySelector("#statistics");
+                statisticsScript.src = "https://hm.baidu.com/hm.js?8f4f772c1a48735deb9712902c5315b6";
+                var search = window.location.search;
+                if (search) {
+                    var paramsObj = {};
+                    var kvs = search.replace("?", "").split("&");
+                    var splits = null;
+                    for (var i = 0; i < kvs.length; i++) {
+                        splits = kvs[i].split("=");
+                        if (splits.length === 2) {
+                            paramsObj[splits[0]] = splits[1];
+                        }
+                    }
+                    var version = "";
+                    if (paramsObj.hasOwnProperty("v")) {
+                        version = paramsObj.v;
+                    }
+                    var supportedVersions = ["0.2.1", "0.4.4"];
+                    if (supportedVersions.indexOf(version) >= 0) {
+                        window.location.href = version + "/index.html";
                     }
                 }
-                var version = "";
-                if (paramsObj.hasOwnProperty("v")) {
-                    version = paramsObj.v;
-                }
-                var supportedVersions = ["0.2.1", "0.4.4"];
-                if (supportedVersions.indexOf(version) >= 0) {
-                    window.location.href = version + "/index.html";
-                }
             }
-        }
+        })();
     </script>
 </head>
 
