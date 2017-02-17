@@ -584,6 +584,9 @@ class Camera extends Object3D {
   }
 
   setDeltaPitch(deltaPitch: number) {
+    if(this.level < Kernel.MIN_PITCH_LEVEL || !this.isEarthFullOverlapScreen()){
+      return;
+    }
     var currentPitch = this.getPitch();
     var newPitch = currentPitch + deltaPitch;
     if (newPitch > this.maxPitch) {
