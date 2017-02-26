@@ -13,28 +13,13 @@ class Renderer {
     private onBeforeRender?: (renderer: Renderer) => void,
     private onAfterRender?: (renderer: Renderer) => void) {
 
-    var gl: WebGLRenderingContextExtension;
+    var gl = this._getWebGLContext(canvas);
 
-    function initWebGL(canvas: HTMLCanvasElement) {
-      try {
-        var contextList = ["webgl", "experimental-webgl", "webkit-3d", "moz-webgl"];
-        for (var i = 0; i < contextList.length; i++) {
-          gl = canvas.getContext(contextList[i], {
-            antialias: true
-          }) as WebGLRenderingContextExtension;
-          if (gl) {
-            Kernel.gl = gl;
-            (<any>window).gl = gl;
-            Kernel.canvas = canvas;
-            break;
-          }
-        }
-      } catch (e) { }
-    }
-
-    initWebGL(canvas);
-
-    if (!gl) {
+    if(gl){
+      Kernel.gl = gl;
+      (<any>window).gl = gl;
+      Kernel.canvas = canvas;
+    }else{
       console.debug("浏览器不支持WebGL或将WebGL禁用!");
       return;
     }
@@ -53,6 +38,25 @@ class Renderer {
     //gl.enable(gl.TEXTURE_2D);//WebGL: INVALID_ENUM: enable: invalid capability
   }
 
+  private _getWebGLContext(canvas: HTMLCanvasElement) {
+    var gl: WebGLRenderingContextExtension = null;
+
+    try {
+      var contextList: string[] = ["webgl", "experimental-webgl", "webkit-3d", "moz-webgl"];
+      for (var i = 0; i < contextList.length; i++) {
+        gl = canvas.getContext(contextList[i], {
+          antialias: true
+        }) as WebGLRenderingContextExtension;
+        if (gl) {
+          break;
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    return gl;
+  }
+
   render(scene: Scene, camera: Camera) {
     var gl = Kernel.gl;
     var canvas = Kernel.canvas;
@@ -63,11 +67,11 @@ class Renderer {
     // gl.depthFunc(gl.LEQUAL);
     // gl.depthMask(true);
     camera.update();
-    if(this.onBeforeRender){
+    if (this.onBeforeRender) {
       this.onBeforeRender(this);
     }
     scene.draw(camera);
-    if(this.onAfterRender){
+    if (this.onAfterRender) {
       this.onAfterRender(this);
     }
   }

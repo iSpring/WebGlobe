@@ -284,4 +284,14 @@ export class Globe {
     return this.tiledLayer.getExtents(level);
   }
 
+  test(){
+    this.debugStopRefreshTiles = true;
+    this.labelLayer.hideAllTiles();
+    this.tiledLayer.children.forEach((subLayer) => subLayer.hideAllTiles());
+    var subLayer = this.tiledLayer.children[this.tiledLayer.children.length-1];
+    subLayer.visible = true;
+    subLayer.children[0].visible = true;
+    return subLayer;
+  }
+
 };
