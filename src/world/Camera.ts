@@ -471,7 +471,7 @@ class Camera extends Object3D {
     return this._calculateResolutionAndBestDisplayLevelByDistance2EarthOrigin(distance2EarthOrigin);
   }
 
-  //L=>[resolution,level]
+  //distance2EarthOrigin=>[resolution,level]
   private _calculateResolutionAndBestDisplayLevelByDistance2EarthOrigin(distance2EarthOrigin: number){
     var α2 = MathUtils.degreeToRadian(this.fov / 2);
     var α1 = Math.atan(2 / Kernel.canvas.height * Math.tan(α2));
@@ -499,7 +499,7 @@ class Camera extends Object3D {
     return this._calculateDistance2EarthOriginByResolution(resolution);
   }
 
-  //resolution=>L
+  //resolution=>distance2EarthOrigin
   private _calculateDistance2EarthOriginByResolution(resolution: number){
     resolution /= this.resolutionFactor2;
     var α2 = MathUtils.degreeToRadian(this.fov / 2);
