@@ -301,6 +301,7 @@ class EventHandler {
   }
 
   private _onTouchMove(event: TouchEvent) {
+    event.preventDefault();
     if(!this.down){
       return;
     }
