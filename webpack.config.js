@@ -1,7 +1,15 @@
 var path = require('path');
 var chalk = require('chalk');
 var webpack = require('webpack');
+var ExtractTextWebpackPlugin = require("extract-text-webpack-plugin");
+var extractPlugin = new ExtractTextWebpackPlugin("bundle.[contenthash].css");
 var HtmlWebpackPlugin = require('html-webpack-plugin');
+var htmlWebpackPlugin = new HtmlWebpackPlugin({
+    filename: '../index.html',
+    template: '!!ejs!./template.html',
+    hash: false,
+    inject: 'body'
+});
 
 //https://github.com/webpack/webpack/issues/708
 
@@ -9,36 +17,32 @@ module.exports = {
     entry: path.resolve(__dirname, "./index.ts"),
     output: {
         path: path.resolve(__dirname, "buildOutput"),
-        filename: "bundle.js"
+        filename: "bundle.[chunkhash].js"
     },
     resolve: {
-        extensions: ["", ".webpack.js", ".web.js", ".js", ".ts", ".tsx"]
+        extensions: ["", ".webpack.js", ".web.js", ".js", ".ts", ".tsx", ".scss"]
     },
     module: {
         loaders: [
             { test: /\.tsx?$/, loader: "ts-loader" },
-            { test: /\.css$/, loader: "style!css"}
+            { test: /\.scss$/, loader: extractPlugin.extract("css!sass") }
         ]
     },
     plugins: [
-        new HtmlWebpackPlugin({
-            filename: '../index.html',
-            template: '!!ejs!./template.html',
-            hash: true,
-            inject: 'body'
-        })
+        extractPlugin,
+        htmlWebpackPlugin
     ]
 };
 
-if(process.argv.indexOf("--ci") >= 0){
+if (process.argv.indexOf("--ci") >= 0) {
     module.exports.plugins.push(
-        function(){
-            this.plugin("done", function(stats){
+        function() {
+            this.plugin("done", function(stats) {
                 var errors = stats.compilation.errors;
-                if(errors && errors.length > 0){
+                if (errors && errors.length > 0) {
                     console.log("");
                     console.log(chalk.red("----------------------------------------------------------------"));
-                    errors.forEach(function(err){
+                    errors.forEach(function(err) {
                         var msg = chalk.red(`ERROR in ${err.module.userRequest},`);
                         msg += chalk.blue(`(${err.location.line},${err.location.character}),`);
                         msg += chalk.red(err.rawMessage);
@@ -52,6 +56,6 @@ if(process.argv.indexOf("--ci") >= 0){
     );
 }
 
-if(process.env.NODE_ENV === 'production'){
+if (process.env.NODE_ENV === 'production') {
     module.exports.plugins.push(new webpack.optimize.UglifyJsPlugin());
 }

@@ -1,7 +1,7 @@
 ﻿import Kernel = require("./src/world/Kernel");
 import {Globe, GlobeOptions} from "./src/world/Globe";
 
-// import "./index.css";
+import "./index.scss";
 
 (function () {
     var canvas = <HTMLCanvasElement>document.getElementById("canvasId");
