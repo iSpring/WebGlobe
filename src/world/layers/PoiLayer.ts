@@ -1,3 +1,4 @@
+declare function require(name: string): any;
 import Kernel = require('../Kernel');
 import Utils = require('../Utils');
 import Extent = require('../Extent');
@@ -7,6 +8,8 @@ import Program = require('../Program');
 import Graphic = require('../graphics/Graphic');
 import PoiMaterial = require('../materials/PoiMaterial');
 import VertexBufferObject = require('../VertexBufferObject');
+const poiImgUrl = require("../images/poi.png");
+
 
 class Poi {
   constructor(
@@ -64,8 +67,7 @@ class PoiLayer extends Graphic {
   }
 
   static getInstance() {
-    var url = "/WebGlobe/src/world/images/poi.png";
-    var material = new PoiMaterial(url, 24);
+    var material = new PoiMaterial(poiImgUrl, 24);
     return new PoiLayer(material);
   }
 

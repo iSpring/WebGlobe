@@ -158,3 +158,5 @@
 0.4.6 增加了GlobeOptions类，为Globe构造函数传递参数
 
 0.4.7 修复Camera中setDeltaPitch的bug
+
+0.4.8 使用Webpack加载图片、分离JavaScript与CSS、基于文件内容生成hash

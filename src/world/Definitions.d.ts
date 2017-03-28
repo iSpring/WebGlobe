@@ -32,3 +32,10 @@ export interface Drawable{
     shouldDraw(camera: Camera): boolean;
     destroy(): void;
 }
+
+// declare module "*.png" {
+//   const content: any;
+//   export default content;
+// }
+
+// declare function require(path: string): string;

@@ -19,19 +19,23 @@ var htmlWebpackPlugin = new HtmlWebpackPlugin({
 
 //https://github.com/webpack/webpack/issues/708
 
+var buildFolder = "buildOutput";
+
 module.exports = {
     entry: path.resolve(__dirname, "./index.ts"),
     output: {
-        path: path.resolve(__dirname, "buildOutput"),
-        filename: "bundle.[chunkhash].js"
+        path: path.resolve(__dirname, buildFolder),
+        filename: "bundle.[chunkhash].js",
+        publicPath: buildFolder + "/",
     },
     resolve: {
-        extensions: ["", ".webpack.js", ".web.js", ".js", ".ts", ".tsx", ".scss"]
+        extensions: ["", ".webpack.js", ".web.js", ".ts", ".tsx", ".js", ".scss", ".png"]
     },
     module: {
         loaders: [
             { test: /\.tsx?$/, loader: "ts-loader" },
-            { test: /\.scss$/, loader: extractPlugin.extract("css!sass") }
+            { test: /\.scss$/, loader: extractPlugin.extract("css!sass") },
+            { test: /\.(png|jpeg|jpg)$/, loader: "file-loader" },
         ]
     },
     plugins: [
