@@ -72,7 +72,7 @@ export class Globe {
     }else{
       this.setTiledLayer(new AutonaviTiledLayer());
     }
-    
+
     // this.trafficLayer = new QihuTrafficLayer();
     // this.trafficLayer.visible = false;
     // this.scene.add(this.trafficLayer);
@@ -280,8 +280,8 @@ export class Globe {
     }
   }
 
-  getExtents(level?: number) {
-    return this.tiledLayer.getExtents(level);
+  getExtent(){
+    return this.tiledLayer.getExtent();
   }
 
   test(){

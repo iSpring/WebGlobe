@@ -8,7 +8,7 @@ import Program = require('../Program');
 import Graphic = require('../graphics/Graphic');
 import PoiMaterial = require('../materials/PoiMaterial');
 import VertexBufferObject = require('../VertexBufferObject');
-const poiImgUrl = require("../images/poi.png");
+const poiImgUrl = require("../images/red.png");
 
 
 class Poi {
@@ -23,7 +23,7 @@ class Poi {
 }
 
 const vs =
-  `
+`
 attribute vec3 aPosition;
 uniform mat4 uPMVMatrix;
 uniform float uSize;
@@ -40,7 +40,7 @@ void main(void) {
 //https://www.opengl.org/sdk/docs/tutorials/ClockworkCoders/discard.php
 //highp mediump
 const fs =
-  `
+`
 precision mediump float;
 uniform sampler2D uSampler;
 
@@ -67,7 +67,7 @@ class PoiLayer extends Graphic {
   }
 
   static getInstance() {
-    var material = new PoiMaterial(poiImgUrl, 24);
+    var material = new PoiMaterial(poiImgUrl, 10);
     return new PoiLayer(material);
   }
 
@@ -133,7 +133,7 @@ class PoiLayer extends Graphic {
     return poi;
   }
 
-  addPoi(lon: number, lat: number, uuid: string, name: string, address: string, phone: string){
+  addPoi(lon: number, lat: number, uuid: string, name: string, address: string, phone: string) {
     return this._addPoi(lon, lat, uuid, name, address, phone);
   }
 
@@ -147,17 +147,15 @@ class PoiLayer extends Graphic {
     this.keyword = keyword;
     var globe = Kernel.globe;
     var level = globe.getLevel();
-    var extents = globe.getExtents(level);
-    extents.forEach((extent: Extent) => {
-      PoiLayer.search(keyword, level, extent.getMinLon(), extent.getMinLat(), extent.getMaxLon(), extent.getMaxLat(), (response) => {
-        console.log(`${keyword} response:`, response);
-        var data = response.detail.pois || [];
-        data.forEach((item: any) => {
-          var lon = parseFloat(item.pointx);
-          var lat = parseFloat(item.pointy);
-          this._addPoi(lon, lat, item.uid, item.name, item.addr, item.phone);
-        })
-      });
+    var extent = globe.getExtent();
+    PoiLayer.search(keyword, level, extent.getMinLon(), extent.getMinLat(), extent.getMaxLon(), extent.getMaxLat(), (response) => {
+      console.log(`${keyword} response:`, response);
+      var data = response.detail.pois || [];
+      data.forEach((item: any) => {
+        var lon = parseFloat(item.pointx);
+        var lat = parseFloat(item.pointy);
+        this._addPoi(lon, lat, item.uid, item.name, item.addr, item.phone);
+      })
     });
   }
 }
