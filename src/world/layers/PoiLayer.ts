@@ -8,7 +8,7 @@ import Program = require('../Program');
 import Graphic = require('../graphics/Graphic');
 import PoiMaterial = require('../materials/PoiMaterial');
 import VertexBufferObject = require('../VertexBufferObject');
-const poiImgUrl = require("../images/poi.png");
+const poiImgUrl = require("../images/red.png");
 
 
 class Poi {
@@ -23,7 +23,7 @@ class Poi {
 }
 
 const vs =
-  `
+`
 attribute vec3 aPosition;
 uniform mat4 uPMVMatrix;
 uniform float uSize;
@@ -40,7 +40,7 @@ void main(void) {
 //https://www.opengl.org/sdk/docs/tutorials/ClockworkCoders/discard.php
 //highp mediump
 const fs =
-  `
+`
 precision mediump float;
 uniform sampler2D uSampler;
 
@@ -67,7 +67,7 @@ class PoiLayer extends Graphic {
   }
 
   static getInstance() {
-    var material = new PoiMaterial(poiImgUrl, 24);
+    var material = new PoiMaterial(poiImgUrl, 10);
     return new PoiLayer(material);
   }
 
