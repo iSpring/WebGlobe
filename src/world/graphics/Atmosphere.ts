@@ -5,8 +5,8 @@ import AtmosphereGeometry = require("../geometries/Atmosphere");
 import MeshTextureMaterial = require("../materials/MeshTextureMaterial");
 import Camera from "../Camera";
 import Vector = require("../math/Vector");
-const atmosphereImgUrl = require("../images/atmosphere.png");
 // import atmosphereImgUrl = require("../images/atmosphere.png");
+const atmosphereImgUrl = require("../images/atmosphere.png");
 
 class Atmosphere extends MeshGraphic {
     private constructor(public geometry: AtmosphereGeometry, public material: MeshTextureMaterial){
@@ -14,9 +14,7 @@ class Atmosphere extends MeshGraphic {
     }
 
     static getInstance(): Atmosphere{
-        console.log(`atmosphere url: ${atmosphereImgUrl}`);
         var geometry = new AtmosphereGeometry();
-        // var imageUrl = "/WebGlobe/src/world/images/atmosphere.png";
         var material = new MeshTextureMaterial(atmosphereImgUrl, false);
         return new Atmosphere(geometry, material);
     }

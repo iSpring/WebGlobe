@@ -16,9 +16,6 @@ var htmlWebpackPlugin = new HtmlWebpackPlugin({
     inject: 'body'
 });
 
-
-//https://github.com/webpack/webpack/issues/708
-
 var buildFolder = "buildOutput";
 
 module.exports = {
@@ -46,6 +43,7 @@ module.exports = {
 };
 
 if (process.argv.indexOf("--ci") >= 0) {
+    //https://github.com/webpack/webpack/issues/708
     module.exports.plugins.push(
         function() {
             this.plugin("done", function(stats) {

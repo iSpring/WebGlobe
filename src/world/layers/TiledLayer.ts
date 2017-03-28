@@ -168,20 +168,9 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
     gl.depthFunc(gl.LEQUAL);
   }
 
-  getExtent(level?: number) {
-    var extents = this.getExtents(level);
-    return Extent.union(extents);
-  }
-
-  getExtents(level?: number): Extent[] {
-    if (!(level >= 0 && level <= (this.children.length - 1))) {
-      level = this.children.length - 1 - 3;
-    }
-    var subTiledLayer = this.children[level];
-    if (subTiledLayer) {
-      return subTiledLayer.getExtents();
-    }
-    return [];
+  getExtent() {
+    var subTiledLayer = this.children[this.children.length - 1];
+    return subTiledLayer.getExtent();
   }
 
   protected wrapUrlWithProxy(url: string): string {
