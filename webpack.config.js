@@ -1,8 +1,13 @@
 var path = require('path');
 var chalk = require('chalk');
 var webpack = require('webpack');
+
 var ExtractTextWebpackPlugin = require("extract-text-webpack-plugin");
 var extractPlugin = new ExtractTextWebpackPlugin("bundle.[contenthash].css");
+
+var WebpackMd5Hash = require('webpack-md5-hash');
+var webpackMd5HashPlugin = new WebpackMd5Hash();
+
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var htmlWebpackPlugin = new HtmlWebpackPlugin({
     filename: '../index.html',
@@ -10,6 +15,7 @@ var htmlWebpackPlugin = new HtmlWebpackPlugin({
     hash: false,
     inject: 'body'
 });
+
 
 //https://github.com/webpack/webpack/issues/708
 
@@ -30,6 +36,7 @@ module.exports = {
     },
     plugins: [
         extractPlugin,
+        webpackMd5HashPlugin,
         htmlWebpackPlugin
     ]
 };
