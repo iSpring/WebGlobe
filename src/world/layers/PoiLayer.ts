@@ -67,7 +67,7 @@ class PoiLayer extends Graphic {
   }
 
   static getInstance() {
-    var material = new PoiMaterial(poiImgUrl, 10);
+    var material = new PoiMaterial(poiImgUrl, 16);
     return new PoiLayer(material);
   }
 
