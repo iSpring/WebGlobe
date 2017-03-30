@@ -149,7 +149,7 @@ class Utils {
         topic[topicName].push(callback);
     }
 
-    static publish(topicName: string, data: any){
+    static publish(topicName: string, data?: any){
         var callbacks = topic[topicName];
         if(callbacks && callbacks.length > 0){
             callbacks.forEach(function(callback: TopicCallback){
