@@ -18,16 +18,22 @@ var htmlWebpackPlugin = new HtmlWebpackPlugin({
 
 var buildFolder = "buildOutput";
 
+var PRODUCTION = process.env.NODE_ENV === 'production';
+
 module.exports = {
     entry: path.resolve(__dirname, "./index.ts"),
+
     output: {
         path: path.resolve(__dirname, buildFolder),
         filename: "bundle.[chunkhash].js",
         publicPath: buildFolder + "/",
+        devtoolModuleFilenameTemplate: 'webpack:///[absolute-resource-path]'
     },
+
     resolve: {
         extensions: ["", ".webpack.js", ".web.js", ".ts", ".tsx", ".js", ".scss", ".png"]
     },
+
     module: {
         loaders: [
             { test: /\.tsx?$/, loader: "ts-loader" },
@@ -35,11 +41,15 @@ module.exports = {
             { test: /\.(png|jpeg|jpg)$/, loader: "file-loader" },
         ]
     },
+
     plugins: [
         extractPlugin,
         webpackMd5HashPlugin,
         htmlWebpackPlugin
-    ]
+    ],
+
+    // devtool: PRODUCTION ? 'hidden-source-map' : 'cheap-module-eval-source-map'
+    devtool: PRODUCTION ? false : 'source-map'
 };
 
 if (process.argv.indexOf("--ci") >= 0) {
@@ -65,6 +75,8 @@ if (process.argv.indexOf("--ci") >= 0) {
     );
 }
 
-if (process.env.NODE_ENV === 'production') {
-    module.exports.plugins.push(new webpack.optimize.UglifyJsPlugin());
+if (PRODUCTION) {
+    module.exports.plugins.push(new webpack.optimize.UglifyJsPlugin({
+        sourceMap: false
+    }));
 }

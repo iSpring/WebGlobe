@@ -162,3 +162,5 @@
 0.4.8 使用Webpack加载图片、分离JavaScript与CSS、基于文件内容生成hash
 
 0.4.9 当level>=10时可以进行POI搜索，并且当地图范围变化时会重新动态搜索
+
+0.4.10 开发模式下，启用SourceMap
