@@ -1,16 +1,15 @@
-<p align="center">
+<div align="center">
   <a target="_blank" href="https://ispring.github.io/WebGlobe/index.html">
     <img src="https://github.com/iSpring/WebGlobe/blob/develop/webglobe.png">
   </a>
   <p align="center">A WebGL virtual globe and map engine</p>
-</p>
-
+</div>
 
 
 ## WebGlobe
 [![Build Status](https://travis-ci.org/iSpring/WebGlobe.svg?branch=develop)](https://travis-ci.org/iSpring/WebGlobe)
 [![Release](https://img.shields.io/badge/release-0.4.4-blue.svg)](https://github.com/iSpring/WebGlobe/releases)
-[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/iSpring/WebGlobe)
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/iSpring/WebGlobe)
 
 [![Chrome 8+](https://img.shields.io/badge/Chrome-8+-1DA362.svg)](http://caniuse.com/#search=WebGL)
 [![Firefox 4+](https://img.shields.io/badge/Firefox-4+-E77827.svg)](http://caniuse.com/#search=WebGL)
@@ -33,7 +32,7 @@ Demo: https://ispring.github.io/WebGlobe/index.html
 
 ## Features
  1. 没有使用第三方框架，无需插件，所有支持WebGL的浏览器均可使用。
- 
+
  2. 支持Google、高德、微软Bing、腾讯、360、OpenStreetMap等底图服务。
 
  3. 支持影像图、行政图以及实施交通图。
@@ -43,20 +42,18 @@ Demo: https://ispring.github.io/WebGlobe/index.html
  5. 轻量级，编译压缩后不足100KB。
 
 ## Getting Started
- 1. 项目有两个主要的分支：develop分支和master分支，develop是主分支，开发的代码都提交到该分支；master分支用于release，当develop分支中的代码比较稳定且有重要更新的时候，会将develop分支的代码merge到master分支，然后通过master分支进行发布新版本。
+ 1. 在项目的根目录下执行`npm install`，安装所需模块。执行`npm start`即可进行打包编译，在浏览器中打开生成的`index.html`即可。
 
- 2. 项目采用TypeScript编写，使用Webpack进行编译打包，编译成JavaScript运行，推荐使用[Visual Studio Code](http://code.visualstudio.com/)作为编辑器。
+ 2. 项目有两个主要的分支：develop分支和master分支，develop是主分支，开发的代码都提交到该分支，master分支用于发布新版本。
 
- 3. 在项目的根目录下执行npm install，安装所需模块。
+ 3. 项目采用TypeScript编写，使用Webpack进行编译打包，编译成JavaScript运行，推荐使用最新的[Visual Studio Code](http://code.visualstudio.com/)作为编辑器。
 
- 4. package.json中定义了npm scripts：
+ 4. package.json中定义了`npm scripts`：
     - npm run clean 用于清除编译打包的结果
     - npm run build:dev 对代码进行编译打包，代码没有压缩混淆，用于开发环境
     - npm run build:prod 对代码进行编译打包，代码进行了压缩混淆，用于生产环境
     - npm start 用于执行build:dev
 
- 5. 开发过程中，在WebGlobe根目录下执行npm start即可进行打包编译。
+ 5. 接入持续集成服务[Travis CI](https://travis-ci.org/iSpring/WebGlobe)，保证代码质量。
 
- 6. 接入持续集成服务[Travis CI](https://travis-ci.org/iSpring/WebGlobe)，保证代码质量。
- 
- 7. 有问题的话欢迎大家提issue或者到[Gitter](https://gitter.im/iSpring/WebGlobe)中进行讨论。
+ 6. 有问题的话欢迎大家提issue或者到[Gitter](https://gitter.im/iSpring/WebGlobe)中进行讨论。
