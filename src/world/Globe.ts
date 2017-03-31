@@ -14,6 +14,7 @@ import TrafficLayer from "./layers/TrafficLayer";
 import { QihuTrafficLayer } from "./layers/Qihu";
 import Atmosphere = require("./graphics/Atmosphere");
 import PoiLayer = require("./layers/PoiLayer");
+import Extent = require("./Extent");
 
 const initLevel:number = Utils.isMobile() ? 11 : 3;
 
@@ -281,7 +282,16 @@ export class Globe {
   }
 
   getExtent(){
-    return this.tiledLayer.getExtent();
+    var layerExtent = this.tiledLayer.getExtent();
+    var cameraExtent = this.camera.getExtent();
+    var extent = layerExtent;
+    if(cameraExtent){
+      var intersect = Extent.intersect([layerExtent, cameraExtent]);
+      if(intersect){
+        extent = intersect;
+      }
+    }
+    return extent;
   }
 
   test(){

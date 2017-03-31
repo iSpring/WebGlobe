@@ -5,7 +5,7 @@ type ArrayBooleanCallback = (value: any, index: number, arr: any[]) => boolean;
 type ArrayAnyCallback = (value: any, index: number, arr: any[]) => any;
 type TopicCallback = (data:any) => void;
 
-const topic:{[key:string]:TopicCallback[]} = {}; 
+const topic:{[key:string]:TopicCallback[]} = {};
 
 class Utils {
 
@@ -114,6 +114,7 @@ class Utils {
         var scriptElement = document.createElement("script");
         scriptElement.setAttribute("src", url);
         scriptElement.setAttribute("async", "true");
+        scriptElement.setAttribute("defer", "true");
         document.body.appendChild(scriptElement);
         var canceled = false;
         (<any>window)[callbackName] = function (response: any) {
@@ -127,6 +128,7 @@ class Utils {
             }
         }
         return function () {
+            scriptElement.src = "";
             canceled = true;
         };
     }

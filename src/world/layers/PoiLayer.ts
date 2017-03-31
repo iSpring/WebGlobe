@@ -64,6 +64,11 @@ class PoiLayer extends Graphic {
     this.pois = [];
     this.vbo = new VertexBufferObject(Kernel.gl.ARRAY_BUFFER);
     // this._addPoi(116.408540, 39.902350, "3161565500563468633", "首都大酒店", "北京市东城区前门东大街3号", "");
+    Utils.subscribe("extent-change", () => {
+      if(this.keyword){
+        this.search(this.keyword);
+      }
+    });
   }
 
   static getInstance() {
@@ -147,16 +152,18 @@ class PoiLayer extends Graphic {
     this.keyword = keyword;
     var globe = Kernel.globe;
     var level = globe.getLevel();
-    var extent = globe.getExtent();
-    PoiLayer.search(keyword, level, extent.getMinLon(), extent.getMinLat(), extent.getMaxLon(), extent.getMaxLat(), (response) => {
-      console.log(`${keyword} response:`, response);
-      var data = response.detail.pois || [];
-      data.forEach((item: any) => {
-        var lon = parseFloat(item.pointx);
-        var lat = parseFloat(item.pointy);
-        this._addPoi(lon, lat, item.uid, item.name, item.addr, item.phone);
-      })
-    });
+    if(level >= 10){
+      var extent = globe.getExtent();
+      PoiLayer.search(keyword, level, extent.getMinLon(), extent.getMinLat(), extent.getMaxLon(), extent.getMaxLat(), (response) => {
+        console.log(`${keyword} response:`, response);
+        var data = response.detail.pois || [];
+        data.forEach((item: any) => {
+          var lon = parseFloat(item.pointx);
+          var lat = parseFloat(item.pointy);
+          this._addPoi(lon, lat, item.uid, item.name, item.addr, item.phone);
+        })
+      });
+    }
   }
 }
 

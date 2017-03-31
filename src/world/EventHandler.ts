@@ -44,6 +44,7 @@ class EventHandler {
     if (Kernel.globe) {
       Kernel.globe.camera.setAspect(this.canvas.width / this.canvas.height);
     }
+    Utils.publish("extent-change");
   }
 
   moveLonLatToCanvas(lon: number, lat: number, canvasX: number, canvasY: number) {
@@ -114,6 +115,7 @@ class EventHandler {
     if (this.canvas) {
       this.canvas.style.cursor = "default";
     }
+    Utils.publish("extent-change");
   }
 
   private _onMouseDown(event: MouseEvent) {
@@ -183,7 +185,9 @@ class EventHandler {
     var newLevel = globe.getLevel() + deltaLevel;
     if (newLevel >= 0) {
       //globe.setLevel(newLevel);
-      globe.animateToLevel(newLevel);
+      globe.animateToLevel(newLevel, function(){
+        Utils.publish("extent-change");
+      });
     }
   }
 

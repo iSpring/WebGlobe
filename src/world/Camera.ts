@@ -9,6 +9,7 @@ import Plan = require('./math/Plan');
 import TileGrid,{TileGridPosition} from './TileGrid';
 import Matrix = require('./math/Matrix');
 import Object3D = require('./Object3D');
+import Extent = require('./Extent');
 
 export class CameraCore{
   constructor(private fov: number, private aspect: number, private near: number, private far: number, private floatLevel: number, private matrix: Matrix){
@@ -93,6 +94,8 @@ class Camera extends Object3D {
   private projMatrixForDraw: Matrix;
   private projViewMatrixForDraw: Matrix;//实际传递给shader的矩阵是projViewMatrixForDraw，而不是projViewMatrix
 
+  /*left top,left middle,left bottom,right top,right middle,right bottom,middle top,middle bottom*/
+  //如果没有交点，怎么没有对应的数据，长度就会小于8
   private lonlatsOfBoundary:number[][] = null;
 
   private animating: boolean = false;
@@ -114,6 +117,24 @@ class Camera extends Object3D {
     this._rawSetPerspectiveMatrix(this.fov, this.aspect, this.near, this.far);
     this._initCameraPosition(level, lonlat[0], lonlat[1]);
     this.update(true);
+  }
+
+  getExtent(){
+    var extent: Extent = null;
+    if(this.isEarthFullOverlapScreen()){
+      var lons:number[] = [];
+      var lats:number[] = [];
+      this.lonlatsOfBoundary.forEach(function(lonlat){
+        lons.push(lonlat[0]);
+        lats.push(lonlat[1]);
+      });
+      var minLon = Math.min(...lons);
+      var maxLon = Math.max(...lons);
+      var minLat = Math.min(...lats);
+      var maxLat = Math.max(...lats);
+      extent = new Extent(minLon, minLat, maxLon, maxLat);
+    }
+    return extent;
   }
 
   getEventEmitter(){
