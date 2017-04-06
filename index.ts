@@ -1,5 +1,5 @@
-﻿import Kernel = require("./src/world/Kernel");
-import {Globe, GlobeOptions} from "./src/world/Globe";
+﻿import Kernel = require("./src/core/world/Kernel");
+import {Globe, GlobeOptions} from "./src/core/world/Globe";
 
 import "./index.scss";
 
