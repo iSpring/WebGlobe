@@ -5,7 +5,8 @@
         "noImplicitAny": true,
         "removeComments": true,
         "preserveConstEnums": true,
-        "outDir": "buildOutput/amd"
+        "outDir": "buildOutput/amd",
+        "jsx": "react"
     },
     "include": [
         "src/**/*.ts"

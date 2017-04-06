@@ -21,7 +21,7 @@ var buildFolder = "buildOutput";
 var PRODUCTION = process.env.NODE_ENV === 'production';
 
 module.exports = {
-    entry: path.resolve(__dirname, "./index.ts"),
+    entry: path.resolve(__dirname, "./src/webapp/index.tsx"),
 
     output: {
         path: path.resolve(__dirname, buildFolder),
@@ -31,14 +31,16 @@ module.exports = {
     },
 
     resolve: {
-        extensions: ["", ".webpack.js", ".web.js", ".ts", ".tsx", ".js", ".scss", ".png"]
+        extensions: ["", ".webpack.js", ".web.js", ".ts", ".tsx", ".js", ".jsx", ".scss", ".png"]
     },
 
     module: {
         loaders: [
             { test: /\.tsx?$/, loader: "ts-loader" },
+            { test: /\.css$/, loader: extractPlugin.extract("css") },
             { test: /\.scss$/, loader: extractPlugin.extract("css!sass") },
             { test: /\.(png|jpeg|jpg)$/, loader: "file-loader" },
+            { test: /\.(otf|ttf|eot|woff|woff2)\?v=.*/, loader: "file-loader" }
         ]
     },
 
