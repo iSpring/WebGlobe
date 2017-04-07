@@ -19,7 +19,7 @@ var coreHtmlWebpackPlugin = new HtmlWebpackPlugin({
 
 var webappHtmlWebpackPlugin = new HtmlWebpackPlugin({
     filename: './webapp.html',
-    // template: '!!ejs!./src/webapp/template.html',
+    template: '!!ejs!./src/webapp/template.html',
     hash: false,
     inject: 'body',
     chunks: ["webapp"]
