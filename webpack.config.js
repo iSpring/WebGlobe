@@ -9,11 +9,20 @@ var WebpackMd5Hash = require('webpack-md5-hash');
 var webpackMd5HashPlugin = new WebpackMd5Hash();
 
 var HtmlWebpackPlugin = require('html-webpack-plugin');
-var htmlWebpackPlugin = new HtmlWebpackPlugin({
-    filename: './index.html',
-    // template: '!!ejs!./template.html',
+var coreHtmlWebpackPlugin = new HtmlWebpackPlugin({
+    filename: './core.html',
+    template: '!!ejs!./src/core/template.html',
     hash: false,
-    inject: 'body'
+    inject: 'body',
+    chunks: ["core"]
+});
+
+var webappHtmlWebpackPlugin = new HtmlWebpackPlugin({
+    filename: './webapp.html',
+    // template: '!!ejs!./src/webapp/template.html',
+    hash: false,
+    inject: 'body',
+    chunks: ["webapp"]
 });
 
 var buildFolder = "buildOutput";
@@ -21,7 +30,10 @@ var buildFolder = "buildOutput";
 var PRODUCTION = process.env.NODE_ENV === 'production';
 
 module.exports = {
-    entry: path.resolve(__dirname, "./src/webapp/index.jsx"),
+    entry: {
+        core: path.resolve(__dirname, "./src/core/index.ts"),
+        webapp: path.resolve(__dirname, "./src/webapp/index.jsx")
+    },
 
     output: {
         path: path.resolve(__dirname, buildFolder),
@@ -47,7 +59,8 @@ module.exports = {
     plugins: [
         extractPlugin,
         webpackMd5HashPlugin,
-        htmlWebpackPlugin
+        coreHtmlWebpackPlugin,
+        webappHtmlWebpackPlugin
     ],
 
     // devtool: PRODUCTION ? 'hidden-source-map' : 'cheap-module-eval-source-map'
