@@ -10,8 +10,8 @@ var webpackMd5HashPlugin = new WebpackMd5Hash();
 
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var htmlWebpackPlugin = new HtmlWebpackPlugin({
-    filename: '../index.html',
-    template: '!!ejs!./template.html',
+    filename: './index.html',
+    // template: '!!ejs!./template.html',
     hash: false,
     inject: 'body'
 });
@@ -21,12 +21,12 @@ var buildFolder = "buildOutput";
 var PRODUCTION = process.env.NODE_ENV === 'production';
 
 module.exports = {
-    entry: path.resolve(__dirname, "./src/webapp/index.tsx"),
+    entry: path.resolve(__dirname, "./src/webapp/index.jsx"),
 
     output: {
         path: path.resolve(__dirname, buildFolder),
         filename: "bundle.[chunkhash].js",
-        publicPath: buildFolder + "/",
+        // publicPath: buildFolder + "/",
         devtoolModuleFilenameTemplate: 'webpack:///[absolute-resource-path]'
     },
 
@@ -37,8 +37,8 @@ module.exports = {
     module: {
         loaders: [
             { test: /\.tsx?$/, loader: "ts-loader" },
-            { test: /\.css$/, loader: extractPlugin.extract("css") },
-            { test: /\.scss$/, loader: extractPlugin.extract("css!sass") },
+            { test: /\.jsx?$/, loader: "babel-loader" },
+            { test: /\.scss$/, loader: extractPlugin.extract("css?modules&localIdentName=[name]__[local]___[hash:base64:5]!sass") },
             { test: /\.(png|jpeg|jpg)$/, loader: "file-loader" },
             { test: /\.(otf|ttf|eot|woff|woff2)\?v=.*/, loader: "file-loader" }
         ]
