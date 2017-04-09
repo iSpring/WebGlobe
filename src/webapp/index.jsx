@@ -12,9 +12,15 @@ const rootDiv = document.getElementById("root");
 ReactDOM.render((
     <Router history={hashHistory}>
         <Redirect from="/" to="/index/index" />
-        <Route path="/index/index" component={IndexIndex} />
-        <Route path="/index/map" component={IndexMap} />
-        <Route path="/index/nav" component={IndexNav} />
-        <Route path="/nearby/search" component={NearbySearch} />
+        <Route path="/">
+            <Route path="index">
+                <Route path="index" component={IndexIndex}></Route>
+                <Route path="map" component={IndexMap}></Route>
+                <Route path="nav" component={IndexNav}></Route>
+            </Route>
+            <Route path="nearby">
+                <Route path="search" component={NearbySearch}></Route>
+            </Route>
+        </Route>
     </Router>
 ), rootDiv);
