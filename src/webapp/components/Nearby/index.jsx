@@ -9,6 +9,6 @@ export default class Nearby extends Component{
     }
 
     render(){
-        return <div>Nearby</div>;
+        return <div>附近</div>;
     }
 };

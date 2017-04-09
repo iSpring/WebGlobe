@@ -9,6 +9,6 @@ export default class Nav extends Component{
     }
 
     render(){
-        return <div>Nav</div>;
+        return <div>路线</div>;
     }
 };

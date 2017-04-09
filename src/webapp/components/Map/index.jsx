@@ -9,6 +9,6 @@ export default class Map extends Component{
     }
 
     render(){
-        return <div>Map</div>;
+        return <div>地图</div>;
     }
 };
