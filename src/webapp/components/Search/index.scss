@@ -1,0 +1,31 @@
+﻿.search-section{
+    height: 30px;
+    padding: 8px 10px;
+}
+
+.search-section .input-container{
+    height: 100%;
+    background-color: #ededed;
+    border-radius: 4px;
+}
+
+.search-section .input-container > *{
+    background: transparent;
+}
+
+.search-section .keyword{
+    display: block;
+    width: 100%;
+    font-size: 15px;
+    border: none;
+    line-height: 22px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    outline: none;
+}
+
+.search-section .cancel{
+    color: #0079ff;
+    font-size: 16px;
+    display: none;
+}
