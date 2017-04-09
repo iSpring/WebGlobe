@@ -5,27 +5,63 @@
     color: gray;
 }
 
-.container{
+.link1-container{
     padding: 10px 0;
 }
 
-.link{
+.link1,.link2{
     box-sizing: border-box;
     display: inline-block;
+    text-align: center;
+    text-decoration: none;
+}
+
+.link1{
     width: 33.33333%;
     line-height: 28px;
-    text-align: center;
     font-size: 15px;
     color: gray;
-    text-decoration: none;
     &:nth-child(2){
         border-left: 1px solid rgba(128,128,128,0.3);
         border-right: 1px solid rgba(128,128,128,0.3);
     }
 }
 
-.link span{
+.link1 span{
     margin-left: 5px;
+}
+
+.link2-container{
+}
+
+.link2{
+    width: 25%;
+    :after{
+        display: inline-block;
+        width: 0;
+        height: 100%;
+        content: "";
+        vertical-align: middle;
+    }
+}
+
+.link2 div{
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: #f3a61f;
+    margin: 0 auto;
+    color: white;
+    font-size: 24px;
+    & *{
+        display: inline-block;
+        vertical-align: middle;
+    }
+}
+
+.link2 span{
+    font-size: 12px;
+    color: gray;
 }
 
 .active{
