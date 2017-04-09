@@ -47,25 +47,25 @@ export default class App extends Component{
                 </div>
                 <div className={styles["link2-container"]}>
                     <Link to="/nearby/result" className={styles.link2}>
-                        <div>
+                        <div className={styles.food}>
                             <i className={faCutlery}></i>
                         </div>
                         <span>美食</span>
                     </Link>
                     <Link to="/nearby/result" className={styles.link2}>
-                        <div>
+                        <div className={styles.hotel}>
                             <i className={faBed}></i>
                         </div>
                         <span>酒店</span>
                     </Link>
                     <Link to="/nearby/result" className={styles.link2}>
-                        <div>
+                        <div className={styles.traffic}>
                             <i className={faBus}></i>
                         </div>
                         <span>公交</span>
                     </Link>
                     <Link to="/nearby/result" className={styles.link2}>
-                        <div>
+                        <div className={styles.subway}>
                             <i className={faSubway}></i>
                         </div>
                         <span>地铁</span>
