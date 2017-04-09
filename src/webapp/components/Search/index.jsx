@@ -1,28 +1,28 @@
-﻿import React, {Component, PropTypes} from 'react';
+﻿import React, { Component, PropTypes } from 'react';
 import classNames from 'classNames';
 import styles from './index.scss';
 
-export default class Search extends Component{
-    // static propTypes = {
-    //     placeholder: PropTypes.string,
-    //     showVoice: PropTypes.bool,
-    //     showCancel: PropTypes.bool
-    // };
+export default class Search extends Component {
+    static propTypes = {
+        placeholder: PropTypes.string,
+        showVoice: PropTypes.bool,
+        showCancel: PropTypes.bool
+    };
 
-    // static defaultProps = {
-    //     placeholder: "",
-    //     showVoice: false,
-    //     showCancel: false
-    // };
+    static defaultProps = {
+        placeholder: "",
+        showVoice: false,
+        showCancel: false
+    };
 
-    constructor(props){
+    constructor(props) {
         super(props);
         this.state = {
             keyword: ""
         };
     }
 
-    render(){
+    render() {
         // const cancel = classNames({
         //     [styles.cancel]: true
         // });

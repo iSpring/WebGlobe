@@ -13,8 +13,9 @@ export default class App extends Component{
     }
 
     render(){
+        const placeholder = "搜索地点、公交、城市";
         return <div>
-            <Search placeholder="搜索地点、公交、城市" />
+            <Search placeholder={placeholder} />
         </div>;
     }
 };
