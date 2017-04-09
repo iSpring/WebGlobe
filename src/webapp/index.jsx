@@ -1,10 +1,14 @@
 ﻿import React from 'react';
 import ReactDOM from 'react-dom';
 import {Router, Route, Link, Redirect, hashHistory} from 'react-router';
+
 import IndexIndex from './routes/index/Index';
 import IndexMap from './routes/index/Map';
 import IndexNav from './routes/index/Nav';
+
 import NearbySearch from './routes/nearby/Search';
+import NearbyResult from './routes/nearby/Result';
+
 import './fonts/font-awesome';
 
 const rootDiv = document.getElementById("root");
@@ -20,6 +24,7 @@ ReactDOM.render((
             </Route>
             <Route path="nearby">
                 <Route path="search" component={NearbySearch}></Route>
+                <Route path="result" component={NearbyResult}></Route>
             </Route>
         </Route>
     </Router>
