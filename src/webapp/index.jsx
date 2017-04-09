@@ -9,7 +9,8 @@ import IndexNav from './routes/index/Nav';
 import NearbySearch from './routes/nearby/Search';
 import NearbyResult from './routes/nearby/Result';
 
-import './fonts/font-awesome';
+import './common.scss';
+import './fonts/font-awesome.scss';
 
 const rootDiv = document.getElementById("root");
 

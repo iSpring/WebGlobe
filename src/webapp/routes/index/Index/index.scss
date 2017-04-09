@@ -1,12 +1,33 @@
-﻿html, body, input{
-    margin: 0;
-    padding: 0;
+﻿.title{
+    font-size: 30px;
+    text-align: center;
+    margin: 30px 0;
+    color: gray;
 }
 
-input[type=text]::-ms-clear{
-    display: none;
+.container{
+    padding: 10px 0;
+}
+
+.link{
+    box-sizing: border-box;
+    display: inline-block;
+    width: 33.33333%;
+    line-height: 28px;
+    text-align: center;
+    font-size: 15px;
+    color: gray;
+    text-decoration: none;
+    &:nth-child(2){
+        border-left: 1px solid rgba(128,128,128,0.3);
+        border-right: 1px solid rgba(128,128,128,0.3);
+    }
+}
+
+.link span{
+    margin-left: 5px;
 }
 
 .active{
-    margin: 0 20px;
+
 }
