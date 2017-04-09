@@ -1,10 +1,10 @@
 ﻿import React from 'react';
 import ReactDOM from 'react-dom';
 import {Router, Route, Link, Redirect, hashHistory} from 'react-router';
-import App from './components/App';
-import Map from './components/Map';
-import Nav from './components/Nav';
-import Nearby from './components/Nearby';
+import IndexIndex from './routes/index/Index';
+import IndexMap from './routes/index/Map';
+import IndexNav from './routes/index/Nav';
+import NearbySearch from './routes/nearby/Search';
 import './fonts/font-awesome';
 
 const rootDiv = document.getElementById("root");
@@ -12,9 +12,9 @@ const rootDiv = document.getElementById("root");
 ReactDOM.render((
     <Router history={hashHistory}>
         <Redirect from="/" to="/index/index" />
-        <Route path="/index/index" component={App} />
-        <Route path="/index/map" component={Map} />
-        <Route path="/nearby/search" component={Nearby} />
-        <Route path="/index/nav" component={Nav} />
+        <Route path="/index/index" component={IndexIndex} />
+        <Route path="/index/map" component={IndexMap} />
+        <Route path="/index/nav" component={IndexNav} />
+        <Route path="/nearby/search" component={NearbySearch} />
     </Router>
 ), rootDiv);
