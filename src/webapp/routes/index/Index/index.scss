@@ -1,8 +1,16 @@
-﻿.title{
+﻿.root{
+    padding: 0 30px;
+}
+
+.title{
     font-size: 30px;
     text-align: center;
     margin: 30px 0;
     color: gray;
+}
+
+.search{
+    padding: 8px 0;
 }
 
 .link1-container{
@@ -22,20 +30,30 @@
     font-size: 15px;
     color: gray;
     &:nth-child(2){
-        border-left: 1px solid rgba(128,128,128,0.3);
-        border-right: 1px solid rgba(128,128,128,0.3);
+        // &:before{
+        //     width: 1px;
+        //     height: 20px;
+        //     background: rgba(128, 128, 128, 1);
+        // }
+        &:after{
+            border-left: 1px solid rgba(128,128,128,0.3);
+            border-right: 1px solid rgba(128,128,128,0.3);
+        }
+    }
+
+    span{
+        margin-left: 5px;
     }
 }
 
-.link1 span{
-    margin-left: 5px;
-}
-
 .link2-container{
+    border-top: 1px solid rgba(128,128,128,0.3);
+    padding-top: 20px;
 }
 
 .link2{
     width: 25%;
+
     :after{
         display: inline-block;
         width: 0;

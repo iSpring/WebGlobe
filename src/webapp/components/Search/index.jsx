@@ -4,6 +4,7 @@ import styles from './index.scss';
 
 export default class Search extends Component {
     static propTypes = {
+        className: PropTypes.string,
         placeholder: PropTypes.string,
         showVoice: PropTypes.bool,
         showCancel: PropTypes.bool
@@ -28,7 +29,7 @@ export default class Search extends Component {
         // });
 
         return <div>
-            <div className={styles["search-section"]}>
+            <div className={classNames(styles["search-section"], this.props.className)}>
                 <div className={styles["input-container"]}>
                     <input className={styles.keyword} placeholder={this.props.placeholder} />
                     {

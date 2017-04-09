@@ -28,9 +28,9 @@ export default class App extends Component{
         const faSubway = classNames(fontStyles.fa, fontStyles["fa-subway"]);
 
         return(
-            <div>
+            <div className={styles.root}>
                 <div className={styles.title}>WebGlobe</div>
-                <Search placeholder="搜索地点、公交、城市" />
+                <Search className={styles.search} placeholder="搜索地点、公交、城市" />
                 <div className={styles["link1-container"]}>
                     <Link to="/index/map" className={styles.link1}>
                         <i className={faMapTo}></i>
