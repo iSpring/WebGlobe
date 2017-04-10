@@ -1,10 +1,7 @@
-import Utils from '../Utils';
 import Extent from '../Extent';
-import MathUtils from '../math/Utils';
 import TileGrid from '../TileGrid';
 import GraphicGroup from '../GraphicGroup';
 import Tile from '../graphics/Tile';
-import TiledLayer from './TiledLayer';
 
 export default class SubTiledLayer extends GraphicGroup<Tile> {
 

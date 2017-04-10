@@ -1,17 +1,17 @@
 import Kernel from './Kernel';
 import Utils from './Utils';
-import Locator, { LocationData } from './Locator';
+// import Locator, { LocationData } from './Locator';
 import Renderer from './Renderer';
 import Camera, { CameraCore } from './Camera';
 import Scene from './Scene';
 import ImageUtils from './Image';
 import EventHandler from './EventHandler';
 import TiledLayer from './layers/TiledLayer';
-import { GoogleTiledLayer, GoogleLabelLayer } from './layers/Google';
+import { GoogleTiledLayer } from './layers/Google';
 import { AutonaviTiledLayer, AutonaviLabelLayer } from './layers/Autonavi';
 import LabelLayer from './layers/LabelLayer';
 import TrafficLayer from './layers/TrafficLayer';
-import { QihuTrafficLayer } from './layers/Qihu';
+// import { QihuTrafficLayer } from './layers/Qihu';
 import Atmosphere from './graphics/Atmosphere';
 import PoiLayer from './layers/PoiLayer';
 import Extent from './Extent';
@@ -44,7 +44,7 @@ export default class Globe {
   private eventHandler: EventHandler = null;
   private allRefreshCount: number = 0;
   private realRefreshCount: number = 0;
-  private beforeRenderCallbacks: RenderCallback[] = [];
+  // private beforeRenderCallbacks: RenderCallback[] = [];
   private afterRenderCallbacks: RenderCallback[] = [];
 
   constructor(private canvas: HTMLCanvasElement, options?: GlobeOptions) {
@@ -108,17 +108,19 @@ export default class Globe {
     Locator.getLocation();
     // LocationService.watchPosition();*/
 
+    console.time("location");
     Service.location().then((response:any) => {
+      console.timeEnd("location");
       console.log(`定位：`, response);
       if(response.detail){
         const lon = parseFloat(response.detail.pointx);
         const lat = parseFloat(response.detail.pointy);
-        this.showLocation(lon, lat);
+        this.updateUserLocation(lon, lat);
       }
     });
   }
 
-  private showLocation(lon:number, lat:number, accuracy:number = Infinity) {
+  private updateUserLocation(lon:number, lat:number, accuracy:number = Infinity) {
     // this.poiLayer.clear();
     // this.poiLayer.addPoi(lon, lat, "", "", "", "");
     this.eventHandler.moveLonLatToCanvas(lon, lat, this.canvas.width / 2, this.canvas.height / 2);

@@ -35,7 +35,7 @@ export default class Service{
     return promise;
   }
 
-  static route(from:string, to:string){
+  // static route(from:string, to:string){
     
-  }
+  // }
 };

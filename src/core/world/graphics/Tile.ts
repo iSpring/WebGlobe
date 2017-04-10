@@ -73,7 +73,7 @@ class TileInfo {
     var deltaX = (this.maxX - this.minX) / this.segment;
     var deltaY = (this.maxY - this.minY) / this.segment;
     var deltaTextureCoord = 1.0 / this.segment;
-    var changeElevation = 0;//this.type === Enum.TERRAIN_TILE && this.elevationInfo;
+    //var changeElevation = 0;//this.type === Enum.TERRAIN_TILE && this.elevationInfo;
     //level不同设置的半径也不同
     var levelDeltaR = 0;//this.level * 2;
     //对WebMercator投影进行等间距划分格网

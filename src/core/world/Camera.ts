@@ -363,7 +363,7 @@ class Camera extends Object3D {
     var near = this.near;
 
     //计算newFar
-    var newPosition = this.matrixForDraw.getPosition();
+    // var newPosition = this.matrixForDraw.getPosition();
     var newFar = this.far; //this._getMinimalFar(newPosition);
 
     //根据newFov和newFar重新计算
@@ -566,7 +566,7 @@ class Camera extends Object3D {
     }
     if (level !== this.level || force) {
       //不要在this._updatePositionByLevel()方法中更新this.level，因为这会影响animateToLevel()方法
-      var isLevelChanged = this._updatePositionByLevel(level, this.matrix);
+      this._updatePositionByLevel(level, this.matrix);
       this.level = level;
       this.floatLevel = level;
     }
@@ -591,7 +591,6 @@ class Camera extends Object3D {
 
   //设置观察到的层级，不要在该方法中修改this.level的值
   private _updatePositionByLevel(level: number, cameraMatrix: Matrix) {
-    var globe = Kernel.globe;
     var intersects = this._getDirectionIntersectPointWithEarth(cameraMatrix);
     if (intersects.length === 0) {
       throw "no intersect";

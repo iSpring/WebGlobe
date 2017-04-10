@@ -1,7 +1,7 @@
 import Kernel from './Kernel';
 import Scene from './Scene';
 import Camera from './Camera';
-import { WebGLRenderingContextExtension, WebGLProgramExtension } from "./Definitions";
+import { WebGLRenderingContextExtension } from "./Definitions";
 
 export default class Renderer {
   scene: Scene = null;
@@ -13,7 +13,7 @@ export default class Renderer {
     private onBeforeRender?: (renderer: Renderer) => void,
     private onAfterRender?: (renderer: Renderer) => void) {
 
-    var gl = this._getWebGLContext(canvas);
+    var gl = this._getWebGLContext(this.canvas);
 
     if(gl){
       Kernel.gl = gl;

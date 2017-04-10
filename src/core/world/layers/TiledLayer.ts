@@ -2,7 +2,6 @@ import Camera from '../Camera';
 import Utils from '../Utils';
 import TileGrid from '../TileGrid';
 import Kernel from '../Kernel';
-import Extent from '../Extent';
 import Tile from '../graphics/Tile';
 import GraphicGroup from '../GraphicGroup';
 import SubTiledLayer from './SubTiledLayer';
@@ -43,7 +42,7 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
     var options = {
       threshold: 1
     };
-    var pitch = camera.getPitch();
+    // var pitch = camera.getPitch();
     options.threshold = 1;// options.threshold = Math.min(90 / (90 - pitch), 1.5);
     //最大级别的level所对应的可见TileGrids
     var lastLevelTileGrids = camera.getVisibleTilesByLevel(level, options);

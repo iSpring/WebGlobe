@@ -1,16 +1,11 @@
 declare function require(name: string): any;
 import Kernel from '../Kernel';
 import Utils from '../Utils';
-import Extent from '../Extent';
-import Camera from '../Camera';
 import MathUtils from '../math/Utils';
-import Program from '../Program';
-import Graphic from '../graphics/Graphic';
-import PoiMaterial from '../materials/PoiMaterial';
-import VertexBufferObject from '../VertexBufferObject';
+import MultiPointsGraphic from '../graphics/MultiPointsGraphic';
+import MarkerTextureMaterial from '../materials/MarkerTextureMaterial';
 import Service from '../Service';
 const poiImgUrl = require("../images/red.png");
-
 
 class Poi {
   constructor(
@@ -23,48 +18,13 @@ class Poi {
     public phone: string) { }
 }
 
-const vs =
-`
-attribute vec3 aPosition;
-uniform mat4 uPMVMatrix;
-uniform float uSize;
-
-void main(void) {
-  gl_Position = uPMVMatrix * vec4(aPosition, 1.0);
-  gl_PointSize = uSize;
-}
-`;
-
-//http://stackoverflow.com/questions/3497068/textured-points-in-opengl-es-2-0
-//gl_FragColor = texture2D(uSampler, vec2(gl_PointCoord.x, 1.0 - gl_PointCoord.y));
-
-//https://www.opengl.org/sdk/docs/tutorials/ClockworkCoders/discard.php
-//highp mediump
-const fs =
-`
-precision mediump float;
-uniform sampler2D uSampler;
-
-void main()
-{
-	vec4 color = texture2D(uSampler, vec2(gl_PointCoord.x, gl_PointCoord.y));
-    if(color.a == 0.0){
-        discard;
-    }
-    gl_FragColor = color;
-}
-`;
-
-export default class PoiLayer extends Graphic {
+export default class PoiLayer extends MultiPointsGraphic {
   private keyword: string = null;
   private pois: Poi[] = null;
-  private vbo: VertexBufferObject = null;
 
-  private constructor(public material: PoiMaterial) {
-    super(null, material);
+  private constructor(public material: MarkerTextureMaterial) {
+    super(material);
     this.pois = [];
-    this.vbo = new VertexBufferObject(Kernel.gl.ARRAY_BUFFER);
-    // this._addPoi(116.408540, 39.902350, "3161565500563468633", "首都大酒店", "北京市东城区前门东大街3号", "");
     Utils.subscribe("extent-change", () => {
       if(this.keyword){
         this.search(this.keyword);
@@ -72,62 +32,13 @@ export default class PoiLayer extends Graphic {
     });
   }
 
-  static getInstance() {
-    var material = new PoiMaterial(poiImgUrl, 16);
+  static getInstance(): PoiLayer {
+    var material = new MarkerTextureMaterial(poiImgUrl, 16);
     return new PoiLayer(material);
   }
 
-  createProgram() {
-    return Program.getProgram(vs, fs);
-  }
-
-  isReady(): boolean {
-    return !!(this.pois.length > 0 && this.material && this.material.isReady());
-  }
-
-  onDraw(camera: Camera) {
-    var gl = Kernel.gl;
-
-    gl.enable(gl.BLEND);
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-
-    //aPosition
-    var locPosition = this.program.getAttribLocation('aPosition');
-    this.program.enableVertexAttribArray('aPosition');
-    this.vbo.bind();
-    var vertices: number[] = [];
-    this.pois.map(function (poi) {
-      vertices.push(poi.x, poi.y, poi.z);
-    });
-    this.vbo.bufferData(vertices, gl.DYNAMIC_DRAW, true);
-    gl.vertexAttribPointer(locPosition, 3, gl.FLOAT, false, 0, 0);
-
-    //uPMVMatrix
-    var pmvMatrix = camera.getProjViewMatrixForDraw();
-    var locPMVMatrix = this.program.getUniformLocation('uPMVMatrix');
-    gl.uniformMatrix4fv(locPMVMatrix, false, pmvMatrix.getFloat32Array());
-
-    //uSize
-    var locSize = this.program.getUniformLocation('uSize');
-    gl.uniform1f(locSize, this.material.size);
-
-    //set uSampler
-    var locSampler = this.program.getUniformLocation('uSampler');
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, this.material.texture);
-    gl.uniform1i(locSampler, 0);
-
-    //绘图,vertices.length / 3表示所绘点的个数
-    gl.drawArrays(gl.POINTS, 0, vertices.length / 3);
-
-    //释放当前绑定对象
-    gl.disable(gl.BLEND);
-    // gl.bindBuffer(gl.ARRAY_BUFFER, null);
-    // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
-    // gl.bindTexture(gl.TEXTURE_2D, null);
-  }
-
   clear() {
+    super.clear();
     this.keyword = null;
     this.pois = [];
   }
@@ -137,10 +48,6 @@ export default class PoiLayer extends Graphic {
     var poi = new Poi(p.x, p.y, p.z, uuid, name, address, phone);
     this.pois.push(poi);
     return poi;
-  }
-
-  addPoi(lon: number, lat: number, uuid: string, name: string, address: string, phone: string) {
-    return this._addPoi(lon, lat, uuid, name, address, phone);
   }
 
   search(keyword: string) {
@@ -153,11 +60,13 @@ export default class PoiLayer extends Graphic {
       Service.searchByExtent(keyword, level, extent).then((response: any) => {
         console.log(`${keyword} response:`, response);
         var data = response.detail.pois || [];
-        data.forEach((item: any) => {
+        var lonlats:number[][] = data.map((item: any) => {
           var lon = parseFloat(item.pointx);
           var lat = parseFloat(item.pointy);
           this._addPoi(lon, lat, item.uid, item.name, item.addr, item.phone);
-        })
+          return [lon, lat];
+        });
+        this.setLonlats(lonlats);
       });
     }
   }

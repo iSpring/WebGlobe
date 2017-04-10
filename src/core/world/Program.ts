@@ -1,5 +1,4 @@
 ﻿import Kernel from './Kernel';
-import Graphic from './graphics/Graphic';
 
 export default class Program{
 	ready: boolean = false;

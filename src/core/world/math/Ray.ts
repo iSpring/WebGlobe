@@ -31,8 +31,4 @@ export default class Ray{
         var rayCopy = new Ray(this.vertice, this.vector);
         return rayCopy;
     }
-
-    rotateVertice(vertice: Vertice): Vertice {
-        return null;
-    }
 };

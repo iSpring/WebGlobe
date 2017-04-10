@@ -1,4 +1,3 @@
-import Kernel from './Kernel';
 import Matrix from './math/Matrix';
 import Vertice from './math/Vertice';
 import Vector from './math/Vector';

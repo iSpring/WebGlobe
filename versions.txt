@@ -170,3 +170,6 @@
        3. 将core中的import require改成import from
 
 0.4.12 使用更加快速的城市级别的定位服务，明显缩短定位时间
+
+0.4.13 1. 添加MultiPointsGraphic类，并让PoiLayer继承自该类
+       2. 通过配置tsconfig.json删除了很多无用的import和变量

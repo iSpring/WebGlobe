@@ -1,6 +1,5 @@
 ﻿import Kernel from './Kernel';
 import {Drawable} from './Definitions.d';
-import Graphic from './graphics/Graphic';
 import Camera from "./Camera";
 
 export default class GraphicGroup<T extends Drawable> implements Drawable {

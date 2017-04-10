@@ -1,5 +1,4 @@
 import Kernel from './Kernel';
-import Utils from './Utils';
 import MathUtils from './math/Utils';
 
 export enum TileGridPosition{
@@ -19,7 +18,7 @@ class TileGrid {
 
     private Egeo:any = null;//{minLon,minLat,maxLon,maxLat}
 
-    private maxSize: number = 0;
+    // private maxSize: number = 0;
 
     constructor(public level: number, public row: number, public column: number) {
         // this.maxSize = Math.pow(2, this.level);

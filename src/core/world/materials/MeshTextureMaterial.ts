@@ -1,5 +1,4 @@
 ﻿import Kernel from '../Kernel';
-import MathUtils from '../math/Utils';
 import Material from './Material';
 import ImageUtils from '../Image';
 

@@ -29,7 +29,7 @@ export default class Matrix{
     toJson(){
       //TypedArray不会被序列化成数组，而是序列化成对象，不要用map，可能会返回TypedArray
       var elements:number[] = [];
-      Utils.forEach(this.elements, function(ele:number, i:number){
+      Utils.forEach(this.elements, function(ele:number){
         elements.push(ele);
       });
       return {

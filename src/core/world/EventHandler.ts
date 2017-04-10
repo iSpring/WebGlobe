@@ -2,7 +2,6 @@ import Kernel from './Kernel';
 import Utils from './Utils';
 import MathUtils from './math/Utils';
 import Vector from './math/Vector';
-import Camera from "./Camera";
 
 export default class EventHandler {
   private down: boolean = false;

@@ -1,6 +1,3 @@
-import Kernel = require("./Kernel");
-import Utils = require("./Utils");
-
 type Listener = (data: any) => void;
 
 export interface Handle{
