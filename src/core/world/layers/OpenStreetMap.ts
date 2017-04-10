@@ -1,4 +1,4 @@
-import TiledLayer = require('./TiledLayer');
+import TiledLayer from './TiledLayer';
 
 //http://www.openstreetmap.org/
 

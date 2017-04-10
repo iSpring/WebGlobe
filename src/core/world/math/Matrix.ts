@@ -1,9 +1,8 @@
-import Utils = require('../Utils');
-import Vertice = require('./Vertice');
-import Vector = require('./Vector');
+import Utils from '../Utils';
+import Vertice from './Vertice';
+import Vector from './Vector';
 
-class Matrix{
-
+export default class Matrix{
     private elements: Float64Array;
 
     constructor(m11 = 1, m12 = 0, m13 = 0, m14 = 0,
@@ -496,5 +495,3 @@ class Matrix{
       this.setPosition(transVertice);
     }
   };
-
-  export = Matrix;

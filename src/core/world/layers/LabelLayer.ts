@@ -1,8 +1,8 @@
+import Kernel from '../Kernel';
 import Camera from '../Camera';
 import TileGrid from '../TileGrid';
-import Kernel = require('../Kernel');
-import Tile = require("../graphics/Tile");
-import SubTiledLayer = require('./SubTiledLayer');
+import Tile from '../graphics/Tile';
+import SubTiledLayer from './SubTiledLayer';
 
 abstract class LabelLayer extends SubTiledLayer {
 

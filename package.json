@@ -1,6 +1,6 @@
 {
   "name": "webglobe",
-  "version": "0.4.10",
+  "version": "0.4.11",
   "description": "A WebGL virtual globe and map engine.",
   "main": "require.js",
   "scripts": {
@@ -34,6 +34,7 @@
   },
   "homepage": "https://github.com/iSpring/WebGlobe#readme",
   "devDependencies": {
+    "@types/es6-promise": "0.0.32",
     "@types/react": "^15.0.21",
     "@types/react-dom": "^0.14.23",
     "babel-core": "^6.24.0",

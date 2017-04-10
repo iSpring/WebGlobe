@@ -1,13 +1,12 @@
-import Kernel = require('../Kernel');
-import Utils = require('../Utils');
-import Extent = require('../Extent');
-import MathUtils = require('../math/Utils');
+import Utils from '../Utils';
+import Extent from '../Extent';
+import MathUtils from '../math/Utils';
 import TileGrid from '../TileGrid';
-import GraphicGroup = require('../GraphicGroup');
-import Tile = require('../graphics/Tile');
-import TiledLayer = require('./TiledLayer');
+import GraphicGroup from '../GraphicGroup';
+import Tile from '../graphics/Tile';
+import TiledLayer from './TiledLayer';
 
-class SubTiledLayer extends GraphicGroup<Tile> {
+export default class SubTiledLayer extends GraphicGroup<Tile> {
 
   constructor(private level: number) {
     super();
@@ -157,6 +156,4 @@ class SubTiledLayer extends GraphicGroup<Tile> {
       return tile.visible && tile.isReady();
     }).length : 0;
   }
-}
-
-export = SubTiledLayer;
+};

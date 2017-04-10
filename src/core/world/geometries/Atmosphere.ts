@@ -1,11 +1,11 @@
-﻿import Kernel = require("../Kernel");
-import MeshVertice = require("./MeshVertice");
-import Triangle = require("./Triangle");
-import Mesh = require("./Mesh");
-import Vertice = require("../math/Vertice");
-import Matrix = require("../math/Matrix");
+﻿import Kernel from '../Kernel';
+import MeshVertice from './MeshVertice';
+import Triangle from './Triangle';
+import Mesh from './Mesh';
+import Vertice from '../math/Vertice';
+import Matrix from '../math/Matrix';
 
-class Atmosphere  extends Mesh {
+export default class Atmosphere  extends Mesh {
   private readonly segment: number = 360;
   private readonly radius1: number = Kernel.EARTH_RADIUS * 0.99;
   private readonly radius2: number = Kernel.EARTH_RADIUS * 1.01;
@@ -65,6 +65,4 @@ class Atmosphere  extends Mesh {
 
     this.vertices.push(...meshVertices1, ...meshVertices2);
   }
-}
-
-export = Atmosphere;
+};

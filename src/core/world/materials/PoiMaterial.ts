@@ -1,12 +1,10 @@
-import MeshTextureMaterial = require("./MeshTextureMaterial");
+import MeshTextureMaterial from './MeshTextureMaterial';
 
 type ImageType = string | HTMLImageElement;
 
-class PoiMaterial extends MeshTextureMaterial{
+export default class PoiMaterial extends MeshTextureMaterial{
 
     constructor(imageOrUrl?: ImageType, public size:number = 16){
         super(imageOrUrl, false);
     }
-}
-
-export = PoiMaterial;
+};

@@ -1,11 +1,11 @@
 import Camera from '../Camera';
-import Utils = require('../Utils');
+import Utils from '../Utils';
 import TileGrid from '../TileGrid';
-import Kernel = require('../Kernel');
-import Extent = require('../Extent');
-import Tile = require("../graphics/Tile");
-import GraphicGroup = require('../GraphicGroup');
-import SubTiledLayer = require('./SubTiledLayer');
+import Kernel from '../Kernel';
+import Extent from '../Extent';
+import Tile from '../graphics/Tile';
+import GraphicGroup from '../GraphicGroup';
+import SubTiledLayer from './SubTiledLayer';
 
 abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
   readonly imageRequestOptimizeDeltaLevel = 2;
@@ -56,7 +56,7 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
 
     for (subLevel = level; subLevel >= 2; subLevel--) {
       levelsTileGrids[subLevel] = parentTileGrids;//此行代码表示第subLevel层级的可见切片
-      parentTileGrids = parentTileGrids.map(function (item) {
+      parentTileGrids = parentTileGrids.map(function (item: TileGrid) {
         return item.getParent();
       });
       parentTileGrids = Utils.filterRepeatArray(parentTileGrids);
@@ -131,7 +131,7 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
         for(var i: number = 0; i <= ancesorLevel; i++){
           this.children[i].hideAllTiles();
         }
-        tileGrids.forEach((tileGrid) => {
+        tileGrids.forEach((tileGrid: TileGrid) => {
           var tile = this._getReadyTile(tileGrid);
           if(tile){
             tile.setVisible(true);
@@ -201,7 +201,6 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
     });
     console.table(result);
   }
-}
+};
 
-
-export = TiledLayer;
+export default TiledLayer;

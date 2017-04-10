@@ -1,10 +1,10 @@
-import Kernel = require("./Kernel");
-import Utils = require("./Utils");
-import MathUtils = require("./math/Utils");
-import Vector = require("./math/Vector");
+import Kernel from './Kernel';
+import Utils from './Utils';
+import MathUtils from './math/Utils';
+import Vector from './math/Vector';
 import Camera from "./Camera";
 
-class EventHandler {
+export default class EventHandler {
   private down: boolean = false;
   private dragGeo: any = null;
   private previousX: number = -1;
@@ -332,7 +332,4 @@ class EventHandler {
       this._onTouchMulti();
     }
   }
-
-}
-
-export = EventHandler;
+};

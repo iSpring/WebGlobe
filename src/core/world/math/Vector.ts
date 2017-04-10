@@ -1,6 +1,6 @@
-import Vertice = require('./Vertice');
+import Vertice from './Vertice';
 
-class Vector{
+export default class Vector{
     constructor(public x = 0, public y = 0, public z = 0){}
 
     static fromVertice(vertice: Vertice): Vector{
@@ -168,6 +168,4 @@ class Vector{
       var newVector = newVertice.getVector();
       return newVector;
     }*/
-}
-
-export = Vector;
+};

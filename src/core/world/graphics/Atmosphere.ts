@@ -1,14 +1,14 @@
 declare function require(name: string): any;
-import Kernel = require("../Kernel");
-import MeshGraphic = require("./MeshGraphic");
-import AtmosphereGeometry = require("../geometries/Atmosphere");
-import MeshTextureMaterial = require("../materials/MeshTextureMaterial");
-import Camera from "../Camera";
-import Vector = require("../math/Vector");
+import Kernel from '../Kernel';
+import MeshGraphic from './MeshGraphic';
+import AtmosphereGeometry from '../geometries/Atmosphere';
+import MeshTextureMaterial from '../materials/MeshTextureMaterial';
+import Camera from '../Camera';
+import Vector from '../math/Vector';
 // import atmosphereImgUrl = require("../images/atmosphere.png");
 const atmosphereImgUrl = require("../images/atmosphere.png");
 
-class Atmosphere extends MeshGraphic {
+export default class Atmosphere extends MeshGraphic {
     private constructor(public geometry: AtmosphereGeometry, public material: MeshTextureMaterial){
         super(geometry, material);
     }
@@ -55,6 +55,4 @@ class Atmosphere extends MeshGraphic {
         gl.depthMask(true);
         gl.disable(gl.BLEND);
     }
-}
-
-export = Atmosphere;
+};

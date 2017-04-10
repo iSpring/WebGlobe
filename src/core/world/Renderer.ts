@@ -1,9 +1,9 @@
-import Kernel = require("./Kernel");
-import Scene = require("./Scene");
-import Camera from "./Camera";
+import Kernel from './Kernel';
+import Scene from './Scene';
+import Camera from './Camera';
 import { WebGLRenderingContextExtension, WebGLProgramExtension } from "./Definitions";
 
-class Renderer {
+export default class Renderer {
   scene: Scene = null;
   camera: Camera = null;
   autoRefresh: boolean = false;
@@ -100,6 +100,4 @@ class Renderer {
       this._tick();
     }
   }
-}
-
-export = Renderer;
+};

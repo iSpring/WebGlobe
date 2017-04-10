@@ -3,4 +3,4 @@
     abstract destroy(): void
 }
 
-export = Material;
+export default Material;

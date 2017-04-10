@@ -1,5 +1,5 @@
-import Utils = require('../Utils');
-import TiledLayer = require('./TiledLayer');
+import Utils from '../Utils';
+import TiledLayer from './TiledLayer';
 import TrafficLayer from './TrafficLayer';
 
 export class SosoTiledLayer extends TiledLayer {

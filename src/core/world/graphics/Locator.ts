@@ -1,5 +1,3 @@
-class Locator{
+export default class Locator{
     
-}
-
-export default Locator;
+};

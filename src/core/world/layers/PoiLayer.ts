@@ -1,13 +1,14 @@
 declare function require(name: string): any;
-import Kernel = require('../Kernel');
-import Utils = require('../Utils');
-import Extent = require('../Extent');
+import Kernel from '../Kernel';
+import Utils from '../Utils';
+import Extent from '../Extent';
 import Camera from '../Camera';
-import MathUtils = require('../math/Utils');
-import Program = require('../Program');
-import Graphic = require('../graphics/Graphic');
-import PoiMaterial = require('../materials/PoiMaterial');
-import VertexBufferObject = require('../VertexBufferObject');
+import MathUtils from '../math/Utils';
+import Program from '../Program';
+import Graphic from '../graphics/Graphic';
+import PoiMaterial from '../materials/PoiMaterial';
+import VertexBufferObject from '../VertexBufferObject';
+import Service from '../Service';
 const poiImgUrl = require("../images/red.png");
 
 
@@ -54,7 +55,7 @@ void main()
 }
 `;
 
-class PoiLayer extends Graphic {
+export default class PoiLayer extends Graphic {
   private keyword: string = null;
   private pois: Poi[] = null;
   private vbo: VertexBufferObject = null;
@@ -142,11 +143,6 @@ class PoiLayer extends Graphic {
     return this._addPoi(lon, lat, uuid, name, address, phone);
   }
 
-  static search(wd: string, level: number, minLon: number, minLat: number, maxLon: number, maxLat: number, callback: (response: any) => void, pageCapacity: number = 50, pageIndex: number = 0) {
-    var url = `//apis.map.qq.com/jsapi?qt=syn&wd=${wd}&pn=${pageIndex}&rn=${pageCapacity}&output=jsonp&b=${minLon},${minLat},${maxLon},${maxLat}&l=${level}&c=000000`;
-    Utils.jsonp(url, callback);
-  }
-
   search(keyword: string) {
     this.clear();
     this.keyword = keyword;
@@ -154,7 +150,7 @@ class PoiLayer extends Graphic {
     var level = globe.getLevel();
     if(level >= 10){
       var extent = globe.getExtent();
-      PoiLayer.search(keyword, level, extent.getMinLon(), extent.getMinLat(), extent.getMaxLon(), extent.getMaxLat(), (response) => {
+      Service.searchByExtent(keyword, level, extent).then((response: any) => {
         console.log(`${keyword} response:`, response);
         var data = response.detail.pois || [];
         data.forEach((item: any) => {
@@ -165,6 +161,10 @@ class PoiLayer extends Graphic {
       });
     }
   }
-}
 
-export = PoiLayer;
+  searchNearby(keyword: string){
+    Service.searchNearby(keyword, 116.408540, 39.902350).then((response: any) => {
+      console.log(response);
+    });
+  }
+};

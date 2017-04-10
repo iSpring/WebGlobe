@@ -1,6 +1,6 @@
-﻿import Material = require("./Material");
+﻿import Material from './Material';
 
-class MeshColorMaterial extends Material {
+export default class MeshColorMaterial extends Material {
     type: string = "";
     ready: boolean = false;
     singleColor: number[];
@@ -49,6 +49,4 @@ class MeshColorMaterial extends Material {
     destroy() {
         this.reset();
     }
-}
-
-export = MeshColorMaterial;
+};

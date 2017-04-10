@@ -1,5 +1,5 @@
 interface Geometry{
-    destroy():void
+    destroy(): void
 }
 
-export = Geometry;
+export default Geometry;

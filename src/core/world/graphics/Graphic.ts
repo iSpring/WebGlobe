@@ -1,11 +1,10 @@
-﻿import Kernel = require('../Kernel');
+﻿import Kernel from '../Kernel';
 import {Drawable} from '../Definitions.d';
-import Geometry = require('../geometries/Geometry');
-import Material = require('../materials/Material');
-import Program = require('../Program');
+import Geometry from '../geometries/Geometry';
+import Material from '../materials/Material';
+import Program from '../Program';
 import Camera from '../Camera';
-import GraphicGroup = require('../GraphicGroup');
-
+import GraphicGroup from '../GraphicGroup';
 
 abstract class Graphic implements Drawable{
     id: number;
@@ -55,4 +54,4 @@ abstract class Graphic implements Drawable{
     }
 }
 
-export = Graphic;
+export default Graphic;

@@ -1,5 +1,4 @@
-import Kernel = require('../Kernel');
-import TiledLayer = require('./TiledLayer');
+import TiledLayer from './TiledLayer';
 import LabelLayer from './LabelLayer';
 
 //http://gaode.com

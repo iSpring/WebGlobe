@@ -1,9 +1,9 @@
-import Kernel = require('./Kernel');
-import Matrix = require('./math/Matrix');
-import Vertice = require('./math/Vertice');
-import Vector = require('./math/Vector');
+import Kernel from './Kernel';
+import Matrix from './math/Matrix';
+import Vertice from './math/Vertice';
+import Vector from './math/Vector';
 
-class Object3D {
+export default class Object3D {
     protected matrix: Matrix;
 
     constructor() {
@@ -116,6 +116,4 @@ class Object3D {
       directionZ.normalize();
       return directionZ;
     }
-}
-
-export = Object3D;
+};

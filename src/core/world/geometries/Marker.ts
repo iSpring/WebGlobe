@@ -1,8 +1,8 @@
-import Kernel = require("../Kernel");
-import Geometry = require('./Geometry');
-import VertexBufferObject = require("../VertexBufferObject");
+import Kernel from '../Kernel';
+import Geometry from './Geometry';
+import VertexBufferObject from '../VertexBufferObject';
 
-class Marker implements Geometry{
+export default class Marker implements Geometry{
 
     vbo: VertexBufferObject;
 
@@ -18,5 +18,3 @@ class Marker implements Geometry{
         this.vbo = null;
     }
 }
-
-export = Marker;

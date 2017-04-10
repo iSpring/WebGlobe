@@ -1,9 +1,7 @@
 import {Drawable} from './Definitions.d';
-import GraphicGroup = require('./GraphicGroup');
-import TiledLayer = require("./layers/TiledLayer");
+import GraphicGroup from './GraphicGroup';
+import TiledLayer from './layers/TiledLayer';
 
-class Scene extends GraphicGroup<Drawable>{
+export default class Scene extends GraphicGroup<Drawable>{
     tiledLayer: TiledLayer;
-}
-
-export = Scene;
+};

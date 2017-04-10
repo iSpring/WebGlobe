@@ -1,9 +1,9 @@
-import Kernel = require('../Kernel');
-import Utils = require('../Utils');
-import Vertice = require('./Vertice');
-import Vector = require('./Vector');
-import Line = require('./Line');
-import Plan = require('./Plan');
+import Kernel from '../Kernel';
+import Utils from '../Utils';
+import Vertice from './Vertice';
+import Vector from './Vector';
+import Line from './Line';
+import Plan from './Plan';
 
 //Math.log2() method is defined in ES6
 if(!(<any>Math).log2){
@@ -22,7 +22,7 @@ const pow2Cache: any = {};
 const ONE_RADIAN_EQUAL_DEGREE:number = 57.29577951308232;//=>180/Math.PI
 const ONE_DEGREE_EQUAL_RADIAN:number = 0.017453292519943295;//=>Math.PI/180
 
-class MathUtils {
+export default class MathUtils {
     static getRealValueInWorld(virtualValue: number){
         return virtualValue / Kernel.SCALE_FACTOR;
     }
@@ -741,5 +741,3 @@ class MathUtils {
         return ns;
     }
 };
-
-export = MathUtils;

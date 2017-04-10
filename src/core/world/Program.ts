@@ -1,7 +1,7 @@
-﻿import Kernel = require("./Kernel");
-import Graphic = require("./graphics/Graphic");
+﻿import Kernel from './Kernel';
+import Graphic from './graphics/Graphic';
 
-class Program{
+export default class Program{
 	ready: boolean = false;
 	activeInfosObject: any;
 	program: WebGLProgram;
@@ -183,6 +183,4 @@ class Program{
 
         return shader;
 	}
-}
-
-export = Program;
+};

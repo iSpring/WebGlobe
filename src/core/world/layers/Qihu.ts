@@ -1,4 +1,4 @@
-import TiledLayer = require('./TiledLayer');
+import TiledLayer from './TiledLayer';
 import TrafficLayer from './TrafficLayer';
 
 //http://ditu.so.com/

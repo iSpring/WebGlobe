@@ -1,7 +1,8 @@
-﻿import Kernel = require("./world/Kernel");
-import {Globe, GlobeOptions} from "./world/Globe";
-
-import "./index.scss";
+﻿import Kernel from './world/Kernel';
+import Globe, {GlobeOptions} from './world/Globe';
+import './index.scss';
+import es6Promise = require('es6-promise');
+es6Promise.polyfill();
 
 (function () {
     var canvas = <HTMLCanvasElement>document.getElementById("canvasId");

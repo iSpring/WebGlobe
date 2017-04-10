@@ -1,8 +1,8 @@
-﻿import Kernel = require("../Kernel");
-import Program = require("../Program");
-import Graphic = require("./Graphic");
-import Mesh = require("../geometries/Mesh");
-import MeshTextureMaterial = require("../materials/MeshTextureMaterial");
+﻿import Kernel from '../Kernel';
+import Program from '../Program';
+import Graphic from './Graphic';
+import Mesh from '../geometries/Mesh';
+import MeshTextureMaterial from '../materials/MeshTextureMaterial';
 import Camera from "../Camera";
 
 const vs =
@@ -31,7 +31,7 @@ void main()
 }
 `;
 
-class MeshGraphic extends Graphic {
+export default class MeshGraphic extends Graphic {
     constructor(public geometry: Mesh, public material: MeshTextureMaterial){
         super(geometry, material);
         this.geometry.calculateVBO();
@@ -100,6 +100,4 @@ class MeshGraphic extends Graphic {
         // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
         // gl.bindTexture(gl.TEXTURE_2D, null);
     }
-}
-
-export = MeshGraphic;
+};

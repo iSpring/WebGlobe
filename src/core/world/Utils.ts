@@ -1,4 +1,4 @@
-import Kernel = require('./Kernel');
+import Kernel from './Kernel';
 
 type ArrayVoidCallback = (value: any, index: number, arr: Array<any>) => void;
 type ArrayBooleanCallback = (value: any, index: number, arr: any[]) => boolean;
@@ -7,7 +7,7 @@ type TopicCallback = (data:any) => void;
 
 const topic:{[key:string]:TopicCallback[]} = {};
 
-class Utils {
+export default class Utils {
 
     static isNumber(v: any): boolean {
         return typeof v === "number";
@@ -117,19 +117,26 @@ class Utils {
         scriptElement.setAttribute("defer", "true");
         document.body.appendChild(scriptElement);
         var canceled = false;
-        (<any>window)[callbackName] = function (response: any) {
-            if (!canceled) {
-                callback(response);
-            }
+
+        function clear(){
             delete (<any>window)[callbackName];
             scriptElement.src = "";
             if (scriptElement.parentNode) {
                 scriptElement.parentNode.removeChild(scriptElement);
             }
+            scriptElement = null;
         }
+
+        (<any>window)[callbackName] = function (response: any) {
+            if (!canceled) {
+                callback(response);
+            }
+            clear();
+        }
+        
         return function () {
-            scriptElement.src = "";
             canceled = true;
+            clear();
         };
     }
 
@@ -160,5 +167,3 @@ class Utils {
         }
     }
 };
-
-export = Utils;

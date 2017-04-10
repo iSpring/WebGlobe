@@ -1,10 +1,10 @@
-﻿import Kernel = require("../Kernel");
-import Vertice = require("./MeshVertice");
-import Triangle = require("./Triangle");
-import Object3D = require("../Object3D");
-import VertexBufferObject = require("../VertexBufferObject");
+﻿import Kernel from '../Kernel';
+import Vertice from './MeshVertice';
+import Triangle from './Triangle';
+import Object3D from '../Object3D';
+import VertexBufferObject from '../VertexBufferObject';
 
-class Mesh extends Object3D {
+export default class Mesh extends Object3D {
 	vertices: Vertice[];
 	triangles: Triangle[];
 	vbo: VertexBufferObject;
@@ -148,6 +148,4 @@ class Mesh extends Object3D {
 		this.vertices = [];
 		this.triangles = [];
 	}
-}
-
-export = Mesh;
+};

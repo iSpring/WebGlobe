@@ -1,4 +1,4 @@
-﻿class MeshVertice{
+﻿export default class MeshVertice{
 	p:number[];
 	n:number[];
 	uv:number[];
@@ -13,6 +13,4 @@
 		this.n = args.n;//[x,y,z]
 		this.c = args.c;//[r,g,b]
 	}
-}
-
-export = MeshVertice;
+};

@@ -1,5 +1,4 @@
-import Kernel = require("../Kernel");
-import TiledLayer = require("./TiledLayer");
+import TiledLayer from './TiledLayer';
 
 export class ArcGISTiledLayer extends TiledLayer{
   constructor(public url: string){

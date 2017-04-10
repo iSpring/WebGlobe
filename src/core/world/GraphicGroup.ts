@@ -1,9 +1,9 @@
-﻿import Kernel = require('./Kernel');
+﻿import Kernel from './Kernel';
 import {Drawable} from './Definitions.d';
-import Graphic = require('./graphics/Graphic');
+import Graphic from './graphics/Graphic';
 import Camera from "./Camera";
 
-class GraphicGroup<T extends Drawable> implements Drawable {
+export default class GraphicGroup<T extends Drawable> implements Drawable {
     id: number;
     parent: GraphicGroup<T>;
     children: T[];
@@ -80,6 +80,4 @@ class GraphicGroup<T extends Drawable> implements Drawable {
             }
         });
     }
-}
-
-export = GraphicGroup;
+};

@@ -1,5 +1,5 @@
-import MathUtils = require('../math/Utils');
-import TiledLayer = require('./TiledLayer');
+import MathUtils from '../math/Utils';
+import TiledLayer from './TiledLayer';
 
 //Bing地图
 export class BingTiledLayer extends TiledLayer{

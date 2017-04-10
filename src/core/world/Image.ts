@@ -34,4 +34,4 @@ const ImageUtils = {
   }
 };
 
-export = ImageUtils;
+export default ImageUtils;

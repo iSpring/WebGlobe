@@ -1,8 +1,8 @@
-﻿import Vertice = require("./MeshVertice");
-import Triangle = require("./Triangle");
-import Mesh = require("./Mesh");
+﻿import Vertice from './MeshVertice';
+import Triangle from './Triangle';
+import Mesh from './Mesh';
 
-class Box extends Mesh {
+export default class Box extends Mesh {
 	constructor(public length: number, public width: number, public height: number) {
 		super();
 		this.buildTriangles();
@@ -140,6 +140,4 @@ class Box extends Mesh {
 
 		return result;
 	}
-}
-
-export = Box;
+};

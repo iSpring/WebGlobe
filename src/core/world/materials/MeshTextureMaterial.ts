@@ -1,11 +1,11 @@
-﻿import Kernel = require("../Kernel");
-import MathUtils = require("../math/Utils");
-import Material = require("./Material");
-import ImageUtils = require('../Image');
+﻿import Kernel from '../Kernel';
+import MathUtils from '../math/Utils';
+import Material from './Material';
+import ImageUtils from '../Image';
 
 type ImageType = HTMLImageElement | string;
 
-class MeshTextureMaterial extends Material {
+export default class MeshTextureMaterial extends Material {
     texture: WebGLTexture;
     image: HTMLImageElement;
     private ready: boolean = false;
@@ -144,6 +144,4 @@ class MeshTextureMaterial extends Material {
         this.texture = null;
         this.deleted = true;
     }
-}
-
-export = MeshTextureMaterial;
+};

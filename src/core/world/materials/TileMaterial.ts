@@ -1,9 +1,9 @@
-import MeshTextureMaterial= require('./MeshTextureMaterial');
-import ImageUtils = require('../Image');
+import MeshTextureMaterial from './MeshTextureMaterial';
+import ImageUtils from '../Image';
 
 type ImageType = HTMLImageElement | string;
 
-class TileMaterial extends MeshTextureMaterial{
+export default class TileMaterial extends MeshTextureMaterial{
   level: number;
 
   constructor(level: number, imageOrUrl: ImageType){
@@ -17,6 +17,4 @@ class TileMaterial extends MeshTextureMaterial{
     }
     super.onLoad();
   }
-}
-
-export = TileMaterial;
+};

@@ -1,7 +1,7 @@
-import Vertice = require('./Vertice');
-import Vector = require('./Vector');
+import Vertice from './Vertice';
+import Vector from './Vector';
 
-class Line{
+export default class Line{
     public vertice: Vertice;
     public vector: Vector;
 
@@ -26,6 +26,4 @@ class Line{
         var lineCopy = new Line(this.vertice, this.vector);
         return lineCopy;
     }
-}
-
-export = Line;
+};

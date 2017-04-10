@@ -37,7 +37,7 @@ module.exports = {
 
     output: {
         path: path.resolve(__dirname, buildFolder),
-        filename: "bundle.[chunkhash].js",
+        filename: "[name].[chunkhash].js",
         // publicPath: buildFolder + "/",
         devtoolModuleFilenameTemplate: 'webpack:///[absolute-resource-path]'
     },

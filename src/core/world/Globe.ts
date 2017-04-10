@@ -1,20 +1,20 @@
-import Kernel = require("./Kernel");
-import Utils = require("./Utils");
-import LocationService, { LocationData } from "./LocationService";
-import Renderer = require("./Renderer");
-import Camera, { CameraCore } from "./Camera";
-import Scene = require("./Scene");
-import ImageUtils = require("./Image");
-import EventHandler = require("./EventHandler");
-import TiledLayer = require("./layers/TiledLayer");
-import { GoogleTiledLayer, GoogleLabelLayer } from "./layers/Google";
-import { AutonaviTiledLayer, AutonaviLabelLayer } from "./layers/Autonavi";
-import LabelLayer from "./layers/LabelLayer";
-import TrafficLayer from "./layers/TrafficLayer";
-import { QihuTrafficLayer } from "./layers/Qihu";
-import Atmosphere = require("./graphics/Atmosphere");
-import PoiLayer = require("./layers/PoiLayer");
-import Extent = require("./Extent");
+import Kernel from './Kernel';
+import Utils from './Utils';
+import Locator, { LocationData } from './Locator';
+import Renderer from './Renderer';
+import Camera, { CameraCore } from './Camera';
+import Scene from './Scene';
+import ImageUtils from './Image';
+import EventHandler from './EventHandler';
+import TiledLayer from './layers/TiledLayer';
+import { GoogleTiledLayer, GoogleLabelLayer } from './layers/Google';
+import { AutonaviTiledLayer, AutonaviLabelLayer } from './layers/Autonavi';
+import LabelLayer from './layers/LabelLayer';
+import TrafficLayer from './layers/TrafficLayer';
+import { QihuTrafficLayer } from './layers/Qihu';
+import Atmosphere from './graphics/Atmosphere';
+import PoiLayer from './layers/PoiLayer';
+import Extent from './Extent';
 
 const initLevel:number = Utils.isMobile() ? 11 : 3;
 
@@ -28,7 +28,7 @@ export class GlobeOptions{
   lonlat: number[] = initLonlat;
 }
 
-export class Globe {
+export default class Globe {
   renderer: Renderer = null;
   scene: Scene = null;
   camera: Camera = null;
@@ -101,8 +101,8 @@ export class Globe {
         this.showLocation(data);
       });
     });
-    LocationService.getRobustLocation();
-    LocationService.getLocation();
+    Locator.getRobustLocation();
+    Locator.getLocation();
     // LocationService.watchPosition();
   }
 

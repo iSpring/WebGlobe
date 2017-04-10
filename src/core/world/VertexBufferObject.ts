@@ -1,8 +1,8 @@
-﻿import Kernel = require("./Kernel");
+﻿import Kernel from './Kernel';
 const maxBufferSize:number = 200;
 const buffers:WebGLBuffer[] = [];
 
-class VertexBufferObject{
+export default class VertexBufferObject{
 	buffer: WebGLBuffer;
 
 	constructor(public target: number){
@@ -49,6 +49,4 @@ class VertexBufferObject{
 		}
 		this.buffer = null;
 	}
-}
-
-export = VertexBufferObject;
+};

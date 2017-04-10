@@ -164,3 +164,7 @@
 0.4.9 当level>=10时可以进行POI搜索，并且当地图范围变化时会重新动态搜索
 
 0.4.10 开发模式下，启用SourceMap
+
+0.4.11 1. 分离core和webapp目录，基本搭建起了webapp的路由机制，基本完成首页界面
+       2. 将所有服务都放入到Service类中，并添加searchNearby接口
+       3. 将core中的import require改成import from

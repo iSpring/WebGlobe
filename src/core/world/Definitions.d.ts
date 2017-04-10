@@ -1,6 +1,6 @@
-import Matrix = require('./math/Matrix');
+import Matrix from './math/Matrix';
 import Camera from './Camera';
-import GraphicGroup = require('./GraphicGroup');
+import GraphicGroup from './GraphicGroup';
 
 interface WebGLProgramExtension extends WebGLProgram{
     uMVMatrix: WebGLUniformLocation;

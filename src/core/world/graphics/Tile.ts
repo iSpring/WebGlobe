@@ -1,13 +1,13 @@
-import Kernel = require('../Kernel');
-import Extent = require('../Extent');
+import Kernel from '../Kernel';
+import Extent from '../Extent';
 import Camera from '../Camera';
-import MathUtils = require('../math/Utils');
-import MeshGraphic = require('../graphics/MeshGraphic');
-import TileMaterial = require('../materials/TileMaterial');
-import TileGeometry = require('../geometries/TileGeometry');
-import Vertice = require('../geometries/MeshVertice');
-import Triangle = require('../geometries/Triangle');
-import SubTiledLayer = require('../layers/SubTiledLayer');
+import MathUtils from '../math/Utils';
+import MeshGraphic from '../graphics/MeshGraphic';
+import TileMaterial from '../materials/TileMaterial';
+import TileGeometry from '../geometries/TileGeometry';
+import Vertice from '../geometries/MeshVertice';
+import Triangle from '../geometries/Triangle';
+import SubTiledLayer from '../layers/SubTiledLayer';
 import TileGrid from '../TileGrid';
 
 class TileInfo {
@@ -142,7 +142,7 @@ class TileInfo {
   }
 }
 
-class Tile extends MeshGraphic {
+export default class Tile extends MeshGraphic {
   subTiledLayer: SubTiledLayer;
 
   private constructor(public geometry: TileGeometry, public material: TileMaterial, public tileInfo: TileInfo) {
@@ -171,6 +171,4 @@ class Tile extends MeshGraphic {
     super.destroy();
     this.subTiledLayer = null;
   }
-}
-
-export = Tile;
+};

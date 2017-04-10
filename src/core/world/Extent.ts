@@ -1,6 +1,6 @@
 import TileGrid from './TileGrid';
 
-class Extent {
+export default class Extent {
     constructor(private minLon: number, private minLat: number, private maxLon: number, private maxLat: number, private tileGrid?: TileGrid) {
 
     }
@@ -74,6 +74,4 @@ class Extent {
     static intersect(extents: Extent[]): Extent {
         return this.merge(extents, false);
     }
-}
-
-export = Extent;
+};

@@ -1,4 +1,4 @@
-import Utils = require('./Utils');
+import Utils from './Utils';
 
 //http://lbs.qq.com/tool/component-geolocation.html
 
@@ -20,7 +20,7 @@ const targetOrigin:string = 'https://apis.map.qq.com';
 
 var iframe = document.createElement("iframe");
 
-class LocationService{
+class Locator{
     private static init(){
         window.addEventListener('message', function(event){
             var data:LocationData = event.data;
@@ -55,6 +55,6 @@ class LocationService{
     }
 }
 
-(LocationService as any).init();
+(Locator as any).init();
 
-export default LocationService;
+export default Locator;

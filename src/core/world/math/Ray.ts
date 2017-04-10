@@ -1,7 +1,7 @@
-import Vertice = require('./Vertice');
-import Vector = require('./Vector');
+import Vertice from './Vertice';
+import Vector from './Vector';
 
-class Ray{
+export default class Ray{
     public vertice: Vertice;
     public vector: Vector;
     /**
@@ -35,6 +35,4 @@ class Ray{
     rotateVertice(vertice: Vertice): Vertice {
         return null;
     }
-}
-
-export = Ray;
+};

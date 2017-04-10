@@ -1,15 +1,15 @@
-import Kernel = require('./Kernel');
-import Utils = require('./Utils');
+import Kernel from './Kernel';
+import Utils from './Utils';
 import {EventEmitter} from './Events';
-import MathUtils = require('./math/Utils');
-import Vertice = require('./math/Vertice');
-import Vector = require('./math/Vector');
-import Line = require('./math/Line');
-import Plan = require('./math/Plan');
-import TileGrid,{TileGridPosition} from './TileGrid';
-import Matrix = require('./math/Matrix');
-import Object3D = require('./Object3D');
-import Extent = require('./Extent');
+import MathUtils from './math/Utils';
+import Vertice from'./math/Vertice';
+import Vector from './math/Vector';
+import Line from './math/Line';
+import Plan from'./math/Plan';
+import TileGrid, {TileGridPosition} from './TileGrid';
+import Matrix from './math/Matrix';
+import Object3D from './Object3D';
+import Extent from './Extent';
 
 export class CameraCore{
   constructor(private fov: number, private aspect: number, private near: number, private far: number, private floatLevel: number, private matrix: Matrix){
@@ -145,7 +145,7 @@ class Camera extends Object3D {
     return this.lonlatsOfBoundary.length === 8;
   }
 
-  getTileGridsOfBoundary(level:number, filterRepeat: boolean){
+  getTileGridsOfBoundary(level:number, filterRepeat: boolean): TileGrid[]{
     var tileGridsOfBoundary: TileGrid[] = this.lonlatsOfBoundary.map((lonlat)=>{
       return TileGrid.getTileGridByGeo(lonlat[0], lonlat[1], level);
     });

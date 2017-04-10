@@ -1,4 +1,4 @@
-class Vertice{
+export default class Vertice{
     constructor(public x = 0, public y = 0, public z = 0){}
 
     getArray(): number[] {
@@ -12,6 +12,4 @@ class Vertice{
     getOpposite(): Vertice {
       return new Vertice(-this.x, -this.y, -this.z);
     }
-}
-
-export = Vertice;
+};

@@ -1,6 +1,5 @@
 import {WebGLRenderingContextExtension} from './Definitions';
-import {Globe} from "./Globe";
-import Renderer = require("./Renderer");
+import Globe from './Globe';
 
 const REAL_EARTH_RADIUS = 6378137;
 const EARTH_RADIUS = 500;
@@ -9,12 +8,12 @@ const MAX_PROJECTED_COORD = Math.PI * EARTH_RADIUS;
 const MAX_REAL_RESOLUTION = 156543.03392800014;
 const MAX_RESOLUTION = MAX_REAL_RESOLUTION * SCALE_FACTOR;
 
-class Kernel{
+export default class Kernel{
     static gl:WebGLRenderingContextExtension = null;
     static canvas:HTMLCanvasElement = null;
     static globe:Globe = null;
     static idCounter:number = 0; //Object3D对象的唯一标识
-    static readonly version:string = "0.4.10";
+    static readonly version:string = "0.4.11";
     static readonly SCALE_FACTOR:number = SCALE_FACTOR;
     static readonly EARTH_RADIUS:number = EARTH_RADIUS;
     static readonly MAX_RESOLUTION:number = MAX_RESOLUTION;
@@ -25,6 +24,4 @@ class Kernel{
     static readonly MIN_LEVEL:number = 2;
     static readonly MIN_PITCH_LEVEL:number = 8;
     static readonly proxy:string = "";
-}
-
-export = Kernel;
+};
