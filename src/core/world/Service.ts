@@ -1,7 +1,18 @@
 import Utils from './Utils';
 import Extent from './Extent';
+// import { CancelablePromise } from './Definitions.d';
 
 export default class Service{
+  static location(){
+    const promise = new Promise(function(resolve){
+      const url = "http://apis.map.qq.com/jsapi?qt=gc&output=jsonp";
+      Utils.jsonp(url, function(response: any){
+        resolve(response);
+      });
+    });
+    return promise;
+  }
+
   //http://lbs.qq.com/javascript_v2/case-run.html#service-searchservice
   static searchByExtent(keyword: string, level: number, {minLon, minLat, maxLon, maxLat}: Extent, pageCapacity: number = 50, pageIndex: number = 0) {
     const promise = new Promise(function(resolve){

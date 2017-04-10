@@ -13,7 +13,7 @@ export default class Kernel{
     static canvas:HTMLCanvasElement = null;
     static globe:Globe = null;
     static idCounter:number = 0; //Object3D对象的唯一标识
-    static readonly version:string = "0.4.11";
+    static readonly version:string = "0.4.12";
     static readonly SCALE_FACTOR:number = SCALE_FACTOR;
     static readonly EARTH_RADIUS:number = EARTH_RADIUS;
     static readonly MAX_RESOLUTION:number = MAX_RESOLUTION;

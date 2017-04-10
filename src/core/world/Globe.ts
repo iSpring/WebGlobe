@@ -15,6 +15,7 @@ import { QihuTrafficLayer } from './layers/Qihu';
 import Atmosphere from './graphics/Atmosphere';
 import PoiLayer from './layers/PoiLayer';
 import Extent from './Extent';
+import Service from './Service';
 
 const initLevel:number = Utils.isMobile() ? 11 : 3;
 
@@ -85,34 +86,42 @@ export default class Globe {
     this.renderer.setIfAutoRefresh(true);
     this.eventHandler = new EventHandler(canvas);
 
-    // if(Utils.isMobile() && window.navigator.geolocation){
-    //   window.navigator.geolocation.getCurrentPosition((position: Position) => {
-    //     // var str = `accuracy:${position.coords.accuracy},heading:${position.coords.heading},speed:${position.coords.speed}`;
-    //     // alert(str);
-    //     var lon = position.coords.longitude;
-    //     var lat = position.coords.latitude;
-    //     this.showLocation(lon, lat);
-    //   });
-    // }
+    /*if(Utils.isMobile() && window.navigator.geolocation){
+      window.navigator.geolocation.getCurrentPosition((position: Position) => {
+        // var str = `accuracy:${position.coords.accuracy},heading:${position.coords.heading},speed:${position.coords.speed}`;
+        // alert(str);
+        var lon = position.coords.longitude;
+        var lat = position.coords.latitude;
+        this.showLocation(lon, lat);
+      });
+    }*/
 
-    Utils.subscribe('location', (data: LocationData) => {
+    /*Utils.subscribe('location', (data: LocationData) => {
+      console.timeEnd("location");
       console.info(data);
       this.afterRenderCallbacks.push(() => {
         this.showLocation(data);
       });
     });
+    console.time("location");
     Locator.getRobustLocation();
     Locator.getLocation();
-    // LocationService.watchPosition();
+    // LocationService.watchPosition();*/
+
+    Service.location().then((response:any) => {
+      console.log(`定位：`, response);
+      if(response.detail){
+        const lon = parseFloat(response.detail.pointx);
+        const lat = parseFloat(response.detail.pointy);
+        this.showLocation(lon, lat);
+      }
+    });
   }
 
-  private showLocation(locationData: LocationData) {
-    var lon = locationData.lng;
-    var lat = locationData.lat;
+  private showLocation(lon:number, lat:number, accuracy:number = Infinity) {
     // this.poiLayer.clear();
     // this.poiLayer.addPoi(lon, lat, "", "", "", "");
     this.eventHandler.moveLonLatToCanvas(lon, lat, this.canvas.width / 2, this.canvas.height / 2);
-    var accuracy = locationData.accuracy;
     var level: number = 8;
     if (accuracy <= 100) {
       level = 16;
