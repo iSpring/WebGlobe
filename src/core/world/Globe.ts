@@ -13,6 +13,7 @@ import LabelLayer from './layers/LabelLayer';
 import TrafficLayer from './layers/TrafficLayer';
 // import { QihuTrafficLayer } from './layers/Qihu';
 import Atmosphere from './graphics/Atmosphere';
+import LocationGraphic from './graphics/LocationGraphic';
 import PoiLayer from './layers/PoiLayer';
 import Extent from './Extent';
 import Service from './Service';
@@ -37,6 +38,7 @@ export default class Globe {
   labelLayer: LabelLayer = null;
   trafficLayer: TrafficLayer = null;
   poiLayer: PoiLayer = null;
+  locationGraphic: LocationGraphic = null;
   debugStopRefreshTiles: boolean = false;
   private readonly REFRESH_INTERVAL: number = 150; //Globe自动刷新时间间隔，以毫秒为单位
   private lastRefreshTimestamp: number = -1;
@@ -82,6 +84,8 @@ export default class Globe {
     this.scene.add(atmosphere);
     this.poiLayer = PoiLayer.getInstance();
     this.scene.add(this.poiLayer);
+    this.locationGraphic = LocationGraphic.getInstance();
+    this.scene.add(this.locationGraphic);
 
     this.renderer.setIfAutoRefresh(true);
     this.eventHandler = new EventHandler(canvas);
@@ -123,6 +127,7 @@ export default class Globe {
   private updateUserLocation(lon:number, lat:number, accuracy:number = Infinity) {
     // this.poiLayer.clear();
     // this.poiLayer.addPoi(lon, lat, "", "", "", "");
+    this.locationGraphic.setLonLat(lon, lat);
     this.eventHandler.moveLonLatToCanvas(lon, lat, this.canvas.width / 2, this.canvas.height / 2);
     var level: number = 8;
     if (accuracy <= 100) {
