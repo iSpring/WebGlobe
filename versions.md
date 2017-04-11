@@ -184,4 +184,4 @@
 
  - 0.4.14
    - versions.txt -> versions.md
-   - 基本完成webapp/routes/nearby/Result页面UI
+   - 基本完成附近搜索功能

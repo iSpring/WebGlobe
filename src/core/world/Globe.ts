@@ -112,14 +112,9 @@ export default class Globe {
     Locator.getLocation();
     // LocationService.watchPosition();*/
 
-    console.time("location");
-    Service.location().then((response:any) => {
-      console.timeEnd("location");
-      console.log(`定位：`, response);
-      if(response.detail){
-        const lon = parseFloat(response.detail.pointx);
-        const lat = parseFloat(response.detail.pointy);
-        this.updateUserLocation(lon, lat);
+    Service.location().then((location: any) => {
+      if(location){
+        this.updateUserLocation(location.lon, location.lat);
       }
     });
   }

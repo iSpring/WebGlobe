@@ -160,7 +160,7 @@ export default class Tile extends MeshGraphic {
   getExtent(){
     var tileInfo = this.tileInfo;
     var tileGrid = new TileGrid(tileInfo.level, tileInfo.row, tileInfo.column);
-    return new Extent(this.tileInfo.minLon, this.tileInfo.minLat, this.tileInfo.maxLon, this.tileInfo.maxLat, tileGrid);
+    return new Extent(this.tileInfo.minLon, this.tileInfo.minLat, this.tileInfo.maxLon, this.tileInfo.maxLat);
   }
 
   shouldDraw(camera: Camera){

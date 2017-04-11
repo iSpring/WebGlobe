@@ -29,10 +29,13 @@ var buildFolder = "buildOutput";
 
 var PRODUCTION = process.env.NODE_ENV === 'production';
 
+var es6Promise = "./node_modules/es6-promise/dist/es6-promise.auto.min.js";
+
 module.exports = {
     entry: {
-        core: path.resolve(__dirname, "./src/core/index.ts"),
-        webapp: path.resolve(__dirname, "./src/webapp/index.jsx")
+        core: ["./src/core/index.ts", es6Promise],
+        webapp: ["./src/webapp/index.jsx", es6Promise]
+        // polyfill: path.resolve(__dirname, )
     },
 
     output: {

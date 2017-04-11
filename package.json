@@ -60,6 +60,7 @@
     "webpack-md5-hash": "0.0.5"
   },
   "dependencies": {
+    "babel-polyfill": "^6.23.0",
     "es6-promise": "^4.0.5",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",

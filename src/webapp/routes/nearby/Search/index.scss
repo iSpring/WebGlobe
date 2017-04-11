@@ -1,11 +1,17 @@
 ﻿$item-line-height: 6vh;
 
 .root{
+    position: relative;
     height: 100%;
 }
 
 .cards{
-    height: 100%;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 40px;
+    bottom: 0;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;

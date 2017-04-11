@@ -1,12 +1,10 @@
-import TileGrid from './TileGrid';
-
 export default class Extent {
-    constructor(private minLon: number, private minLat: number, private maxLon: number, private maxLat: number, private tileGrid?: TileGrid) {
+    constructor(private minLon: number, private minLat: number, private maxLon: number, private maxLat: number) {
 
     }
 
     clone() {
-        return new Extent(this.minLon, this.minLat, this.maxLon, this.maxLat, this.tileGrid);
+        return new Extent(this.minLon, this.minLat, this.maxLon, this.maxLat);
     }
 
     getMinLon() {
@@ -23,10 +21,6 @@ export default class Extent {
 
     getMaxLat() {
         return this.maxLat;
-    }
-
-    getTileGrid() {
-        return this.tileGrid;
     }
 
     toJson() {

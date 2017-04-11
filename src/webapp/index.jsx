@@ -9,6 +9,8 @@ import IndexNav from './routes/index/Nav';
 import NearbySearch from './routes/nearby/Search';
 import NearbyResult from './routes/nearby/Result';
 
+import NotFound from './routes/404';
+
 import './common.scss';
 import './fonts/font-awesome.scss';
 
@@ -28,5 +30,6 @@ ReactDOM.render((
                 <Route path="result" component={NearbyResult}></Route>
             </Route>
         </Route>
+        <Route path="*" component={NotFound} />
     </Router>
 ), rootDiv);

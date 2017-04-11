@@ -103,43 +103,6 @@ export default class Utils {
         return simplifyArray;
     }
 
-    static jsonp(url: string, callback: (response: any) => void, callbackParameterName: string = "cb"): () => void {
-        var callbackName = `webglobe_callback_` + Math.random().toString().substring(2);
-        if (url.indexOf('?') < 0) {
-            url += '?';
-        } else {
-            url += '&';
-        }
-        url += `${callbackParameterName}=window.${callbackName}`;
-        var scriptElement = document.createElement("script");
-        scriptElement.setAttribute("src", url);
-        scriptElement.setAttribute("async", "true");
-        scriptElement.setAttribute("defer", "true");
-        document.body.appendChild(scriptElement);
-        var canceled = false;
-
-        function clear(){
-            delete (<any>window)[callbackName];
-            scriptElement.src = "";
-            if (scriptElement.parentNode) {
-                scriptElement.parentNode.removeChild(scriptElement);
-            }
-            scriptElement = null;
-        }
-
-        (<any>window)[callbackName] = function (response: any) {
-            if (!canceled) {
-                callback(response);
-            }
-            clear();
-        }
-        
-        return function () {
-            canceled = true;
-            clear();
-        };
-    }
-
     static isMobile(): boolean {
         return !!window.navigator.userAgent.match(/Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone|IEMobile|Opera Mini/i);
     }
