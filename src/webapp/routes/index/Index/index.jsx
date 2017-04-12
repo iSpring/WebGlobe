@@ -1,9 +1,9 @@
 ﻿import React, {Component} from 'react';
 import {Link} from 'react-router';
 import classNames from 'classnames';
-import Search from '../../../components/Search';
 import styles from './index.scss';
-import fontStyles from '../../../fonts/font-awesome.scss';
+import fontStyles from 'webapp/fonts/font-awesome.scss';
+import Search from 'webapp/components/Search';
 
 export default class App extends Component{
 

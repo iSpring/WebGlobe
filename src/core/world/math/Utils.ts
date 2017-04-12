@@ -450,12 +450,37 @@ export default class MathUtils {
         return radian * ONE_RADIAN_EQUAL_DEGREE;
     }
 
+    // static webMercatorDistanceBetweenLonlats(lon1: number, lat1: number, lon2: number, lat2: number){
+    //     var xy1 = this.degreeGeographicToWebMercator(lon1, lat1);
+    //     var xy2 = this.degreeGeographicToWebMercator(lon2, lat2);
+    //     var deltaX = xy1[0] - xy2[0];
+    //     var deltaY = xy1[1] - xy2[1];
+    //     var distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+    //     return distance;
+    // }
+
+    static getRealArcDistanceBetweenLonLats(lon1: number, lat1: number, lon2: number, lat2: number){
+        //http://www.movable-type.co.uk/scripts/latlong.html
+        var φ1 = this.degreeToRadian(lat1);
+        var φ2 = this.degreeToRadian(lat2);
+        var Δφ = φ2 - φ1;
+        var Δλ = this.degreeToRadian(lon2 - lon1);
+        var a = Math.sin(Δφ / 2);
+        var b = Math.sin(Δλ / 2);
+
+        var c = a * a + Math.cos(φ1) * Math.cos(φ2) * b * b;
+        var d = 2 * Math.atan2(Math.sqrt(c), Math.sqrt(1 - c));
+
+        var distance = Kernel.REAL_EARTH_RADIUS * d;
+        return distance;
+    }
+
     /**
      * 将投影坐标x转换为以弧度表示的经度
      * @param x 投影坐标x
      * @return {Number} 返回的经度信息以弧度表示
      */
-    static webMercatorXToRadianLog(x: number){
+    static webMercatorXToRadianLon(x: number){
         return x / Kernel.EARTH_RADIUS;
     }
 
@@ -464,8 +489,8 @@ export default class MathUtils {
      * @param x 投影坐标x
      * @return {*} 返回的经度信息以角度表示
      */
-    static webMercatorXToDegreeLog(x: number): number{
-        var radianLog = this.webMercatorXToRadianLog(x);
+    static webMercatorXToDegreeLon(x: number): number{
+        var radianLog = this.webMercatorXToRadianLon(x);
         return this.radianToDegree(radianLog);
     }
 
@@ -502,7 +527,7 @@ export default class MathUtils {
      * @return {Array} 返回的经纬度信息以弧度表示
      */
     static webMercatorToRadianGeographic(x: number, y: number): number[]{
-        var radianLog = this.webMercatorXToRadianLog(x);
+        var radianLog = this.webMercatorXToRadianLon(x);
         var radianLat = this.webMercatorYToRadianLat(y);
         return [radianLog,radianLat];
     }
@@ -514,7 +539,7 @@ export default class MathUtils {
      * @return {Array} 返回的经纬度信息以角度表示
      */
     static webMercatorToDegreeGeographic(x: number, y: number): number[]{
-        var degreeLog = this.webMercatorXToDegreeLog(x);
+        var degreeLog = this.webMercatorXToDegreeLon(x);
         var degreeLat = this.webMercatorYToDegreeLat(y);
         return [degreeLog,degreeLat];
     }
@@ -524,7 +549,7 @@ export default class MathUtils {
      * @param radianLog 以弧度表示的经度
      * @return {*} 投影坐标x
      */
-    static radianLogToWebMercatorX(radianLog: number): number{
+    static radianLonToWebMercatorX(radianLog: number): number{
         if(!(Utils.isNumber(radianLog) && radianLog <= (Math.PI + 0.001) && radianLog >= -(Math.PI + 0.001))){
             throw "invalid radianLog";
         }
@@ -536,12 +561,12 @@ export default class MathUtils {
      * @param degreeLog 以角度表示的经度
      * @return {*} 投影坐标x
      */
-    static degreeLogToWebMercatorX(degreeLog: number): number{
+    static degreeLonToWebMercatorX(degreeLog: number): number{
         if(!(Utils.isNumber(degreeLog) && degreeLog <= (180 + 0.001) && degreeLog >= -(180 + 0.001))){
             throw "invalid degreeLog";
         }
         var radianLog = this.degreeToRadian(degreeLog);
-        return this.radianLogToWebMercatorX(radianLog);
+        return this.radianLonToWebMercatorX(radianLog);
     }
 
     /**
@@ -580,7 +605,7 @@ export default class MathUtils {
      * @return {Array}  投影坐标x、y
      */
     static radianGeographicToWebMercator(radianLog: number, radianLat: number): number[]{
-        var x = this.radianLogToWebMercatorX(radianLog);
+        var x = this.radianLonToWebMercatorX(radianLog);
         var y = this.radianLatToWebMercatorY(radianLat);
         return [x, y];
     }
@@ -592,7 +617,7 @@ export default class MathUtils {
      * @return {Array}
      */
     static degreeGeographicToWebMercator(degreeLog: number, degreeLat: number): number[]{
-        var x = this.degreeLogToWebMercatorX(degreeLog);
+        var x = this.degreeLonToWebMercatorX(degreeLog);
         var y = this.degreeLatToWebMercatorY(degreeLat);
         return [x, y];
     }

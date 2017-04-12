@@ -1,18 +1,75 @@
-﻿.pois{
-    .poi{
-        .index{
+﻿$index-size: 16px;
+$info-left: 40px;
+$distance-width: 60px;
+$index-left: ($info-left - $index-size) / 2;
+$main-color: gray;
 
+.pois{
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 85px;
+    bottom: 30px;
+
+    .poi{
+        position: relative;
+        height: 10%;
+        box-sizing: border-box;
+
+        > *{
+            position: absolute;
+        }
+
+        .index{
+            left: $index-left;
+            top: 1.3vh;
+            width: $index-size;
+            height: $index-size;
+            border-radius: 50%;
+            background: red;
+            color: white;
+            text-align: center;
+            line-height: 16px;
+            font-size: 12px;
+        }
+        .info, .distance{
+            top: 0;
+            height: 100%;
+            box-sizing: border-box;
+            border-bottom: 1px solid #d3d3d3;
+            > *{
+                margin-top: 1vh;
+            }
         }
         .info{
-            .name{
+            left: $info-left;
+            right: $distance-width;
 
+            .name{
+                font-size: 15px;
+                color: #333;
             }
             .address{
-
+                font-size: 12px;
+                color: $main-color;
             }
         }
         .distance{
-            
+            right: 0;
+            width: $distance-width;
+            text-align: center;
+            box-sizing: border-box;
+            padding-top: 3px;
+
+            i{
+                color: #0079ff;
+            }
+
+            div{
+                color: $main-color;
+                font-size: 12px;
+                text-align: center;
+            }
         }
     }
 }

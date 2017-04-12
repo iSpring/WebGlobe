@@ -1,8 +1,8 @@
 ﻿import React, {Component} from 'react';
 import classNames from 'classnames';
-import Search from '../../../components/Search';
 import styles from './index.scss';
-import fontStyles from '../../../fonts/font-awesome.scss';
+import fontStyles from 'webapp/fonts/font-awesome.scss';
+import Search from 'webapp/components/Search';
 
 export default class Nearby extends Component{
 
@@ -13,15 +13,7 @@ export default class Nearby extends Component{
     constructor(props){
         super(props);
         this.state = {};
-    }
-
-    onItemClick(keyword){
-        const path = `/nearby/result?keyword=${keyword}`;
-        this.context.router.push(path);
-    }
-
-    render(){
-        const structure = [
+        this.structure = [
             [
                 [{
                     type: "big",
@@ -98,12 +90,20 @@ export default class Nearby extends Component{
                 ]
             ]
         ];
+    }
+
+    onItemClick(keyword){
+        const path = `/nearby/result?keyword=${keyword}`;
+        this.context.router.push(path);
+    }
+
+    render(){
         return (
             <div className={styles.root}>
                 <Search placeholder="搜索附近地点" />
                 <div className={styles.cards}>
                     {
-                        structure.map((card, index) => {
+                        this.structure.map((card, index) => {
                             return (
                                 <div className={styles.card} key={`card-${index}`}>
                                     {

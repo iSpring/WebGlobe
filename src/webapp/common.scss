@@ -12,6 +12,19 @@ input[type=text]::-ms-clear{
     display: none;
 }
 
-.hidden{
-    display: none !important;
+:global{
+    *[data-reactroot]{
+        position: relative;
+        height: 100%;
+    }
+
+    .ellipsis{
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .hidden{
+        display: none !important;
+    }
 }

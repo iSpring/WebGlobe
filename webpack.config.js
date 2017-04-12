@@ -46,7 +46,12 @@ module.exports = {
     },
 
     resolve: {
-        extensions: ["", ".webpack.js", ".web.js", ".ts", ".tsx", ".js", ".jsx", ".scss", ".png"]
+        extensions: ["", ".webpack.js", ".web.js", ".ts", ".tsx", ".js", ".jsx", ".scss", ".png"],
+        alias: {
+            core: path.resolve(__dirname, "./src/core"),
+            world: path.resolve(__dirname, "./src/core/world"),
+            webapp: path.resolve(__dirname, "./src/webapp")
+        }
     },
 
     module: {
