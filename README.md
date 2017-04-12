@@ -33,7 +33,7 @@ Demo: https://ispring.github.io/WebGlobe/index.html
 ## Features
  1. 没有使用第三方框架，无需插件，所有支持WebGL的浏览器均可使用。
 
- 2. 支持Google、高德、微软Bing、腾讯、360、OpenStreetMap等底图服务。
+ 2. 支持Google、高德、微软Bing、腾讯、360、OpenStreetMap等地图服务。
 
  3. 支持影像图、行政图以及实施交通图。
 
