@@ -97,10 +97,14 @@ export default class Nearby extends Component{
         this.context.router.push(path);
     }
 
+    onCancel(){
+        this.props.router.goBack();
+    }
+
     render(){
         return (
             <div className={styles.root}>
-                <Search placeholder="搜索附近地点" />
+                <Search placeholder="搜索附近地点" showCancel={true} onCancel={()=>{this.onCancel()}} />
                 <div className={styles.cards}>
                     {
                         this.structure.map((card, index) => {
