@@ -10,7 +10,7 @@ var webpackMd5HashPlugin = new WebpackMd5Hash();
 
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var coreHtmlWebpackPlugin = new HtmlWebpackPlugin({
-    filename: './core.html',
+    filename: './index.html',
     template: '!!ejs!./src/core/template.html',
     hash: false,
     inject: 'body',
@@ -35,7 +35,6 @@ module.exports = {
     entry: {
         core: ["./src/core/index.ts", es6Promise],
         webapp: ["./src/webapp/index.jsx", es6Promise]
-        // polyfill: path.resolve(__dirname, )
     },
 
     output: {
