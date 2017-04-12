@@ -1,0 +1,76 @@
+﻿$item-line-height: 6vh;
+
+.root{
+    position: relative;
+    height: 100%;
+}
+
+.cards{
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 40px;
+    bottom: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    text-align: center;
+
+    .card{
+        flex: 1 1 auto;
+
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        margin: 8px 15px;
+
+        .column{
+            flex: 1 1 33.333333%;
+
+            display: flex;
+            flex-flow: column nowrap;
+
+            .big-item, .small-item{
+                flex: 1 1 auto;
+                font-size: 12px;
+                border-radius: 2px;
+                margin: 1px;
+                line-height: $item-line-height;
+            }
+
+            .big-item{
+                color: white;
+                &.food{
+                    background: #f73838;
+                }
+                &.hotel{
+                    background: #f3a61f;
+                }
+                &.recreation{
+                    background: #61b51d;
+                }
+                &.traffic{
+                    background: #0079ff;
+                }
+                &.life{
+                    background: #9584dd;
+                }
+
+                .icon{
+                    font-size: 24px;
+                    margin: 15px;
+                }
+
+                .label{
+                    line-height: $item-line-height * 2 / 3;
+                }
+            }
+
+            .small-item{
+                background: #ebebeb;
+                color: #333;
+            }
+        }
+    }
+}

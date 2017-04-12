@@ -1,0 +1,98 @@
+﻿.root{
+    padding: 0 30px;
+}
+
+.title{
+    font-size: 30px;
+    text-align: center;
+    padding: 30px 0;
+    color: gray;
+}
+
+.search{
+    padding: 8px 0;
+}
+
+.link1-container{
+    padding: 10px 0;
+}
+
+.link1,.link2{
+    box-sizing: border-box;
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+}
+
+.link1{
+    width: 33.33333%;
+    line-height: 28px;
+    font-size: 15px;
+    color: gray;
+    &:nth-child(2){
+        &:after{
+            border-left: 1px solid rgba(128,128,128,0.3);
+            border-right: 1px solid rgba(128,128,128,0.3);
+        }
+    }
+
+    span{
+        margin-left: 5px;
+    }
+}
+
+.link2-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    border-top: 1px solid rgba(128,128,128,0.3);
+    padding-top: 20px;
+}
+
+.link2{
+    div{
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background-color: #f3a61f;
+        margin: 0 auto;
+        color: white;
+        font-size: 24px;
+        & *{
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        &:after{
+            display: inline-block;
+            width: 0;
+            height: 100%;
+            content: "";
+            vertical-align: middle;
+        }
+    }
+
+    span{
+        font-size: 12px;
+        color: gray;
+    }
+
+    .food{
+        background: #f73838;
+    }
+
+    .hotel{
+        background: #f3a61f;
+    }
+
+    .traffic{
+        background: #61b51d;
+    }
+
+    .subway{
+        background: #0079ff;
+    }
+}
+
+.active{}
