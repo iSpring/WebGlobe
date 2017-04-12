@@ -12,7 +12,8 @@ export default class Search extends Component {
         onMap: PropTypes.func,
         onList: PropTypes.func,
         onCancel: PropTypes.func,
-        onFocus: PropTypes.func
+        onFocus: PropTypes.func,
+        onSearch: PropTypes.func
     };
 
     static defaultProps = {
@@ -53,6 +54,14 @@ export default class Search extends Component {
         }
     }
 
+    onKeyPress(e){
+        if(e.key === "Enter"){
+            if(this.props.onSearch){
+                this.props.onSearch(this.keywordInput.value);
+            }
+        }
+    }
+
     render() {
         const a = classNames(styles["search-section"], this.props.className, {
             [styles["hide-left-action"]]: !this.props.showMapList,
@@ -65,7 +74,7 @@ export default class Search extends Component {
                     this.props.showMapList ? <div className={styles["left-action"]} onClick={()=>this.onLeftAction()}>{this.state.showMap ? "地图" : "列表"}</div> : false
                 }
                 <div className={styles["input-container"]}>
-                    <input className={styles.keyword} placeholder={this.props.placeholder} onFocus={()=>this.onFocus()} />
+                    <input className={styles.keyword} placeholder={this.props.placeholder} onFocus={()=>this.onFocus()} onKeyPress={(e)=>{this.onKeyPress(e)}} ref={(input)=>{this.keywordInput=input;}} />
                     {
                         this.props.showVoice && <i className="fa fa-microphone" aria-hidden="true"></i>
                     }

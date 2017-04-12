@@ -92,7 +92,7 @@ export default class Nearby extends Component{
         ];
     }
 
-    onItemClick(keyword){
+    onSearch(keyword){
         const path = `/nearby/result?keyword=${keyword}`;
         this.context.router.push(path);
     }
@@ -104,7 +104,7 @@ export default class Nearby extends Component{
     render(){
         return (
             <div className={styles.root}>
-                <Search placeholder="搜索附近地点" showCancel={true} onCancel={()=>{this.onCancel()}} />
+                <Search placeholder="搜索附近地点" showCancel={true} onCancel={()=>{this.onCancel()}} onSearch={(keyword)=>{this.onSearch(keyword);}} />
                 <div className={styles.cards}>
                     {
                         this.structure.map((card, index) => {
@@ -118,13 +118,13 @@ export default class Nearby extends Component{
                                                         column.map((item, index) => {
                                                             if(item.type === 'big'){
                                                                 return (
-                                                                    <div className={classNames(styles["big-item"], item.className)} onClick={()=>{this.onItemClick(item.value)}} key={`item-${index}`} style={{height: `${item.height*100}%`}}>
+                                                                    <div className={classNames(styles["big-item"], item.className)} onClick={()=>{this.onSearch(item.value)}} key={`item-${index}`} style={{height: `${item.height*100}%`}}>
                                                                         <i className={classNames(styles.icon, item.fontIcon)}></i>
                                                                         <div className={styles.label}>{item.value}</div>
                                                                     </div>
                                                                 );
                                                             }else{
-                                                                return <div className={styles["small-item"]} onClick={()=>{this.onItemClick(item)}} key={`item-${item}`}>{item}</div>;
+                                                                return <div className={styles["small-item"]} onClick={()=>{this.onSearch(item)}} key={`item-${item}`}>{item}</div>;
                                                             }
                                                         })
                                                     }

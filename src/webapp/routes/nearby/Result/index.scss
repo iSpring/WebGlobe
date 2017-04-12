@@ -1,15 +1,18 @@
-﻿$index-size: 16px;
+﻿@import "../../../css/variables";
+$index-size: 16px;
 $info-left: 40px;
 $distance-width: 60px;
 $index-left: ($info-left - $index-size) / 2;
 $main-color: gray;
+$footer-height: 48px;
+$line: 1px solid #d3d3d3;
 
 .pois{
     position: absolute;
     left: 0;
     right: 0;
     top: 85px;
-    bottom: 30px;
+    bottom: $footer-height;
 
     .poi{
         position: relative;
@@ -36,9 +39,14 @@ $main-color: gray;
             top: 0;
             height: 100%;
             box-sizing: border-box;
-            border-bottom: 1px solid #d3d3d3;
+            border-bottom: $line;
             > *{
                 margin-top: 1vh;
+            }
+        }
+        &:last-child{
+            .info, .distance{
+                border-bottom: 0;
             }
         }
         .info{
@@ -62,7 +70,7 @@ $main-color: gray;
             padding-top: 3px;
 
             i{
-                color: #0079ff;
+                color: $blue-color;
             }
 
             div{
@@ -71,5 +79,49 @@ $main-color: gray;
                 text-align: center;
             }
         }
+    }
+}
+
+.footer{
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: $footer-height;
+    border-top: $line;
+    
+    > *{
+        line-height: $footer-height;
+    }
+
+    .prev-page, .next-page{
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        color: $blue-color;
+        font-size: 14px;
+        i{
+            font-size: 14px;
+        }
+    }
+
+    .prev-page{
+        left: 12px;
+        span{
+            margin-left: 5px;
+        }
+    }
+
+    .next-page{
+        right: 12px;
+        span{
+            margin-right: 5px;
+        }
+    }
+
+    .current-page{
+        text-align: center;
+        color: $main-color;
+        font-size: 12px;
     }
 }

@@ -11,7 +11,7 @@ import NearbyResult from './routes/nearby/Result';
 
 import NotFound from './routes/404';
 
-import './common.scss';
+import './css/common.scss';
 import './fonts/font-awesome.scss';
 
 const rootDiv = document.getElementById("root");

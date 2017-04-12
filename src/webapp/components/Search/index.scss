@@ -1,4 +1,5 @@
-﻿$padding-offset: 15px;
+﻿@import "../../css/variables";
+$padding-offset: 15px;
 
 .search-section{
     display: flex;
@@ -43,7 +44,7 @@
     .left-action,.right-action{
         flex: none;
         padding: 0 $padding-offset;
-        color: #0079ff;
+        color: $blue-color;
         font-size: 16px;
     }
 }
