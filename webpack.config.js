@@ -85,9 +85,10 @@ if (process.argv.indexOf("--ci") >= 0) {
                     console.log(chalk.red("----------------------------------------------------------------"));
                     errors.forEach(function (err) {
                         var msg = chalk.red(`ERROR in ${err.module.userRequest},`);
-                        msg += chalk.blue(`(${err.location.line},${err.location.character}),`);
-                        msg += chalk.red(err.rawMessage);
+                        // msg += chalk.blue(`(${err.location.line},${err.location.character}),`);
+                        msg += chalk.red(err.message);
                         console.log(msg);
+                        // console.log(err);
                     });
                     console.log(chalk.red("----------------------------------------------------------------"));
                     process.exit(1);
