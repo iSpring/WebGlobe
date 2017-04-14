@@ -8,20 +8,20 @@ html, body,:global(#root){
     height: 100%;
 }
 
-// html{
-//     overflow: hidden;
-// }
+html{
+    overflow: hidden;
+}
 
-// body{
-//     position: fixed;
-//     height: 100%;
-//     left: 0;
-//     right: 0;
-//     top: 0;
-//     bottom: 0;
-//     overflow-y: auto;
-//     -webkit-overflow-scrolling: touch; 
-// }
+body{
+    position: fixed;
+    height: 100%;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch; 
+}
 
 input[type=text]::-ms-clear{
     display: none;
