@@ -31,10 +31,10 @@ export default class Mesh extends Object3D {
 			}
 
 			if (!this.vbo) {
-				this.vbo = new VertexBufferObject(Kernel.gl.ARRAY_BUFFER);
+				this.vbo = new VertexBufferObject(WebGLRenderingContext.ARRAY_BUFFER);
 			}
 			this.vbo.bind();
-			this.vbo.bufferData(vboData, Kernel.gl.STATIC_DRAW, true);
+			this.vbo.bufferData(vboData, WebGLRenderingContext.STATIC_DRAW, true);
 			// this.vbo.unbind();
 		}
 		return this.vbo;
@@ -52,10 +52,10 @@ export default class Mesh extends Object3D {
 			}
 
 			if (!this.ibo) {
-				this.ibo = new VertexBufferObject(Kernel.gl.ELEMENT_ARRAY_BUFFER);
+				this.ibo = new VertexBufferObject(WebGLRenderingContext.ELEMENT_ARRAY_BUFFER);
 			}
 			this.ibo.bind();
-			this.ibo.bufferData(iboData, Kernel.gl.STATIC_DRAW, true);
+			this.ibo.bufferData(iboData, WebGLRenderingContext.STATIC_DRAW, true);
 			// this.ibo.unbind();
 		}
 		return this.ibo;
@@ -73,10 +73,10 @@ export default class Mesh extends Object3D {
 			}
 
 			if (!this.nbo) {
-				this.nbo = new VertexBufferObject(Kernel.gl.ARRAY_BUFFER);
+				this.nbo = new VertexBufferObject(WebGLRenderingContext.ARRAY_BUFFER);
 			}
 			this.nbo.bind();
-			this.nbo.bufferData(nboData, Kernel.gl.STATIC_DRAW, true);
+			this.nbo.bufferData(nboData, WebGLRenderingContext.STATIC_DRAW, true);
 			// this.nbo.unbind();
 		}
 		return this.nbo;
@@ -93,10 +93,10 @@ export default class Mesh extends Object3D {
 			}
 
 			if (!this.uvbo) {
-				this.uvbo = new VertexBufferObject(Kernel.gl.ARRAY_BUFFER);
+				this.uvbo = new VertexBufferObject(WebGLRenderingContext.ARRAY_BUFFER);
 			}
 			this.uvbo.bind();
-			this.uvbo.bufferData(uvboData, Kernel.gl.STATIC_DRAW, true);
+			this.uvbo.bufferData(uvboData, WebGLRenderingContext.STATIC_DRAW, true);
 			// this.uvbo.unbind();
 		}
 		return this.uvbo;
@@ -114,10 +114,10 @@ export default class Mesh extends Object3D {
 			}
 
 			if (!this.cbo) {
-				this.cbo = new VertexBufferObject(Kernel.gl.ARRAY_BUFFER);
+				this.cbo = new VertexBufferObject(WebGLRenderingContext.ARRAY_BUFFER);
 			}
 			this.cbo.bind();
-			this.cbo.bufferData(cboData, Kernel.gl.STATIC_DRAW, true);
+			this.cbo.bufferData(cboData, WebGLRenderingContext.STATIC_DRAW, true);
 			// this.cbo.unbind();
 		}
 		return this.cbo;

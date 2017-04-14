@@ -1,13 +1,14 @@
 import Camera from '../Camera';
+import Globe from '../Globe';
 import Utils from '../Utils';
 import TileGrid from '../TileGrid';
-import Kernel from '../Kernel';
 import Tile from '../graphics/Tile';
 import GraphicGroup from '../GraphicGroup';
 import SubTiledLayer from './SubTiledLayer';
 
 abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
-  readonly imageRequestOptimizeDeltaLevel = 2;
+  private readonly imageRequestOptimizeDeltaLevel = 2;
+  public globe: Globe = null;
 
   constructor(protected style: string = "") {
     super();
@@ -35,10 +36,17 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
     }
   }
 
+  destroy(){
+    this.globe = null;
+    super.destroy();
+  }
+
   refresh() {
-    var globe = Kernel.globe;
-    var camera = globe.camera;
-    var level = globe.getLevel();
+    if(!this.globe){
+      return;
+    }
+    var camera = this.globe.camera;
+    var level = this.globe.getLevel();
     var options = {
       threshold: 1
     };
@@ -71,7 +79,10 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
 
   //根据传入的level更新SubTiledLayer的数量
   updateSubLayerCount() {
-    var level: number = Kernel.globe.getLevel();
+    if(!this.globe){
+      return;
+    }
+    var level: number = this.globe.getLevel();
     var subLayerCount = this.children.length;
     var deltaLevel = level + 1 - subLayerCount;
     var i: number, subLayer: SubTiledLayer;
@@ -114,8 +125,10 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
   }
 
   updateTileVisibility() {
-    var globe = Kernel.globe;
-    var level = globe.getLevel();
+    if(!this.globe){
+      return;
+    }
+    var level = this.globe.getLevel();
 
     this.children.forEach((subTiledLayer) => {
       subTiledLayer.showAllTiles();
@@ -123,7 +136,7 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
 
     var ancesorLevel = level - this.imageRequestOptimizeDeltaLevel - 1;
     if(ancesorLevel >= 1){
-      var camera = Kernel.globe.camera;
+      var camera = this.globe.camera;
       var tileGrids = camera.getTileGridsOfBoundary(ancesorLevel, false);
       if(tileGrids.length === 8){
         tileGrids = Utils.filterRepeatArray(tileGrids);
@@ -142,12 +155,16 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
   }
 
   onDraw(camera: Camera) {
+    var gl = this.globe && this.globe.gl;
+    if(!gl){
+      return;
+    }
     var program = Tile.findProgram();
     if (!program) {
       return;
     }
     program.use();
-    var gl = Kernel.gl;
+    
 
     //设置uniform变量的值
     //uPMVMatrix

@@ -17,6 +17,7 @@ import LocationGraphic from './graphics/LocationGraphic';
 import PoiLayer from './layers/PoiLayer';
 import Extent from './Extent';
 import Service from './Service';
+import {WebGLRenderingContextExtension} from './Definitions.d';
 
 const initLevel:number = Utils.isMobile() ? 11 : 3;
 
@@ -48,10 +49,9 @@ export default class Globe {
   private realRefreshCount: number = 0;
   // private beforeRenderCallbacks: RenderCallback[] = [];
   private afterRenderCallbacks: RenderCallback[] = [];
+  public gl: WebGLRenderingContextExtension = null;
 
-  constructor(private canvas: HTMLCanvasElement, options?: GlobeOptions) {
-    Kernel.globe = this;
-    Kernel.canvas = canvas;
+  constructor(public canvas: HTMLCanvasElement, options?: GlobeOptions) {
     if(!options){
       options = new GlobeOptions();
     }
@@ -62,9 +62,10 @@ export default class Globe {
       options.lonlat = initLonlat;
     }
     this.renderer = new Renderer(canvas, this._onBeforeRender.bind(this), this._onAfterRender.bind(this));
+    this.gl = this.renderer.gl;
     this.scene = new Scene();
     var radio = canvas.width / canvas.height;
-    this.camera = new Camera(30, radio, 1, Kernel.EARTH_RADIUS * 2, options.level, options.lonlat);
+    this.camera = new Camera(canvas, 30, radio, 1, Kernel.EARTH_RADIUS * 2, options.level, options.lonlat);
     this.renderer.setScene(this.scene);
     this.renderer.setCamera(this.camera);
 
@@ -83,12 +84,13 @@ export default class Globe {
     var atmosphere = Atmosphere.getInstance();
     this.scene.add(atmosphere);
     this.poiLayer = PoiLayer.getInstance();
+    this.poiLayer.globe = this;
     this.scene.add(this.poiLayer);
     this.locationGraphic = LocationGraphic.getInstance();
     this.scene.add(this.locationGraphic);
 
     this.renderer.setIfAutoRefresh(true);
-    this.eventHandler = new EventHandler(canvas);
+    this.eventHandler = new EventHandler(this);
 
     /*if(Utils.isMobile() && window.navigator.geolocation){
       window.navigator.geolocation.getCurrentPosition((position: Position) => {
@@ -118,12 +120,17 @@ export default class Globe {
       }
     });
   }
+  
+  public resize(width: number, height: number){
+    this.canvas.width = width;
+    this.canvas.height = height;
+    this.camera.setAspect(this.canvas.width / this.canvas.height);
+    Utils.publish("extent-change");
+  }
 
   private updateUserLocation(lon:number, lat:number, accuracy:number = Infinity) {
-    // this.poiLayer.clear();
-    // this.poiLayer.addPoi(lon, lat, "", "", "", "");
     this.locationGraphic.setLonLat(lon, lat);
-    this.eventHandler.moveLonLatToCanvas(lon, lat, this.canvas.width / 2, this.canvas.height / 2);
+    this.centerTo(lon, lat);
     var level: number = 8;
     if (accuracy <= 100) {
       level = 16;
@@ -145,6 +152,7 @@ export default class Globe {
       }
       this.scene.tiledLayer = null;
     }
+    tiledLayer.globe = this;
     this.tiledLayer = tiledLayer;
     this.scene.add(this.tiledLayer, true);
     this.refresh(true);

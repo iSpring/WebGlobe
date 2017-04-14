@@ -11,12 +11,13 @@ $line: 1px solid #d3d3d3;
     position: absolute;
     left: 0;
     right: 0;
-    top: 85px;
+    top: 45px;
     bottom: $footer-height;
+    overflow-y: auto;
 
     .poi{
         position: relative;
-        height: 10%;
+        height: 64px;
         box-sizing: border-box;
 
         > *{
@@ -25,7 +26,7 @@ $line: 1px solid #d3d3d3;
 
         .index{
             left: $index-left;
-            top: 1.3vh;
+            top: 10px;
             width: $index-size;
             height: $index-size;
             border-radius: 50%;
@@ -41,7 +42,7 @@ $line: 1px solid #d3d3d3;
             box-sizing: border-box;
             border-bottom: $line;
             > *{
-                margin-top: 1vh;
+                margin-top: 8px;
             }
         }
         &:last-child{

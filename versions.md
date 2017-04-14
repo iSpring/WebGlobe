@@ -185,3 +185,10 @@
  - 0.4.14
    - versions.txt -> versions.md
    - 基本完成附近搜索功能，将搜索结果分页显示
+
+ - 0.4.15
+   - 阻止隐藏地址栏
+   - 处理文本框和软键盘
+   - 对nearby/Search和nearby/Result的UI做了增强
+
+ - 0.4.16 从Kernel中删除了globe和canvas属性

@@ -37,6 +37,10 @@ export interface CancelablePromise extends Promise<any>{
     cancel: () => void;
 }
 
+export interface Destroyable{
+    destroy: () => void;
+}
+
 // declare module "*.png" {
 //   const content: any;
 //   export default content;
