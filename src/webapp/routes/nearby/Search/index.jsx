@@ -19,8 +19,7 @@ export default class Nearby extends Component{
                     type: "big",
                     value: "美食畅饮",
                     className: styles.food,
-                    fontIcon: classNames(fontStyles.fa, fontStyles["fa-cutlery"]),
-                    height: 2 / 3
+                    fontIcon: classNames(fontStyles.fa, fontStyles["fa-cutlery"])
                 }, "甜点饮品"],
                 [
                     "快餐", "火锅", "茶餐厅"
@@ -34,8 +33,7 @@ export default class Nearby extends Component{
                     type: "big",
                     value: "酒店住宿",
                     className: styles.hotel,
-                    fontIcon: classNames(fontStyles.fa, fontStyles["fa-bed"]),
-                    height: 1
+                    fontIcon: classNames(fontStyles.fa, fontStyles["fa-bed"])
                 }],
                 [
                     "快捷酒店", "星级酒店"
@@ -49,8 +47,7 @@ export default class Nearby extends Component{
                     type: "big",
                     value: "娱乐休闲",
                     className: styles.recreation,
-                    fontIcon: classNames(fontStyles.fa, fontStyles["fa-glass"]),
-                    height: 2 / 3,
+                    fontIcon: classNames(fontStyles.fa, fontStyles["fa-glass"])
                 }, "酒吧"],
                 [
                     "电影院", "景点", "KTV"
@@ -64,8 +61,7 @@ export default class Nearby extends Component{
                     type: "big",
                     value: "交通出行",
                     className: styles.traffic,
-                    fontIcon: classNames(fontStyles.fa, fontStyles["fa-bus"]),
-                    height: 1
+                    fontIcon: classNames(fontStyles.fa, fontStyles["fa-bus"])
                 }],
                 [
                     "加油站", "地铁站"
@@ -79,8 +75,7 @@ export default class Nearby extends Component{
                     type: "big",
                     value: "生活服务",
                     className: styles.life,
-                    fontIcon: classNames(fontStyles.fa, fontStyles["fa-shopping-cart"]),
-                    height: 2 / 3
+                    fontIcon: classNames(fontStyles.fa, fontStyles["fa-shopping-cart"])
                 }, "美容美发"],
                 [
                     "ATM", "公厕", "药店"
@@ -118,7 +113,7 @@ export default class Nearby extends Component{
                                                         column.map((item, index) => {
                                                             if(item.type === 'big'){
                                                                 return (
-                                                                    <div className={classNames(styles["big-item"], item.className)} onClick={()=>{this.onSearch(item.value)}} key={`item-${index}`} style={{height: `${item.height*100}%`}}>
+                                                                    <div className={classNames(styles["big-item"], item.className)} onClick={()=>{this.onSearch(item.value)}} key={`item-${index}`}>
                                                                         <i className={classNames(styles.icon, item.fontIcon)}></i>
                                                                         <div className={styles.label}>{item.value}</div>
                                                                     </div>
