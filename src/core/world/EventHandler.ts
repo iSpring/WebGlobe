@@ -2,8 +2,12 @@ import Kernel from './Kernel';
 import Utils from './Utils';
 import MathUtils from './math/Utils';
 import Vector from './math/Vector';
+import Globe from './Globe';
+import {Destroyable} from './Definitions.d';
 
-export default class EventHandler {
+type DomEventListener = () => any;
+
+export default class EventHandler implements Destroyable {
   private down: boolean = false;
   private dragGeo: any = null;
   private previousX: number = -1;
@@ -13,41 +17,45 @@ export default class EventHandler {
   private lastTime: number = -1;
   private startTime: number = -1;
   private endTime: number = -1;
+  private resizeListener: DomEventListener = null;
+  private bodyKeydownListener: DomEventListener = null;
 
-  constructor(private canvas: HTMLCanvasElement) {
+  constructor(private globe: Globe) {
     this.endTime = this.startTime = this.lastTime = this.oldTime = Date.now();
     this._bindEvents();
-    this._initLayout();
+  }
+
+  destroy(){
+    this.globe = null;
+    const eventNames = ["touchstart", "touchend", "touchmove", "mousedown", "mouseup", "mousemove", "dblclick", "mousewheel", "DOMMouseScroll"];
+    eventNames.forEach((eventName) => {
+      this.globe.canvas.removeEventListener(eventName);
+    });
+    if(this.bodyKeydownListener){
+      document.body.removeEventListener("keydown", this.bodyKeydownListener);
+    }
+    this.bodyKeydownListener = null;
   }
 
   private _bindEvents() {
-    window.addEventListener("resize", this._initLayout.bind(this));
     if (Utils.isMobile()) {
-      this.canvas.addEventListener("touchstart", this._onTouchStart.bind(this), false);
-      this.canvas.addEventListener("touchend", this._onTouchEnd.bind(this), false);
-      this.canvas.addEventListener("touchmove", this._onTouchMove.bind(this), false);
+      this.globe.canvas.addEventListener("touchstart", this._onTouchStart.bind(this), false);
+      this.globe.canvas.addEventListener("touchend", this._onTouchEnd.bind(this), false);
+      this.globe.canvas.addEventListener("touchmove", this._onTouchMove.bind(this), false);
     } else {
-      this.canvas.addEventListener("mousedown", this._onMouseDown.bind(this), false);
-      this.canvas.addEventListener("mouseup", this._onMouseUp.bind(this), false);
-      this.canvas.addEventListener("mousemove", this._onMouseMove.bind(this), false);
-      this.canvas.addEventListener("dblclick", this._onDbClick.bind(this), false);
-      this.canvas.addEventListener("mousewheel", this._onMouseWheel.bind(this), false);
-      this.canvas.addEventListener("DOMMouseScroll", this._onMouseWheel.bind(this), false);
-      document.body.addEventListener("keydown", this._onKeyDown.bind(this), false);
+      this.globe.canvas.addEventListener("mousedown", this._onMouseDown.bind(this), false);
+      this.globe.canvas.addEventListener("mouseup", this._onMouseUp.bind(this), false);
+      this.globe.canvas.addEventListener("mousemove", this._onMouseMove.bind(this), false);
+      this.globe.canvas.addEventListener("dblclick", this._onDbClick.bind(this), false);
+      this.globe.canvas.addEventListener("mousewheel", this._onMouseWheel.bind(this), false);
+      this.globe.canvas.addEventListener("DOMMouseScroll", this._onMouseWheel.bind(this), false);
+      this.bodyKeydownListener = this._onKeyDown.bind(this);
+      document.body.addEventListener("keydown", this.bodyKeydownListener, false);
     }
-  }
-
-  private _initLayout() {
-    this.canvas.width = document.body.clientWidth;
-    this.canvas.height = document.body.clientHeight;
-    if (Kernel.globe) {
-      Kernel.globe.camera.setAspect(this.canvas.width / this.canvas.height);
-    }
-    Utils.publish("extent-change");
   }
 
   moveLonLatToCanvas(lon: number, lat: number, canvasX: number, canvasY: number) {
-    var pickResult = Kernel.globe.camera.getPickCartesianCoordInEarthByCanvas(canvasX, canvasY);
+    var pickResult = this.globe.camera.getPickCartesianCoordInEarthByCanvas(canvasX, canvasY);
     if (pickResult.length > 0) {
       var newLonLat = MathUtils.cartesianCoordToGeographic(pickResult[0]);
       var newLon = newLonLat[0];
@@ -66,21 +74,21 @@ export default class EventHandler {
     var v2 = Vector.fromVertice(p2);
     var rotateVector = v1.cross(v2);
     var rotateRadian = -Vector.getRadianOfTwoVectors(v1, v2);
-    Kernel.globe.camera.worldRotateByVector(rotateRadian, rotateVector);
+    this.globe.camera.worldRotateByVector(rotateRadian, rotateVector);
   }
 
   private _handleMouseDownOrTouchStart(offsetX: number, offsetY: number) {
     this.down = true;
     this.previousX = offsetX;
     this.previousY = offsetY;
-    var pickResult = Kernel.globe.camera.getPickCartesianCoordInEarthByCanvas(this.previousX, this.previousY);
+    var pickResult = this.globe.camera.getPickCartesianCoordInEarthByCanvas(this.previousX, this.previousY);
     if (pickResult.length > 0) {
       this.dragGeo = MathUtils.cartesianCoordToGeographic(pickResult[0]);
     }
   }
 
   private _handleMouseMoveOrTouchMove(currentX: number, currentY: number) {
-    var globe = Kernel.globe;
+    var globe = this.globe;
     if (!globe || globe.isAnimating() || !this.down) {
       return;
     }
@@ -96,13 +104,13 @@ export default class EventHandler {
       }
       this.previousX = currentX;
       this.previousY = currentY;
-      this.canvas.style.cursor = "pointer";
+      this.globe.canvas.style.cursor = "pointer";
     } else {
       //mouse out of Earth
       this.previousX = -1;
       this.previousY = -1;
       this.dragGeo = null;
-      this.canvas.style.cursor = "default";
+      this.globe.canvas.style.cursor = "default";
     }
   }
 
@@ -111,14 +119,14 @@ export default class EventHandler {
     this.previousX = -1;
     this.previousY = -1;
     this.dragGeo = null;
-    if (this.canvas) {
-      this.canvas.style.cursor = "default";
+    if (this.globe.canvas) {
+      this.globe.canvas.style.cursor = "default";
     }
     Utils.publish("extent-change");
   }
 
   private _onMouseDown(event: MouseEvent) {
-    var globe = Kernel.globe;
+    var globe = this.globe;
     if (!globe || globe.isAnimating()) {
       return;
     }
@@ -131,7 +139,7 @@ export default class EventHandler {
     if(!this.down){
       return;
     }
-    if(Kernel.globe.isAnimating()){
+    if(this.globe.isAnimating()){
       return;
     }
     var currentX = event.layerX || event.offsetX;
@@ -144,7 +152,7 @@ export default class EventHandler {
   }
 
   private _onDbClick(event: MouseEvent) {
-    var globe = Kernel.globe;
+    var globe = this.globe;
     if (!globe || globe.isAnimating()) {
       return;
     }
@@ -166,7 +174,7 @@ export default class EventHandler {
   }
 
   private _onMouseWheel(event: MouseWheelEvent) {
-    var globe = Kernel.globe;
+    var globe = this.globe;
     if (!globe || globe.isAnimating()) {
       return;
     }
@@ -191,7 +199,7 @@ export default class EventHandler {
   }
 
   private _onKeyDown(event: KeyboardEvent) {
-    var globe = Kernel.globe;
+    var globe = this.globe;
     if (!globe || globe.isAnimating()) {
       return;
     }
@@ -220,7 +228,7 @@ export default class EventHandler {
       var time2 = this.endTime - this.lastTime;
       if (time2 < 300) {
         this.lastTime = this.oldTime;
-        Kernel.globe.zoomIn();
+        this.globe.zoomIn();
       }else {
         this.lastTime = this.endTime;
       }
@@ -259,7 +267,7 @@ export default class EventHandler {
   }
 
   private _onTouchStart(event: TouchEvent) {
-    var globe = Kernel.globe;
+    var globe = this.globe;
     if (!globe || globe.isAnimating()) {
       return;
     }
@@ -293,11 +301,11 @@ export default class EventHandler {
     var twoTouchDistance = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
     var radio = twoTouchDistance / this.twoTouchDistance;
     if(radio >= 1.3){
-      Kernel.globe.animateIn(()=>{
+      this.globe.animateIn(()=>{
         this.twoTouchDistance = twoTouchDistance;
       });
     }else if(radio <= 0.7){
-      Kernel.globe.animateOut(()=>{
+      this.globe.animateOut(()=>{
         this.twoTouchDistance = twoTouchDistance;
       });
     }
@@ -308,7 +316,7 @@ export default class EventHandler {
     if(!this.down){
       return;
     }
-    if(Kernel.globe.isAnimating()){
+    if(this.globe.isAnimating()){
       return;
     }
     var touchCount = event.targetTouches.length;

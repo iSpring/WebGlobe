@@ -330,28 +330,28 @@ export default class MathUtils {
 
     ///////////////////////////////////////////////////////////////////////////////////////////
     //点变换: Canvas->NDC
-    static convertPointFromCanvasToNDC(canvasX: number, canvasY: number): number[]{
+    static convertPointFromCanvasToNDC(canvasWidth: number, canvasHeight: number, canvasX: number, canvasY: number): number[]{
         if(!(Utils.isNumber(canvasX))){
             throw "invalid canvasX";
         }
         if(!(Utils.isNumber(canvasY))){
             throw "invalid canvasY";
         }
-        var ndcX = 2 * canvasX / Kernel.canvas.width - 1;
-        var ndcY = 1 - 2 * canvasY / Kernel.canvas.height;
+        var ndcX = 2 * canvasX / canvasWidth - 1;
+        var ndcY = 1 - 2 * canvasY / canvasHeight;
         return [ndcX, ndcY];
     }
 
     //点变换: NDC->Canvas
-    static convertPointFromNdcToCanvas(ndcX: number, ndcY: number): number[]{
+    static convertPointFromNdcToCanvas(canvasWidth: number, canvasHeight: number, ndcX: number, ndcY: number): number[]{
         if(!(Utils.isNumber(ndcX))){
             throw "invalid ndcX";
         }
         if(!(Utils.isNumber(ndcY))){
             throw "invalid ndcY";
         }
-        var canvasX = (1 + ndcX) * Kernel.canvas.width / 2.0;
-        var canvasY = (1 - ndcY) * Kernel.canvas.height / 2.0;
+        var canvasX = (1 + ndcX) * canvasWidth / 2.0;
+        var canvasY = (1 - ndcY) * canvasHeight / 2.0;
         return [canvasX, canvasY];
     }
 

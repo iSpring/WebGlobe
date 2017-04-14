@@ -5,10 +5,18 @@ import './index.scss';
 // es6Promise.polyfill();
 
 (function () {
-    var canvas = <HTMLCanvasElement>document.getElementById("canvasId");
-    var options = new GlobeOptions();
-    options.satellite = true;
-    var globe = new Globe(canvas, options);
-    (<any>window).globe = globe;
+    var canvas1 = <HTMLCanvasElement>document.getElementById("canvas1");
+    var options1 = new GlobeOptions();
+    options1.satellite = true;
+    var globe1 = new Globe(canvas1, options1);
+    (<any>window).globe = globe1;
     (<any>window).kernel = Kernel;
+
+    function resize(){
+        globe1.resize(window.innerWidth, window.innerHeight);
+    }
+
+    window.addEventListener("resize", resize, false);
+
+    resize();
 })();

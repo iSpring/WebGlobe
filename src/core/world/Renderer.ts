@@ -7,24 +7,33 @@ export default class Renderer {
   scene: Scene = null;
   camera: Camera = null;
   autoRefresh: boolean = false;
+  gl: WebGLRenderingContextExtension = null;
 
   constructor(
     private canvas: HTMLCanvasElement,
     private onBeforeRender?: (renderer: Renderer) => void,
     private onAfterRender?: (renderer: Renderer) => void) {
 
-    var gl = this._getWebGLContext(this.canvas);
+    this.gl = this._getWebGLContext(this.canvas);
 
-    if(gl){
-      Kernel.gl = gl;
-      (<any>window).gl = gl;
-      Kernel.canvas = canvas;
-    }else{
+    Kernel.gl = this.gl;
+
+    // if(gl){
+    //   Kernel.gl = gl;
+    //   (<any>window).gl = gl;
+    //   Kernel.canvas = canvas;
+    // }else{
+    //   console.debug("浏览器不支持WebGL或将WebGL禁用!");
+    //   return;
+    // }
+
+    if(!this.gl){
       console.debug("浏览器不支持WebGL或将WebGL禁用!");
-      return;
     }
 
-    Kernel.gl.clear(Kernel.gl.COLOR_BUFFER_BIT | Kernel.gl.DEPTH_BUFFER_BIT);
+    const gl = this.gl;
+
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.clearColor(0, 0, 0, 1);
 
     gl.enable(gl.DEPTH_TEST);
@@ -58,9 +67,8 @@ export default class Renderer {
   }
 
   render(scene: Scene, camera: Camera) {
-    var gl = Kernel.gl;
-    var canvas = Kernel.canvas;
-    gl.viewport(0, 0, canvas.width, canvas.height);
+    var gl = this.gl;
+    gl.viewport(0, 0, this.canvas.width, this.canvas.height);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.clearColor(0, 0, 0, 1);
     // gl.enable(gl.DEPTH_TEST);

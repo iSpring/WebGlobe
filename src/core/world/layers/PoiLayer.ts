@@ -5,6 +5,7 @@ import MathUtils from '../math/Utils';
 import MultiPointsGraphic from '../graphics/MultiPointsGraphic';
 import MarkerTextureMaterial from '../materials/MarkerTextureMaterial';
 import Service from '../Service';
+import Globe from '../Globe';
 const poiImgUrl = require("../images/red.png");
 
 class Poi {
@@ -21,6 +22,7 @@ class Poi {
 export default class PoiLayer extends MultiPointsGraphic {
   private keyword: string = null;
   private pois: Poi[] = null;
+  public globe: Globe = null;
 
   private constructor(public material: MarkerTextureMaterial) {
     super(material);
@@ -37,6 +39,11 @@ export default class PoiLayer extends MultiPointsGraphic {
     return new PoiLayer(material);
   }
 
+  destroy(){
+    this.globe = null;
+    super.destroy();
+  }
+
   clear() {
     super.clear();
     this.keyword = null;
@@ -51,12 +58,14 @@ export default class PoiLayer extends MultiPointsGraphic {
   }
 
   search(keyword: string) {
+    if(!this.globe){
+      return;
+    }
     this.clear();
     this.keyword = keyword;
-    var globe = Kernel.globe;
-    var level = globe.getLevel();
+    var level = this.globe.getLevel();
     if(level >= 10){
-      var extent = globe.getExtent();
+      var extent = this.globe.getExtent();
       Service.searchByExtent(keyword, level, extent).then((response: any) => {
         console.log(`${keyword} response:`, response);
         var data = response.detail.pois || [];
