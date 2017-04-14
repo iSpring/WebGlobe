@@ -104,7 +104,7 @@ export default class Nearby extends Component{
     render(){
         return (
             <div className={styles.root}>
-                <Search placeholder="搜索附近地点" showCancel={true} onCancel={()=>{this.onCancel()}} onSearch={(keyword)=>{this.onSearch(keyword);}} />
+                <Search placeholder="搜索附近地点" showCancel={true} onCancel={()=>{this.onCancel();}} onSearch={(keyword)=>{this.onSearch(keyword);}} />
                 <div className={styles.cards}>
                     {
                         this.structure.map((card, index) => {

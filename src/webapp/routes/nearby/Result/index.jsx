@@ -92,7 +92,7 @@ export default class Result extends Component {
 
         return (
             <div>
-                <Search placeholder={this.props.location.query.keyword || ""} showMapList={true} showCancel={true} onMap={() => this.onMap()} onList={() => this.onList()} onCancel={() => this.onCancel()} onFocus={() => this.onCancel()} />
+                <Search readOnly={true} placeholder={this.props.location.query.keyword || ""} showMapList={true} showCancel={true} onMap={() => this.onMap()} onList={() => this.onList()} onCancel={() => this.onCancel()} onFocus={() => this.onCancel()} />
                 <div className={styles.pois}>
                     {
                         this.state.pois.map((poi, index) => {

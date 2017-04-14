@@ -188,6 +188,11 @@ export default class Globe {
     }
   }
 
+  centerTo(lon: number, lat: number, level:number = this.getLevel()){
+    this.setLevel(level);
+    this.eventHandler.moveLonLatToCanvas(lon, lat, this.canvas.width / 2, this.canvas.height / 2);
+  }
+
   isAnimating(): boolean {
     return this.camera.isAnimating();
   }
