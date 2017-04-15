@@ -1,5 +1,5 @@
 ﻿import React, {Component} from 'react';
-import Globe from 'webapp/components/Globe';
+import MapComponent from 'webapp/components/Map';
 
 export default class Map extends Component{
     constructor(props){
@@ -10,7 +10,7 @@ export default class Map extends Component{
     render(){
         return (
             <div>
-                <Globe />
+                <MapComponent />
             </div>
         );
     }
