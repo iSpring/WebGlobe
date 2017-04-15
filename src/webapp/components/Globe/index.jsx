@@ -14,7 +14,7 @@ export default class Map extends Component{
     }
 
     render(){
-        return <div></div>;
+        return <div className={styles.globe}></div>;
     }
 
     componentDidMount(){
