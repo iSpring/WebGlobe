@@ -16,7 +16,7 @@ import Atmosphere from './graphics/Atmosphere';
 import LocationGraphic from './graphics/LocationGraphic';
 import PoiLayer from './layers/PoiLayer';
 import Extent from './Extent';
-import Service from './Service';
+import Service,{Location} from './Service';
 import {WebGLRenderingContextExtension} from './Definitions.d';
 
 const initLevel:number = Utils.isMobile() ? 11 : 3;
@@ -107,7 +107,7 @@ export default class Globe {
     this.poiLayer = PoiLayer.getInstance();
     this.poiLayer.globe = this;
     this.scene.add(this.poiLayer);
-    this.locationGraphic = LocationGraphic.getInstance();
+    this.locationGraphic = LocationGraphic.getInstance(this);
     this.scene.add(this.locationGraphic);
 
     this.renderer.setIfAutoRefresh(true);
@@ -135,9 +135,15 @@ export default class Globe {
     Locator.getLocation();
     // LocationService.watchPosition();*/
 
-    Service.location().then((location: any) => {
+    const locationCallback = (location: any) => {
       if(location){
-        this.updateUserLocation(location.lon, location.lat);
+        this.updateUserLocation(location);
+      }
+    };
+
+    Service.getCurrentPosition(false).then(locationCallback).then(() => {
+      if(Utils.isMobile()){
+        Service.getCurrentPosition(true).then(locationCallback);
       }
     });
   }
@@ -149,18 +155,22 @@ export default class Globe {
     Utils.publish("extent-change");
   }
 
-  private updateUserLocation(lon:number, lat:number, accuracy:number = Infinity) {
-    this.locationGraphic.setLonLat(lon, lat);
-    this.centerTo(lon, lat);
+  private updateUserLocation(location: Location) {
+    this.locationGraphic.setLonLat(location.lon, location.lat);
+    this.centerTo(location.lon, location.lat);
     var level: number = 8;
-    if (accuracy <= 100) {
+    if (location.accuracy <= 100) {
       level = 16;
-    } else if (accuracy <= 1000) {
+    } else if (location.accuracy <= 1000) {
       level = 13;
     } else {
       level = 11;
     }
     this.setLevel(level);
+  }
+
+  public searchNearby(keyword: string, radius: number, pageCapacity: number, pageIndex: number){
+    return this.poiLayer.searchNearby(keyword, radius, pageCapacity, pageIndex);
   }
 
   private setTiledLayer(tiledLayer: TiledLayer) {

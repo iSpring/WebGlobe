@@ -3,6 +3,7 @@ import classNames from "classnames";
 import styles from './index.scss';
 import fontStyles from 'webapp/fonts/font-awesome.scss';
 import Search from 'webapp/components/Search';
+import Map,{globe} from 'webapp/components/Map';
 import Service from 'world/Service';
 import MathUtils from 'world/math/Utils';
 
@@ -23,13 +24,14 @@ export default class Result extends Component {
         this.state = {
             total: 0,
             pageIndex: 0,
-            pois: []
+            pois: [],
+            list: true
         };
     }
 
     componentDidMount() {
         this._isMounted = true;
-        Service.location().then((location) => {
+        Service.getCurrentPosition().then((location) => {
             this.location = location;
         }).then(() => {
             this.search(0);
@@ -41,11 +43,15 @@ export default class Result extends Component {
     }
 
     onMap() {
-        console.log("onMap");
+        this.setState({
+            list: false
+        });
     }
 
     onList() {
-        console.log("onList");
+        this.setState({
+            list: true
+        });
     }
 
     onCancel() {
@@ -64,7 +70,7 @@ export default class Result extends Component {
         const distance = this.distance;
         const keyword = this.props.location.query.keyword;
         if (this._isMounted && this.location && keyword) {
-            Service.searchNearby(keyword, this.location.lon, this.location.lat, distance, this.pageCapacity, pageIndex).then((response) => {
+            globe.searchNearby(keyword, distance, this.pageCapacity, pageIndex).then((response) => {
                 if (!this._isMounted) {
                     return;
                 }
@@ -93,48 +99,59 @@ export default class Result extends Component {
         return (
             <div>
                 <Search readOnly={true} placeholder={this.props.location.query.keyword || ""} showMapList={true} showCancel={true} onMap={() => this.onMap()} onList={() => this.onList()} onCancel={() => this.onCancel()} onFocus={() => this.onCancel()} />
-                <div className={styles.pois}>
-                    {
-                        this.state.pois.map((poi, index) => {
-                            var distance = MathUtils.getRealArcDistanceBetweenLonLats(this.location.lon, this.location.lat, poi.pointx, poi.pointy);
-                            distance = Math.floor(distance);
-                            return (
-                                <div className={styles.poi} key={poi.uid}>
-                                    <div className={styles.index}>{index + 1}</div>
-                                    <div className={styles.info}>
-                                        <div className={this.nameClassNames}>{poi.name}</div>
-                                        <div className={this.addressClassNames}>{poi.addr}</div>
-                                    </div>
-                                    <div className={styles.distance}>
-                                        <i className={this.roadIcon}></i>
-                                        <div>{distance}米</div>
-                                    </div>
+                {
+                    this.state.list ? (
+                        <div className={styles.list}>
+                            <div className={styles.pois}>
+                                {
+                                    this.state.pois.map((poi, index) => {
+                                        var distance = MathUtils.getRealArcDistanceBetweenLonLats(this.location.lon, this.location.lat, poi.pointx, poi.pointy);
+                                        distance = Math.floor(distance);
+                                        return (
+                                            <div className={styles.poi} key={poi.uid}>
+                                                <div className={styles.index}>{index + 1}</div>
+                                                <div className={styles.info}>
+                                                    <div className={this.nameClassNames}>{poi.name}</div>
+                                                    <div className={this.addressClassNames}>{poi.addr}</div>
+                                                </div>
+                                                <div className={styles.distance}>
+                                                    <i className={this.roadIcon}></i>
+                                                    <div>{distance}米</div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })
+                                }
+                            </div>
+                            <div className={styles.footer}>
+                                {
+                                    showPrevPage && (
+                                        <div className={styles["prev-page"]} onClick={() => this.onPrevPage()}>
+                                            <i className={this.leftIcon}></i>
+                                            <span>上一页</span>
+                                        </div>
+                                    )
+                                }
+                                <div className={styles["current-page"]}>
+                                    {pageIndex + 1} / {totalPageCount}
                                 </div>
-                            );
-                        })
-                    }
-                </div>
-                <div className={styles.footer}>
-                    {
-                        showPrevPage && (
-                            <div className={styles["prev-page"]} onClick={() => this.onPrevPage()}>
-                                <i className={this.leftIcon}></i>
-                                <span>上一页</span>
+                                {
+                                    showNextPage && (
+                                        <div className={styles["next-page"]} onClick={() => this.onNextPage()}>
+                                            <span>下一页</span>
+                                            <i className={this.rightIcon}></i>
+                                        </div>
+                                    )
+                                }
+                            </div>
+                        </div>
+                    ) : (
+                            <div className={styles.map}>
+                                <Map />
                             </div>
                         )
-                    }
-                    <div className={styles["current-page"]}>
-                        {pageIndex+1} / {totalPageCount}
-                    </div>
-                    {
-                        showNextPage && (
-                            <div className={styles["next-page"]} onClick={() => this.onNextPage()}>
-                                <span>下一页</span>
-                                <i className={this.rightIcon}></i>
-                            </div>
-                        )
-                    }
-                </div>
+                }
+
             </div>
         );
     }

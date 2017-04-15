@@ -1,6 +1,12 @@
 import Extent from './Extent';
 
-export default class Service {
+export interface Location{
+  lon:number;
+  lat:number;
+  accuracy:number;
+}
+
+class Service {
   static jsonp(url: string, callback: (response: any) => void, callbackParameterName: string = "cb"): () => void {
     var callbackName = `webglobe_callback_` + Math.random().toString().substring(2);
     if (url.indexOf('?') < 0) {
@@ -38,9 +44,11 @@ export default class Service {
     };
   }
 
-  static location() {
+  private static location: Location = null;
+
+  private static getCityLocation(){
     const promise = new Promise(function (resolve) {
-      const url = "http://apis.map.qq.com/jsapi?qt=gc&output=jsonp";
+      const url = "//apis.map.qq.com/jsapi?qt=gc&output=jsonp";
       console.time("location");
       Service.jsonp(url, function (response: any) {
         console.timeEnd("location");
@@ -48,13 +56,52 @@ export default class Service {
         if(response.detail){
           let info = {
             lon: parseFloat(response.detail.pointx),
-            lat: parseFloat(response.detail.pointy)
+            lat: parseFloat(response.detail.pointy),
+            accuracy: Infinity
           };
           resolve(info);
         }else{
           resolve(null);
         }
       });
+    });
+    return promise;
+  }
+
+  static getCurrentPosition(highAccuracy: boolean = false) {
+    const promise = new Promise((resolve) => {
+      if(highAccuracy){
+        navigator.geolocation.getCurrentPosition((response: Position) => {
+          console.log("getCurrentPosition:", response);
+          const location = {} as Location;
+          location.lon = response.coords.longitude;
+          location.lat = response.coords.latitude;
+          location.accuracy = response.coords.accuracy;
+          this.location = location;
+          resolve(this.location);
+        }, (err) => {
+          console.error(err);
+          if(this.location){
+            resolve(this.location);
+          }else{
+            this.getCityLocation().then((location: Location) => {
+              this.location = location;
+              resolve(this.location);
+            });
+          }
+        }, {
+          enableHighAccuracy: true
+        });
+      }else{
+        if(this.location){
+          resolve(this.location);
+        }else{
+          this.getCityLocation().then((location: Location) => {
+            this.location = location;
+            resolve(this.location);
+          });
+        }
+      }
     });
     return promise;
   }
@@ -85,3 +132,17 @@ export default class Service {
 
   // }
 };
+
+
+
+// navigator.geolocation.watchPosition(function(response: any){
+//   console.log("watchPosition:", response);
+//   // var str = JSON.stringify(response);
+//   // alert(`watchPosition:${str}`);
+// }, function(err){
+//   console.error(err);
+// }, {
+//   enableHighAccuracy: true
+// });
+
+export default Service;

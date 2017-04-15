@@ -8,14 +8,12 @@ import Globe from '../Globe';
 const locationImageUrl = require("../images/location.png");
 
 export default class LocationGraphic extends MultiPointsGraphic {
-//   private constructor(public material: MarkerTextureMaterial) {
-//     super(material);
-//     // Utils.subscribe("location", () => {
-//     //   console.log(location);
-//     // });
-//   }
-
-  globe: Globe = null;
+  private constructor(material: MarkerTextureMaterial, private globe: Globe) {
+    super(material);
+    // Utils.subscribe("location", () => {
+    //   console.log(location);
+    // });
+  }
 
   setLonLat(lon: number, lat: number){
       this.setLonlats([[lon, lat]]);
@@ -30,8 +28,8 @@ export default class LocationGraphic extends MultiPointsGraphic {
     return this.globe && this.globe.camera.isEarthFullOverlapScreen() && super.isReady();
   }
 
-  static getInstance(): LocationGraphic {
+  static getInstance(globe: Globe): LocationGraphic {
     var material = new MarkerTextureMaterial(locationImageUrl, 24);
-    return new LocationGraphic(material);
+    return new LocationGraphic(material, globe);
   }
 };
