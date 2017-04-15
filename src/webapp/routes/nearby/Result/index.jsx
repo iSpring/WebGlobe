@@ -146,7 +146,9 @@ export default class Result extends Component {
                             </div>
                         </div>
                     ) : (
-                            <Map />
+                            <div className={styles.map}>
+                                <Map />
+                            </div>
                         )
                 }
 
