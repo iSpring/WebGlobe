@@ -5,10 +5,10 @@ import './index.scss';
 // es6Promise.polyfill();
 
 (function () {
-    var canvas1 = <HTMLCanvasElement>document.getElementById("canvas1");
     var options1 = new GlobeOptions();
     options1.satellite = true;
-    var globe1 = new Globe(canvas1, options1);
+    var globe1 = Globe.getInstance(options1);
+    globe1.placeAt(document.body);
     (<any>window).globe = globe1;
     (<any>window).kernel = Kernel;
 
