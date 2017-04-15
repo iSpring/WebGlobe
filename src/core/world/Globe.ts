@@ -50,8 +50,29 @@ export default class Globe {
   // private beforeRenderCallbacks: RenderCallback[] = [];
   private afterRenderCallbacks: RenderCallback[] = [];
   public gl: WebGLRenderingContextExtension = null;
+  private static globe: Globe = null;
 
-  constructor(public canvas: HTMLCanvasElement, options?: GlobeOptions) {
+  static getInstance(options?: GlobeOptions){
+    if(!this.globe){
+      const canvas = document.createElement("canvas");
+      canvas.width = document.documentElement.clientWidth;
+      canvas.height = document.documentElement.clientHeight;
+      this.globe = new Globe(canvas, options);
+    }
+    return this.globe;
+  }
+
+  placeAt(container: HTMLElement){
+    if(this.canvas.parentNode){
+      if(this.canvas.parentNode !== container){
+        container.appendChild(this.canvas);
+      }
+    }else{
+      container.appendChild(this.canvas);
+    }
+  }
+
+  private constructor(public canvas: HTMLCanvasElement, options?: GlobeOptions) {
     if(!options){
       options = new GlobeOptions();
     }

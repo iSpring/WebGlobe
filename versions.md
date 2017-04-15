@@ -192,3 +192,7 @@
    - 对nearby/Search和nearby/Result的UI做了增强
 
  - 0.4.16 从Kernel中删除了globe和canvas属性
+
+ - 0.4.17
+   - 设置Globe的构造函数为私有方法，只能通过静态方法getInstance获取其单例
+   - 将Globe包装成React组件

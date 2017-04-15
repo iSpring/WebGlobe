@@ -1,14 +1,17 @@
 ﻿import React, {Component} from 'react';
-import styles from './index.scss';
+import Globe from 'webapp/components/Globe';
 
 export default class Map extends Component{
-
     constructor(props){
         super(props);
         this.state = {};
     }
 
     render(){
-        return <div>地图</div>;
+        return (
+            <div>
+                <Globe />
+            </div>
+        );
     }
 };

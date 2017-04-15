@@ -16,6 +16,9 @@ import './fonts/font-awesome.scss';
 
 const rootDiv = document.getElementById("root");
 
+const dom = document.createElement("div");
+dom.innerHTML = "a";
+
 ReactDOM.render((
     <Router history={hashHistory}>
         <Redirect from="/" to="/index/index" />
