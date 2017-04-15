@@ -40,6 +40,10 @@ export default class PoiLayer extends MultiPointsGraphic {
     return new PoiLayer(material);
   }
 
+  isReady(){
+    return this.globe && this.globe.camera.isEarthFullOverlapScreen() && super.isReady();
+  }
+
   destroy() {
     this.globe = null;
     super.destroy();

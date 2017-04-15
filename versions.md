@@ -200,3 +200,7 @@
  - 0.4.18
    - 优化定位逻辑
    - 将附近搜索的结果在地图中显示
+
+ - 0.4.19
+   - 使用WebGLRenderingContext引用WebGL静态常量
+   - 在绘制PoiLayer时禁用深度测试

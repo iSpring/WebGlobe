@@ -63,7 +63,7 @@ export default class MeshGraphic extends Graphic {
         gl.uniformMatrix4fv(locPMVMatrix, false, pmvMatrix.getFloat32Array());
 
         //uSampler
-        gl.activeTexture(gl.TEXTURE0);
+        gl.activeTexture(WebGLRenderingContext.TEXTURE0);
         var locSampler = this.program.getUniformLocation('uSampler');
         gl.uniform1i(locSampler, 0);
     }
@@ -77,23 +77,23 @@ export default class MeshGraphic extends Graphic {
         var locPosition = this.program.getAttribLocation('aPosition');
         this.program.enableVertexAttribArray('aPosition');
         this.geometry.vbo.bind();
-        gl.vertexAttribPointer(locPosition, 3, gl.FLOAT, false, 0, 0);
+        gl.vertexAttribPointer(locPosition, 3, WebGLRenderingContext.FLOAT, false, 0, 0);
 
         //set aUV
         var locUV = this.program.getAttribLocation('aUV');
         this.program.enableVertexAttribArray('aUV');
         this.geometry.uvbo.bind();
-        gl.vertexAttribPointer(locUV, 2, gl.FLOAT, false, 0, 0);
+        gl.vertexAttribPointer(locUV, 2, WebGLRenderingContext.FLOAT, false, 0, 0);
 
         //set uSampler
-        gl.bindTexture(gl.TEXTURE_2D, this.material.texture);
+        gl.bindTexture(WebGLRenderingContext.TEXTURE_2D, this.material.texture);
 
         //设置索引，但不用往shader中赋值
         this.geometry.ibo.bind();
 
         //绘图
         var count = this.geometry.triangles.length * 3;
-        gl.drawElements(gl.TRIANGLES, count, gl.UNSIGNED_SHORT, 0);
+        gl.drawElements(WebGLRenderingContext.TRIANGLES, count, WebGLRenderingContext.UNSIGNED_SHORT, 0);
 
         //释放当前绑定对象
         // gl.bindBuffer(gl.ARRAY_BUFFER, null);
