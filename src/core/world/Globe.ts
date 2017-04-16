@@ -110,7 +110,7 @@ export default class Globe {
     this.locationGraphic = LocationGraphic.getInstance(this);
     this.scene.add(this.locationGraphic);
 
-    this.renderer.setIfAutoRefresh(true);
+    this.renderer.resume();
     this.eventHandler = new EventHandler(this);
 
     /*Utils.subscribe('location', (data: LocationData) => {
@@ -157,6 +157,21 @@ export default class Globe {
       level = 11;
     }
     this.setLevel(level);
+  }
+
+  public isPaused(){
+    return this.renderer.isPaused();
+  }
+
+  public pause(){
+    this.renderer.pause();
+  }
+
+  public resume(){
+    if(this.isPaused){
+      this.renderer.resume();
+      this.refresh(true);
+    }
   }
 
   public searchNearby(keyword: string, radius: number, pageCapacity: number, pageIndex: number){

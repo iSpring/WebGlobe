@@ -204,3 +204,7 @@
  - 0.4.19
    - 使用WebGLRenderingContext引用WebGL静态常量
    - 在绘制PoiLayer时禁用深度测试
+
+ - 0.4.20
+   - 在Service中添加searchByCurrentCity接口
+   - 为Globe添加pause和resume方法，在React组件中调用

@@ -27,6 +27,7 @@ export default class Map extends Component{
         if(width > 0 && height > 0){
             globe.resize(width, height);
         }
+        globe.resume();
     }
 
     componentWillUnmount(){
@@ -34,6 +35,7 @@ export default class Map extends Component{
         const canvas = globe && globe.canvas;
         if(canvas && canvas.parentNode === domNode){
             domNode.removeChild(canvas);
+            globe.pause();
         }
     }
 };

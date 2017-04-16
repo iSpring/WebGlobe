@@ -92,9 +92,7 @@ export default class PoiLayer extends MultiPointsGraphic {
 
   searchNearby(keyword: string, radius: number = 1000, pageCapacity: number = 50, pageIndex: number = 0) {
     this.searchExtentMode = false;
-    return Service.getCurrentPosition().then((location: Location) => {
-      return Service.searchNearby(keyword, location.lon, location.lat, radius, pageCapacity, pageIndex);
-    }).then((response: any) => {
+    return Service.searchNearby(keyword, radius, false, pageCapacity, pageIndex).then((response: any) => {
       this._showPois(response);
       return response;
     });

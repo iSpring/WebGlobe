@@ -57,12 +57,13 @@ class Service {
         const url = "//apis.map.qq.com/jsapi?qt=gc&output=jsonp";
         Service.jsonp(url, (response: any) => {
           console.log(`定位：`, response);
+          const detail = response.detail;
           if (response.detail) {
             this.cityLocation = {
-              lon: parseFloat(response.detail.pointx),
-              lat: parseFloat(response.detail.pointy),
+              lon: parseFloat(detail.pointx),
+              lat: parseFloat(detail.pointy),
               accuracy: Infinity,
-              city: response.cname
+              city: detail.cname
             } as Location;
             resolve(this.cityLocation);
           } else {
@@ -111,7 +112,7 @@ class Service {
 
   //http://lbs.qq.com/javascript_v2/case-run.html#service-searchservice
   static searchByExtent(keyword: string, level: number, { minLon, minLat, maxLon, maxLat }: Extent, pageCapacity: number = 50, pageIndex: number = 0) {
-    const promise = new Promise(function (resolve) {
+    const promise = new Promise((resolve) => {
       const url = `//apis.map.qq.com/jsapi?qt=syn&wd=${keyword}&pn=${pageIndex}&rn=${pageCapacity}&output=jsonp&b=${minLon},${minLat},${maxLon},${maxLat}&l=${level}&c=000000`;
       Service.jsonp(url, function (response: any) {
         resolve(response);
@@ -120,8 +121,8 @@ class Service {
     return promise;
   }
 
-  static searchNearby(keyword: string, lon: number, lat: number, radius: number = 1000, pageCapacity: number = 50, pageIndex: number = 0) {
-    const promise = new Promise(function (resolve) {
+  static searchByBuffer(keyword: string, lon: number, lat: number, radius: number, pageCapacity: number = 50, pageIndex: number = 0) {
+    const promise = new Promise((resolve) => {
       //http://apis.map.qq.com/jsapi?qt=rn&wd=酒店&pn=0&rn=5&px=116.397128&py=39.916527&r=2000&output=jsonp&cb=webglobe_jsonp_1
       const url = `//apis.map.qq.com/jsapi?qt=rn&wd=${keyword}&pn=${pageIndex}&rn=${pageCapacity}&px=${lon}&py=${lat}&r=${radius}&output=jsonp`;
       Service.jsonp(url, function (response: any) {
@@ -131,11 +132,30 @@ class Service {
     return promise;
   }
 
-  // static route(from:string, to:string){
+  static searchByCity(keyword: string, city: string, pageCapacity: number = 50, pageIndex: number = 0){
+    //http://apis.map.qq.com/jsapi?qt=poi&wd=杨村一中&pn=0&rn=5&c=北京&output=json&cb=callbackname
+    const promise = new Promise((resolve) => {
+      const url = `//apis.map.qq.com/jsapi?qt=poi&wd=${keyword}&pn=${pageIndex}&rn=${pageCapacity}&c=${city}&output=jsonp`;
+      Service.jsonp(url, function(response: any){
+        resolve(response);
+      });
+    });
+    return promise;
+  }
 
-  // }
+  static searchNearby(keyword: string, radius: number = 1000, highAccuracy: boolean = false, pageCapacity: number = 50, pageIndex: number = 0){
+    return this.getCurrentPosition(highAccuracy).then((location: Location) => {
+      return this.searchByBuffer(keyword, location.lon, location.lat, radius, pageCapacity, pageIndex);
+    });
+  }
+
+  static searchByCurrentCity(keyword: string, pageCapacity: number = 50, pageIndex: number = 0){
+    return this.getCityLocation().then((cityLocation: Location) => {
+      return this.searchByCity(keyword, cityLocation.city, pageCapacity, pageIndex);
+    });
+  }
 };
 
-
+(window as any).service = Service;
 
 export default Service;

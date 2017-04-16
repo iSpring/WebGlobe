@@ -6,7 +6,7 @@ import { WebGLRenderingContextExtension } from "./Definitions";
 export default class Renderer {
   scene: Scene = null;
   camera: Camera = null;
-  autoRefresh: boolean = false;
+  paused: boolean = true;
   gl: WebGLRenderingContextExtension = null;
 
   constructor(
@@ -17,15 +17,6 @@ export default class Renderer {
     this.gl = this._getWebGLContext(this.canvas);
 
     Kernel.gl = this.gl;
-
-    // if(gl){
-    //   Kernel.gl = gl;
-    //   (<any>window).gl = gl;
-    //   Kernel.canvas = canvas;
-    // }else{
-    //   console.debug("浏览器不支持WebGL或将WebGL禁用!");
-    //   return;
-    // }
 
     if(!this.gl){
       console.debug("浏览器不支持WebGL或将WebGL禁用!");
@@ -97,15 +88,21 @@ export default class Renderer {
       this.render(this.scene, this.camera);
     }
 
-    if (this.autoRefresh) {
+    if (!this.paused) {
       window.requestAnimationFrame(this._tick.bind(this));
     }
   }
 
-  setIfAutoRefresh(auto: boolean) {
-    this.autoRefresh = auto;
-    if (this.autoRefresh) {
-      this._tick();
-    }
+  isPaused(){
+    return this.paused;
+  }
+
+  pause(){
+    this.paused = true;
+  }
+
+  resume(){
+    this.paused = false;
+    this._tick();
   }
 };
