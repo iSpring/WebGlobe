@@ -113,16 +113,6 @@ export default class Globe {
     this.renderer.setIfAutoRefresh(true);
     this.eventHandler = new EventHandler(this);
 
-    /*if(Utils.isMobile() && window.navigator.geolocation){
-      window.navigator.geolocation.getCurrentPosition((position: Position) => {
-        // var str = `accuracy:${position.coords.accuracy},heading:${position.coords.heading},speed:${position.coords.speed}`;
-        // alert(str);
-        var lon = position.coords.longitude;
-        var lat = position.coords.latitude;
-        this.showLocation(lon, lat);
-      });
-    }*/
-
     /*Utils.subscribe('location', (data: LocationData) => {
       console.timeEnd("location");
       console.info(data);

@@ -1,9 +1,10 @@
 import Extent from './Extent';
 
-export interface Location{
-  lon:number;
-  lat:number;
-  accuracy:number;
+export interface Location {
+  lon: number;
+  lat: number;
+  accuracy: number;
+  city: ""//北京市
 }
 
 class Service {
@@ -44,64 +45,66 @@ class Service {
     };
   }
 
+  private static cityLocation: Location = null;
+
   private static location: Location = null;
 
-  private static getCityLocation(){
-    const promise = new Promise(function (resolve) {
-      const url = "//apis.map.qq.com/jsapi?qt=gc&output=jsonp";
-      console.time("location");
-      Service.jsonp(url, function (response: any) {
-        console.timeEnd("location");
-        console.log(`定位：`, response);
-        if(response.detail){
-          let info = {
-            lon: parseFloat(response.detail.pointx),
-            lat: parseFloat(response.detail.pointy),
-            accuracy: Infinity
-          };
-          resolve(info);
-        }else{
-          resolve(null);
-        }
-      });
+  private static getCityLocation() {
+    const promise = new Promise((resolve) => {
+      if (this.cityLocation) {
+        resolve(this.cityLocation);
+      } else {
+        const url = "//apis.map.qq.com/jsapi?qt=gc&output=jsonp";
+        Service.jsonp(url, (response: any) => {
+          console.log(`定位：`, response);
+          if (response.detail) {
+            this.cityLocation = {
+              lon: parseFloat(response.detail.pointx),
+              lat: parseFloat(response.detail.pointy),
+              accuracy: Infinity,
+              city: response.cname
+            } as Location;
+            resolve(this.cityLocation);
+          } else {
+            resolve(null);
+          }
+        });
+      }
     });
     return promise;
   }
 
   static getCurrentPosition(highAccuracy: boolean = false) {
     const promise = new Promise((resolve) => {
-      if(highAccuracy){
-        navigator.geolocation.getCurrentPosition((response: Position) => {
-          console.log("getCurrentPosition:", response);
-          const location = {} as Location;
-          location.lon = response.coords.longitude;
-          location.lat = response.coords.latitude;
-          location.accuracy = response.coords.accuracy;
-          this.location = location;
-          resolve(this.location);
-        }, (err) => {
-          console.error(err);
+      this.getCityLocation().then((cityLocation: Location) => {
+        if (highAccuracy) {
+          navigator.geolocation.getCurrentPosition((response: Position) => {
+            const location = {
+              lon: response.coords.longitude,
+              lat: response.coords.latitude,
+              accuracy: response.coords.accuracy,
+              city: cityLocation.city
+            } as Location;
+            this.location = location;
+            resolve(this.location);
+          }, (err) => {
+            console.error(err);
+            if(this.location){
+              resolve(this.location);
+            }else{
+              resolve(cityLocation);
+            }
+          }, {
+              enableHighAccuracy: true
+          });
+        } else {
           if(this.location){
             resolve(this.location);
           }else{
-            this.getCityLocation().then((location: Location) => {
-              this.location = location;
-              resolve(this.location);
-            });
+            resolve(cityLocation);
           }
-        }, {
-          enableHighAccuracy: true
-        });
-      }else{
-        if(this.location){
-          resolve(this.location);
-        }else{
-          this.getCityLocation().then((location: Location) => {
-            this.location = location;
-            resolve(this.location);
-          });
         }
-      }
+      });
     });
     return promise;
   }
@@ -134,15 +137,5 @@ class Service {
 };
 
 
-
-// navigator.geolocation.watchPosition(function(response: any){
-//   console.log("watchPosition:", response);
-//   // var str = JSON.stringify(response);
-//   // alert(`watchPosition:${str}`);
-// }, function(err){
-//   console.error(err);
-// }, {
-//   enableHighAccuracy: true
-// });
 
 export default Service;

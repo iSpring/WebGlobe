@@ -1,9 +1,9 @@
 ﻿import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import styles from './index.scss';
-import Globe from 'world/Globe';
+import Globe,{GlobeOptions} from 'world/Globe';
 
-export const globe = Globe.getInstance();
+export const globe = Globe.getInstance({satellite: false});
 
 export default class Map extends Component{
 
