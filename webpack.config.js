@@ -33,8 +33,8 @@ var es6Promise = "./node_modules/es6-promise/dist/es6-promise.auto.min.js";
 
 module.exports = {
     entry: {
-        core: ["./src/core/index.ts", es6Promise],
-        webapp: ["./src/webapp/index.jsx", es6Promise]
+        core: [es6Promise, "./src/core/index.ts"],
+        webapp: [es6Promise, "./src/webapp/index.jsx"]
     },
 
     output: {
