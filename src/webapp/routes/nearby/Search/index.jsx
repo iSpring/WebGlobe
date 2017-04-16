@@ -1,10 +1,11 @@
-﻿import React, {Component} from 'react';
+﻿import React from 'react';
 import classNames from 'classnames';
 import styles from './index.scss';
 import fontStyles from 'webapp/fonts/font-awesome.scss';
+import RouteComponent from 'webapp/routes/RouteComponent';
 import Search from 'webapp/components/Search';
 
-export default class Nearby extends Component{
+export default class Nearby extends RouteComponent{
 
     static contextTypes = {
         router: React.PropTypes.object

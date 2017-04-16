@@ -2,7 +2,7 @@
 import loading from 'webapp/common/loading';
 
 export default class RouteComponent extends Component {
-    static contextProps = {
+    static contextTypes = {
         router: PropTypes.object
     };
 

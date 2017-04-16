@@ -1,7 +1,8 @@
-﻿import React, {Component} from 'react';
+﻿import React from 'react';
+import RouteComponent from 'webapp/routes/RouteComponent';
 import MapComponent from 'webapp/components/Map';
 
-export default class Map extends Component{
+export default class Map extends RouteComponent{
     constructor(props){
         super(props);
         this.state = {};

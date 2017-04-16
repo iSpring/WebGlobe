@@ -1,11 +1,12 @@
-﻿import React, {Component} from 'react';
+﻿import React from 'react';
 import {Link} from 'react-router';
 import classNames from 'classnames';
 import styles from './index.scss';
 import fontStyles from 'webapp/fonts/font-awesome.scss';
+import RouteComponent from 'webapp/routes/RouteComponent';
 import Search from 'webapp/components/Search';
 
-export default class App extends Component{
+export default class App extends RouteComponent{
 
     constructor(props){
         super(props);

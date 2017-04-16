@@ -23,8 +23,12 @@ body{
     -webkit-overflow-scrolling: touch; 
 }
 
-input[type=text]::-ms-clear{
-    display: none;
+input[type=text]{
+    border: 0;
+    outline: none;
+    &::-ms-clear{
+        display: none;
+    }
 }
 
 :global{

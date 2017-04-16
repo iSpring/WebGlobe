@@ -9,7 +9,8 @@ export interface Location {
 
 class Service {
   static jsonp(url: string, callback: (response: any) => void, callbackParameterName: string = "cb"): () => void {
-    var callbackName = `webglobe_callback_` + Math.random().toString().substring(2);
+    //callback名称要以大写的QQ开头，否则容易挂掉
+    var callbackName = `QQ_webglobe_callback_` + Math.random().toString().substring(2);
     if (url.indexOf('?') < 0) {
       url += '?';
     } else {
@@ -155,7 +156,5 @@ class Service {
     });
   }
 };
-
-(window as any).service = Service;
 
 export default Service;

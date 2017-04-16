@@ -1,26 +1,122 @@
 ﻿@import "../../../css/variables";
 $header-height: 46px;
+$input-container-height: $header-height;
+$input-height: 26px;
+$exchange-size: 60px;
 
 header{
+    position: relative;
     height: $header-height;
     line-height: $header-height;
+    border-bottom: 1px solid #b4b4b4;
 
     .traffic-types{
         width: 50%;
         height: 100%;
+        margin: 0 auto;
         display: flex;
         flex-flow: row nowrap;
         justify-content: space-between;
         align-items: center;
-        border-bottom: 1px solid #b4b4b4;
 
         .traffic-type{
             font-size: 24px;
             color: #54585E;
-            &.selected{
+            .selected{
                 color: $blue-color;
             }
         }
     }
+
+    .cancel{
+        position: absolute;
+        color: $blue-color;
+        font-size: 16px;
+        height: 100%;
+        top: 0;
+        bottom: 0;
+        right: 15px;
+    }
 }
 
+.search-section{
+    position: relative;
+    box-sizing: border-box;
+    height: $input-container-height * 2;
+    padding-left: 15px;
+    border-bottom: 1px solid #d3d3d3;
+    overflow: hidden;
+
+    .inputs-container{
+        position: absolute;
+        left: 15px;
+        right: $exchange-size;
+        top: 0;
+        height: 100%;
+
+        .input-container{
+            position: relative;
+            box-sizing: border-box;
+            height: 50%;
+            padding: 0 16px;
+
+            .from-icon,.to-icon{
+                position: absolute;
+                left: 0;
+                top: 0;
+                height: $input-container-height;
+                line-height: $input-container-height;
+            }
+            .from-icon{
+                color: $blue-color;
+                font-size: 16px;
+            }
+            .to-icon{
+                color: #fe5f5f;
+                font-size: 13px;
+            }
+            input{
+                width: 100%;
+                height: $input-height;
+                line-height: $input-height;
+                color: #333;
+                font-size: 15px;
+                margin-top: ($input-container-height - $input-height) / 2;
+            }
+            &.departure{
+                border-bottom: 1px solid #d3d3d3;
+            }
+        }
+    }
+
+    .exchange{
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: $exchange-size;
+        height: 100%;
+        text-align: center;
+
+        i{
+            color: gray;
+            font-size: 24px;
+            line-height: $input-container-height * 2;
+        }
+    }
+}
+
+.pois{
+    .poi{
+        padding: 15px;
+        .name{
+            color: #333;
+            font-size: 15px;
+        }
+        .address{
+            color: gray;
+            font-size: 12px;
+            margin-top: 12px;
+        }
+        border-bottom: 1px solid #d3d3d3;
+    }
+}
