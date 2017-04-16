@@ -1,0 +1,20 @@
+﻿$icon-size: 48px;
+
+#loading{
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+
+    .icon{
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: $icon-size;
+        height: $icon-size;
+        margin-left: -$icon-size/2;
+        margin-top: -$icon-size/2;
+        background: yellowgreen;
+    }
+}

@@ -2,12 +2,13 @@
 import classNames from "classnames";
 import styles from './index.scss';
 import fontStyles from 'webapp/fonts/font-awesome.scss';
+import RouteComponent from 'webapp/routes/RouteComponent';
 import Search from 'webapp/components/Search';
 import Map,{globe} from 'webapp/components/Map';
 import Service from 'world/Service';
 import MathUtils from 'world/math/Utils';
 
-export default class Result extends Component {
+export default class Result extends RouteComponent {
     static contextTypes = {
         router: React.PropTypes.object
     };
@@ -30,7 +31,8 @@ export default class Result extends Component {
     }
 
     componentDidMount() {
-        this._isMounted = true;
+        // this._isMounted = true;
+        super.componentDidMount();
         Service.getCurrentPosition().then((location) => {
             this.location = location;
         }).then(() => {
@@ -69,11 +71,9 @@ export default class Result extends Component {
     search(pageIndex) {
         const distance = this.distance;
         const keyword = this.props.location.query.keyword;
-        if (this._isMounted && this.location && keyword) {
-            globe.searchNearby(keyword, distance, this.pageCapacity, pageIndex).then((response) => {
-                if (!this._isMounted) {
-                    return;
-                }
+        if (this.hasBeenMounted() && this.location && keyword) {
+            const promise = globe.searchNearby(keyword, distance, this.pageCapacity, pageIndex);
+            this.wrapPromise(promise).then((response) => {
                 if (response) {
                     this.setState({
                         total: response.info.total,

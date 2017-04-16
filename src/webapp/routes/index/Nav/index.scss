@@ -1,1 +1,26 @@
-﻿
+﻿@import "../../../css/variables";
+$header-height: 46px;
+
+header{
+    height: $header-height;
+    line-height: $header-height;
+
+    .traffic-types{
+        width: 50%;
+        height: 100%;
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #b4b4b4;
+
+        .traffic-type{
+            font-size: 24px;
+            color: #54585E;
+            &.selected{
+                color: $blue-color;
+            }
+        }
+    }
+}
+
