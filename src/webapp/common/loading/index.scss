@@ -1,4 +1,13 @@
-﻿$icon-size: 48px;
+﻿$icon-size: 36px;
+
+@keyframes loading-keyframes{
+    from{
+        transform: rotate(0deg);
+    }
+    to{
+        transform: rotate(360deg);
+    }
+}
 
 #loading{
     position: fixed;
@@ -15,6 +24,8 @@
         height: $icon-size;
         margin-left: -$icon-size/2;
         margin-top: -$icon-size/2;
-        background: yellowgreen;
+        background-position: center;
+        background-repeat: no-repeat;
+        animation: loading-keyframes 0.9s linear infinite;
     }
 }

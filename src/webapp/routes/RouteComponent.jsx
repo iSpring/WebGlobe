@@ -24,15 +24,24 @@ export default class RouteComponent extends Component {
 
     wrapPromise(promise){
         loading.show();
+        this.setState({
+            loading: true
+        });
         const p = new Promise((resolve, reject) => {
             promise.then((response) => {
                 loading.hide();
                 if(this.hasBeenMounted()){
+                    this.setState({
+                        loading: false
+                    });
                     resolve(response);
                 }
             }, (err) => {
                 loading.hide();
                 if(this.hasBeenMounted()){
+                    this.setState({
+                        loading: false
+                    });
                     reject(err);
                 }
             });

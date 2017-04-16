@@ -4,6 +4,7 @@ $info-left: 40px;
 $distance-width: 60px;
 $index-left: ($info-left - $index-size) / 2;
 $main-color: gray;
+$header-height: 0;
 $footer-height: 48px;
 $line: 1px solid #d3d3d3;
 
@@ -16,11 +17,27 @@ $line: 1px solid #d3d3d3;
 }
 
 .list {
-    .pois {
+    .header{
+
+    }
+
+    .not-found, .pois{
         position: absolute;
         left: 0;
         right: 0;
-        top: 0;
+    }
+
+    .not-found{
+        top: 50%;
+        margin-top: -16px;
+        padding: 0 30px;
+        text-align: center;
+        color: $main-color;
+        font-size: 12px;
+    }
+
+    .pois {
+        top: $header-height;
         bottom: $footer-height;
         overflow-y: auto;
         .poi {
@@ -87,6 +104,7 @@ $line: 1px solid #d3d3d3;
             }
         }
     }
+
     .footer {
         position: absolute;
         left: 0;

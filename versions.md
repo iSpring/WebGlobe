@@ -208,3 +208,7 @@
  - 0.4.20
    - 在Service中添加searchByCurrentCity接口
    - 为Globe添加pause和resume方法，在React组件中调用
+
+ - 0.4.21
+   - 添加RouteComponent，所有routes目录下的Component均继承自它，异步操作会显示loading
+   - 对附近搜索无结果的情况进行友好显示
