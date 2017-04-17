@@ -22,7 +22,7 @@ header{
         .traffic-type{
             font-size: 24px;
             color: #54585E;
-            .selected{
+            &:global(.selected){
                 color: $blue-color;
             }
         }
@@ -83,7 +83,7 @@ header{
                 font-size: 15px;
                 margin-top: ($input-container-height - $input-height) / 2;
             }
-            &.departure{
+            &.from{
                 border-bottom: 1px solid #d3d3d3;
             }
         }

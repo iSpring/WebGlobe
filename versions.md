@@ -212,3 +212,7 @@
  - 0.4.21
    - 添加RouteComponent，所有routes目录下的Component均继承自它，异步操作会显示loading
    - 对附近搜索无结果的情况进行友好显示
+
+ - 0.4.22
+   - 继续完善index/Nav页面
+   - 添加了路线规划相关的服务

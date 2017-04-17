@@ -549,11 +549,15 @@ export default class MathUtils {
      * @param radianLog 以弧度表示的经度
      * @return {*} 投影坐标x
      */
-    static radianLonToWebMercatorX(radianLog: number): number{
+    static radianLonToWebMercatorX(radianLog: number, real: boolean = false): number{
         if(!(Utils.isNumber(radianLog) && radianLog <= (Math.PI + 0.001) && radianLog >= -(Math.PI + 0.001))){
             throw "invalid radianLog";
         }
-        return Kernel.EARTH_RADIUS * radianLog;
+        if(real){
+            return Kernel.REAL_EARTH_RADIUS * radianLog;
+        }else{
+            return Kernel.EARTH_RADIUS * radianLog;
+        }
     }
 
     /**
@@ -561,12 +565,12 @@ export default class MathUtils {
      * @param degreeLog 以角度表示的经度
      * @return {*} 投影坐标x
      */
-    static degreeLonToWebMercatorX(degreeLog: number): number{
+    static degreeLonToWebMercatorX(degreeLog: number, real: boolean = false): number{
         if(!(Utils.isNumber(degreeLog) && degreeLog <= (180 + 0.001) && degreeLog >= -(180 + 0.001))){
             throw "invalid degreeLog";
         }
         var radianLog = this.degreeToRadian(degreeLog);
-        return this.radianLonToWebMercatorX(radianLog);
+        return this.radianLonToWebMercatorX(radianLog, real);
     }
 
     /**
@@ -574,15 +578,18 @@ export default class MathUtils {
      * @param radianLat 以弧度表示的纬度
      * @return {Number} 投影坐标y
      */
-    static radianLatToWebMercatorY(radianLat: number): number{
+    static radianLatToWebMercatorY(radianLat: number, real: boolean = false): number{
         if(!(radianLat <= (Math.PI / 2 + 0.001) && radianLat >= -(Math.PI / 2 + 0.001))){
             throw "invalid radianLat";
         }
         var a = Math.PI / 4 + radianLat / 2;
         var b = Math.tan(a);
         var c = Math.log(b);
-        var y = Kernel.EARTH_RADIUS * c;
-        return y;
+        if(real){
+            return Kernel.REAL_EARTH_RADIUS * c;
+        }else{
+            return Kernel.EARTH_RADIUS * c;
+        }
     }
 
     /**
@@ -590,12 +597,12 @@ export default class MathUtils {
      * @param degreeLat 以角度表示的纬度
      * @return {Number} 投影坐标y
      */
-    static degreeLatToWebMercatorY(degreeLat: number): number{
+    static degreeLatToWebMercatorY(degreeLat: number, real: boolean = false): number{
         if(!(degreeLat <= (90 + 0.001) && degreeLat >= -(90 + 0.001))){
             throw "invalid degreeLat";
         }
         var radianLat = this.degreeToRadian(degreeLat);
-        return this.radianLatToWebMercatorY(radianLat);
+        return this.radianLatToWebMercatorY(radianLat, real);
     }
 
     /**
