@@ -197,6 +197,4 @@ class Service {
 
 };
 
-(window as any).service = Service;
-
 export default Service;
