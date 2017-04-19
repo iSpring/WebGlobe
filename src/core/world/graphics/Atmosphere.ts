@@ -1,6 +1,6 @@
 declare function require(name: string): any;
 import Kernel from '../Kernel';
-import MeshGraphic from './MeshGraphic';
+import MeshTextureGraphic from './MeshTextureGraphic';
 import AtmosphereGeometry from '../geometries/Atmosphere';
 import MeshTextureMaterial from '../materials/MeshTextureMaterial';
 import Camera from '../Camera';
@@ -8,7 +8,7 @@ import Vector from '../math/Vector';
 // import atmosphereImgUrl = require("../images/atmosphere.png");
 const atmosphereImgUrl = require("../images/atmosphere.png");
 
-export default class Atmosphere extends MeshGraphic {
+export default class Atmosphere extends MeshTextureGraphic {
     private constructor(public geometry: AtmosphereGeometry, public material: MeshTextureMaterial){
         super(geometry, material);
     }

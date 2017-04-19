@@ -2,7 +2,7 @@ import Kernel from '../Kernel';
 import Extent from '../Extent';
 import Camera from '../Camera';
 import MathUtils from '../math/Utils';
-import MeshGraphic from '../graphics/MeshGraphic';
+import MeshTextureGraphic from '../graphics/MeshTextureGraphic';
 import TileMaterial from '../materials/TileMaterial';
 import TileGeometry from '../geometries/TileGeometry';
 import Vertice from '../geometries/MeshVertice';
@@ -142,7 +142,7 @@ class TileInfo {
   }
 }
 
-export default class Tile extends MeshGraphic {
+export default class Tile extends MeshTextureGraphic {
   subTiledLayer: SubTiledLayer;
 
   private constructor(public geometry: TileGeometry, public material: TileMaterial, public tileInfo: TileInfo) {

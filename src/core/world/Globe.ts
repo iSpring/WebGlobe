@@ -19,6 +19,8 @@ import Extent from './Extent';
 import Service,{Location} from './Service';
 import {WebGLRenderingContextExtension} from './Definitions.d';
 
+import RouteLayer from './layers/RouteLayer';
+
 const initLevel:number = Utils.isMobile() ? 11 : 3;
 
 const initLonlat:number[] = [116.3975, 39.9085];
@@ -114,6 +116,9 @@ export default class Globe {
     this.scene.add(this.poiLayer);
     this.locationGraphic = LocationGraphic.getInstance(this);
     this.scene.add(this.locationGraphic);
+
+    const meshColorGraphic = RouteLayer.testMeshColorGraphic();
+    this.scene.add(meshColorGraphic);
 
     this.renderer.resume();
     this.eventHandler = new EventHandler(this);

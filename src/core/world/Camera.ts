@@ -564,10 +564,15 @@ class Camera extends Object3D {
       level = Kernel.MAX_LEVEL;
     }
     if (level !== this.level || force) {
+      const oldLevel = this.level;
       //不要在this._updatePositionByLevel()方法中更新this.level，因为这会影响animateToLevel()方法
       this._updatePositionByLevel(level, this.matrix);
       this.level = level;
       this.floatLevel = level;
+      Utils.publish('level-change', {
+        oldLevel: oldLevel,
+        newLevel: this.level
+      });
     }
   }
 

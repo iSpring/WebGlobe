@@ -162,16 +162,41 @@ class Service {
     });
   }
 
+  private static _handleRouteResult(responseText: string){
+    const response: any = JSON.parse(responseText);
+    response.route.paths.forEach((path: any) => {
+      if(path.steps){
+        path.steps.forEach((step: any) => {
+          //polyline: "117.002052,39.403416;116.998672,39.404453"
+          const polyline: string = step.polyline;
+          const firstIndex: number = polyline.indexOf(";");
+          const firstStr = polyline.slice(0, firstIndex);
+          const firstLonLat: string[] = firstStr.split(",");
+          step.start = [parseFloat(firstLonLat[0]), parseFloat(firstLonLat[1])];
+
+          const lastIndex: number = polyline.indexOf(";");
+          const lastStr = polyline.slice(0, lastIndex);
+          const lastLonLat: string[] = lastStr.split(",");
+          step.last = [parseFloat(lastLonLat[0]), parseFloat(lastLonLat[1])];
+        });
+      }
+    });
+    return response;
+  }
+
   static gaodeRouteByDriving(fromLon: number, fromLat: number, toLon: number, toLat: number, key: string, strategy: number = 5){
     //http://lbs.gaode.com/api/webservice/guide/api/direction/#driving
     //http://restapi.amap.com/v3/direction/driving?origin=117.00216,39.40365&destination=116.99557,39.39268&extensions=base&output=json&key=db146b37ef8d9f34473828f12e1e85ad&strategy=5
     const promise = new Promise((resolve, reject) => {
       const url = `//restapi.amap.com/v3/direction/driving?origin=${fromLon},${fromLat}&destination=${toLon},${toLat}&extensions=base&output=json&key=${key}&strategy=${strategy}`;
       const xhr = new XMLHttpRequest();
-      xhr.responseType = 'json';
+      //IE12+
+      // xhr.responseType = 'json';
       xhr.open("GET", url, true);
       xhr.onload = (event: any) => {
-        resolve(event.target.response);
+        // const response = event.target.response;
+        const response = this._handleRouteResult(event.target.responseText);
+        resolve(response);
       };
       xhr.onerror = (err: any) => {
         reject(err);
@@ -184,7 +209,7 @@ class Service {
     return promise;
   }
 
-  static decodePolyline(polyline: number[]) {
+  static decodeQQPolyline(polyline: number[]) {
     for (var i = 2; i < polyline.length; i++){
       polyline[i] = polyline[i - 2] + polyline[i] / 1000000;
     }
@@ -201,7 +226,7 @@ class Service {
     const promise = new Promise((resolve) => {
       Service.jsonp(url, (response: any) => {
         response.result.routes.forEach((route: any) => {
-          Service.decodePolyline(route.polyline);
+          Service.decodeQQPolyline(route.polyline);
         });
         resolve(response);
       });
