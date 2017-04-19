@@ -29,6 +29,7 @@ export class GlobeOptions{
   satellite: boolean = true;
   level: number = initLevel;
   lonlat: number[] = initLonlat;
+  key: string = "";
 }
 
 export default class Globe {
@@ -42,6 +43,7 @@ export default class Globe {
   locationGraphic: LocationGraphic = null;
   debugStopRefreshTiles: boolean = false;
   private readonly REFRESH_INTERVAL: number = 150; //Globe自动刷新时间间隔，以毫秒为单位
+  private key: string = "";
   private lastRefreshTimestamp: number = -1;
   private lastRefreshCameraCore: CameraCore = null;
   private eventHandler: EventHandler = null;
@@ -81,6 +83,9 @@ export default class Globe {
     }
     if(!options.lonlat){
       options.lonlat = initLonlat;
+    }
+    if(options.key){
+      this.key = options.key;
     }
     this.renderer = new Renderer(canvas, this._onBeforeRender.bind(this), this._onAfterRender.bind(this));
     this.gl = this.renderer.gl;

@@ -11,7 +11,7 @@ export interface Location {
 type RouteType = "bus" | "snsnav";
 
 class Service {
-  static jsonp(url: string, callback: (response: any) => void, charset:string = "", callbackParameterName: string = "cb"): () => void {
+  static jsonp(url: string, callback: (response: any) => void, charset: string = "", callbackParameterName: string = "cb"): () => void {
     //callback名称要以大写的QQ开头，否则容易挂掉
     var callbackName = `QQ_webglobe_callback_` + Math.random().toString().substring(2);
     if (url.indexOf('?') < 0) {
@@ -22,7 +22,7 @@ class Service {
     url += `${callbackParameterName}=window.${callbackName}`;
     var scriptElement = document.createElement("script");
     scriptElement.setAttribute("src", url);
-    if(charset){
+    if (charset) {
       scriptElement.setAttribute("charset", charset);//UTF-8,GBK
     }
     scriptElement.setAttribute("async", "true");
@@ -97,18 +97,18 @@ class Service {
             resolve(this.location);
           }, (err) => {
             console.error(err);
-            if(this.location){
+            if (this.location) {
               resolve(this.location);
-            }else{
+            } else {
               resolve(cityLocation);
             }
           }, {
               enableHighAccuracy: true
-          });
+            });
         } else {
-          if(this.location){
+          if (this.location) {
             resolve(this.location);
-          }else{
+          } else {
             resolve(cityLocation);
           }
         }
@@ -139,39 +139,68 @@ class Service {
     return promise;
   }
 
-  static searchByCity(keyword: string, city: string, pageCapacity: number = 50, pageIndex: number = 0){
+  static searchByCity(keyword: string, city: string, pageCapacity: number = 50, pageIndex: number = 0) {
     //http://apis.map.qq.com/jsapi?qt=poi&wd=杨村一中&pn=0&rn=5&c=北京&output=json&cb=callbackname
     const promise = new Promise((resolve) => {
       const url = `//apis.map.qq.com/jsapi?qt=poi&wd=${keyword}&pn=${pageIndex}&rn=${pageCapacity}&c=${city}&output=jsonp`;
-      Service.jsonp(url, function(response: any){
+      Service.jsonp(url, function (response: any) {
         resolve(response);
       });
     });
     return promise;
   }
 
-  static searchNearby(keyword: string, radius: number = 1000, highAccuracy: boolean = false, pageCapacity: number = 50, pageIndex: number = 0){
+  static searchNearby(keyword: string, radius: number = 1000, highAccuracy: boolean = false, pageCapacity: number = 50, pageIndex: number = 0) {
     return this.getCurrentPosition(highAccuracy).then((location: Location) => {
       return this.searchByBuffer(keyword, location.lon, location.lat, radius, pageCapacity, pageIndex);
     });
   }
 
-  static searchByCurrentCity(keyword: string, pageCapacity: number = 50, pageIndex: number = 0){
+  static searchByCurrentCity(keyword: string, pageCapacity: number = 50, pageIndex: number = 0) {
     return this.getCityLocation().then((cityLocation: Location) => {
       return this.searchByCity(keyword, cityLocation.city, pageCapacity, pageIndex);
     });
   }
-  
-  
-  static route(routeType: RouteType, fromLon: number, fromLat: number, toLon: number, toLat: number){
+
+  static decodePolyline(polyline: number[]) {
+    for (var i = 2; i < polyline.length; i++){
+      polyline[i] = polyline[i - 2] + polyline[i] / 1000000;
+    }
+    return polyline;
+  }
+
+  static routeByDriving(fromLon: number, fromLat: number, toLon: number, toLat: number, key: string, policy?: string) {
+    //policy: LEAST_TIME,LEAST_FEE,REAL_TRAFFIC
+    //http://apis.map.qq.com/ws/direction/v1/driving/?from=39.915285,116.403857&to=39.915285,116.803857&waypoints=39.111,116.112;39.112,116.113&output=json&callback=cb&key=OB4BZ-D4W3U-B7VVO-4PJWW-6TKDJ-WPB77
+    let url = `//apis.map.qq.com/ws/direction/v1/driving/?from=${fromLat},${fromLon}&to=${toLat},${toLon}&output=jsonp&key=${key}`;
+    if(policy){
+      url += `&policy=${policy}`;
+    }
+    const promise = new Promise((resolve) => {
+      Service.jsonp(url, (response: any) => {
+        response.result.routes.forEach((route: any) => {
+          Service.decodePolyline(route.polyline);
+        });
+        resolve(response);
+      });
+    });
+    return promise;
+  }
+
+  static routeByWalking() { }
+
+  static routeByTransit() { }
+
+
+  static route(routeType: RouteType, fromLon: number, fromLat: number, toLon: number, toLat: number) {
     //RouteType: bus,snsnav
     //http://lbs.qq.com/guides/direction.html
     //http://lbs.qq.com/javascript_v2/case-run.html#sample-directions-route
     //http://apis.map.qq.com/jsapi?c=北京&qt=snsnav&start=1$$$$12947295.571620844, 4863618.782990928$$&dest=1$$$$12968287.08799973, 4863630.841508553$$&cond=3&key=TKUBZ-D24AF-GJ4JY-JDVM2-IBYKK-KEBCU&mt=2&s=2&fm=0&output=jsonp&pf=jsapi&ref=jsapi&cb=qq.maps._svcb3.driving_service_0
-    const fromX:number = MathUtils.degreeLonToWebMercatorX(fromLon, true);
-    const fromY:number = MathUtils.degreeLatToWebMercatorY(fromLat, true);
-    const toX:number = MathUtils.degreeLonToWebMercatorX(toLon, true);
-    const toY:number = MathUtils.degreeLatToWebMercatorY(toLat, true);
+    const fromX: number = MathUtils.degreeLonToWebMercatorX(fromLon, true);
+    const fromY: number = MathUtils.degreeLatToWebMercatorY(fromLat, true);
+    const toX: number = MathUtils.degreeLonToWebMercatorX(toLon, true);
+    const toY: number = MathUtils.degreeLatToWebMercatorY(toLat, true);
     const url = `//apis.map.qq.com/jsapi?qt=${routeType}&start=1$$$$${fromX}, ${fromY}$$&dest=1$$$$${toX}, ${toY}$$&cond=3&mt=2&s=2&fm=0&output=jsonp&pf=jsapi&ref=jsapi`;
     const promise = new Promise((resolve) => {
       Service.jsonp(url, (response: any) => {
@@ -182,18 +211,18 @@ class Service {
     return promise;
   }
 
-  static routeByName(routeType: RouteType, from: string, to: string, city:string = ""){
+  static routeByName(routeType: RouteType, from: string, to: string, city: string = "") {
     //http://apis.map.qq.com/jsapi?c=北京&qt=bus&start=2$$$$$$银科大厦&dest=2$$$$$$天坛公园&cond=0&output=jsonp&pf=jsapi&ref=jsapi&cb=qq.maps._svcb3.transfer_service_0
     //http://tbus.map.qq.com/?c=23&qt=bus&start=1$$15956984146388822716$$117.00216,39.40365$$杨村第一中学$$$$$$$$&dest=1$$2242236621554464466$$116.99329,39.3907$$雍鑫·红星华府$$$$$$$$&cond=0&output=jsonp&cb=QQMapLoader.cb242142556
     const url = `//apis.map.qq.com/jsapi?c=${city}&qt=bus&start=2$$$$$$${from}&dest=2$$$$$$${to}&cond=0&output=jsonp&pf=jsapi&ref=jsapi`;
     const promise = new Promise((resolve) => {
-      Service.jsonp(url, (response:any) => {
+      Service.jsonp(url, (response: any) => {
         console.log(response);
         resolve(response);
       }, "GBK");
     });
     return promise;
- }
+  }
 
 };
 
