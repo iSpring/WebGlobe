@@ -164,8 +164,9 @@ class Service {
 
   static gaodeRouteByDriving(fromLon: number, fromLat: number, toLon: number, toLat: number, key: string, strategy: number = 5){
     //http://lbs.gaode.com/api/webservice/guide/api/direction/#driving
+    //http://restapi.amap.com/v3/direction/driving?origin=117.00216,39.40365&destination=116.99557,39.39268&extensions=base&output=json&key=db146b37ef8d9f34473828f12e1e85ad&strategy=5
     const promise = new Promise((resolve, reject) => {
-      const url = `//restapi.amap.com/v3/direction/driving?origin=${fromLon},${fromLat}&destination=${toLon},${toLat}&extensions=all&output=json&key=${key}&strategy=${strategy}`;
+      const url = `//restapi.amap.com/v3/direction/driving?origin=${fromLon},${fromLat}&destination=${toLon},${toLat}&extensions=base&output=json&key=${key}&strategy=${strategy}`;
       const xhr = new XMLHttpRequest();
       xhr.responseType = 'json';
       xhr.open("GET", url, true);
