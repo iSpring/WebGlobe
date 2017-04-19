@@ -11,9 +11,9 @@ export interface Location {
 type RouteType = "bus" | "snsnav";
 
 class Service {
-  static jsonp(url: string, callback: (response: any) => void, charset: string = "", callbackParameterName: string = "cb"): () => void {
+  static jsonp(url: string, callback: (response: any) => void, charset: string = "", callbackParameterName: string = "cb", callbackPrefix: string = "QQ"): () => void {
     //callback名称要以大写的QQ开头，否则容易挂掉
-    var callbackName = `QQ_webglobe_callback_` + Math.random().toString().substring(2);
+    var callbackName = `${callbackPrefix}_webglobe_callback_` + Math.random().toString().substring(2);
     if (url.indexOf('?') < 0) {
       url += '?';
     } else {
@@ -162,6 +162,27 @@ class Service {
     });
   }
 
+  static gaodeRouteByDriving(fromLon: number, fromLat: number, toLon: number, toLat: number, key: string, strategy: number = 5){
+    //http://lbs.gaode.com/api/webservice/guide/api/direction/#driving
+    const promise = new Promise((resolve, reject) => {
+      const url = `//restapi.amap.com/v3/direction/driving?origin=${fromLon},${fromLat}&destination=${toLon},${toLat}&extensions=all&output=json&key=${key}&strategy=${strategy}`;
+      const xhr = new XMLHttpRequest();
+      xhr.responseType = 'json';
+      xhr.open("GET", url, true);
+      xhr.onload = (event: any) => {
+        resolve(event.target.response);
+      };
+      xhr.onerror = (err: any) => {
+        reject(err);
+      };
+      xhr.onabort = (err: any) => {
+        reject(err);
+      };
+      xhr.send();
+    });
+    return promise;
+  }
+
   static decodePolyline(polyline: number[]) {
     for (var i = 2; i < polyline.length; i++){
       polyline[i] = polyline[i - 2] + polyline[i] / 1000000;
@@ -169,7 +190,7 @@ class Service {
     return polyline;
   }
 
-  static routeByDriving(fromLon: number, fromLat: number, toLon: number, toLat: number, key: string, policy?: string) {
+  static qqRouteByDriving(fromLon: number, fromLat: number, toLon: number, toLat: number, key: string, policy?: string) {
     //policy: LEAST_TIME,LEAST_FEE,REAL_TRAFFIC
     //http://apis.map.qq.com/ws/direction/v1/driving/?from=39.915285,116.403857&to=39.915285,116.803857&waypoints=39.111,116.112;39.112,116.113&output=json&callback=cb&key=OB4BZ-D4W3U-B7VVO-4PJWW-6TKDJ-WPB77
     let url = `//apis.map.qq.com/ws/direction/v1/driving/?from=${fromLat},${fromLon}&to=${toLat},${toLon}&output=jsonp&key=${key}`;
@@ -187,12 +208,8 @@ class Service {
     return promise;
   }
 
-  static routeByWalking() { }
 
-  static routeByTransit() { }
-
-
-  static route(routeType: RouteType, fromLon: number, fromLat: number, toLon: number, toLat: number) {
+  static qqRoute(routeType: RouteType, fromLon: number, fromLat: number, toLon: number, toLat: number) {
     //RouteType: bus,snsnav
     //http://lbs.qq.com/guides/direction.html
     //http://lbs.qq.com/javascript_v2/case-run.html#sample-directions-route
@@ -202,19 +219,6 @@ class Service {
     const toX: number = MathUtils.degreeLonToWebMercatorX(toLon, true);
     const toY: number = MathUtils.degreeLatToWebMercatorY(toLat, true);
     const url = `//apis.map.qq.com/jsapi?qt=${routeType}&start=1$$$$${fromX}, ${fromY}$$&dest=1$$$$${toX}, ${toY}$$&cond=3&mt=2&s=2&fm=0&output=jsonp&pf=jsapi&ref=jsapi`;
-    const promise = new Promise((resolve) => {
-      Service.jsonp(url, (response: any) => {
-        console.log(response);
-        resolve(response);
-      }, "GBK");
-    });
-    return promise;
-  }
-
-  static routeByName(routeType: RouteType, from: string, to: string, city: string = "") {
-    //http://apis.map.qq.com/jsapi?c=北京&qt=bus&start=2$$$$$$银科大厦&dest=2$$$$$$天坛公园&cond=0&output=jsonp&pf=jsapi&ref=jsapi&cb=qq.maps._svcb3.transfer_service_0
-    //http://tbus.map.qq.com/?c=23&qt=bus&start=1$$15956984146388822716$$117.00216,39.40365$$杨村第一中学$$$$$$$$&dest=1$$2242236621554464466$$116.99329,39.3907$$雍鑫·红星华府$$$$$$$$&cond=0&output=jsonp&cb=QQMapLoader.cb242142556
-    const url = `//apis.map.qq.com/jsapi?c=${city}&qt=bus&start=2$$$$$$${from}&dest=2$$$$$$${to}&cond=0&output=jsonp&pf=jsapi&ref=jsapi`;
     const promise = new Promise((resolve) => {
       Service.jsonp(url, (response: any) => {
         console.log(response);
