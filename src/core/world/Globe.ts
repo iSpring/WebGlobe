@@ -15,11 +15,10 @@ import TrafficLayer from './layers/TrafficLayer';
 import Atmosphere from './graphics/Atmosphere';
 import LocationGraphic from './graphics/LocationGraphic';
 import PoiLayer from './layers/PoiLayer';
+import RouteLayer from './layers/RouteLayer';
 import Extent from './Extent';
 import Service,{Location} from './Service';
 import {WebGLRenderingContextExtension} from './Definitions.d';
-
-import RouteLayer from './layers/RouteLayer';
 
 const initLevel:number = Utils.isMobile() ? 11 : 3;
 
@@ -42,6 +41,7 @@ export default class Globe {
   labelLayer: LabelLayer = null;
   trafficLayer: TrafficLayer = null;
   poiLayer: PoiLayer = null;
+  routeLayer: RouteLayer = null;
   locationGraphic: LocationGraphic = null;
   debugStopRefreshTiles: boolean = false;
   private readonly REFRESH_INTERVAL: number = 150; //Globe自动刷新时间间隔，以毫秒为单位
@@ -111,14 +111,13 @@ export default class Globe {
     // this.scene.add(this.trafficLayer);
     var atmosphere = Atmosphere.getInstance();
     this.scene.add(atmosphere);
+    this.routeLayer = RouteLayer.getInstance();
+    this.scene.add(this.routeLayer);
     this.poiLayer = PoiLayer.getInstance();
     this.poiLayer.globe = this;
     this.scene.add(this.poiLayer);
     this.locationGraphic = LocationGraphic.getInstance(this);
     this.scene.add(this.locationGraphic);
-
-    const meshColorGraphic = RouteLayer.testMeshColorGraphic();
-    this.scene.add(meshColorGraphic);
 
     this.renderer.resume();
     this.eventHandler = new EventHandler(this);

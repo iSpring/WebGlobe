@@ -1,3 +1,4 @@
+import Kernel from '../Kernel';
 import Utils from '../Utils';
 import MathUtils from '../math/Utils';
 import Vertice from '../geometries/MeshVertice';
@@ -5,12 +6,34 @@ import Triangle from '../geometries/Triangle';
 import Mesh from '../geometries/Mesh';
 import MeshColorGraphic from '../graphics/MeshColorGraphic';
 import MeshColorMaterial from '../materials/MeshColorMaterial';
+import GraphicGroup from '../GraphicGroup';
+import {Drawable} from '../Definitions.d';
+import Camera from '../Camera';
 
-export default class RouteLayer{
-    constructor(){
+export default class RouteLayer extends GraphicGroup<Drawable>{
+    private constructor(){
         // Utils.subscribe('level-change', () => {
         //     ;
         // });
+        super();
+        const testGraphic = RouteLayer.testMeshColorGraphic();
+        this.add(testGraphic);
+    }
+
+    protected onDraw(camera: Camera) {
+        const gl = Kernel.gl;
+        
+        gl.disable(WebGLRenderingContext.DEPTH_TEST);
+        gl.depthMask(false);
+
+        super.onDraw(camera);
+
+        gl.enable(WebGLRenderingContext.DEPTH_TEST);
+        gl.depthMask(true);
+    }
+
+    static getInstance(){
+        return new RouteLayer();
     }
 
     static testMeshColorGraphic(){

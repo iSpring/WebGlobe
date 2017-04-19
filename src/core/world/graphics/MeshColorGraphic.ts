@@ -65,9 +65,6 @@ export default class MeshColorGraphic extends Graphic {
     protected onDraw(camera: Camera) {
         var gl = Kernel.gl;
 
-        gl.disable(WebGLRenderingContext.DEPTH_TEST);
-        gl.depthMask(false);
-
         this.updateShaderUniforms(camera);
 
         //aPosition
@@ -88,9 +85,6 @@ export default class MeshColorGraphic extends Graphic {
         //绘图
         var count = this.geometry.triangles.length * 3;
         gl.drawElements(WebGLRenderingContext.TRIANGLES, count, WebGLRenderingContext.UNSIGNED_SHORT, 0);
-
-        gl.enable(WebGLRenderingContext.DEPTH_TEST);
-        gl.depthMask(true);
 
         //释放当前绑定对象
         // gl.bindBuffer(gl.ARRAY_BUFFER, null);
