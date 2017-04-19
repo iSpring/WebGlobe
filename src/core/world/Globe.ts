@@ -111,7 +111,7 @@ export default class Globe {
     // this.scene.add(this.trafficLayer);
     var atmosphere = Atmosphere.getInstance();
     this.scene.add(atmosphere);
-    this.routeLayer = RouteLayer.getInstance();
+    this.routeLayer = RouteLayer.getInstance(this.camera);
     this.scene.add(this.routeLayer);
     this.poiLayer = PoiLayer.getInstance();
     this.poiLayer.globe = this;
