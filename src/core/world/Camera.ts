@@ -549,6 +549,14 @@ class Camera extends Object3D {
     }
   }
 
+  getLonlat(){
+    const origin2PositionVector = Vector.fromVertice(this.getPosition());
+    origin2PositionVector.setLength(Kernel.EARTH_RADIUS);
+    const p = origin2PositionVector.getVertice();
+    const lonlat = MathUtils.cartesianCoordToGeographic(p);
+    return lonlat;
+  }
+
   getLevel(): number {
     return this.level;
   }

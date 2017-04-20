@@ -126,7 +126,7 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
 
     private constructor(private camera: Camera) {
         super();
-        this.test();
+        // this.test();
         Utils.subscribe('level-change', () => {
             if(this.children.length > 0){
                 const resolution = this._getResolution();

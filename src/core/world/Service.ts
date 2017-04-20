@@ -169,16 +169,6 @@ class Service {
         if (path.steps) {
           path.steps.forEach((step: any) => {
             //polyline: "117.002052,39.403416;116.998672,39.404453"
-            // const polyline: string = step.polyline;
-            // const firstIndex: number = polyline.indexOf(";");
-            // const firstStr = polyline.slice(0, firstIndex);
-            // const firstLonLat: string[] = firstStr.split(",");
-            // step.start = [parseFloat(firstLonLat[0]), parseFloat(firstLonLat[1])];
-
-            // const lastIndex: number = polyline.indexOf(";");
-            // const lastStr = polyline.slice(0, lastIndex);
-            // const lastLonLat: string[] = lastStr.split(",");
-            // step.last = [parseFloat(lastLonLat[0]), parseFloat(lastLonLat[1])];
             const strLonLats: string[] = step.polyline.split(";");
             const lonlats: number[][] = strLonLats.map((strLonlat: string) => {
               const splits = strLonlat.split(",");

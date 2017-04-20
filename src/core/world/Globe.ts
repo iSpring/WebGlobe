@@ -1,6 +1,5 @@
 import Kernel from './Kernel';
 import Utils from './Utils';
-// import Locator, { LocationData } from './Locator';
 import Renderer from './Renderer';
 import Camera, { CameraCore } from './Camera';
 import Scene from './Scene';
@@ -98,10 +97,9 @@ export default class Globe {
     this.renderer.setCamera(this.camera);
 
     if(options.satellite){
-      this.setTiledLayer(new GoogleTiledLayer("Satellite"));
-      this.labelLayer = new AutonaviLabelLayer();
-      // this.labelLayer = new GoogleLabelLayer();
-      this.scene.add(this.labelLayer);
+      this.setTiledLayer(new GoogleTiledLayer("Default"));//"Default" | "Satellite" | "Road" | "RoadOnly" | "Terrain" | "TerrainOnly";
+      // this.labelLayer = new AutonaviLabelLayer();
+      // this.scene.add(this.labelLayer);
     }else{
       this.setTiledLayer(new AutonaviTiledLayer());
     }
@@ -166,6 +164,9 @@ export default class Globe {
       level = 11;
     }
     this.setLevel(level);
+  }
+
+  public animateTo(newLon:number, newLat:number, newLevel:number){
   }
 
   public isPaused(){
