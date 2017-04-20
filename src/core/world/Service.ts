@@ -162,29 +162,41 @@ class Service {
     });
   }
 
-  private static _handleRouteResult(responseText: string){
+  private static _handleRouteResult(responseText: string) {
     const response: any = JSON.parse(responseText);
-    response.route.paths.forEach((path: any) => {
-      if(path.steps){
-        path.steps.forEach((step: any) => {
-          //polyline: "117.002052,39.403416;116.998672,39.404453"
-          const polyline: string = step.polyline;
-          const firstIndex: number = polyline.indexOf(";");
-          const firstStr = polyline.slice(0, firstIndex);
-          const firstLonLat: string[] = firstStr.split(",");
-          step.start = [parseFloat(firstLonLat[0]), parseFloat(firstLonLat[1])];
+    if (response.route && response.route.paths && response.route.paths.length > 0) {
+      response.route.paths.forEach((path: any) => {
+        if (path.steps) {
+          path.steps.forEach((step: any) => {
+            //polyline: "117.002052,39.403416;116.998672,39.404453"
+            // const polyline: string = step.polyline;
+            // const firstIndex: number = polyline.indexOf(";");
+            // const firstStr = polyline.slice(0, firstIndex);
+            // const firstLonLat: string[] = firstStr.split(",");
+            // step.start = [parseFloat(firstLonLat[0]), parseFloat(firstLonLat[1])];
 
-          const lastIndex: number = polyline.indexOf(";");
-          const lastStr = polyline.slice(0, lastIndex);
-          const lastLonLat: string[] = lastStr.split(",");
-          step.last = [parseFloat(lastLonLat[0]), parseFloat(lastLonLat[1])];
-        });
-      }
-    });
+            // const lastIndex: number = polyline.indexOf(";");
+            // const lastStr = polyline.slice(0, lastIndex);
+            // const lastLonLat: string[] = lastStr.split(",");
+            // step.last = [parseFloat(lastLonLat[0]), parseFloat(lastLonLat[1])];
+            const strLonLats: string[] = step.polyline.split(";");
+            const lonlats: number[][] = strLonLats.map((strLonlat: string) => {
+              const splits = strLonlat.split(",");
+              const lon = parseFloat(splits[0]);
+              const lat = parseFloat(splits[1]);
+              return [lon, lat];
+            });
+            step.firstLonlat = lonlats[0];
+            step.lastLonlat = lonlats[lonlats.length - 1];
+            step.lonlats = lonlats;
+          });
+        }
+      });
+    }
     return response;
   }
 
-  static gaodeRouteByDriving(fromLon: number, fromLat: number, toLon: number, toLat: number, key: string, strategy: number = 5){
+  static routeByDriving(fromLon: number, fromLat: number, toLon: number, toLat: number, key: string, strategy: number = 5) {
     //http://lbs.gaode.com/api/webservice/guide/api/direction/#driving
     //http://restapi.amap.com/v3/direction/driving?origin=117.00216,39.40365&destination=116.99557,39.39268&extensions=base&output=json&key=db146b37ef8d9f34473828f12e1e85ad&strategy=5
     const promise = new Promise((resolve, reject) => {
@@ -210,7 +222,7 @@ class Service {
   }
 
   static decodeQQPolyline(polyline: number[]) {
-    for (var i = 2; i < polyline.length; i++){
+    for (var i = 2; i < polyline.length; i++) {
       polyline[i] = polyline[i - 2] + polyline[i] / 1000000;
     }
     return polyline;
@@ -220,7 +232,7 @@ class Service {
     //policy: LEAST_TIME,LEAST_FEE,REAL_TRAFFIC
     //http://apis.map.qq.com/ws/direction/v1/driving/?from=39.915285,116.403857&to=39.915285,116.803857&waypoints=39.111,116.112;39.112,116.113&output=json&callback=cb&key=OB4BZ-D4W3U-B7VVO-4PJWW-6TKDJ-WPB77
     let url = `//apis.map.qq.com/ws/direction/v1/driving/?from=${fromLat},${fromLon}&to=${toLat},${toLon}&output=jsonp&key=${key}`;
-    if(policy){
+    if (policy) {
       url += `&policy=${policy}`;
     }
     const promise = new Promise((resolve) => {

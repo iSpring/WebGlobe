@@ -34,12 +34,22 @@ void main()
 export default class MeshColorGraphic extends Graphic {
     constructor(public geometry: Mesh, public material: MeshColorMaterial){
         super(geometry, material);
-        this.geometry.vertices.forEach((vertice: MeshVertice) => {
-            vertice.c = material.color;
-        });
-        this.geometry.calculateVBO();
-        this.geometry.calculateIBO();
-        this.geometry.calculateCBO();
+        this.setGeometry(geometry);
+    }
+
+    setGeometry(geometry: Mesh){
+        if(this.geometry){
+            this.geometry.destroy();
+        }
+        this.geometry = geometry;
+        if(this.geometry){
+            this.geometry.vertices.forEach((vertice: MeshVertice) => {
+                vertice.c = this.material.color;
+            });
+            this.geometry.calculateVBO();
+            this.geometry.calculateIBO();
+            this.geometry.calculateCBO();
+        }
     }
 
     isGeometryReady():boolean{
