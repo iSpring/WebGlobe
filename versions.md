@@ -221,3 +221,5 @@
    - 完善Service.gaodeRouteByDriving()方法
    - MeshGraphic => MeshTextureGraphic
    - 添加MeshColorGraphic
+
+- 0.4.24 RouteLayer基本可以实现固定宽度的Polyline
