@@ -39,7 +39,7 @@ export default class App extends RouteComponent{
                         <i className={faMapMarker}></i>
                         <span>附近</span>
                     </Link>
-                    <Link to="/index/nav" className={styles.link1}>
+                    <Link to="/nav/search" className={styles.link1}>
                         <i className={faRoad}></i>
                         <span>路线</span>
                     </Link>

@@ -216,3 +216,10 @@
  - 0.4.22
    - 继续完善index/Nav页面
    - 添加了路线规划相关的服务
+
+- 0.4.23
+   - 完善Service.gaodeRouteByDriving()方法
+   - MeshGraphic => MeshTextureGraphic
+   - 添加MeshColorGraphic
+
+- 0.4.24 RouteLayer基本可以实现固定宽度的Polyline

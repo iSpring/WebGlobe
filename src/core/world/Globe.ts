@@ -1,6 +1,5 @@
 import Kernel from './Kernel';
 import Utils from './Utils';
-// import Locator, { LocationData } from './Locator';
 import Renderer from './Renderer';
 import Camera, { CameraCore } from './Camera';
 import Scene from './Scene';
@@ -15,6 +14,7 @@ import TrafficLayer from './layers/TrafficLayer';
 import Atmosphere from './graphics/Atmosphere';
 import LocationGraphic from './graphics/LocationGraphic';
 import PoiLayer from './layers/PoiLayer';
+import RouteLayer from './layers/RouteLayer';
 import Extent from './Extent';
 import Service,{Location} from './Service';
 import {WebGLRenderingContextExtension} from './Definitions.d';
@@ -29,6 +29,7 @@ export class GlobeOptions{
   satellite: boolean = true;
   level: number = initLevel;
   lonlat: number[] = initLonlat;
+  key: string = "";
 }
 
 export default class Globe {
@@ -39,9 +40,11 @@ export default class Globe {
   labelLayer: LabelLayer = null;
   trafficLayer: TrafficLayer = null;
   poiLayer: PoiLayer = null;
+  routeLayer: RouteLayer = null;
   locationGraphic: LocationGraphic = null;
   debugStopRefreshTiles: boolean = false;
   private readonly REFRESH_INTERVAL: number = 150; //Globe自动刷新时间间隔，以毫秒为单位
+  private key: string = "";
   private lastRefreshTimestamp: number = -1;
   private lastRefreshCameraCore: CameraCore = null;
   private eventHandler: EventHandler = null;
@@ -82,6 +85,9 @@ export default class Globe {
     if(!options.lonlat){
       options.lonlat = initLonlat;
     }
+    if(options.key){
+      this.key = options.key;
+    }
     this.renderer = new Renderer(canvas, this._onBeforeRender.bind(this), this._onAfterRender.bind(this));
     this.gl = this.renderer.gl;
     this.scene = new Scene();
@@ -91,10 +97,9 @@ export default class Globe {
     this.renderer.setCamera(this.camera);
 
     if(options.satellite){
-      this.setTiledLayer(new GoogleTiledLayer("Satellite"));
-      this.labelLayer = new AutonaviLabelLayer();
-      // this.labelLayer = new GoogleLabelLayer();
-      this.scene.add(this.labelLayer);
+      this.setTiledLayer(new GoogleTiledLayer("Default"));//"Default" | "Satellite" | "Road" | "RoadOnly" | "Terrain" | "TerrainOnly";
+      // this.labelLayer = new AutonaviLabelLayer();
+      // this.scene.add(this.labelLayer);
     }else{
       this.setTiledLayer(new AutonaviTiledLayer());
     }
@@ -104,6 +109,8 @@ export default class Globe {
     // this.scene.add(this.trafficLayer);
     var atmosphere = Atmosphere.getInstance();
     this.scene.add(atmosphere);
+    this.routeLayer = RouteLayer.getInstance(this.camera);
+    this.scene.add(this.routeLayer);
     this.poiLayer = PoiLayer.getInstance();
     this.poiLayer.globe = this;
     this.scene.add(this.poiLayer);
@@ -157,6 +164,9 @@ export default class Globe {
       level = 11;
     }
     this.setLevel(level);
+  }
+
+  public animateTo(newLon:number, newLat:number, newLevel:number){
   }
 
   public isPaused(){

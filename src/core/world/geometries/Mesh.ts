@@ -5,13 +5,35 @@ import Object3D from '../Object3D';
 import VertexBufferObject from '../VertexBufferObject';
 
 export default class Mesh extends Object3D {
-	vertices: Vertice[];
-	triangles: Triangle[];
-	vbo: VertexBufferObject;
-	ibo: VertexBufferObject;
-	nbo: VertexBufferObject;
-	uvbo: VertexBufferObject;
-	cbo: VertexBufferObject;
+	vertices: Vertice[] = null;
+	triangles: Triangle[] = null;
+	vbo: VertexBufferObject = null;
+	ibo: VertexBufferObject = null;
+	nbo: VertexBufferObject = null;
+	uvbo: VertexBufferObject = null;
+	cbo: VertexBufferObject = null;
+
+	static buildPlane(vLeftTop: Vertice, vLeftBottom: Vertice, vRightTop: Vertice, vRightBottom: Vertice) {
+		/*对于一个面从外面向里面看的绘制顺序
+		 * 0      2
+		 *
+		 * 1      3*/
+		//0,1,2; 2,1,3
+
+		//triangles
+
+		var tri0 = new Triangle(vLeftTop, vLeftBottom, vRightTop);
+
+		var tri1 = new Triangle(vRightTop, vLeftBottom, vRightBottom);
+
+		return [tri0, tri1];
+	}
+
+	constructor(){
+		super();
+		this.vertices = [];
+		this.triangles = [];
+	}
 
 	//set vertices and triangles
 	buildTriangles(){

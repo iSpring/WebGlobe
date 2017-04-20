@@ -14,7 +14,7 @@ export default class Nav extends RouteComponent{
         this.pageCapacity = 10;
         this.isFromLastFocused = true;
         this.state = {
-            type: 'bus',//drive,walk
+            type: 'bus',//snsnav,walk
             fromPois: [],
             toPois: [],
             routes: []
@@ -38,9 +38,12 @@ export default class Nav extends RouteComponent{
             if(keyword){
                 Service.searchByCurrentCity(keyword, this.pageCapacity).then((response) => {
                     console.log(response);
-                    let pois = [];
+                    let pois = null;
                     if(response.detail){
                         pois = response.detail.pois;
+                    }
+                    if(!pois){
+                        pois = [];
                     }
                     if(isFrom){
                         this.setState({
@@ -98,14 +101,19 @@ export default class Nav extends RouteComponent{
 
     route(fromPoi, toPoi){
         console.log(fromPoi, toPoi);
+        // const promise = Service.routeByDriving(fromPoi.pointx, fromPoi.pointy, toPoi.pointx, toPoi.pointy, "YLZBZ-XDPKU-LWMV6-2WNPB-PL5W5-H6BGL");
+        const promise = Service.gaodeRouteByDriving(fromPoi.pointx, fromPoi.pointy, toPoi.pointx, toPoi.pointy, "db146b37ef8d9f34473828f12e1e85ad");
+        promise.then((response) => {
+            console.log(response);
+        });
     }
 
     render(){
         const busClassName = classNames(fontStyles.fa, fontStyles["fa-bus"], styles["traffic-type"], {
-            selected: this.state.type !== 'drive' && this.state.type !== 'walk'
+            selected: this.state.type !== 'snsnav' && this.state.type !== 'walk'
         });
         const driveClassName = classNames(fontStyles.fa, fontStyles["fa-car"], styles["traffic-type"], {
-            selected: this.state.type === 'drive'
+            selected: this.state.type === 'snsnav'
         });
         const walkClassName = classNames(fontStyles.fa, fontStyles["fa-male"], styles["traffic-type"], {
             selected: this.state.type === 'walk'
@@ -121,7 +129,7 @@ export default class Nav extends RouteComponent{
                 <header>
                     <div className={styles["traffic-types"]}>
                         <i className={busClassName} onClick={()=>this.onClickTrafficType('bus')}></i>
-                        <i className={driveClassName} onClick={()=>this.onClickTrafficType('drive')}></i>
+                        <i className={driveClassName} onClick={()=>this.onClickTrafficType('snsnav')}></i>
                         <i className={walkClassName} onClick={()=>this.onClickTrafficType('walk')}></i>
                     </div>
                     <div className={styles.cancel} onClick={()=>{this.onCancel();}}>取消</div>
