@@ -122,16 +122,17 @@ class RouteGraphic extends MeshColorGraphic {
 }
 
 export default class RouteLayer extends GraphicGroup<Drawable>{
-    pixelWidth: number = 5;
+    private pixelWidth: number = 5;
+    private paths: any[] = null;
 
     private constructor(private camera: Camera, private key: string) {
         super();
         // this.test();
         Utils.subscribe('level-change', () => {
-            if(this.children.length > 0){
+            if (this.children.length > 0) {
                 const resolution = this._getResolution();
                 this.children.forEach((graphic: Drawable) => {
-                    if(graphic instanceof RouteGraphic){
+                    if (graphic instanceof RouteGraphic) {
                         graphic.updateGeometry(resolution);
                     }
                 });
@@ -146,12 +147,12 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
         this.addRouteByLonlat(startLonLat, endLonLat, pixelWidth, segments, rgb);
     }
 
-    addRouteByLonlat(startLonLat: number[], endLonLat: number[], pixelWidth: number, segments: number, rgb: number[]) {
+    private addRouteByLonlat(startLonLat: number[], endLonLat: number[], pixelWidth: number, segments: number, rgb: number[]) {
         const lonlats = this._getLonlatsBySegments(startLonLat, endLonLat, segments);
         return this.addRouteByLonlats(lonlats, pixelWidth, rgb);
     }
 
-    addRouteByLonlats(lonlats: number[][], pixelWidth: number, rgb: number[], resolution: number = -1) {
+    private addRouteByLonlats(lonlats: number[][], pixelWidth: number, rgb: number[], resolution: number = -1) {
         if (resolution < 0) {
             resolution = this._getResolution();
         }
@@ -182,21 +183,32 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
         return lonlats;
     }
 
-    routeByDriving(fromLon: number, fromLat: number, toLon: number, toLat: number, strategy: number = 5) {
-        return Service.routeByDriving(fromLon, fromLat, toLon, toLat, this.key, strategy).then((response: any) => {
-            console.log(response);
-            this.clear();
-            if (response.route && response.route.paths.length > 0) {
-                let path = response.route.paths[0];
+    showPath(pathIndex: number) {
+        if (this.paths && this.paths.length > 0) {
+            const path: any = this.paths[pathIndex];
+            if(path && path.steps && path.steps.length > 0){
+                this.clear();
                 let color = [0, 1, 0];
-                path.steps.forEach((step: any, index:number, steps: any[]) => {
-                    if(index !== 0){
+                path.steps.forEach((step: any, index: number, steps: any[]) => {
+                    if (index !== 0) {
                         let prevStep = steps[index - 1];
-                        const joinLonlats:number[][] = [prevStep.lastLonlat, step.firstLonlat];
+                        const joinLonlats: number[][] = [prevStep.lastLonlat, step.firstLonlat];
                         this.addRouteByLonlats(joinLonlats, this.pixelWidth, color);
                     }
                     this.addRouteByLonlats(step.lonlats, this.pixelWidth, color);
                 });
+            }
+        }
+    }
+
+    routeByDriving(fromLon: number, fromLat: number, toLon: number, toLat: number, strategy: number = 5) {
+        return Service.routeByDriving(fromLon, fromLat, toLon, toLat, this.key, strategy).then((response: any) => {
+            console.log(response);
+            this.paths = null;
+            this.clear();
+            if (response.route && response.route.paths.length > 0) {
+                this.paths = response.route.paths;
+                this.showPath(0);
             }
         });
     }
