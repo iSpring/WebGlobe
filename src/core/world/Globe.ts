@@ -97,8 +97,10 @@ export default class Globe {
     this.renderer.setCamera(this.camera);
 
     if(options.satellite){
+      //not display well for level 10,11 when style is Default
       this.setTiledLayer(new GoogleTiledLayer("Default"));//"Default" | "Satellite" | "Road" | "RoadOnly" | "Terrain" | "TerrainOnly";
       // this.labelLayer = new AutonaviLabelLayer();
+      // this.labelLayer = new SosoLabelLayer();
       // this.scene.add(this.labelLayer);
     }else{
       this.setTiledLayer(new AutonaviTiledLayer());
