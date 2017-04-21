@@ -76,7 +76,7 @@ class Camera extends Object3D {
   // private resolutionInWorld: number = -1;//屏幕1px在实际世界中的距离
 
   private level: number = -1;//当前渲染等级
-  private floatLevel: number = -2;//可能是正数，可能是非整数，非整数表示缩放动画过程中的level
+  private floatLevel: number = -2;//可能是整数，可能是非整数，非整数表示缩放动画过程中的level
   private lastFloatLevel: number = -3;//上次render()时所用到的this.realLevel
 
   private lastMatrix: Matrix;//上次render()时的this.matrix
@@ -549,10 +549,15 @@ class Camera extends Object3D {
     }
   }
 
-  getLonlat(){
+  getVertice(){
     const origin2PositionVector = Vector.fromVertice(this.getPosition());
     origin2PositionVector.setLength(Kernel.EARTH_RADIUS);
     const p = origin2PositionVector.getVertice();
+    return p;
+  }
+
+  getLonlat(){
+    const p = this.getVertice();
     const lonlat = MathUtils.cartesianCoordToGeographic(p);
     return lonlat;
   }
@@ -747,6 +752,55 @@ class Camera extends Object3D {
   isAnimating(): boolean {
     return this.animating;
   }
+
+  animateToLonlat(newLon: number, newLat: number){
+    const promise = new Promise((resolve, reject) => {
+      if(this.isAnimating()){
+        reject("be animating");
+        return;
+      }
+
+    });
+    return promise;
+  }
+
+  centerToLonlat(newLon:number, newLat:number){
+    this._centerToLonlat(newLon, newLat);
+  }
+
+  private _centerToLonlat(newLon:number, newLat:number, newLengthFromOrigin2Positon?: number){
+    // const length = Vector.fromVertice(this.getPosition()).getLength();
+    // const newVertice = MathUtils.geographicToCartesianCoord(newLon, newLat, length);
+    // this.centerToVertice(newVertice);
+    const [lon, lat] = this.getLonlat();
+    const deltaLonRadian = MathUtils.degreeToRadian(newLon - lon);
+    const deltaLatRadian = MathUtils.degreeToRadian(newLat - lat);
+
+    this._rotateDeltaLonLat(deltaLonRadian, deltaLatRadian);
+
+    if(newLengthFromOrigin2Positon > 0){
+      const vectorFromOrigin2Position = Vector.fromVertice(this.getPosition());
+      vectorFromOrigin2Position.setLength(newLengthFromOrigin2Positon);
+      const newPosition = vectorFromOrigin2Position.getVertice();
+      this.setPosition(newPosition);
+    }
+  }
+
+  private _rotateDeltaLonLat(deltaLonRadian: number, deltaLatRadian: number){
+    this.worldRotateY(deltaLonRadian);
+    const vector1 = Vector.fromVertice(this.getPosition());
+    const vector2 = new Vector(0, 1, 0);
+    const crossAxis = vector1.cross(vector2);
+    this.worldRotateByVector(deltaLatRadian, crossAxis);
+  }
+
+  // centerToVertice(newVertice: Vertice){
+  //   const startVector = Vector.fromVertice(this.getPosition());
+  //   const endVector = Vector.fromVertice(newVertice);
+  //   const axis = startVector.cross(endVector);
+  //   const radian = Vector.getRadianOfTwoVectors(startVector, endVector);
+  //   this.worldRotateByVector(radian, axis);
+  // }
 
   animateToLevel(newLevel: number, cb?: ()=>void): void {
     if (this.isAnimating()) {
