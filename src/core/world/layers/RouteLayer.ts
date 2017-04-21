@@ -124,7 +124,7 @@ class RouteGraphic extends MeshColorGraphic {
 export default class RouteLayer extends GraphicGroup<Drawable>{
     pixelWidth: number = 5;
 
-    private constructor(private camera: Camera) {
+    private constructor(private camera: Camera, private key: string) {
         super();
         // this.test();
         Utils.subscribe('level-change', () => {
@@ -182,8 +182,8 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
         return lonlats;
     }
 
-    routeByDriving(fromLon: number, fromLat: number, toLon: number, toLat: number, key: string, strategy: number = 5) {
-        return Service.routeByDriving(fromLon, fromLat, toLon, toLat, key, strategy).then((response: any) => {
+    routeByDriving(fromLon: number, fromLat: number, toLon: number, toLat: number, strategy: number = 5) {
+        return Service.routeByDriving(fromLon, fromLat, toLon, toLat, this.key, strategy).then((response: any) => {
             console.log(response);
             this.clear();
             if (response.route && response.route.paths.length > 0) {
@@ -218,7 +218,7 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
         super.destroy();
     }
 
-    static getInstance(camera: Camera) {
-        return new RouteLayer(camera);
+    static getInstance(camera: Camera, key: string) {
+        return new RouteLayer(camera, key);
     }
 };

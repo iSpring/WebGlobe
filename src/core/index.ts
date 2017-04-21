@@ -6,15 +6,17 @@ import './index.scss';
 // console.log(template);
 
 (function () {
-    var options1 = new GlobeOptions();
-    options1.satellite = true;
-    var globe1 = Globe.getInstance(options1);
-    globe1.placeAt(document.body);
-    (<any>window).globe = globe1;
+    var options = new GlobeOptions();
+    options.satellite = true;
+    options.level = 3;
+    options.lonlat = 'auto';
+    var globe = Globe.getInstance(options);
+    globe.placeAt(document.body);
+    (<any>window).globe = globe;
     (<any>window).kernel = Kernel;
 
     function resize(){
-        globe1.resize(window.innerWidth, window.innerHeight);
+        globe.resize(window.innerWidth, window.innerHeight);
     }
 
     window.addEventListener("resize", resize, false);

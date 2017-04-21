@@ -27,9 +27,9 @@ type RenderCallback = () => void;
 
 export class GlobeOptions{
   satellite: boolean = true;
-  level: number = initLevel;
-  lonlat: number[] = initLonlat;
-  key: string = "";
+  level: number | 'auto' = 'auto';
+  lonlat: number[] | 'auto' = 'auto';
+  key: string = ""
 }
 
 export default class Globe {
@@ -44,7 +44,6 @@ export default class Globe {
   locationGraphic: LocationGraphic = null;
   debugStopRefreshTiles: boolean = false;
   private readonly REFRESH_INTERVAL: number = 150; //Globe自动刷新时间间隔，以毫秒为单位
-  private key: string = "";
   private lastRefreshTimestamp: number = -1;
   private lastRefreshCameraCore: CameraCore = null;
   private eventHandler: EventHandler = null;
@@ -75,28 +74,27 @@ export default class Globe {
     }
   }
 
-  private constructor(public canvas: HTMLCanvasElement, options?: GlobeOptions) {
-    if(!options){
-      options = new GlobeOptions();
+  private constructor(public canvas: HTMLCanvasElement, private options?: GlobeOptions) {
+    if(!this.options){
+      this.options = new GlobeOptions();
     }
-    if(!(options.level >= Kernel.MIN_LEVEL && options.level <= Kernel.MAX_LEVEL)){
-      options.level = initLevel;
-    }
-    if(!options.lonlat){
-      options.lonlat = initLonlat;
-    }
-    if(options.key){
-      this.key = options.key;
-    }
+    // if(!(options.level >= Kernel.MIN_LEVEL && options.level <= Kernel.MAX_LEVEL)){
+    //   options.level = initLevel;
+    // }
+    // if(!options.lonlat){
+    //   options.lonlat = initLonlat;
+    // }
     this.renderer = new Renderer(canvas, this._onBeforeRender.bind(this), this._onAfterRender.bind(this));
     this.gl = this.renderer.gl;
     this.scene = new Scene();
     var radio = canvas.width / canvas.height;
-    this.camera = new Camera(canvas, 30, radio, 1, Kernel.EARTH_RADIUS * 2, options.level, options.lonlat);
+    let level = this.options.level >= 0 ? (this.options.level as number) : initLevel;
+    let lonlat = (this.options.lonlat && this.options.lonlat.length === 2) ? (this.options.lonlat as number[]) : initLonlat;
+    this.camera = new Camera(canvas, 30, radio, 1, Kernel.EARTH_RADIUS * 2, level, lonlat);
     this.renderer.setScene(this.scene);
     this.renderer.setCamera(this.camera);
 
-    if(options.satellite){
+    if(this.options.satellite){
       //not display well for level 10,11 when style is Default
       this.setTiledLayer(new GoogleTiledLayer("Default"));//"Default" | "Satellite" | "Road" | "RoadOnly" | "Terrain" | "TerrainOnly";
       // this.labelLayer = new AutonaviLabelLayer();
@@ -111,7 +109,7 @@ export default class Globe {
     // this.scene.add(this.trafficLayer);
     var atmosphere = Atmosphere.getInstance();
     this.scene.add(atmosphere);
-    this.routeLayer = RouteLayer.getInstance(this.camera);
+    this.routeLayer = RouteLayer.getInstance(this.camera, this.options.key);
     this.scene.add(this.routeLayer);
     this.poiLayer = PoiLayer.getInstance();
     this.poiLayer.globe = this;
@@ -156,16 +154,22 @@ export default class Globe {
 
   private updateUserLocation(location: Location) {
     this.locationGraphic.setLonLat(location.lon, location.lat);
-    this.centerTo(location.lon, location.lat);
-    var level: number = 8;
-    if (location.accuracy <= 100) {
-      level = 16;
-    } else if (location.accuracy <= 1000) {
-      level = 13;
-    } else {
-      level = 11;
+
+    if(this.options.lonlat === 'auto'){
+      this.centerTo(location.lon, location.lat);
     }
-    this.setLevel(level);
+    
+    if(this.options.level === 'auto'){
+      let level: number = 8;
+      if (location.accuracy <= 100) {
+        level = 16;
+      } else if (location.accuracy <= 1000) {
+        level = 13;
+      } else {
+        level = 11;
+      }
+      this.setLevel(level);
+    }
   }
 
   public animateTo(newLon:number, newLat:number, newLevel:number){
