@@ -3,15 +3,19 @@ var chalk = require('chalk');
 var webpack = require('webpack');
 
 var ExtractTextWebpackPlugin = require("extract-text-webpack-plugin");
-var extractPlugin = new ExtractTextWebpackPlugin("bundle.[contenthash].css");
+//https://github.com/webpack-contrib/extract-text-webpack-plugin/blob/webpack-1/README.md
+//[name] the name of the chunk
+//[contenthash] a hash of the content of the extracted file
+var extractPlugin = new ExtractTextWebpackPlugin("[name].[contenthash].css");
 
 var WebpackMd5Hash = require('webpack-md5-hash');
 var webpackMd5HashPlugin = new WebpackMd5Hash();
 
 var HtmlWebpackPlugin = require('html-webpack-plugin');
+//https://github.com/jantimon/html-webpack-plugin/issues/133
 var coreHtmlWebpackPlugin = new HtmlWebpackPlugin({
     filename: './index.html',
-    template: '!!ejs!./src/core/template.html',
+    template: '!!html!./src/core/template.html',
     hash: false,
     inject: 'body',
     chunks: ["core"]
@@ -54,12 +58,33 @@ module.exports = {
     },
 
     module: {
-        loaders: [
-            { test: /\.tsx?$/, loader: "ts-loader" },
-            { test: /\.jsx?$/, loader: "babel-loader" },
-            { test: /\.scss$/, loader: extractPlugin.extract("css?modules&localIdentName=[name]__[local]___[hash:base64:5]!sass") },
-            { test: /\.(png|jpeg|jpg)$/, loader: "file-loader" },
-            { test: /\.(otf|ttf|eot|woff|woff2)\?v=.*/, loader: "file-loader" }
+        loaders: [{
+                test: /\.tsx?$/,
+                loader: "ts-loader"
+            },
+            {
+                test: /\.jsx?$/,
+                loader: "babel-loader"
+            },
+            {
+                test: /\.scss$/,
+                loader: extractPlugin.extract("css?modules&localIdentName=[name]__[local]___[hash:base64:5]!sass")
+            },
+            {
+                test: /\.(png|jpeg|jpg)$/,
+                loader: "file-loader"
+            },
+            {
+                test: /\.(otf|ttf|eot|woff|woff2)\?v=.*/,
+                loader: "file-loader"
+            },
+            {
+                test: /\.html$/,
+                loader: "html-loader",
+                query: {
+                    attrs: ['img:src']
+                }
+            }
         ]
     },
 
