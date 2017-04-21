@@ -8,7 +8,6 @@ import EventHandler from './EventHandler';
 import TiledLayer from './layers/TiledLayer';
 import { GoogleTiledLayer } from './layers/Google';
 import { AutonaviTiledLayer, AutonaviLabelLayer } from './layers/Autonavi';
-import { SosoLabelLayer } from './layers/Soso';
 import LabelLayer from './layers/LabelLayer';
 import TrafficLayer from './layers/TrafficLayer';
 // import { QihuTrafficLayer } from './layers/Qihu';
