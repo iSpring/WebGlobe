@@ -765,10 +765,10 @@ class Camera extends Object3D {
   }
 
   centerToLonlat(newLon:number, newLat:number){
-    this._centerToLonlat(newLon, newLat);
+    this._setPositionByLonLatDistance(newLon, newLat);
   }
 
-  private _centerToLonlat(newLon:number, newLat:number, newLengthFromOrigin2Positon?: number){
+  private _setPositionByLonLatDistance(newLon:number, newLat:number, newLengthFromOrigin2Positon?: number){
     // const length = Vector.fromVertice(this.getPosition()).getLength();
     // const newVertice = MathUtils.geographicToCartesianCoord(newLon, newLat, length);
     // this.centerToVertice(newVertice);
@@ -776,7 +776,7 @@ class Camera extends Object3D {
     const deltaLonRadian = MathUtils.degreeToRadian(newLon - lon);
     const deltaLatRadian = MathUtils.degreeToRadian(newLat - lat);
 
-    this._rotateDeltaLonLat(deltaLonRadian, deltaLatRadian);
+    this._setPositionByDeltaLonLatHeight(deltaLonRadian, deltaLatRadian);
 
     if(newLengthFromOrigin2Positon > 0){
       const vectorFromOrigin2Position = Vector.fromVertice(this.getPosition());
@@ -786,12 +786,20 @@ class Camera extends Object3D {
     }
   }
 
-  private _rotateDeltaLonLat(deltaLonRadian: number, deltaLatRadian: number){
+  private _setPositionByDeltaLonLatHeight(deltaLonRadian: number, deltaLatRadian: number, deltaHeight?: number){
     this.worldRotateY(deltaLonRadian);
     const vector1 = Vector.fromVertice(this.getPosition());
     const vector2 = new Vector(0, 1, 0);
     const crossAxis = vector1.cross(vector2);
     this.worldRotateByVector(deltaLatRadian, crossAxis);
+
+    if(deltaHeight > 0 || deltaHeight < 0){
+      const vectorFromOrigin2Position = Vector.fromVertice(this.getPosition());
+      const newLength = vectorFromOrigin2Position.getLength() + deltaHeight;
+      vectorFromOrigin2Position.setLength(newLength);
+      const newPosition = vectorFromOrigin2Position.getVertice();
+      this.setPosition(newPosition);
+    }
   }
 
   // centerToVertice(newVertice: Vertice){
