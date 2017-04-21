@@ -15,28 +15,27 @@ body {
     cursor: default;
 }
 
-#canvasId {
-    cursor: default;
-}
-
-#fork-me {
-    position: absolute;
-    right: 0;
-    top: 0;
-    outline: none !important;
-}
-
-#fork-me img {
-    position: absolute;
-    top: 0;
-    right: 0;
-    left: auto;
-    bottom: auto;
-}
-
-#about-me {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    outline: none !important;
+:global {
+    #canvasId {
+        cursor: default;
+    }
+    #fork-me {
+        position: absolute;
+        right: 0;
+        top: 0;
+        outline: none !important;
+    }
+    #fork-me img {
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: auto;
+        bottom: auto;
+    }
+    #about-me {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        outline: none !important;
+    }
 }

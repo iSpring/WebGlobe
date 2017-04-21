@@ -223,3 +223,5 @@
    - 添加MeshColorGraphic
 
 - 0.4.24 RouteLayer基本可以实现固定宽度的Polyline
+
+- 0.4.25 更新webpack.config.js

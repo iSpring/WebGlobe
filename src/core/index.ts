@@ -1,6 +1,9 @@
 ﻿import Kernel from './world/Kernel';
 import Globe, {GlobeOptions} from './world/Globe';
 import './index.scss';
+// declare function require(name: string): any;
+// const template = require('./template.html');
+// console.log(template);
 
 (function () {
     var options1 = new GlobeOptions();
