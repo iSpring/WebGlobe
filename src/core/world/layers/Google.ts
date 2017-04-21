@@ -81,7 +81,6 @@ export class GoogleLabelLayer extends LabelLayer {
 
     getTileUrl(level: number, row: number, column: number): string {
 
-
         if (this.idx === undefined) {
             this.idx = 0;
         }
