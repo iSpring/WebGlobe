@@ -66,7 +66,7 @@ class RouteGraphic extends MeshColorGraphic {
 
     private _getRouteVertices(startIndex: number, startVertice: Vertice, start2EndVector: Vector, resolution: number, pixelWidth: number) {
         // const lineMesh = this.getLineMesh([116, -40], [117, 40], 1);
-        // const material = new MeshColorMaterial([0, 1, 0]);
+        // const material = new MeshColorMaterial([0, 255, 0]);
         // const graphic = new MeshColorGraphic(lineMesh, material);
         /*对于一个面从外面向里面看的绘制顺序
 		 * 0    end    2
@@ -189,7 +189,7 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
             const path: any = this.paths[pathIndex];
             if(path && path.steps && path.steps.length > 0){
                 this.clear();
-                let color = [0, 1, 0];
+                let color = [7, 215, 108];
                 const lonlats: number[][] = [];
                 path.steps.forEach((step: any, index: number, steps: any[]) => {
                     if (index !== 0) {

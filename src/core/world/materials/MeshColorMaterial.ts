@@ -48,8 +48,11 @@
 // };
 
 export default class MeshColorMaterial extends Material{
-    constructor(public color: number[]){
+    public color: number[] = null;//rgb,0-1
+
+    constructor(rgb255: number[]){
         super();
+        this.color = [rgb255[0] / 255, rgb255[1] / 255, rgb255[2] / 255];
     }
 
     isReady(){
