@@ -227,3 +227,5 @@
 - 0.4.25 更新webpack.config.js
 
 - 0.4.26 Camera中添加centerTo和animateTo方法
+
+- 0.4.27 Camera中添加setExtent和animateToExtent方法

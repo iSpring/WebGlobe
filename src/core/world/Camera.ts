@@ -576,12 +576,15 @@ class Camera extends Object3D {
     if (level > Kernel.MAX_LEVEL) {
       level = Kernel.MAX_LEVEL;
     }
-    if (level !== this.level || force) {
-      const oldLevel = this.level;
+    const oldLevel = this.level;
+    const levelChanged = level !== this.level;
+    if (levelChanged || force) {
       //不要在this._updatePositionByLevel()方法中更新this.level，因为这会影响animateToLevel()方法
       this._updatePositionByLevel(level, this.matrix);
       this.level = level;
       this.floatLevel = level;
+    }
+    if(levelChanged){
       Utils.publish('level-change', {
         oldLevel: oldLevel,
         newLevel: this.level
@@ -786,7 +789,7 @@ class Camera extends Object3D {
         if (a >= duration) {
           this.animating = false;
           this.floatLevel = newLevel;
-          this.setLevel(newLevel);
+          this.centerTo(newLon, newLat, newLevel);
           resolve();
         } else {
           this.floatLevel += deltaLevel;
@@ -814,6 +817,7 @@ class Camera extends Object3D {
     } else {
       this._setPositionByLonLatDistance(newLon, newLat);
     }
+    this.setLevel(newLevel, true);
   }
 
   private _setPositionByLonLatDistance(newLon: number, newLat: number, newLengthFromOrigin2Positon?: number) {
@@ -906,6 +910,41 @@ class Camera extends Object3D {
       }
     };
     requestAnimationFrame(callback);
+  }
+
+  setExtent(extent: Extent){
+    const [lon, lat, level] = this._calculateLonLatLevelByExtent(extent);
+    this.centerTo(lon, lat, level);
+  }
+
+  animateToExtent(extent: Extent, duration: number = 1000){
+    const [lon, lat, level] = this._calculateLonLatLevelByExtent(extent);
+    return this.animateTo(lon, lat, level, duration);
+  }
+
+  private _safelyGetValidLevel(level: number){
+    if(level > Kernel.MAX_LEVEL){
+      level = Kernel.MAX_LEVEL;
+    }else if(level < Kernel.MIN_LEVEL){
+      level = Kernel.MIN_LEVEL;
+    }
+    return level;
+  }
+
+  private _calculateLonLatLevelByExtent(extent: Extent){
+    const centerLon = (extent.getMinLon() + extent.getMaxLon()) / 2;
+    const centerLat = (extent.getMinLat() + extent.getMaxLat()) / 2;
+    const deltaLon = extent.getMaxLon() - extent.getMinLon();
+    const deltaLonRadian = MathUtils.degreeToRadian(deltaLon);
+    const deltaLength = Kernel.EARTH_RADIUS * deltaLonRadian;
+    const resolution = deltaLength / this.canvas.width;
+    const bestFloatLevel = this._calculateLevelByResolution(resolution);
+    let level = Math.floor(bestFloatLevel);
+    if(bestFloatLevel - level >= 0.9){
+      level += 1;
+    }
+    level = this._safelyGetValidLevel(level);
+    return [centerLon, centerLat, level];
   }
 
   private _look(cameraPnt: Vertice, targetPnt: Vertice, upDirection: Vector = new Vector(0, 1, 0)): void {
