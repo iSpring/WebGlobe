@@ -84,9 +84,11 @@ export default class PoiLayer extends MultiPointsGraphic {
     var level = this.globe.getLevel();
     if (level >= 10) {
       var extent = this.globe.getExtent();
-      Service.searchByExtent(keyword, level, extent).then((response: any) => {
-        this._showPois(response);
-      });
+      if(extent){
+        Service.searchByExtent(keyword, level, extent).then((response: any) => {
+          this._showPois(response);
+        });
+      }
     }
   }
 

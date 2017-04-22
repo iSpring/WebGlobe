@@ -188,10 +188,8 @@ export default class Globe {
   }
 
   public resumeRendering(){
-    if(this.isRenderingPaused()){
-      this.renderer.resumeRendering();
-      this.refresh(true);
-    }
+    this.renderer.resumeRendering();
+    this.refresh(true);
   }
 
   public searchNearby(keyword: string, radius: number, pageCapacity: number, pageIndex: number){
@@ -333,10 +331,15 @@ export default class Globe {
     if (force) {
       isNeedRefresh = true;
     } else {
-      if (newCameraCore.equals(this.lastRefreshCameraCore)) {
+      if(this.isRenderingPaused()){
+        //when rendering paused, we don't need to refresh
         isNeedRefresh = false;
-      } else {
-        isNeedRefresh = timestamp - this.lastRefreshTimestamp >= this.REFRESH_INTERVAL;
+      }else{
+        if (newCameraCore.equals(this.lastRefreshCameraCore)) {
+          isNeedRefresh = false;
+        } else {
+          isNeedRefresh = timestamp - this.lastRefreshTimestamp >= this.REFRESH_INTERVAL;
+        }
       }
     }
 
@@ -351,30 +354,41 @@ export default class Globe {
 
     this.tiledLayer.updateTileVisibility();
 
-    var a = !!(this.labelLayer && this.labelLayer.visible);
-    var b = !!(this.trafficLayer && this.trafficLayer.visible);
-    if (a || b) {
-      var lastLevelTileGrids = this.tiledLayer.getLastLevelVisibleTileGrids();
-      if (a) {
-        this.labelLayer.updateTiles(this.getLevel(), lastLevelTileGrids);
-      }
-      if (b) {
-        this.trafficLayer.updateTiles(this.getLevel(), lastLevelTileGrids);
+    if(!this.isRenderingPaused()){
+      var a = !!(this.labelLayer && this.labelLayer.visible);
+      var b = !!(this.trafficLayer && this.trafficLayer.visible);
+      if (a || b) {
+        var lastLevelTileGrids = this.tiledLayer.getLastLevelVisibleTileGrids();
+        if (a) {
+          this.labelLayer.updateTiles(this.getLevel(), lastLevelTileGrids);
+        }
+        if (b) {
+          this.trafficLayer.updateTiles(this.getLevel(), lastLevelTileGrids);
+        }
       }
     }
   }
 
   getExtent(){
+    const extents:Extent[] = [];
+    //layerExtent is null when rendering paused
     var layerExtent = this.tiledLayer.getExtent();
-    var cameraExtent = this.camera.getExtent();
-    var extent = layerExtent;
-    if(cameraExtent){
-      var intersect = Extent.intersect([layerExtent, cameraExtent]);
-      if(intersect){
-        extent = intersect;
-      }
+    if(layerExtent){
+      extents.push(layerExtent);
     }
-    return extent;
+
+    var cameraExtent = this.camera.getExtent();
+    if(cameraExtent){
+      extents.push(cameraExtent);
+    }
+
+    if(extents.length === 0){
+      return  null;
+    }else if(extents.length === 1){
+      return extents[0];
+    }else{
+      return Extent.intersect(extents);
+    }
   }
 
   test(){

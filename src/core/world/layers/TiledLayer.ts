@@ -185,6 +185,9 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
   }
 
   getExtent() {
+    if(this.globe.isRenderingPaused()){
+      return null;
+    }
     var subTiledLayer = this.children[this.children.length - 1];
     return subTiledLayer.getExtent();
   }
