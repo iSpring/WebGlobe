@@ -107,7 +107,14 @@ export default class Nav extends RouteComponent{
         const promise = globe.routeLayer.routeByDriving(fromPoi.pointx, fromPoi.pointy, toPoi.pointx, toPoi.pointy);
         promise.then((response) => {
             console.log(response);
-            this.props.router.push('/nav/paths');
+            if(response.route){
+                this.props.router.push({
+                    pathname: '/nav/paths',
+                    state: {
+                        route: response.route
+                    }
+                });
+            }
         });
     }
 

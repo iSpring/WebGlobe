@@ -1,1 +1,25 @@
-﻿
+﻿$footer-size: 77px;
+
+.map-container{
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    bottom: $footer-size;
+}
+
+.footer{
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: $footer-size;
+
+    .steps{
+
+    }
+
+    .traffic-lights{
+
+    }
+}

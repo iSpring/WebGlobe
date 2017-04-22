@@ -211,13 +211,13 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
 
     routeByDriving(fromLon: number, fromLat: number, toLon: number, toLat: number, strategy: number = 5) {
         return Service.routeByDriving(fromLon, fromLat, toLon, toLat, this.key, strategy).then((response: any) => {
-            console.log(response);
             this.paths = null;
             this.clear();
             if (response.route && response.route.paths.length > 0) {
                 this.paths = response.route.paths;
                 this.showPath(0);
             }
+            return response;
         });
     }
 
