@@ -2,7 +2,7 @@
 import classNames from "classnames";
 import styles from './index.scss';
 import fontStyles from 'webapp/fonts/font-awesome.scss';
-import RouteComponent from 'webapp/routes/RouteComponent';
+import RouteComponent from 'webapp/components/RouteComponent';
 import Search from 'webapp/components/Search';
 import Map, { globe } from 'webapp/components/Map';
 import Service from 'world/Service';

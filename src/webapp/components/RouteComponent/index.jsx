@@ -1,5 +1,7 @@
 ﻿import React, { Component, PropTypes } from 'react';
+import ReactDOM from 'react-dom';
 import loading from 'webapp/common/loading';
+import styles from './index.scss';
 
 export default class RouteComponent extends Component {
     static contextTypes = {
@@ -12,6 +14,11 @@ export default class RouteComponent extends Component {
 
     componentDidMount(){
         this._isMounted = true;
+        const domNode = ReactDOM.findDOMNode(this);
+        const className = styles["route-component"];
+        if(!domNode.classList.contains(className)){
+            domNode.classList.add(className);
+        }
     }
 
     componentWillUnmount(){

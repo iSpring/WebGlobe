@@ -3,7 +3,7 @@ import {Link} from 'react-router';
 import classNames from 'classnames';
 import styles from './index.scss';
 import fontStyles from 'webapp/fonts/font-awesome.scss';
-import RouteComponent from 'webapp/routes/RouteComponent';
+import RouteComponent from 'webapp/components/RouteComponent';
 import Search from 'webapp/components/Search';
 
 export default class App extends RouteComponent{

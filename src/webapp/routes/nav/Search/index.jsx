@@ -1,5 +1,5 @@
 ﻿import React from 'react';
-import RouteComponent from 'webapp/routes/RouteComponent';
+import RouteComponent from 'webapp/components/RouteComponent';
 import classNames from 'classnames';
 import styles from './index.scss';
 import fontStyles from 'webapp/fonts/font-awesome.scss';
