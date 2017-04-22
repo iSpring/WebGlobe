@@ -12,19 +12,31 @@ export default class Paths extends RouteComponent{
 
     render(){
         const route = this.props.location.state.route;
-        const path = route.paths[0];
+        let {
+            distance,
+            duration,
+            steps,
+            traffic_lights
+        } = route.paths[0];
+        distance = parseFloat(distance);
+        duration = parseFloat(duration);
+        let summary = `${Math.round(duration / 60)}分钟 `;
+        if(distance >= 1000){
+            summary += `${(distance/1000).toFixed(1)}公里`;
+        }else{
+            summary += `${distance}米`;
+        }
         return (
             <div>
                 <div className={styles["map-container"]}>
                     <MapComponent />
                 </div>
                 <div className={styles.footer}>
-                    <div className={classNames(styles.steps, "ellipsis")}>
-                        {
-                            path.steps.map((step) => step.road).filter((road) => !!road).join(" -> ")
-                        }
+                    <div className={styles["path-detail"]}>
+                        <div className={styles.summary}>{summary}</div>
+                        <div className={classNames(styles.steps, "ellipsis")}>{steps.map((step) => step.road).filter((road) => !!road).join(" -> ")}</div>
+                        <div className={classNames(styles["traffic-lights"], "ellipsis")}>红绿灯{traffic_lights}个 打车{route.taxi_cost}元</div>
                     </div>
-                    <div className={classNames(styles["traffic-lights"], "ellipsis")}>红绿灯{path.traffic_lights}个 打车{route.taxi_cost}元</div>
                 </div>
             </div>
         );

@@ -15,11 +15,24 @@
     width: 100%;
     height: $footer-size;
 
-    .steps{
+    .path-detail{
+        padding: 0 9px;
 
-    }
+        .summary{
+            font-weight: bold;
+            font-size: 15px;
+            color: #333;
+        }
 
-    .traffic-lights{
+        .steps{
+            font-size: 15px;
+            color: #333;
+            margin: 5px 0;
+        }
 
+        .traffic-lights{
+            font-size: 14px;
+            color: #999;
+        }
     }
 }
