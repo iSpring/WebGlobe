@@ -1,61 +1,61 @@
 import Kernel from './Kernel';
 import Utils from './Utils';
-import {EventEmitter} from './Events';
+import { EventEmitter } from './Events';
 import MathUtils from './math/Utils';
-import Vertice from'./math/Vertice';
+import Vertice from './math/Vertice';
 import Vector from './math/Vector';
 import Line from './math/Line';
-import Plan from'./math/Plan';
-import TileGrid, {TileGridPosition} from './TileGrid';
+import Plan from './math/Plan';
+import TileGrid, { TileGridPosition } from './TileGrid';
 import Matrix from './math/Matrix';
 import Object3D from './Object3D';
 import Extent from './Extent';
 
-export class CameraCore{
-  constructor(private fov: number, private aspect: number, private near: number, private far: number, private floatLevel: number, private matrix: Matrix){
+export class CameraCore {
+  constructor(private fov: number, private aspect: number, private near: number, private far: number, private floatLevel: number, private matrix: Matrix) {
 
   }
 
-  getFov(){
+  getFov() {
     return this.fov;
   }
 
-  getAspect(){
+  getAspect() {
     return this.aspect;
   }
 
-  getNear(){
+  getNear() {
     return this.near;
   }
 
-  getFar(){
+  getFar() {
     return this.far;
   }
 
-  getFloatLevel(){
+  getFloatLevel() {
     return this.floatLevel;
   }
 
-  getMatrix(){
+  getMatrix() {
     return this.matrix;
   }
 
-  equals(other: CameraCore): boolean{
-    if(!other){
+  equals(other: CameraCore): boolean {
+    if (!other) {
       return false;
     }
     return this.fov === other.getFov() &&
-           this.aspect === other.getAspect() &&
-           this.near === other.getNear() &&
-           this.far === other.getFar() &&
-           this.floatLevel === other.getFloatLevel() &&
-           this.matrix.equals(other.getMatrix());
+      this.aspect === other.getAspect() &&
+      this.near === other.getNear() &&
+      this.far === other.getFar() &&
+      this.floatLevel === other.getFloatLevel() &&
+      this.matrix.equals(other.getMatrix());
   }
 }
 
-const realResolutionCache:any = {};
-(function(){
-  for(var i = 0; i <= Kernel.MAX_LEVEL; i++){
+const realResolutionCache: any = {};
+(function () {
+  for (var i = 0; i <= Kernel.MAX_LEVEL; i++) {
     realResolutionCache[i] = Kernel.MAX_REAL_RESOLUTION / Math.pow(2, i);
   }
 })();
@@ -64,7 +64,7 @@ class Camera extends Object3D {
   private readonly initFov: number;
   private readonly animationDuration: number = 200;//层级变化的动画周期，毫秒
   private readonly nearFactor: number = 0.6;
-  private readonly maxPitch:number = 40;
+  private readonly maxPitch: number = 40;
   private readonly resolutionFactor1: number = Math.pow(2, 0.3752950);
   private readonly resolutionFactor2: number = Math.pow(2, 1.3752950);
 
@@ -96,7 +96,7 @@ class Camera extends Object3D {
 
   /*left top,left middle,left bottom,right top,right middle,right bottom,middle top,middle bottom*/
   //如果没有交点，怎么没有对应的数据，长度就会小于8
-  private lonlatsOfBoundary:number[][] = null;
+  private lonlatsOfBoundary: number[][] = null;
 
   private animating: boolean = false;
 
@@ -106,7 +106,7 @@ class Camera extends Object3D {
   //this.far可以动态计算
   //this.aspect在Viewport改变后重新计算
   //this.fov可以调整以实现缩放效果
-  constructor(private canvas: HTMLCanvasElement,private fov:number = 45, private aspect:number = 1, private near:number = 1, private far:number = 100, level:number = 3, lonlat:number[] = [0, 0]) {
+  constructor(private canvas: HTMLCanvasElement, private fov: number = 45, private aspect: number = 1, private near: number = 1, private far: number = 100, level: number = 3, lonlat: number[] = [0, 0]) {
     super();
     this.eventEmitter = new EventEmitter();
     this.lonlatsOfBoundary = [];
@@ -119,12 +119,12 @@ class Camera extends Object3D {
     this.update(true);
   }
 
-  getExtent(){
+  getExtent() {
     var extent: Extent = null;
-    if(this.isEarthFullOverlapScreen()){
-      var lons:number[] = [];
-      var lats:number[] = [];
-      this.lonlatsOfBoundary.forEach(function(lonlat){
+    if (this.isEarthFullOverlapScreen()) {
+      var lons: number[] = [];
+      var lats: number[] = [];
+      this.lonlatsOfBoundary.forEach(function (lonlat) {
         lons.push(lonlat[0]);
         lats.push(lonlat[1]);
       });
@@ -137,23 +137,23 @@ class Camera extends Object3D {
     return extent;
   }
 
-  getEventEmitter(){
+  getEventEmitter() {
     return this.eventEmitter;
   }
 
-  isEarthFullOverlapScreen(){
+  isEarthFullOverlapScreen() {
     return this.lonlatsOfBoundary.length === 8;
   }
 
-  getTileGridsOfBoundary(level:number, filterRepeat: boolean): TileGrid[]{
-    var tileGridsOfBoundary: TileGrid[] = this.lonlatsOfBoundary.map((lonlat)=>{
+  getTileGridsOfBoundary(level: number, filterRepeat: boolean): TileGrid[] {
+    var tileGridsOfBoundary: TileGrid[] = this.lonlatsOfBoundary.map((lonlat) => {
       return TileGrid.getTileGridByGeo(lonlat[0], lonlat[1], level);
     });
     return filterRepeat ? Utils.filterRepeatArray(tileGridsOfBoundary) : tileGridsOfBoundary;
   }
 
-  toJson():any{
-    function matrixToJson(mat: Matrix){
+  toJson(): any {
+    function matrixToJson(mat: Matrix) {
       return mat ? mat.toJson() : null;
     }
     var json = {
@@ -179,11 +179,11 @@ class Camera extends Object3D {
     return json;
   }
 
-  toJsonString(){
+  toJsonString() {
     return JSON.stringify(this.toJson());
   }
 
-  fromJson(json: any){
+  fromJson(json: any) {
     this.matrix = Matrix.fromJson(json.matrix);
     this.isZeroPitch = json.isZeroPitch;
     this.level = json.level;
@@ -205,7 +205,7 @@ class Camera extends Object3D {
     this.update(true);
   }
 
-  fromJsonString(jsonStr: string){
+  fromJsonString(jsonStr: string) {
     this.fromJson(JSON.parse(jsonStr));
   }
 
@@ -280,9 +280,9 @@ class Camera extends Object3D {
     return far;
   }
 
-  update(force: boolean = false): boolean{
+  update(force: boolean = false): boolean {
     var shouldUpdate = this._updateCore(force);
-    if(shouldUpdate){
+    if (shouldUpdate) {
       this._updateTileGridsOfBoundary();
     }
     return shouldUpdate;
@@ -291,7 +291,7 @@ class Camera extends Object3D {
   //更新各种矩阵，理论上只在用户交互的时候调用就可以
   private _updateCore(force: boolean = false): boolean {
     var shouldUpdate = force || this._isNeedUpdate();
-    if(shouldUpdate){
+    if (shouldUpdate) {
       this._normalUpdate();
       this._updateProjViewMatrixForDraw();
     }
@@ -304,9 +304,9 @@ class Camera extends Object3D {
     return shouldUpdate;
   }
 
-  private _updateTileGridsOfBoundary(){
-    var lonlatsOfBoundary:number[][] = [];
-    var ndcs:number[][] = [
+  private _updateTileGridsOfBoundary() {
+    var lonlatsOfBoundary: number[][] = [];
+    var ndcs: number[][] = [
       [-1, 1],//left top
       [-1, 0],//left middle
       [-1, -1],//left bottom
@@ -316,26 +316,26 @@ class Camera extends Object3D {
       [0, 1],//middle top
       [0, -1]//middle bottom
     ];
-    ndcs.forEach((ndcXY:number[]) => {
+    ndcs.forEach((ndcXY: number[]) => {
       var lonlat = this._getPickLonLatByNDC(ndcXY[0], ndcXY[1]);
-      if(lonlat && lonlat.length > 0){
+      if (lonlat && lonlat.length > 0) {
         lonlatsOfBoundary.push(lonlat);
       }
     });
     this.lonlatsOfBoundary = lonlatsOfBoundary;
   }
 
-  getCameraCore(){
+  getCameraCore() {
     return new CameraCore(this.fov, this.aspect, this.near, this.far, this.floatLevel, this.matrix.clone());
   }
 
-  private _isNeedUpdate(): boolean{
+  private _isNeedUpdate(): boolean {
     return (this.fov !== this.lastFov) ||
-           (this.aspect !== this.lastAspect) ||
-           (this.near !== this.lastNear) ||
-           (this.far !== this.lastFar) ||
-           (this.floatLevel !== this.lastFloatLevel) ||
-           (!this.matrix.equals(this.lastMatrix));
+      (this.aspect !== this.lastAspect) ||
+      (this.near !== this.lastNear) ||
+      (this.far !== this.lastFar) ||
+      (this.floatLevel !== this.lastFloatLevel) ||
+      (!this.matrix.equals(this.lastMatrix));
   }
 
   getProjViewMatrixForDraw(): Matrix {
@@ -447,7 +447,7 @@ class Camera extends Object3D {
   }
 
   //resolution,level
-  measureXYResolutionAndBestDisplayLevel(): any{
+  measureXYResolutionAndBestDisplayLevel(): any {
     //计算resolution
     var p = this.matrix.getPosition();
     var dir = Vector.fromVertice(p);
@@ -486,13 +486,13 @@ class Camera extends Object3D {
   }
 
   //[resolution,level]
-  calculateCurrentResolutionAndBestDisplayLevel(){
+  calculateCurrentResolutionAndBestDisplayLevel() {
     var distance2EarthOrigin = this.getDistance2EarthOrigin();
     return this._calculateResolutionAndBestDisplayLevelByDistance2EarthOrigin(distance2EarthOrigin);
   }
 
   //distance2EarthOrigin=>[resolution,level]
-  private _calculateResolutionAndBestDisplayLevelByDistance2EarthOrigin(distance2EarthOrigin: number){
+  private _calculateResolutionAndBestDisplayLevelByDistance2EarthOrigin(distance2EarthOrigin: number) {
     var α2 = MathUtils.degreeToRadian(this.fov / 2);
     var α1 = Math.atan(2 / this.canvas.height * Math.tan(α2));
     var δ = Math.asin(distance2EarthOrigin * Math.sin(α1) / Kernel.EARTH_RADIUS);
@@ -503,24 +503,24 @@ class Camera extends Object3D {
   }
 
   //D=>[resolution,level]
-  private _calculateResolutionAndBestDisplayLevelByDistance2EarthSurface(distance2EarthSurface: number){
+  private _calculateResolutionAndBestDisplayLevelByDistance2EarthSurface(distance2EarthSurface: number) {
     var distance2EarthOrigin = distance2EarthSurface + Kernel.EARTH_RADIUS;
     return this._calculateResolutionAndBestDisplayLevelByDistance2EarthOrigin(distance2EarthOrigin);
   }
 
   //level=>D
-  private _calculateDistance2EarthSurfaceByBestDisplayLevel(level: number){
+  private _calculateDistance2EarthSurfaceByBestDisplayLevel(level: number) {
     return this._calculateDistance2EarthOriginByBestDisplayLevel(level) - Kernel.EARTH_RADIUS;
   }
 
   //level=>L
-  private _calculateDistance2EarthOriginByBestDisplayLevel(level: number){
+  private _calculateDistance2EarthOriginByBestDisplayLevel(level: number) {
     var resolution = this._calculateResolutionByLevel(level);
     return this._calculateDistance2EarthOriginByResolution(resolution);
   }
 
   //resolution=>distance2EarthOrigin
-  private _calculateDistance2EarthOriginByResolution(resolution: number){
+  private _calculateDistance2EarthOriginByResolution(resolution: number) {
     resolution /= this.resolutionFactor2;
     var α2 = MathUtils.degreeToRadian(this.fov / 2);
     var α1 = Math.atan(2 / this.canvas.height * Math.tan(α2));
@@ -530,33 +530,33 @@ class Camera extends Object3D {
     return distance2EarthOrigin;
   }
 
-  private _calculateLevelByResolution(resolution: number){
+  private _calculateLevelByResolution(resolution: number) {
     var pow2value = Kernel.MAX_RESOLUTION / resolution;
     var bestDisplayLevelFloat = MathUtils.log2(pow2value);
     return bestDisplayLevelFloat;
   }
 
-  private _calculateResolutionByLevel(level: number){
+  private _calculateResolutionByLevel(level: number) {
     return Kernel.MAX_RESOLUTION / Math.pow(2, level);
   }
 
   //屏幕1px在实际世界中的距离
-  getResolutionInWorld(): number{
-    if(realResolutionCache.hasOwnProperty(this.level)){
+  getResolutionInWorld(): number {
+    if (realResolutionCache.hasOwnProperty(this.level)) {
       return realResolutionCache[this.level];
-    }else{
+    } else {
       return Kernel.MAX_REAL_RESOLUTION / Math.pow(2, this.level);
     }
   }
 
-  getVertice(){
+  getVertice() {
     const origin2PositionVector = Vector.fromVertice(this.getPosition());
     origin2PositionVector.setLength(Kernel.EARTH_RADIUS);
     const p = origin2PositionVector.getVertice();
     return p;
   }
 
-  getLonlat(){
+  getLonlat() {
     const p = this.getVertice();
     const lonlat = MathUtils.cartesianCoordToGeographic(p);
     return lonlat;
@@ -570,10 +570,10 @@ class Camera extends Object3D {
     if (!(Utils.isNonNegativeInteger(level))) {
       throw "invalid level:" + level;
     }
-    if(level < Kernel.MIN_LEVEL){
+    if (level < Kernel.MIN_LEVEL) {
       level = Kernel.MIN_LEVEL;
     }
-    if(level > Kernel.MAX_LEVEL){
+    if (level > Kernel.MAX_LEVEL) {
       level = Kernel.MAX_LEVEL;
     }
     if (level !== this.level || force) {
@@ -596,7 +596,7 @@ class Camera extends Object3D {
   //   return initDistanceToOrigin;
   // }
 
-  private _initCameraPosition(level: number, lon:number, lat:number) {
+  private _initCameraPosition(level: number, lon: number, lat: number) {
     var initDistanceToOrigin = this._calculateDistance2EarthOriginByBestDisplayLevel(level);
     var initPosition = MathUtils.geographicToCartesianCoord(lon, lat, initDistanceToOrigin);
     var origin = new Vertice(0, 0, 0);
@@ -621,7 +621,7 @@ class Camera extends Object3D {
   }
 
   setDeltaPitch(deltaPitch: number) {
-    if(this.level < Kernel.MIN_PITCH_LEVEL || !this.isEarthFullOverlapScreen()){
+    if (this.level < Kernel.MIN_PITCH_LEVEL || !this.isEarthFullOverlapScreen()) {
       return;
     }
     var currentPitch = this.getPitch();
@@ -692,7 +692,7 @@ class Camera extends Object3D {
 
     var pitch = MathUtils.radianToDegree(radian);
 
-    if(pitch >= 90){
+    if (pitch >= 90) {
       throw `Invalid pitch: ${pitch}`;
     }
 
@@ -744,7 +744,7 @@ class Camera extends Object3D {
     return length2EarthSurface;
   }
 
-  getDistance2EarthOrigin(): number{
+  getDistance2EarthOrigin(): number {
     var position = this.getPosition();
     return Vector.fromVertice(position).getLength();
   }
@@ -753,53 +753,104 @@ class Camera extends Object3D {
     return this.animating;
   }
 
-  animateToLonlat(newLon: number, newLat: number){
+  animateTo(newLon: number, newLat: number, newLevel: number = this.getLevel(), duration: number = 1000) {
     const promise = new Promise((resolve, reject) => {
-      if(this.isAnimating()){
+      if (this.isAnimating()) {
         reject("be animating");
         return;
       }
+      const [startLon, startLat] = this.getLonlat();
+      const singleSpan = 1000 / 60;
+      const count = Math.floor(duration / singleSpan);
+      let start: number = -1;
 
+      const deltaLon = (newLon - startLon) / count;
+      const deltaLat = (newLat - startLat) / count;
+      let deltaLevel: number = 0;
+      let deltaHeight: number = 0;
+      if (newLevel !== this.level) {
+        deltaLevel = (newLevel - this.level) / count;
+        const startDistance = this.getDistance2EarthOrigin();
+        const newPosition = this._safelyGetNewPositonByLevel(newLevel);
+        const newDistance = Vector.fromVertice(newPosition).getLength();
+        deltaHeight = (newDistance - startDistance) / count;
+      }
+
+      this.animating = true;
+
+      const callback = (timestap: number) => {
+        if (start < 0) {
+          start = timestap;
+        }
+        var a = timestap - start;
+        if (a >= duration) {
+          this.animating = false;
+          this.floatLevel = newLevel;
+          this.setLevel(newLevel);
+          resolve();
+        } else {
+          this.floatLevel += deltaLevel;
+          this._setPositionByDeltaLonLatDistance(deltaLon, deltaLat, deltaHeight);
+          requestAnimationFrame(callback);
+        }
+      }
+      requestAnimationFrame(callback);
     });
     return promise;
   }
 
-  centerToLonlat(newLon:number, newLat:number){
-    this._setPositionByLonLatDistance(newLon, newLat);
+  private _safelyGetNewPositonByLevel(newLevel: number) {
+    const newCameraMatrix = this.matrix.clone();
+    this._updatePositionByLevel(newLevel, newCameraMatrix);
+    const newPosition = newCameraMatrix.getPosition();
+    return newPosition;
   }
 
-  private _setPositionByLonLatDistance(newLon:number, newLat:number, newLengthFromOrigin2Positon?: number){
-    // const length = Vector.fromVertice(this.getPosition()).getLength();
-    // const newVertice = MathUtils.geographicToCartesianCoord(newLon, newLat, length);
-    // this.centerToVertice(newVertice);
-    const [lon, lat] = this.getLonlat();
-    const deltaLonRadian = MathUtils.degreeToRadian(newLon - lon);
-    const deltaLatRadian = MathUtils.degreeToRadian(newLat - lat);
-
-    this._setPositionByDeltaLonLatHeight(deltaLonRadian, deltaLatRadian);
-
-    if(newLengthFromOrigin2Positon > 0){
-      const vectorFromOrigin2Position = Vector.fromVertice(this.getPosition());
-      vectorFromOrigin2Position.setLength(newLengthFromOrigin2Positon);
-      const newPosition = vectorFromOrigin2Position.getVertice();
-      this.setPosition(newPosition);
+  centerTo(newLon: number, newLat: number, newLevel: number = this.getLevel()) {
+    if (newLevel !== this.getLevel()) {
+      const newPosition = this._safelyGetNewPositonByLevel(newLevel);
+      const newDistance = Vector.fromVertice(newPosition).getLength();
+      this._setPositionByLonLatDistance(newLon, newLat, newDistance);
+    } else {
+      this._setPositionByLonLatDistance(newLon, newLat);
     }
   }
 
-  private _setPositionByDeltaLonLatHeight(deltaLonRadian: number, deltaLatRadian: number, deltaHeight?: number){
+  private _setPositionByLonLatDistance(newLon: number, newLat: number, newLengthFromOrigin2Positon?: number) {
+    const [lon, lat] = this.getLonlat();
+    const deltaLon = newLon - lon;
+    const deltaLat = newLat - lat;
+
+    this._setPositionByDeltaLonLatDistance(deltaLon, deltaLat);
+
+    if (newLengthFromOrigin2Positon > 0) {
+      this._setPositionByDistanceFromOrigin2Camera(newLengthFromOrigin2Positon);
+    }
+  }
+
+  private _setPositionByDeltaLonLatDistance(deltaLon: number, deltaLat: number, deltaHeight?: number) {
+    const deltaLonRadian = MathUtils.degreeToRadian(deltaLon);
+    const deltaLatRadian = MathUtils.degreeToRadian(deltaLat);
     this.worldRotateY(deltaLonRadian);
     const vector1 = Vector.fromVertice(this.getPosition());
     const vector2 = new Vector(0, 1, 0);
     const crossAxis = vector1.cross(vector2);
     this.worldRotateByVector(deltaLatRadian, crossAxis);
 
-    if(deltaHeight > 0 || deltaHeight < 0){
+    if (deltaHeight > 0 || deltaHeight < 0) {
       const vectorFromOrigin2Position = Vector.fromVertice(this.getPosition());
       const newLength = vectorFromOrigin2Position.getLength() + deltaHeight;
       vectorFromOrigin2Position.setLength(newLength);
       const newPosition = vectorFromOrigin2Position.getVertice();
       this.setPosition(newPosition);
     }
+  }
+
+  _setPositionByDistanceFromOrigin2Camera(newLengthFromOrigin2Positon: number) {
+    const vectorFromOrigin2Position = Vector.fromVertice(this.getPosition());
+    vectorFromOrigin2Position.setLength(newLengthFromOrigin2Positon);
+    const newPosition = vectorFromOrigin2Position.getVertice();
+    this.setPosition(newPosition);
   }
 
   // centerToVertice(newVertice: Vertice){
@@ -810,7 +861,7 @@ class Camera extends Object3D {
   //   this.worldRotateByVector(radian, axis);
   // }
 
-  animateToLevel(newLevel: number, cb?: ()=>void): void {
+  animateToLevel(newLevel: number, cb?: () => void): void {
     if (this.isAnimating()) {
       return;
     }
@@ -818,9 +869,10 @@ class Camera extends Object3D {
     if (!(Utils.isNonNegativeInteger(newLevel))) {
       throw "invalid level:" + newLevel;
     }
-    var newCameraMatrix = this.matrix.clone();
-    this._updatePositionByLevel(newLevel, newCameraMatrix);
-    var newPosition = newCameraMatrix.getPosition();
+    // var newCameraMatrix = this.matrix.clone();
+    // this._updatePositionByLevel(newLevel, newCameraMatrix);
+    // var newPosition = newCameraMatrix.getPosition();
+    const newPosition = this._safelyGetNewPositonByLevel(newLevel);
 
     var oldPosition = this.getPosition();
     var span = this.animationDuration;
@@ -843,7 +895,7 @@ class Camera extends Object3D {
         this.animating = false;
         this.floatLevel = newLevel;
         this.setLevel(newLevel);
-        if(cb){
+        if (cb) {
           cb();
         }
       } else {
@@ -935,10 +987,10 @@ class Camera extends Object3D {
     return result;
   }
 
-  private _getPickLonLatByNDC(ndcX: number, ndcY: number): number[]{
-    var result:number[] = null;
+  private _getPickLonLatByNDC(ndcX: number, ndcY: number): number[] {
+    var result: number[] = null;
     var vertices = this._getPickCartesianCoordInEarthByNDC(ndcX, ndcY);
-    if(vertices.length > 0){
+    if (vertices.length > 0) {
       result = MathUtils.cartesianCoordToGeographic(vertices[0]);
     }
     return result;
@@ -1120,9 +1172,9 @@ class Camera extends Object3D {
 
     var centerGrid: TileGrid = null;
     var verticalCenterInfo = this._getVerticalVisibleCenterInfo();
-    if(TileGrid.isValidLatitude(verticalCenterInfo.lat)){
+    if (TileGrid.isValidLatitude(verticalCenterInfo.lat)) {
       centerGrid = TileGrid.getTileGridByGeo(verticalCenterInfo.lon, verticalCenterInfo.lat, level);
-    }else{
+    } else {
       centerGrid = new TileGrid(level, 0, 0);
     }
     var handleRowThis = handleRow.bind(this);
