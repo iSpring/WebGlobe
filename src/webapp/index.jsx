@@ -9,6 +9,7 @@ import NearbySearch from './routes/nearby/Search';
 import NearbyResult from './routes/nearby/Result';
 
 import NavSearch from './routes/nav/Search';
+import NavPaths from './routes/nav/Paths';
 
 import NotFound from './routes/404';
 
@@ -31,6 +32,7 @@ ReactDOM.render((
             </Route>
             <Route path="nav">
                 <Route path="search" component={NavSearch}></Route>
+                <Route path="paths" component={NavPaths}></Route>
             </Route>
         </Route>
         <Route path="*" component={NotFound} />

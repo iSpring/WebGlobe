@@ -3,7 +3,10 @@ import ReactDOM from 'react-dom';
 import styles from './index.scss';
 import Globe,{GlobeOptions} from 'world/Globe';
 
-export const globe = Globe.getInstance({satellite: false});
+export const globe = Globe.getInstance({
+    satellite: false,
+    key: "db146b37ef8d9f34473828f12e1e85ad"
+});
 
 export default class Map extends Component{
 

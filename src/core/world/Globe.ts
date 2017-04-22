@@ -155,12 +155,17 @@ export default class Globe {
   private updateUserLocation(location: Location) {
     this.locationGraphic.setLonLat(location.lon, location.lat);
 
+    let [lon, lat] = this.camera.getLonlat();
+
     if(this.options.lonlat === 'auto'){
-      this.centerTo(location.lon, location.lat);
+      lon = location.lon;
+      lat = location.lat;
     }
-    
+
+    let level:number = this.getLevel();
+
     if(this.options.level === 'auto'){
-      let level: number = 8;
+      level = 8;
       if (location.accuracy <= 100) {
         level = 16;
       } else if (location.accuracy <= 1000) {
@@ -168,11 +173,9 @@ export default class Globe {
       } else {
         level = 11;
       }
-      this.setLevel(level);
     }
-  }
 
-  public animateTo(newLon:number, newLat:number, newLevel:number){
+    this.centerTo(lon, lat, level);
   }
 
   public isPaused(){
@@ -248,9 +251,12 @@ export default class Globe {
     }
   }
 
-  centerTo(lon: number, lat: number, level:number = this.getLevel()){
-    this.setLevel(level);
-    this.eventHandler.moveLonLatToCanvas(lon, lat, this.canvas.width / 2, this.canvas.height / 2);
+  centerTo(lon: number, lat: number, level:number){
+    this.camera.centerTo(lon, lat, level);
+  }
+
+  public animateTo(newLon:number, newLat:number, newLevel:number){
+    return this.camera.animateTo(newLon, newLat, newLevel);
   }
 
   isAnimating(): boolean {
