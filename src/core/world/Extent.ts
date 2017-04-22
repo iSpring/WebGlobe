@@ -68,4 +68,22 @@ export default class Extent {
     static intersect(extents: Extent[]): Extent {
         return this.merge(extents, false);
     }
+
+    static fromLonlats(lonlats:number[][]){
+        if(lonlats.length <= 1){
+            return null;
+        }
+        const lons:number[] = [];
+        const lats:number[] = [];
+        lonlats.forEach((lonlat:number[]) => {
+            lons.push(lonlat[0]);
+            lats.push(lonlat[1]);
+        });
+        const minLon = Math.min(...lons);
+        const minLat = Math.min(...lats);
+        const maxLon = Math.max(...lons);
+        const maxLat = Math.max(...lats);
+        const extent = new Extent(minLon, minLat, maxLon, maxLat);
+        return extent;
+    }
 };

@@ -12,6 +12,7 @@ import GraphicGroup from '../GraphicGroup';
 import { Drawable } from '../Definitions.d';
 import Camera from '../Camera';
 import Service from '../Service';
+import Extent from '../Extent';
 
 class RouteGraphic extends MeshColorGraphic {
     constructor(private lonlats: number[][], private pixelWidth: number, resolution: number, material: MeshColorMaterial) {
@@ -189,14 +190,20 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
             if(path && path.steps && path.steps.length > 0){
                 this.clear();
                 let color = [0, 1, 0];
+                const lonlats: number[][] = [];
                 path.steps.forEach((step: any, index: number, steps: any[]) => {
                     if (index !== 0) {
                         let prevStep = steps[index - 1];
                         const joinLonlats: number[][] = [prevStep.lastLonlat, step.firstLonlat];
                         this.addRouteByLonlats(joinLonlats, this.pixelWidth, color);
+                        lonlats.push(...joinLonlats);
                     }
                     this.addRouteByLonlats(step.lonlats, this.pixelWidth, color);
+                    lonlats.push(...step.lonlats);
                 });
+                // this.addRouteByLonlats(lonlats, this.pixelWidth, color);
+                const extent = Extent.fromLonlats(lonlats);
+                this.camera.setExtent(extent);
             }
         }
     }
