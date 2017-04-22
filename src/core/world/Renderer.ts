@@ -6,7 +6,7 @@ import { WebGLRenderingContextExtension } from "./Definitions";
 export default class Renderer {
   scene: Scene = null;
   camera: Camera = null;
-  paused: boolean = true;
+  renderingPaused: boolean = true;
   gl: WebGLRenderingContextExtension = null;
 
   constructor(
@@ -69,7 +69,9 @@ export default class Renderer {
     if (this.onBeforeRender) {
       this.onBeforeRender(this);
     }
-    scene.draw(camera);
+    if(!this.renderingPaused){
+      scene.draw(camera);
+    }
     if (this.onAfterRender) {
       this.onAfterRender(this);
     }
@@ -88,21 +90,23 @@ export default class Renderer {
       this.render(this.scene, this.camera);
     }
 
-    if (!this.paused) {
-      window.requestAnimationFrame(this._tick.bind(this));
-    }
+    window.requestAnimationFrame(this._tick.bind(this));
   }
 
-  isPaused(){
-    return this.paused;
-  }
-
-  pause(){
-    this.paused = true;
-  }
-
-  resume(){
-    this.paused = false;
+  start(){
+    this.resumeRendering();
     this._tick();
+  }
+
+  isRenderingPaused(){
+    return this.renderingPaused;
+  }
+
+  pauseRendering(){
+    this.renderingPaused = true;
+  }
+
+  resumeRendering(){
+    this.renderingPaused = false;
   }
 };

@@ -8,7 +8,9 @@ export const globe = Globe.getInstance({
     key: "db146b37ef8d9f34473828f12e1e85ad"
 });
 
-window.addEventListener("resize", ()=>{
+window.globe = globe;
+
+function safelyResizeByParent(){
     const parent = globe.canvas.parentNode;
     if(parent){
         const w = parent.clientWidth;
@@ -17,7 +19,9 @@ window.addEventListener("resize", ()=>{
             globe.resize(w, h);
         }
     }
-}, false);
+}
+
+window.addEventListener("resize", safelyResizeByParent, false);
 
 export default class Map extends Component{
 
@@ -36,12 +40,8 @@ export default class Map extends Component{
     componentDidMount(){
         const domNode = ReactDOM.findDOMNode(this);
         globe.placeAt(domNode);
-        const width = domNode.clientWidth;
-        const height = domNode.clientHeight;
-        if(width > 0 && height > 0){
-            globe.resize(width, height);
-        }
-        globe.resume();
+        safelyResizeByParent();
+        globe.resumeRendering();
     }
 
     componentWillUnmount(){
@@ -49,7 +49,7 @@ export default class Map extends Component{
         const canvas = globe && globe.canvas;
         if(canvas && canvas.parentNode === domNode){
             domNode.removeChild(canvas);
-            globe.pause();
+            globe.pauseRendering();
         }
     }
 };

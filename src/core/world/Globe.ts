@@ -51,6 +51,7 @@ export default class Globe {
   private realRefreshCount: number = 0;
   // private beforeRenderCallbacks: RenderCallback[] = [];
   private afterRenderCallbacks: RenderCallback[] = [];
+  private renderingPaused: boolean = false;
   public gl: WebGLRenderingContextExtension = null;
   private static globe: Globe = null;
 
@@ -117,7 +118,7 @@ export default class Globe {
     this.locationGraphic = LocationGraphic.getInstance(this);
     this.scene.add(this.locationGraphic);
 
-    this.renderer.resume();
+    this.renderer.start();
     this.eventHandler = new EventHandler(this);
 
     /*Utils.subscribe('location', (data: LocationData) => {
@@ -178,17 +179,17 @@ export default class Globe {
     this.centerTo(lon, lat, level);
   }
 
-  public isPaused(){
-    return this.renderer.isPaused();
+  public isRenderingPaused(){
+    return this.renderer.isRenderingPaused();
   }
 
-  public pause(){
-    this.renderer.pause();
+  public pauseRendering(){
+    this.renderer.pauseRendering();
   }
 
-  public resume(){
-    if(this.isPaused){
-      this.renderer.resume();
+  public resumeRendering(){
+    if(this.isRenderingPaused()){
+      this.renderer.resumeRendering();
       this.refresh(true);
     }
   }

@@ -124,6 +124,7 @@ class RouteGraphic extends MeshColorGraphic {
 
 export default class RouteLayer extends GraphicGroup<Drawable>{
     private pixelWidth: number = 5;
+    private routeColor:number[] = [7, 215, 108];
     private paths: any[] = null;
 
     private constructor(private camera: Camera, private key: string) {
@@ -148,9 +149,9 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
         this.addRouteByLonlat(startLonLat, endLonLat, pixelWidth, segments, rgb);
     }
 
-    private addRouteByLonlat(startLonLat: number[], endLonLat: number[], pixelWidth: number, segments: number, rgb: number[]) {
+    private addRouteByLonlat(startLonLat: number[], endLonLat: number[], pixelWidth: number, segments: number, rgb: number[], resolution: number = -1) {
         const lonlats = this._getLonlatsBySegments(startLonLat, endLonLat, segments);
-        return this.addRouteByLonlats(lonlats, pixelWidth, rgb);
+        return this.addRouteByLonlats(lonlats, pixelWidth, rgb, resolution);
     }
 
     private addRouteByLonlats(lonlats: number[][], pixelWidth: number, rgb: number[], resolution: number = -1) {
@@ -189,16 +190,16 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
             const path: any = this.paths[pathIndex];
             if(path && path.steps && path.steps.length > 0){
                 this.clear();
-                let color = [7, 215, 108];
                 const lonlats: number[][] = [];
+                const resolution = this._getResolution();
                 path.steps.forEach((step: any, index: number, steps: any[]) => {
                     if (index !== 0) {
                         let prevStep = steps[index - 1];
                         const joinLonlats: number[][] = [prevStep.lastLonlat, step.firstLonlat];
-                        this.addRouteByLonlats(joinLonlats, this.pixelWidth, color);
+                        this.addRouteByLonlats(joinLonlats, this.pixelWidth, this.routeColor, resolution);
                         lonlats.push(...joinLonlats);
                     }
-                    this.addRouteByLonlats(step.lonlats, this.pixelWidth, color);
+                    this.addRouteByLonlats(step.lonlats, this.pixelWidth, this.routeColor, resolution);
                     lonlats.push(...step.lonlats);
                 });
                 // this.addRouteByLonlats(lonlats, this.pixelWidth, color);
