@@ -1,7 +1,7 @@
 ﻿import React from 'react';
 import classNames from 'classnames';
 import RouteComponent from 'webapp/components/RouteComponent';
-import MapComponent from 'webapp/components/Map';
+import MapComponent, {globe} from 'webapp/components/Map';
 import styles from './index.scss';
 
 export default class Paths extends RouteComponent {
@@ -25,6 +25,7 @@ export default class Paths extends RouteComponent {
     }
 
     onSelectPath(pathIndex) {
+        globe.routeLayer.showPath(pathIndex);
         this.setState({
             selectedPathIndex: pathIndex
         });
