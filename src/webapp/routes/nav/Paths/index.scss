@@ -36,18 +36,15 @@ $footer-multiple-path-height: $footer-multiple-path-tabs-height + $footer-multip
             flex: 1 1 auto;
             background: #efefef;
             border-left: 1px solid #dfdfdf;
+            border-top: 3px solid transparent;
             &.selected{
                 background: white;
                 color: $blue-color;
-                border-top: 3px solid $blue-color;
+                border-top-color: $blue-color;
             }
 
             .time{
-                margin: 4px 0;
-            }
-
-            .distance{
-
+                margin: 2px 0;
             }
         }
     }
@@ -55,6 +52,7 @@ $footer-multiple-path-height: $footer-multiple-path-tabs-height + $footer-multip
     .path-details{
         box-sizing: border-box;
         position: relative;
+        overflow: hidden;
 
         .path-detail{
             box-sizing: border-box;
