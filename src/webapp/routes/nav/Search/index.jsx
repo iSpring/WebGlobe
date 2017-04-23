@@ -15,7 +15,7 @@ export default class Nav extends RouteComponent{
         this.pageCapacity = 10;
         this.isFromLastFocused = true;
         this.state = {
-            type: 'bus',//snsnav,walk
+            type: 'bus',
             fromPois: [],
             toPois: [],
             routes: []
