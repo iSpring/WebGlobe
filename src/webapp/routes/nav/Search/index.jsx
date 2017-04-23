@@ -102,9 +102,7 @@ export default class Nav extends RouteComponent{
 
     route(fromPoi, toPoi){
         console.log(fromPoi, toPoi);
-        // const promise = Service.routeByDriving(fromPoi.pointx, fromPoi.pointy, toPoi.pointx, toPoi.pointy, "YLZBZ-XDPKU-LWMV6-2WNPB-PL5W5-H6BGL");
-        // const promise = Service.routeByDriving(fromPoi.pointx, fromPoi.pointy, toPoi.pointx, toPoi.pointy, "db146b37ef8d9f34473828f12e1e85ad");
-        const promise = globe.routeLayer.routeByDriving(fromPoi.pointx, fromPoi.pointy, toPoi.pointx, toPoi.pointy);
+        const promise = globe.routeLayer.routeByDriving(fromPoi.pointx, fromPoi.pointy, toPoi.pointx, toPoi.pointy, 10);
         promise.then((response) => {
             console.log(response);
             if(response.route){

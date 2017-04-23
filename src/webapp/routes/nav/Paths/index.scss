@@ -1,11 +1,20 @@
-﻿$footer-size: 77px;
+﻿@import "../../../css/variables";
+$header-height: 46px;
+
+$footer-single-path-detail-height: 77px;
+$footer-single-path-height: $footer-single-path-detail-height;
+
+$footer-multiple-path-tabs-height: 45px;
+$footer-multiple-path-detail-height: 60px;
+$footer-multiple-path-height: $footer-multiple-path-tabs-height + $footer-multiple-path-detail-height;
+
 
 .map-container{
     position: absolute;
     left: 0;
-    top: 0;
+    top: $header-height;
     width: 100%;
-    bottom: $footer-size;
+    bottom: $footer-height;
 }
 
 .footer{
@@ -13,26 +22,79 @@
     left: 0;
     bottom: 0;
     width: 100%;
-    height: $footer-size;
+    height: $footer-height;
 
-    .path-detail{
-        padding: 0 9px;
+    .tabs{
+        box-sizing: border-box;
+        height: $footer-tabs-height;
+        display: flex;
+        flex-flow: row nowrap;
 
-        .summary{
-            font-weight: bold;
-            font-size: 15px;
-            color: #333;
-        }
+        .tab{
+            box-sizing: border-box;
+            height: 100%;
+            flex: 1 1 auto;
+            background: #efefef;
+            border-left: 1px solid #dfdfdf;
+            &.selected{
+                background: white;
+                color: $blue-color;
+                border-top: 3px solid $blue-color;
+            }
 
-        .steps{
-            font-size: 15px;
-            color: #333;
-            margin: 5px 0;
-        }
+            .time{
 
-        .traffic-lights{
-            font-size: 14px;
-            color: #999;
+            }
+
+            .distance{
+
+            }
         }
     }
+
+    .path-details{
+        box-sizing: border-box;
+        padding: 0 9px;
+        height: $footer-detail-height;
+
+        .path-detail{
+            display: none;
+            height: 100%;
+
+            &.selected{
+                display: block;
+            }
+
+            .summary{
+                font-weight: bold;
+                font-size: 15px;
+                color: #333;
+            }
+
+            .steps{
+                font-size: 15px;
+                color: #333;
+                margin: 5px 0;
+            }
+
+            .traffic-lights{
+                font-size: 14px;
+                color: #999;
+            }
+        }
+    }
+}
+
+.no-path{
+    .map-container{
+        bottom: 0;
+    }
+}
+
+.single-path{
+
+}
+
+.multiple-path{
+
 }
