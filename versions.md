@@ -229,3 +229,5 @@
 - 0.4.26 Camera中添加centerTo和animateTo方法
 
 - 0.4.27 Camera中添加setExtent和animateToExtent方法
+
+- 0.4.28 通过判断道路拐点解决"箭头道路"的问题
