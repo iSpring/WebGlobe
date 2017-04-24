@@ -12,18 +12,6 @@ export default class Paths extends RouteComponent {
         };
     }
 
-    getTimeDistanceSummary(path) {
-        let {
-            distance,
-            duration
-        } = path;
-        distance = parseFloat(distance);
-        duration = parseFloat(duration);
-        let timeSummary = `${Math.round(duration / 60)}分钟`;
-        let distanceSummary = distance >= 1000 ? `${(distance / 1000).toFixed(1)}公里` : `${distance}米`;
-        return [timeSummary, distanceSummary];
-    }
-
     onSelectPath(pathIndex) {
         globe.routeLayer.showPath(pathIndex);
         this.setState({
@@ -31,40 +19,20 @@ export default class Paths extends RouteComponent {
         });
     }
 
-    genPathDetail(path, pathIndex, selected, showSummary, taxi_cost) {
-        const pathDetailClassName = selected ? classNames(styles["path-detail"], styles.selected) : styles["path-detail"]
-
-        return (
-            <div className={pathDetailClassName} key={`path-${pathIndex}`}>
-                {
-                    (() => {
-                        if (showSummary) {
-                            const [timeSummary, distanceSummary] = this.getTimeDistanceSummary(path);
-                            return <div className={styles.summary}>{`${timeSummary} ${distanceSummary}`}</div>;
-                        } else {
-                            return false;
-                        }
-                    })()
-                }
-                <div className={classNames(styles.steps, "ellipsis")}>{path.steps.map((step) => step.road).filter((road) => !!road).join(" -> ")}</div>
-                <div className={classNames(styles["traffic-lights"], "ellipsis")}>红绿灯{path.traffic_lights}个 {taxi_cost && `打车${parseFloat(taxi_cost).toFixed(1)}元`}</div>
-            </div>
-        );
-    }
-
     render() {
         const route = this.props.location.state && this.props.location.state.route;
         if (route) {
+            let selectedPathIndex = this.state.selectedPathIndex;
             if (route.type === 'driving') {
-                return this.renderDriving(route);
+                return this.renderDriving(route, selectedPathIndex);
             } else if (route.type === 'bus') {
-                return this.renderBus(route);
+                return this.renderBus(route, selectedPathIndex);
             }
         }
         return this.onlyRenderMap();
     }
 
-    renderDriving(route) {
+    renderDriving(route, selectedPathIndex) {
         if (route && route.paths && route.paths.length > 0) {
             if (route.paths.length === 1) {
                 const path = route.paths[0];
@@ -74,13 +42,11 @@ export default class Paths extends RouteComponent {
                             <MapComponent />
                         </div>
                         <div className={styles.footer}>
-                            <div className={styles["path-details"]}>{this.genPathDetail(path, 0, true, true, route.taxi_cost)}</div>
+                            <div className={styles["path-details"]}>{this.getPathDetail(route, path, 0, true, true)}</div>
                         </div>
                     </div>
                 );
             } else {
-                let selectedPathIndex = this.state.selectedPathIndex;
-
                 return (
                     <div className={styles["multiple-path"]}>
                         <div className={styles["map-container"]}>
@@ -93,7 +59,7 @@ export default class Paths extends RouteComponent {
                                         const [timeSummary, distanceSummary] = this.getTimeDistanceSummary(path);
                                         const tabClassName = selectedPathIndex === index ? classNames(styles.tab, styles.selected) : styles.tab;
                                         return (
-                                            <div className={tabClassName} key={`path-${index}`} onClick={() => this.onSelectPath(index)}>
+                                            <div className={tabClassName} key={`${route.type}-path-${index}`} onClick={() => this.onSelectPath(index)}>
                                                 <div className={classNames(styles.time, "ellipsis")}>{timeSummary}</div>
                                                 <div className={classNames(styles.distance, "ellipsis")}>{distanceSummary}</div>
                                             </div>
@@ -104,7 +70,7 @@ export default class Paths extends RouteComponent {
                             <div className={styles["path-details"]}>
                                 {
                                     route.paths.map((path, index) => {
-                                        return this.genPathDetail(path, index, index === selectedPathIndex, false, route.taxi_cost);
+                                        return this.getPathDetail(route, path, index, index === selectedPathIndex, false);
                                     })
                                 }
                             </div>
@@ -117,8 +83,41 @@ export default class Paths extends RouteComponent {
         }
     }
 
-    renderBus(route) {
-        return this.onlyRenderMap();
+    renderBus(route, selectedPathIndex) {
+        if (route && route.transits && route.transits.length > 0) {
+            return (
+                <div className={styles["multiple-path"]}>
+                    <div className={styles["map-container"]}>
+                        <MapComponent />
+                    </div>
+                    <div className={styles.footer}>
+                        <div className={styles.tabs}>
+                            {
+                                route.transits.map((transit, index) => {
+                                    const [timeSummary, distanceSummary] = this.getTimeDistanceSummary(transit);
+                                    const tabClassName = selectedPathIndex === index ? classNames(styles.tab, styles.selected) : styles.tab;
+                                    return (
+                                        <div className={tabClassName} key={`bus-path-${index}`} onClick={() => this.onSelectPath(index)}>
+                                            <div className={classNames(styles.time, "ellipsis")}>{timeSummary}</div>
+                                            <div className={classNames(styles.distance, "ellipsis")}>{distanceSummary}</div>
+                                        </div>
+                                    );
+                                })
+                            }
+                        </div>
+                        <div className={styles["path-details"]}>
+                            {
+                                route.transits.map((transit, index) => {
+                                    return this.getPathDetail(route, transit, index, index === selectedPathIndex, false);
+                                })
+                            }
+                        </div>
+                    </div>
+                </div>
+            );
+        } else {
+            return this.onlyRenderMap();
+        }
     }
 
     onlyRenderMap() {
@@ -129,5 +128,74 @@ export default class Paths extends RouteComponent {
                 </div>
             </div>
         );
+    }
+
+    getPathDetail(route, path, pathIndex, selected, showSummary1) {
+        const pathDetailClassName = selected ? classNames(styles["path-detail"], styles.selected) : styles["path-detail"]
+
+        return (
+            <div className={pathDetailClassName} key={`${route.type}-path-${pathIndex}`}>
+                {
+                    (() => {
+                        if (showSummary1) {
+                            const [timeSummary, distanceSummary] = this.getTimeDistanceSummary(path);
+                            return <div className={styles.summary1}>{`${timeSummary} ${distanceSummary}`}</div>;
+                        }
+                        return false;
+                    })()
+                }
+                {
+                    (() => {
+                        if (route.type === 'driving') {
+                            return [
+                                <div key="summary2" className={classNames(styles.summary2, "ellipsis")}>{path.steps.map((step) => step.road).filter((road) => !!road).join(" -> ")}</div>,
+                                <div key="summary3" className={classNames(styles.summary3, "ellipsis")}>红绿灯{path.traffic_lights}个 {route.taxi_cost && `打车${parseFloat(route.taxi_cost).toFixed(1)}元`}</div>
+                            ];
+                        }else if(route.type === 'bus'){
+                            const busNames = [];
+                            const transit = path;
+                            if(transit.segments && transit.segments.length > 0){
+                                transit.segments.forEach((segment) => {
+                                    if(segment && segment.bus && segment.bus.buslines && segment.bus.buslines.length > 0){
+                                        segment.bus.buslines.forEach((busline) => {
+                                            if(busline && busline.busName){
+                                                if(busNames.indexOf(busline.busName) < 0){
+                                                    busNames.push(busline.busName);
+                                                }
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                            return [
+                                <div key="summary2" className={classNames(styles.summary2, "ellipsis")}>{busNames.join(" -> ")}</div>,
+                                <div key="summary3" className={classNames(styles.summary3, "ellipsis")}>步行{this.getDistanceSummary(transit.walking_distance)}</div>
+                            ];
+                        }
+                        return false;
+                    })()
+                }
+            </div>
+        );
+    }
+
+    getTimeDistanceSummary(path) {
+        let {
+            distance,
+            duration
+        } = path;
+        
+        return [this.getTimeSummary(duration), this.getDistanceSummary(distance)];
+    }
+
+    getTimeSummary(duration){
+        duration = parseFloat(duration);
+        return `${Math.round(duration / 60)}分钟`;
+    }
+
+    getDistanceSummary(distance){
+        distance = parseFloat(distance);
+        let distanceSummary = distance >= 1000 ? `${(distance / 1000).toFixed(1)}公里` : `${distance}米`;
+        return distanceSummary;
     }
 };

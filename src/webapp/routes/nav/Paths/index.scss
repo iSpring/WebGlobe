@@ -67,19 +67,19 @@ $footer-multiple-path-height: $footer-multiple-path-tabs-height + $footer-multip
                 left: 0;
             }
 
-            .summary{
+            .summary1{
                 font-weight: bold;
                 font-size: 14px;
                 color: #333;
                 margin: 4px 0;
             }
 
-            .steps{
+            .summary2{
                 font-size: 14px;
                 color: #333;
             }
 
-            .traffic-lights{
+            .summary3{
                 margin-top: 5px;
                 font-size: 13px;
                 color: #999;
@@ -127,7 +127,7 @@ $footer-multiple-path-height: $footer-multiple-path-tabs-height + $footer-multip
         .path-details{
             height: $footer-multiple-path-detail-height;
 
-            .steps{
+            .summary2{
                 margin-top: 9px;
             }
         }
