@@ -15,7 +15,7 @@ export default class Nav extends RouteComponent{
         this.pageCapacity = 10;
         this.isFromLastFocused = true;
         this.state = {
-            type: 'bus',
+            type: 'driving',//bus,walk
             fromPois: [],
             toPois: [],
             routes: []
@@ -38,7 +38,6 @@ export default class Nav extends RouteComponent{
         if(e.key === "Enter"){
             if(keyword){
                 Service.searchByCurrentCity(keyword, this.pageCapacity).then((response) => {
-                    console.log(response);
                     let pois = null;
                     if(response.detail){
                         pois = response.detail.pois;
@@ -102,26 +101,43 @@ export default class Nav extends RouteComponent{
 
     route(fromPoi, toPoi){
         console.log(fromPoi, toPoi);
-        const promise = globe.routeLayer.routeByDriving(fromPoi.pointx, fromPoi.pointy, toPoi.pointx, toPoi.pointy, 10);
-        promise.then((response) => {
-            console.log(response);
-            if(response.route){
-                this.props.router.push({
-                    pathname: '/nav/paths',
-                    state: {
-                        route: response.route
-                    }
-                });
-            }
-        });
+        if(this.state.type === 'driving'){
+            const promise = globe.routeLayer.routeByDriving(fromPoi.pointx, fromPoi.pointy, toPoi.pointx, toPoi.pointy, 10);
+            promise.then((response) => {
+                console.log(response);
+                if(response.route){
+                    this.props.router.push({
+                        pathname: '/nav/paths',
+                        state: {
+                            route: response.route
+                        }
+                    });
+                }
+            });
+        }else if(this.state.type === 'bus'){
+            const startCity = fromPoi.POI_PATH[0].cname;
+            const endCity = toPoi.POI_PATH[0].cname;
+            const promise = globe.routeLayer.routeByBus(fromPoi.pointx, fromPoi.pointy, toPoi.pointx, toPoi.pointy, startCity, endCity, 0);
+            promise.then((response) => {
+                console.log(response);
+                if(response.route){
+                    this.props.router.push({
+                        pathname: '/nav/paths',
+                        state: {
+                            route: response.route
+                        }
+                    });
+                }
+            });
+        }
     }
 
     render(){
         const busClassName = classNames(fontStyles.fa, fontStyles["fa-bus"], styles["traffic-type"], {
-            selected: this.state.type !== 'snsnav' && this.state.type !== 'walk'
+            selected: this.state.type === 'bus'
         });
         const driveClassName = classNames(fontStyles.fa, fontStyles["fa-car"], styles["traffic-type"], {
-            selected: this.state.type === 'snsnav'
+            selected: this.state.type === 'driving'
         });
         const walkClassName = classNames(fontStyles.fa, fontStyles["fa-male"], styles["traffic-type"], {
             selected: this.state.type === 'walk'
@@ -137,7 +153,7 @@ export default class Nav extends RouteComponent{
                 <header>
                     <div className={styles["traffic-types"]}>
                         <i className={busClassName} onClick={()=>this.onClickTrafficType('bus')}></i>
-                        <i className={driveClassName} onClick={()=>this.onClickTrafficType('snsnav')}></i>
+                        <i className={driveClassName} onClick={()=>this.onClickTrafficType('driving')}></i>
                         <i className={walkClassName} onClick={()=>this.onClickTrafficType('walk')}></i>
                     </div>
                     <div className={styles.cancel} onClick={()=>{this.onCancel();}}>取消</div>

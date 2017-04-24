@@ -1,7 +1,7 @@
 ﻿import React from 'react';
 import classNames from 'classnames';
 import RouteComponent from 'webapp/components/RouteComponent';
-import MapComponent, {globe} from 'webapp/components/Map';
+import MapComponent, { globe } from 'webapp/components/Map';
 import styles from './index.scss';
 
 export default class Paths extends RouteComponent {
@@ -33,28 +33,38 @@ export default class Paths extends RouteComponent {
 
     genPathDetail(path, pathIndex, selected, showSummary, taxi_cost) {
         const pathDetailClassName = selected ? classNames(styles["path-detail"], styles.selected) : styles["path-detail"]
-        
+
         return (
             <div className={pathDetailClassName} key={`path-${pathIndex}`}>
                 {
                     (() => {
-                        if(showSummary){
+                        if (showSummary) {
                             const [timeSummary, distanceSummary] = this.getTimeDistanceSummary(path);
                             return <div className={styles.summary}>{`${timeSummary} ${distanceSummary}`}</div>;
-                        }else{
+                        } else {
                             return false;
                         }
                     })()
                 }
                 <div className={classNames(styles.steps, "ellipsis")}>{path.steps.map((step) => step.road).filter((road) => !!road).join(" -> ")}</div>
-                <div className={classNames(styles["traffic-lights"], "ellipsis")}>红绿灯{path.traffic_lights}个 {taxi_cost && `打车${parseFloat(taxi_cost).toFixed(1)}元` }</div>
+                <div className={classNames(styles["traffic-lights"], "ellipsis")}>红绿灯{path.traffic_lights}个 {taxi_cost && `打车${parseFloat(taxi_cost).toFixed(1)}元`}</div>
             </div>
         );
     }
 
     render() {
-        const route = this.props.location.state.route;
+        const route = this.props.location.state && this.props.location.state.route;
+        if (route) {
+            if (route.type === 'driving') {
+                return this.renderDriving(route);
+            } else if (route.type === 'bus') {
+                return this.renderBus(route);
+            }
+        }
+        return this.onlyRenderMap();
+    }
 
+    renderDriving(route) {
         if (route && route.paths && route.paths.length > 0) {
             if (route.paths.length === 1) {
                 const path = route.paths[0];
@@ -103,13 +113,21 @@ export default class Paths extends RouteComponent {
                 );
             }
         } else {
-            return (
-                <div className={styles["no-path"]}>
-                    <div className={styles["map-container"]}>
-                        <MapComponent />
-                    </div>
-                </div>
-            );
+            return this.onlyRenderMap();
         }
+    }
+
+    renderBus(route) {
+        return this.onlyRenderMap();
+    }
+
+    onlyRenderMap() {
+        return (
+            <div className={styles["no-path"]}>
+                <div className={styles["map-container"]}>
+                    <MapComponent />
+                </div>
+            </div>
+        );
     }
 };

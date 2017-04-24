@@ -162,33 +162,9 @@ class Service {
     });
   }
 
-  private static _handleRouteResult(responseText: string) {
-    const response: any = JSON.parse(responseText);
-    if (response.route && response.route.paths && response.route.paths.length > 0) {
-      response.route.paths.forEach((path: any) => {
-        if (path.steps) {
-          path.steps.forEach((step: any) => {
-            //polyline: "117.002052,39.403416;116.998672,39.404453"
-            const strLonLats: string[] = step.polyline.split(";");
-            const lonlats: number[][] = strLonLats.map((strLonlat: string) => {
-              const splits = strLonlat.split(",");
-              const lon = parseFloat(splits[0]);
-              const lat = parseFloat(splits[1]);
-              return [lon, lat];
-            });
-            step.firstLonlat = lonlats[0];
-            step.lastLonlat = lonlats[lonlats.length - 1];
-            step.lonlats = lonlats;
-          });
-        }
-      });
-    }
-    return response;
-  }
-
   static routeByDriving(fromLon: number, fromLat: number, toLon: number, toLat: number, key: string, strategy: number = 5) {
     //http://lbs.gaode.com/api/webservice/guide/api/direction/#driving
-    //http://restapi.amap.com/v3/direction/driving?origin=117.00216,39.40365&destination=116.99557,39.39268&extensions=base&output=json&key=db146b37ef8d9f34473828f12e1e85ad&strategy=5
+    //http://restapi.amap.com/v3/direction/driving?origin=117.00216,39.40365&destination=117.01633,39.37265&extensions=all&output=json&key=db146b37ef8d9f34473828f12e1e85ad&strategy=10
     const promise = new Promise((resolve, reject) => {
       const url = `//restapi.amap.com/v3/direction/driving?origin=${fromLon},${fromLat}&destination=${toLon},${toLat}&extensions=all&output=json&key=${key}&strategy=${strategy}`;
       const xhr = new XMLHttpRequest();
@@ -197,7 +173,7 @@ class Service {
       xhr.open("GET", url, true);
       xhr.onload = (event: any) => {
         // const response = event.target.response;
-        const response = this._handleRouteResult(event.target.responseText);
+        const response = this._handleDrivingResult(event.target.responseText);
         resolve(response);
       };
       xhr.onerror = (err: any) => {
@@ -209,6 +185,95 @@ class Service {
       xhr.send();
     });
     return promise;
+  }
+
+  private static _parseStepPolyline(step: any) {
+    //polyline: "117.002052,39.403416;116.998672,39.404453"
+    const strLonLats: string[] = step.polyline.split(";");
+    const lonlats: number[][] = strLonLats.map((strLonlat: string) => {
+      const splits = strLonlat.split(",");
+      const lon = parseFloat(splits[0]);
+      const lat = parseFloat(splits[1]);
+      return [lon, lat];
+    });
+    step.firstLonlat = lonlats[0];
+    step.lastLonlat = lonlats[lonlats.length - 1];
+    step.lonlats = lonlats;
+  }
+
+  private static _handleDrivingResult(responseText: string) {
+    const response: any = JSON.parse(responseText);
+    if (response.route) {
+      response.route.type = 'driving';
+      if(response.route.paths && response.route.paths.length > 0){
+        response.route.paths.forEach((path: any) => {
+          if (path.steps) {
+            path.steps.forEach((step: any) => this._parseStepPolyline(step));
+          }
+        });
+      }
+    }
+    return response;
+  }
+
+  static routeByBus(fromLon: number, fromLat: number, toLon: number, toLat: number, startCity: string, endCity: string, key: string, strategy: number = 0) {
+    const promise = new Promise((resolve, reject) => {
+      //http://restapi.amap.com/v3/direction/transit/integrated?origin=117.00216,39.40365&destination=117.01633,39.37265&city=武清区&cityd=武清区&output=json&key=db146b37ef8d9f34473828f12e1e85ad
+      const url = `//restapi.amap.com/v3/direction/transit/integrated?origin=${fromLon},${fromLat}&destination=${toLon},${toLat}&city=${startCity}&cityd=${endCity}&output=json&key=${key}`;
+      const xhr = new XMLHttpRequest();
+      xhr.open("GET", url, true);
+      xhr.onload = (event: any) => {
+        const response = this._handleBusResult(event.target.responseText);
+        resolve(response);
+      };
+      xhr.onerror = (err: any) => {
+        reject(err);
+      };
+      xhr.onabort = (err: any) => {
+        reject(err);
+      };
+      xhr.send();
+    });
+    return promise;
+  }
+
+  private static _handleBusResult(responseText: string) {
+    const response = JSON.parse(responseText);
+    if (response.route) {
+      response.route.type = 'bus';
+      if (response.route.transits && response.route.transits.length > 0) {
+        response.route.transits.forEach((transit: any) => {
+          transit.segments.forEach((segment: any) => {
+            if (segment.walking && segment.walking.steps && segment.walking.steps.length > 0) {
+              segment.walking.lonlats = [];
+              segment.walking.steps.forEach((step: any) => {
+                this._parseStepPolyline(step);
+                segment.walking.lonlats.push(...step.lonlats);
+              });
+              segment.walking.firstLonlat = segment.walking.lonlats[0];
+              segment.walking.lastLonlat = segment.walking.lonlats[segment.walking.lonlats.length - 1];
+            }
+            if (segment.bus && segment.bus.buslines && segment.bus.buslines.length > 0) {
+              segment.bus.lonlats = [];
+              segment.bus.buslines.forEach((step: any) => {
+                this._parseStepPolyline(step);
+                segment.bus.lonlats.push(...step.lonlats);
+                step.busName = step.name;
+                const idx = step.name.indexOf("(");
+                if (idx >= 0) {
+                  step.busName = step.name.slice(0, idx);
+                }
+              });
+              if(segment.bus.lonlats.length > 0){
+                segment.bus.firstLonlat = segment.bus.lonlats[0];
+                segment.bus.lastLonlat = segment.bus.lonlats[segment.bus.lonlats.length - 1];
+              }
+            }
+          });
+        });
+      }
+    }
+    return response;
   }
 
   static decodeQQPolyline(polyline: number[]) {

@@ -122,10 +122,12 @@ class RouteGraphic extends MeshColorGraphic {
     }
 }
 
+type RouteType = 'driving' | 'bus' | 'walking';
+
 export default class RouteLayer extends GraphicGroup<Drawable>{
     private pixelWidth: number = 5;
-    private routeColor:number[] = [7, 215, 108];
-    private paths: any[] = null;
+    private routeColor: number[] = [7, 215, 108];
+    private route: any = null;
 
     private constructor(private camera: Camera, private key: string) {
         super();
@@ -146,21 +148,22 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
         // this.clear();
         const startLonLat: number[] = [116, 40];//[116, -40];
         const endLonLat: number[] = [116, 25];// [116, 40];
-        this.addRouteByLonlat(startLonLat, endLonLat, pixelWidth, segments, rgb);
+        const resolution = this._getResolution();
+        this._addRouteByLonlat(startLonLat, endLonLat, pixelWidth, segments, rgb, resolution);
     }
 
-    private addRouteByLonlat(startLonLat: number[], endLonLat: number[], pixelWidth: number, segments: number, rgb: number[], resolution: number = -1) {
+    private _addRouteByLonlat(startLonLat: number[], endLonLat: number[], pixelWidth: number, segments: number, rgb: number[], resolution: number) {
         const lonlats = this._getLonlatsBySegments(startLonLat, endLonLat, segments);
-        return this.addRouteByLonlats(lonlats, pixelWidth, rgb, resolution);
+        return this._addRouteByLonlats(lonlats, pixelWidth, rgb, resolution);
     }
 
-    private addRouteByLonlats(lonlats: number[][], pixelWidth: number, rgb: number[], resolution: number = -1) {
-        if (resolution < 0) {
-            resolution = this._getResolution();
+    private _addRouteByLonlats(lonlats: number[][], pixelWidth: number, rgb: number[], resolution: number) {
+        if (lonlats.length >= 2) {
+            const graphic = new RouteGraphic(lonlats, pixelWidth, resolution, new MeshColorMaterial(rgb));
+            this.add(graphic);
+            return graphic;
         }
-        const graphic = new RouteGraphic(lonlats, pixelWidth, resolution, new MeshColorMaterial(rgb));
-        this.add(graphic);
-        return graphic;
+        return null;
     }
 
     private _getResolution() {
@@ -186,9 +189,30 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
     }
 
     showPath(pathIndex: number) {
-        if (this.paths && this.paths.length > 0) {
-            const path: any = this.paths[pathIndex];
-            if(path && path.steps && path.steps.length > 0){
+        if (this.route) {
+            if (this.route.type === 'driving') {
+                this._showDrivingPath(pathIndex);
+            } else if (this.route.type === 'bus') {
+                this._showBusPath(pathIndex);
+            }
+        }
+    }
+
+    routeByDriving(fromLon: number, fromLat: number, toLon: number, toLat: number, strategy: number = 5) {
+        return Service.routeByDriving(fromLon, fromLat, toLon, toLat, this.key, strategy).then((response: any) => {
+            this._clearAll();
+            if (response.route && response.route.paths && response.route.paths.length > 0) {
+                this.route = response.route;
+                this.showPath(0);
+            }
+            return response;
+        });
+    }
+
+    private _showDrivingPath(pathIndex: number) {
+        if (this.route && this.route.paths && this.route.paths.length > 0) {
+            const path: any = this.route.paths[pathIndex];
+            if (path && path.steps && path.steps.length > 0) {
                 this.clear();
                 const lonlats: number[][] = [];
                 const resolution = this._getResolution();
@@ -196,10 +220,10 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
                     if (index !== 0) {
                         let prevStep = steps[index - 1];
                         const joinLonlats: number[][] = [prevStep.lastLonlat, step.firstLonlat];
-                        this.addRouteByLonlats(joinLonlats, this.pixelWidth, this.routeColor, resolution);
+                        this._addRouteByLonlats(joinLonlats, this.pixelWidth, this.routeColor, resolution);
                         lonlats.push(...joinLonlats);
                     }
-                    this.addRouteByLonlats(step.lonlats, this.pixelWidth, this.routeColor, resolution);
+                    this._addRouteByLonlats(step.lonlats, this.pixelWidth, this.routeColor, resolution);
                     lonlats.push(...step.lonlats);
                 });
                 // this.addRouteByLonlats(lonlats, this.pixelWidth, color);
@@ -209,16 +233,43 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
         }
     }
 
-    routeByDriving(fromLon: number, fromLat: number, toLon: number, toLat: number, strategy: number = 5) {
-        return Service.routeByDriving(fromLon, fromLat, toLon, toLat, this.key, strategy).then((response: any) => {
-            this.paths = null;
-            this.clear();
-            if (response.route && response.route.paths.length > 0) {
-                this.paths = response.route.paths;
+    routeByBus(fromLon: number, fromLat: number, toLon: number, toLat: number, startCity: string, endCity: string, strategy: number = 0) {
+        return Service.routeByBus(fromLon, fromLat, toLon, toLat, startCity, endCity, this.key, strategy).then((response: any) => {
+            this._clearAll();
+            if (response.route && response.route.transits && response.route.transits.length > 0) {
+                this.route = response.route;
                 this.showPath(0);
             }
             return response;
         });
+    }
+
+    private _showBusPath(pathIndex: number) {
+        if (this.route && this.route.transits && this.route.transits.length > 0) {
+            const transit = this.route.transits[pathIndex];
+            if (transit && transit.segments && transit.segments.length > 0) {
+                this.clear();
+                const lonlats: number[][] = [];
+                const resolution = this._getResolution();
+                transit.segments.forEach((segment: any) => {
+                    if (segment.walking && segment.walking.lonlats && segment.walking.lonlats.length > 0) {
+                        this._addRouteByLonlats(segment.walking.lonlats, this.pixelWidth, this.routeColor, resolution);
+                        lonlats.push(...segment.walking.lonlats);
+                    }
+                    if (segment.bus && segment.bus.lonlats && segment.bus.lonlats.length > 0) {
+                        this._addRouteByLonlats(segment.bus.lonlats, this.pixelWidth, [67, 140, 237], resolution);
+                        lonlats.push(...segment.bus.lonlats);
+                    }
+                });
+                const extent = Extent.fromLonlats(lonlats);
+                this.camera.setExtent(extent);
+            }
+        }
+    }
+
+    private _clearAll() {
+        this.route = null;
+        this.clear();
     }
 
     protected onDraw(camera: Camera) {
@@ -236,6 +287,26 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
     destroy() {
         this.camera = null;
         super.destroy();
+    }
+
+    test2(str: string) {
+        const splits = str.split(";");
+        const splits1 = splits[0].split(",");
+        const splits2 = splits[1].split(",");
+        var lon1 = parseFloat(splits1[0]);
+        var lat1 = parseFloat(splits1[1]);
+        var lon2 = parseFloat(splits2[0]);
+        var lat2 = parseFloat(splits2[1]);
+        var s = Math.pow((lon1 - lon2), 2) + Math.pow((lat1 - lat2), 2);
+        const distance = MathUtils.getRealArcDistanceBetweenLonLats(lon1, lat1, lon2, lat2);
+        return {
+            lon1: lon1,
+            lat1: lat1,
+            lon2: lon2,
+            lat2: lat2,
+            s: s,
+            distance: distance
+        };
     }
 
     static getInstance(camera: Camera, key: string) {
