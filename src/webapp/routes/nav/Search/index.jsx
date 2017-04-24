@@ -15,7 +15,7 @@ export default class Nav extends RouteComponent{
         this.pageCapacity = 10;
         this.isFromLastFocused = true;
         this.state = {
-            type: 'driving',//bus,walk
+            type: 'driving',//bus,walking
             fromPois: [],
             toPois: [],
             routes: []
@@ -101,23 +101,18 @@ export default class Nav extends RouteComponent{
 
     route(fromPoi, toPoi){
         console.log(fromPoi, toPoi);
+        let promise = null;
         if(this.state.type === 'driving'){
-            const promise = globe.routeLayer.routeByDriving(fromPoi.pointx, fromPoi.pointy, toPoi.pointx, toPoi.pointy, 10);
-            promise.then((response) => {
-                console.log(response);
-                if(response.route){
-                    this.props.router.push({
-                        pathname: '/nav/paths',
-                        state: {
-                            route: response.route
-                        }
-                    });
-                }
-            });
+            promise = globe.routeLayer.routeByDriving(fromPoi.pointx, fromPoi.pointy, toPoi.pointx, toPoi.pointy, 10);
         }else if(this.state.type === 'bus'){
             const startCity = fromPoi.POI_PATH[0].cname;
             const endCity = toPoi.POI_PATH[0].cname;
-            const promise = globe.routeLayer.routeByBus(fromPoi.pointx, fromPoi.pointy, toPoi.pointx, toPoi.pointy, startCity, endCity, 0);
+            promise = globe.routeLayer.routeByBus(fromPoi.pointx, fromPoi.pointy, toPoi.pointx, toPoi.pointy, startCity, endCity, 0);
+        }else if(this.state.type === 'walking'){
+            promise = globe.routeLayer.routeByWalking(fromPoi.pointx, fromPoi.pointy, toPoi.pointx, toPoi.pointy);
+        }
+
+        if(promise){
             promise.then((response) => {
                 console.log(response);
                 if(response.route){
@@ -140,7 +135,7 @@ export default class Nav extends RouteComponent{
             selected: this.state.type === 'driving'
         });
         const walkClassName = classNames(fontStyles.fa, fontStyles["fa-male"], styles["traffic-type"], {
-            selected: this.state.type === 'walk'
+            selected: this.state.type === 'walking'
         });
         const fromClassName = classNames(fontStyles.fa, fontStyles["fa-map-marker"], styles["from-icon"]);
         const toClassName = classNames(fontStyles.fa, fontStyles["fa-circle-o"], styles["to-icon"]);
@@ -154,7 +149,7 @@ export default class Nav extends RouteComponent{
                     <div className={styles["traffic-types"]}>
                         <i className={busClassName} onClick={()=>this.onClickTrafficType('bus')}></i>
                         <i className={driveClassName} onClick={()=>this.onClickTrafficType('driving')}></i>
-                        <i className={walkClassName} onClick={()=>this.onClickTrafficType('walk')}></i>
+                        <i className={walkClassName} onClick={()=>this.onClickTrafficType('walking')}></i>
                     </div>
                     <div className={styles.cancel} onClick={()=>{this.onCancel();}}>取消</div>
                 </header>

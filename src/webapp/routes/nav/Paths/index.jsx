@@ -27,6 +27,8 @@ export default class Paths extends RouteComponent {
                 return this.renderDriving(route, selectedPathIndex);
             } else if (route.type === 'bus') {
                 return this.renderBus(route, selectedPathIndex);
+            } else if (route.type === 'walking') {
+                return this.renderWalking(route, selectedPathIndex);
             }
         }
         return this.onlyRenderMap();
@@ -120,6 +122,24 @@ export default class Paths extends RouteComponent {
         }
     }
 
+    renderWalking(route, selectedPathIndex) {
+        if (route && route.paths && route.paths.length > 0) {
+            const path = route.paths[0];
+            return (
+                <div className={styles["single-path"]}>
+                    <div className={styles["map-container"]}>
+                        <MapComponent />
+                    </div>
+                    <div className={styles.footer}>
+                        <div className={styles["path-details"]}>{this.getPathDetail(route, path, 0, true, true)}</div>
+                    </div>
+                </div>
+            );
+        } else {
+            return this.onlyRenderMap();
+        }
+    }
+
     onlyRenderMap() {
         return (
             <div className={styles["no-path"]}>
@@ -151,15 +171,15 @@ export default class Paths extends RouteComponent {
                                 <div key="summary2" className={classNames(styles.summary2, "ellipsis")}>{path.steps.map((step) => step.road).filter((road) => !!road).join(" -> ")}</div>,
                                 <div key="summary3" className={classNames(styles.summary3, "ellipsis")}>红绿灯{path.traffic_lights}个 {route.taxi_cost && `打车${parseFloat(route.taxi_cost).toFixed(1)}元`}</div>
                             ];
-                        }else if(route.type === 'bus'){
+                        } else if (route.type === 'bus') {
                             const busNames = [];
                             const transit = path;
-                            if(transit.segments && transit.segments.length > 0){
+                            if (transit.segments && transit.segments.length > 0) {
                                 transit.segments.forEach((segment) => {
-                                    if(segment && segment.bus && segment.bus.buslines && segment.bus.buslines.length > 0){
+                                    if (segment && segment.bus && segment.bus.buslines && segment.bus.buslines.length > 0) {
                                         segment.bus.buslines.forEach((busline) => {
-                                            if(busline && busline.busName){
-                                                if(busNames.indexOf(busline.busName) < 0){
+                                            if (busline && busline.busName) {
+                                                if (busNames.indexOf(busline.busName) < 0) {
                                                     busNames.push(busline.busName);
                                                 }
                                             }
@@ -171,6 +191,12 @@ export default class Paths extends RouteComponent {
                                 <div key="summary2" className={classNames(styles.summary2, "ellipsis")}>{busNames.join(" -> ")}</div>,
                                 <div key="summary3" className={classNames(styles.summary3, "ellipsis")}>步行{this.getDistanceSummary(transit.walking_distance)}</div>
                             ];
+                        } else if (route.type === 'walking') {
+                            const [timeSummary, distanceSummary] = this.getTimeDistanceSummary(path);
+                            return [
+                                <div key="summary2" className={classNames(styles.summary2, "ellipsis")}>{`${timeSummary} ${distanceSummary}`}</div>,
+                                <div key="summary3" className={classNames(styles.summary3, "ellipsis")}>{route.taxi_cost && `打车${parseFloat(route.taxi_cost).toFixed(1)}元`}</div>
+                            ]
                         }
                         return false;
                     })()
@@ -184,16 +210,16 @@ export default class Paths extends RouteComponent {
             distance,
             duration
         } = path;
-        
+
         return [this.getTimeSummary(duration), this.getDistanceSummary(distance)];
     }
 
-    getTimeSummary(duration){
+    getTimeSummary(duration) {
         duration = parseFloat(duration);
         return `${Math.round(duration / 60)}分钟`;
     }
 
-    getDistanceSummary(distance){
+    getDistanceSummary(distance) {
         distance = parseFloat(distance);
         let distanceSummary = distance >= 1000 ? `${(distance / 1000).toFixed(1)}公里` : `${distance}米`;
         return distanceSummary;

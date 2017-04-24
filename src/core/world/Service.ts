@@ -187,25 +187,11 @@ class Service {
     return promise;
   }
 
-  private static _parseStepPolyline(step: any) {
-    //polyline: "117.002052,39.403416;116.998672,39.404453"
-    const strLonLats: string[] = step.polyline.split(";");
-    const lonlats: number[][] = strLonLats.map((strLonlat: string) => {
-      const splits = strLonlat.split(",");
-      const lon = parseFloat(splits[0]);
-      const lat = parseFloat(splits[1]);
-      return [lon, lat];
-    });
-    step.firstLonlat = lonlats[0];
-    step.lastLonlat = lonlats[lonlats.length - 1];
-    step.lonlats = lonlats;
-  }
-
   private static _handleDrivingResult(responseText: string) {
     const response: any = JSON.parse(responseText);
     if (response.route) {
       response.route.type = 'driving';
-      if(response.route.paths && response.route.paths.length > 0){
+      if (response.route.paths && response.route.paths.length > 0) {
         response.route.paths.forEach((path: any) => {
           if (path.steps) {
             path.steps.forEach((step: any) => this._parseStepPolyline(step));
@@ -264,7 +250,7 @@ class Service {
                   step.busName = step.name.slice(0, idx);
                 }
               });
-              if(segment.bus.lonlats.length > 0){
+              if (segment.bus.lonlats.length > 0) {
                 segment.bus.firstLonlat = segment.bus.lonlats[0];
                 segment.bus.lastLonlat = segment.bus.lonlats[segment.bus.lonlats.length - 1];
               }
@@ -274,6 +260,58 @@ class Service {
       }
     }
     return response;
+  }
+
+  static routeByWalking(fromLon: number, fromLat: number, toLon: number, toLat: number, key: string) {
+    const promise = new Promise((resolve, reject) => {
+      //http://restapi.amap.com/v3/direction/walking?origin=116.434307,39.90909&destination=116.434446,39.90816&key=db146b37ef8d9f34473828f12e1e85ad
+      const url = `//restapi.amap.com/v3/direction/walking?origin=${fromLon},${fromLat}&destination=${toLon},${toLat}&key=${key}`;
+      const xhr = new XMLHttpRequest();
+      xhr.open("GET", url, true);
+      xhr.onload = (event: any) => {
+        const response = this._handleWalkingResult(event.target.responseText);
+        resolve(response);
+      };
+      xhr.onerror = (err: any) => {
+        reject(err);
+      };
+      xhr.onabort = (err: any) => {
+        reject(err);
+      };
+      xhr.send();
+    });
+    return promise;
+  }
+
+  private static _handleWalkingResult(responseText: string) {
+    const response = JSON.parse(responseText);
+    if (response.route) {
+      response.route.type = 'walking';
+      if (response.route.paths && response.route.paths.length > 0) {
+        response.route.paths.forEach((path: any) => {
+          if (path && path.steps && path.steps.length > 0) {
+            path.steps.forEach((step: any) => {
+              this._parseStepPolyline(step);
+            });
+          }
+        });
+      }
+    }
+    return response;
+  }
+
+  private static _parseStepPolyline(step: any) {
+    //polyline: "117.002052,39.403416;116.998672,39.404453"
+    const strLonLats: string[] = step.polyline.split(";");
+    const lonlats: number[][] = strLonLats.map((strLonlat: string) => {
+      const splits = strLonlat.split(",");
+      const lon = parseFloat(splits[0]);
+      const lat = parseFloat(splits[1]);
+      return [lon, lat];
+    });
+    step.firstLonlat = lonlats[0];
+    step.lastLonlat = lonlats[lonlats.length - 1];
+    step.lonlats = lonlats;
   }
 
   static decodeQQPolyline(polyline: number[]) {

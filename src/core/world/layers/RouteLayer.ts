@@ -183,7 +183,8 @@ type RouteType = 'driving' | 'bus' | 'walking';
 
 export default class RouteLayer extends GraphicGroup<Drawable>{
     private pixelWidth: number = 5;
-    private routeColor: number[] = [7, 215, 108];
+    private greenColor: number[] = [7, 215, 108];
+    private blueColor: number[] = [67, 140, 237];
     private route: any = null;
     //将1米的作为连接两个经纬度点的最小阈值的平方
     private deltaLonlatSquareThreshold: number = Math.pow(1 / (2 * Math.PI * Kernel.REAL_EARTH_RADIUS) * 360, 2);
@@ -304,10 +305,10 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
                     if (index !== 0) {
                         let prevStep = steps[index - 1];
                         const joinLonlats: number[][] = [prevStep.lastLonlat, step.firstLonlat];
-                        this._addRouteByLonlats(joinLonlats, resolution, this.pixelWidth, this.routeColor);
+                        this._addRouteByLonlats(joinLonlats, resolution, this.pixelWidth, this.greenColor);
                         lonlats.push(...joinLonlats);
                     }
-                    this._addRouteByLonlats(step.lonlats, resolution, this.pixelWidth, this.routeColor);
+                    this._addRouteByLonlats(step.lonlats, resolution, this.pixelWidth, this.greenColor);
                     lonlats.push(...step.lonlats);
                 });
                 const extent = Extent.fromLonlats(lonlats);
@@ -336,14 +337,42 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
                 const resolution = this._getResolution();
                 transit.segments.forEach((segment: any) => {
                     if (segment.walking && segment.walking.lonlats && segment.walking.lonlats.length > 0) {
-                        this._addRouteByLonlats(segment.walking.lonlats, resolution, this.pixelWidth, this.routeColor);
+                        this._addRouteByLonlats(segment.walking.lonlats, resolution, this.pixelWidth, this.greenColor);
                         lonlats.push(...segment.walking.lonlats);
                     }
                     if (segment.bus && segment.bus.lonlats && segment.bus.lonlats.length > 0) {
-                        this._addRouteByLonlats(segment.bus.lonlats, resolution, this.pixelWidth, [67, 140, 237]);
+                        this._addRouteByLonlats(segment.bus.lonlats, resolution, this.pixelWidth, this.blueColor);
                         lonlats.push(...segment.bus.lonlats);
                     }
                 });
+                const extent = Extent.fromLonlats(lonlats);
+                this.camera.setExtent(extent);
+            }
+        }
+    }
+
+    routeByWalking(fromLon: number, fromLat: number, toLon: number, toLat: number){
+        return Service.routeByWalking(fromLon, fromLat, toLon, toLat, this.key).then((response: any) => {
+            this._clearAll();
+            if(response.route && response.route.paths && response.route.paths.length > 0){
+                this.route = response.route;
+                this._showWalkingPath(0);
+            }
+            return response;
+        });
+    }
+
+    private _showWalkingPath(pathIndex: number){
+        if(this.route && this.route.paths && this.route.paths.length > 0){
+            const path = this.route.paths[pathIndex];
+            if(path && path.steps && path.steps.length > 0){
+                this.clear();
+                const lonlats: number[][] = [];
+                const resolution = this._getResolution();
+                path.steps.forEach((step: any) => {
+                    lonlats.push(...step.lonlats);
+                });
+                this._addRouteByLonlats(lonlats, resolution, this.pixelWidth, this.blueColor);
                 const extent = Extent.fromLonlats(lonlats);
                 this.camera.setExtent(extent);
             }
