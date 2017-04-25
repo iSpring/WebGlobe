@@ -1,0 +1,38 @@
+﻿@import "../../css/variables";
+$header-height: 46px;
+
+header{
+    position: relative;
+    box-sizing: border-box;
+    height: $header-height;
+    line-height: $header-height;
+    border-bottom: 1px solid #b4b4b4;
+
+    .traffic-types{
+        width: 50%;
+        height: 100%;
+        margin: 0 auto;
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: space-between;
+        align-items: center;
+
+        .traffic-type{
+            font-size: 24px;
+            color: #54585E;
+            &:global(.selected){
+                color: $blue-color;
+            }
+        }
+    }
+
+    .cancel{
+        position: absolute;
+        color: $blue-color;
+        font-size: 16px;
+        height: 100%;
+        top: 0;
+        bottom: 0;
+        right: 15px;
+    }
+}
