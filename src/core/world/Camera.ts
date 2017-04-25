@@ -940,9 +940,9 @@ class Camera extends Object3D {
     const resolution = deltaLength / this.canvas.width;
     const bestFloatLevel = this._calculateLevelByResolution(resolution);
     let level = Math.floor(bestFloatLevel);
-    if(bestFloatLevel - level >= 0.9){
-      level += 1;
-    }
+    // if(bestFloatLevel - level >= 0.9){
+    //   level += 1;
+    // }
     level = this._safelyGetValidLevel(level);
     return [centerLon, centerLat, level];
   }

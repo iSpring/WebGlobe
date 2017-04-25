@@ -131,7 +131,7 @@ export default class Paths extends RouteComponent {
                         <MapComponent />
                     </div>
                     <div className={styles.footer}>
-                        <div className={styles["path-details"]}>{this.getPathDetail(route, path, 0, true, true)}</div>
+                        <div className={styles["path-details"]}>{this.getPathDetail(route, path, 0, true, false)}</div>
                     </div>
                 </div>
             );
@@ -157,20 +157,17 @@ export default class Paths extends RouteComponent {
             <div className={pathDetailClassName} key={`${route.type}-path-${pathIndex}`}>
                 {
                     (() => {
-                        if (showSummary1) {
-                            const [timeSummary, distanceSummary] = this.getTimeDistanceSummary(path);
-                            return <div className={styles.summary1}>{`${timeSummary} ${distanceSummary}`}</div>;
-                        }
-                        return false;
-                    })()
-                }
-                {
-                    (() => {
                         if (route.type === 'driving') {
-                            return [
+                            let drivingChildren = [];
+                            if (showSummary1) {
+                                const [timeSummary, distanceSummary] = this.getTimeDistanceSummary(path);
+                                drivingChildren.push(<div className={styles.summary1}>{`${timeSummary} ${distanceSummary}`}</div>);
+                            }
+                            drivingChildren = drivingChildren.concat([
                                 <div key="summary2" className={classNames(styles.summary2, "ellipsis")}>{path.steps.map((step) => step.road).filter((road) => !!road).join(" -> ")}</div>,
                                 <div key="summary3" className={classNames(styles.summary3, "ellipsis")}>红绿灯{path.traffic_lights}个 {route.taxi_cost && `打车${parseFloat(route.taxi_cost).toFixed(1)}元`}</div>
-                            ];
+                            ]);
+                            return drivingChildren;
                         } else if (route.type === 'bus') {
                             const busNames = [];
                             const transit = path;
@@ -194,9 +191,10 @@ export default class Paths extends RouteComponent {
                         } else if (route.type === 'walking') {
                             const [timeSummary, distanceSummary] = this.getTimeDistanceSummary(path);
                             return [
-                                <div key="summary2" className={classNames(styles.summary2, "ellipsis")}>{`${timeSummary} ${distanceSummary}`}</div>,
-                                <div key="summary3" className={classNames(styles.summary3, "ellipsis")}>{route.taxi_cost && `打车${parseFloat(route.taxi_cost).toFixed(1)}元`}</div>
-                            ]
+                                <div key="summary1" className={classNames(styles.summary1, "ellipsis")}>{`${timeSummary} ${distanceSummary}`}</div>,
+                                <div key="summary2" className={classNames(styles.summary2, "ellipsis")}>{path.steps.map((step) => step.road).filter((road) => !!road).join(" -> ")}</div>,
+                                <div key="summary3" className={classNames(styles.summary3, "ellipsis")}><span className={classNames(styles["detail-btn"])}>详情</span></div>
+                            ];
                         }
                         return false;
                     })()
