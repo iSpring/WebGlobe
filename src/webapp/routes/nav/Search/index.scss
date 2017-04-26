@@ -71,6 +71,13 @@ $exchange-size: 60px;
 }
 
 .pois{
+    position: absolute;
+    left: 0;
+    width: 100%;
+    top: $header-height * 3;
+    bottom: 0;
+    overflow-y: auto;
+
     .poi{
         padding: 15px;
         .name{

@@ -5,11 +5,11 @@ import classNames from 'classnames';
 import styles from './index.scss';
 import fontStyles from 'webapp/fonts/font-awesome.scss';
 import Service from 'world/Service';
-import {globe} from 'webapp/components/Map';
+import { globe } from 'webapp/components/Map';
 
-export default class Nav extends RouteComponent{
+export default class Nav extends RouteComponent {
 
-    constructor(props){
+    constructor(props) {
         super(props);
         this.fromPoi = null;
         this.toPoi = null;
@@ -23,28 +23,28 @@ export default class Nav extends RouteComponent{
         };
     }
 
-    onCancel(){
+    onCancel() {
         this.goBack();
     }
 
-    onKeyPress(e){
+    onKeyPress(e) {
         const isFrom = e.target === this.fromInput;
         const keyword = e.target.value;
-        if(e.key === "Enter"){
-            if(keyword){
+        if (e.key === "Enter") {
+            if (keyword) {
                 Service.searchByCurrentCity(keyword, this.pageCapacity).then((response) => {
                     let pois = null;
-                    if(response.detail){
+                    if (response.detail) {
                         pois = response.detail.pois;
                     }
-                    if(!pois){
+                    if (!pois) {
                         pois = [];
                     }
-                    if(isFrom){
+                    if (isFrom) {
                         this.setState({
                             fromPois: pois
                         });
-                    }else{
+                    } else {
                         this.setState({
                             toPois: pois
                         });
@@ -54,84 +54,70 @@ export default class Nav extends RouteComponent{
         }
     }
 
-    onFromFocus(){
+    onFromFocus() {
         this.isFromLastFocused = true;
         this.setState({
             toPois: []
         });
     }
 
-    onToFocus(){
+    onToFocus() {
         this.isFromLastFocused = false;
         this.setState({
             fromPois: []
         });
     }
 
-    onClickPoi(poi, isFromPoi){
-        if(isFromPoi){
+    onClickPoi(poi, isFromPoi) {
+        if (isFromPoi) {
             this.fromPoi = poi;
             this.fromInput.value = poi.name || "";
             this.setState({
                 fromPois: []
             });
-            if(this.toPoi){
+            if (this.toPoi) {
                 this.route(this.fromPoi, this.toPoi);
-            }else{
+            } else {
                 this.toInput.focus();
             }
-        }else{
+        } else {
             this.toPoi = poi;
             this.toInput.value = poi.name || "";
             this.setState({
                 toPois: []
             })
-            if(this.fromPoi){
+            if (this.fromPoi) {
                 this.route(this.fromPoi, this.toPoi);
-            }else{
+            } else {
                 this.fromInput.focus();
             }
         }
     }
 
-    onChangeTrafficType(trafficType){
+    onTrafficTypeChange(trafficType) {
         this.setState({
             type: trafficType
         });
-        if(this.fromPoi && this.toPoi){
+        if (this.fromPoi && this.toPoi) {
             this.route(this.fromPoi, this.toPoi);
         }
     }
 
-    route(fromPoi, toPoi){
-        console.log(fromPoi, toPoi);
-        let promise = null;
-        if(this.state.type === 'driving'){
-            promise = globe.routeLayer.routeByDriving(fromPoi.pointx, fromPoi.pointy, toPoi.pointx, toPoi.pointy, 10);
-        }else if(this.state.type === 'bus'){
-            const startCity = fromPoi.POI_PATH[0].cname;
-            const endCity = toPoi.POI_PATH[0].cname;
-            promise = globe.routeLayer.routeByBus(fromPoi.pointx, fromPoi.pointy, toPoi.pointx, toPoi.pointy, startCity, endCity, 0);
-        }else if(this.state.type === 'walking'){
-            promise = globe.routeLayer.routeByWalking(fromPoi.pointx, fromPoi.pointy, toPoi.pointx, toPoi.pointy);
-        }
-
-        if(promise){
-            this.wrapPromise(promise).then((response) => {
-                console.log(response);
-                if(response.route){
-                    this.props.router.push({
-                        pathname: '/nav/paths',
-                        state: {
-                            route: response.route
-                        }
-                    });
+    route(fromPoi, toPoi) {
+        if (fromPoi && toPoi) {
+            console.log(fromPoi, toPoi);
+            this.props.router.push({
+                pathname: '/nav/paths',
+                state: {
+                    type: this.state.type,
+                    fromPoi: fromPoi,
+                    toPoi: toPoi
                 }
-            }, (err) => console.error(err));
+            });
         }
     }
 
-    render(){
+    render() {
         const fromClassName = classNames(fontStyles.fa, fontStyles["fa-map-marker"], styles["from-icon"]);
         const toClassName = classNames(fontStyles.fa, fontStyles["fa-circle-o"], styles["to-icon"]);
         const exchangeArrowClassName = classNames(fontStyles.fa, fontStyles["fa-arrows-v"]);
@@ -140,16 +126,16 @@ export default class Nav extends RouteComponent{
 
         return (
             <div>
-                <TrafficTypes type={this.state.type} ref={input => this.trafficTypes = input} onChangeTrafficType={(e)=>this.onChangeTrafficType(e)} />
+                <TrafficTypes type={this.state.type} ref={input => this.trafficTypes = input} onTrafficTypeChange={e => this.onTrafficTypeChange(e)} onCancel={() => this.onCancel()} />
                 <div className={styles["search-section"]}>
                     <div className={styles["inputs-container"]}>
                         <div className={classNames(styles["input-container"], styles.from)}>
                             <i className={fromClassName}></i>
-                            <input type="text" placeholder="请输入出发地" ref={(input)=>{this.fromInput = input;}} onFocus={(e)=>this.onFromFocus(e)} onKeyPress={(e)=>this.onKeyPress(e)} />
+                            <input type="text" placeholder="请输入出发地" ref={(input) => { this.fromInput = input; }} onFocus={(e) => this.onFromFocus(e)} onKeyPress={(e) => this.onKeyPress(e)} />
                         </div>
                         <div className={styles["input-container"]}>
                             <i className={toClassName}></i>
-                            <input type="text" placeholder="请输入目的地" ref={(input)=>{this.toInput = input;}} onFocus={(e)=>this.onToFocus(e)} onKeyPress={(e)=>this.onKeyPress(e)} />
+                            <input type="text" placeholder="请输入目的地" ref={(input) => { this.toInput = input; }} onFocus={(e) => this.onToFocus(e)} onKeyPress={(e) => this.onKeyPress(e)} />
                         </div>
                     </div>
                     <div className={styles.exchange}>
@@ -160,7 +146,7 @@ export default class Nav extends RouteComponent{
                     {
                         pois.map((poi) => {
                             return (
-                                <div className={styles.poi} key={poi.uid} onClick={(e)=>{this.onClickPoi(poi, this.isFromLastFocused);}}>
+                                <div className={styles.poi} key={poi.uid} onClick={(e) => { this.onClickPoi(poi, this.isFromLastFocused); }}>
                                     <div className={styles.name}>{poi.name}</div>
                                     <div className={addressClassName}>{poi.addr}</div>
                                 </div>

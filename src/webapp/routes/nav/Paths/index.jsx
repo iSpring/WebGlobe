@@ -9,12 +9,18 @@ export default class Paths extends RouteComponent {
     constructor(props) {
         super(props);
         this.state = {
-            selectedPathIndex: 0,
-            type: 'driving'
+            type: 'driving',
+            route: null,
+            selectedPathIndex: 0
         };
-        const route = this.props.location.state && this.props.location.state.route;
-        if(route && route.type){
-            this.state.type = route.type;
+        // const route = this.props.location.state && this.props.location.state.route;
+        // if (this.route && this.route.type) {
+        //     this.state.type = this.route.type;
+        // }
+        if (this.props.location.state) {
+            if (this.props.location.state.type) {
+                this.state.type = this.props.location.state.type;
+            }
         }
     }
 
@@ -25,8 +31,66 @@ export default class Paths extends RouteComponent {
         });
     }
 
+    route(type) {
+        if (type) {
+            const {
+                state: {
+                    fromPoi,
+                    toPoi
+                }
+            } = this.props.location;
+            if (fromPoi && toPoi) {
+                const fromLon = fromPoi.pointx;
+                const fromLat = fromPoi.pointy;
+                const toLon = toPoi.pointx;
+                const toLat = toPoi.pointy;
+
+                let promise = null;
+
+                if (type === 'driving') {
+                    promise = globe.routeLayer.routeByDriving(fromLon, fromLat, toLon, toLat, 10);
+                } else if (type === 'bus') {
+                    const startCity = fromPoi.POI_PATH[0].cname;
+                    const endCity = toPoi.POI_PATH[0].cname;
+                    promise = globe.routeLayer.routeByBus(fromLon, fromLat, toLon, toLat, startCity, endCity, 0);
+                } else if (type === 'walking') {
+                    promise = globe.routeLayer.routeByWalking(fromLon, fromLat, toLon, toLat);
+                }
+
+                if (promise) {
+                    this.wrapPromise(promise).then((response) => {
+                        console.log(response);
+                        if (response.route) {
+                            this.setState({
+                                type: type,
+                                route: response.route,
+                                selectedPathIndex: 0
+                            }, () => {
+                                this.mapComponent.resizeGlobe();
+                            });
+                        }
+                    }, (err) => console.error(err));
+                }
+            }else{
+                this.setState({
+                    type: type
+                });
+            }
+        }
+    }
+
+    componentDidMount() {
+        super.componentDidMount();
+        this.route(this.state.type);
+    }
+
+    onTrafficTypeChange(trafficType) {
+        this.route(trafficType);
+    }
+
     render() {
-        const route = this.props.location.state && this.props.location.state.route;
+        // const route = this.props.location.state && this.props.location.state.route;
+        const route = this.state.route;
         if (route) {
             let selectedPathIndex = this.state.selectedPathIndex;
             if (route.type === 'driving') {
@@ -148,9 +212,9 @@ export default class Paths extends RouteComponent {
 
     renderHeaderMap() {
         return [
-            <TrafficTypes key="traffic-types" type={this.state.type} />,
+            <TrafficTypes key="traffic-types" type={this.state.type} onTrafficTypeChange={e => this.onTrafficTypeChange(e)} />,
             <div key={"map-container"} className={styles["map-container"]}>
-                <MapComponent />
+                <MapComponent ref={input => this.mapComponent = input} />
             </div>
         ];
     }

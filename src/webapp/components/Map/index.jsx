@@ -37,10 +37,14 @@ export default class Map extends Component{
         return <div className={styles.map}></div>;
     }
 
+    resizeGlobe(){
+        safelyResizeByParent();
+    }
+
     componentDidMount(){
         const domNode = ReactDOM.findDOMNode(this);
         globe.placeAt(domNode);
-        safelyResizeByParent();
+        this.resizeGlobe();
         globe.resumeRendering();
     }
 
