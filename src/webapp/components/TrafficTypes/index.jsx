@@ -7,7 +7,8 @@ export default class TrafficTypes extends Component {
 
     static propTypes = {
         type: PropTypes.string,
-        onTrafficTypeChange: PropTypes.func
+        onTrafficTypeChange: PropTypes.func,
+        onCancel: PropTypes.func
     }
 
     static defaultProps = {

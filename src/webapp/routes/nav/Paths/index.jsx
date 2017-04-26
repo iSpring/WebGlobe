@@ -89,7 +89,6 @@ export default class Paths extends RouteComponent {
     }
 
     render() {
-        // const route = this.props.location.state && this.props.location.state.route;
         const route = this.state.route;
         if (route) {
             let selectedPathIndex = this.state.selectedPathIndex;
@@ -212,7 +211,7 @@ export default class Paths extends RouteComponent {
 
     renderHeaderMap() {
         return [
-            <TrafficTypes key="traffic-types" type={this.state.type} onTrafficTypeChange={e => this.onTrafficTypeChange(e)} />,
+            <TrafficTypes key="traffic-types" type={this.state.type} onTrafficTypeChange={e => this.onTrafficTypeChange(e)} onCancel={() => this.goBack()} />,
             <div key={"map-container"} className={styles["map-container"]}>
                 <MapComponent ref={input => this.mapComponent = input} />
             </div>
