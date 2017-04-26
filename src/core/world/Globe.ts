@@ -250,12 +250,20 @@ export default class Globe {
     }
   }
 
-  centerTo(lon: number, lat: number, level:number){
-    this.camera.centerTo(lon, lat, level);
+  centerTo(lon: number, lat: number, level:number = this.getLevel()){
+    return this.camera.centerTo(lon, lat, level);
   }
 
-  public animateTo(newLon:number, newLat:number, newLevel:number){
-    return this.camera.animateTo(newLon, newLat, newLevel);
+  animateTo(newLon: number, newLat: number, newLevel: number = this.getLevel(), duration: number = 1000){
+    return this.camera.animateTo(newLon, newLat, newLevel, duration);
+  }
+
+  setExtent(extent: Extent){
+    return this.camera.setExtent(extent);
+  }
+
+  animateToExtent(extent: Extent, duration: number = 1000){
+    return this.camera.animateToExtent(extent, duration);
   }
 
   isAnimating(): boolean {

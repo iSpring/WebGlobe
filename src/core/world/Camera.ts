@@ -756,6 +756,17 @@ class Camera extends Object3D {
     return this.animating;
   }
 
+  centerTo(newLon: number, newLat: number, newLevel: number = this.getLevel()) {
+    if (newLevel !== this.getLevel()) {
+      const newPosition = this._safelyGetNewPositonByLevel(newLevel);
+      const newDistance = Vector.fromVertice(newPosition).getLength();
+      this._setPositionByLonLatDistance(newLon, newLat, newDistance);
+    } else {
+      this._setPositionByLonLatDistance(newLon, newLat);
+    }
+    this.setLevel(newLevel, true);
+  }
+
   animateTo(newLon: number, newLat: number, newLevel: number = this.getLevel(), duration: number = 1000) {
     const promise = new Promise((resolve, reject) => {
       if (this.isAnimating()) {
@@ -801,69 +812,6 @@ class Camera extends Object3D {
     });
     return promise;
   }
-
-  private _safelyGetNewPositonByLevel(newLevel: number) {
-    const newCameraMatrix = this.matrix.clone();
-    this._updatePositionByLevel(newLevel, newCameraMatrix);
-    const newPosition = newCameraMatrix.getPosition();
-    return newPosition;
-  }
-
-  centerTo(newLon: number, newLat: number, newLevel: number = this.getLevel()) {
-    if (newLevel !== this.getLevel()) {
-      const newPosition = this._safelyGetNewPositonByLevel(newLevel);
-      const newDistance = Vector.fromVertice(newPosition).getLength();
-      this._setPositionByLonLatDistance(newLon, newLat, newDistance);
-    } else {
-      this._setPositionByLonLatDistance(newLon, newLat);
-    }
-    this.setLevel(newLevel, true);
-  }
-
-  private _setPositionByLonLatDistance(newLon: number, newLat: number, newLengthFromOrigin2Positon?: number) {
-    const [lon, lat] = this.getLonlat();
-    const deltaLon = newLon - lon;
-    const deltaLat = newLat - lat;
-
-    this._setPositionByDeltaLonLatDistance(deltaLon, deltaLat);
-
-    if (newLengthFromOrigin2Positon > 0) {
-      this._setPositionByDistanceFromOrigin2Camera(newLengthFromOrigin2Positon);
-    }
-  }
-
-  private _setPositionByDeltaLonLatDistance(deltaLon: number, deltaLat: number, deltaHeight?: number) {
-    const deltaLonRadian = MathUtils.degreeToRadian(deltaLon);
-    const deltaLatRadian = MathUtils.degreeToRadian(deltaLat);
-    this.worldRotateY(deltaLonRadian);
-    const vector1 = Vector.fromVertice(this.getPosition());
-    const vector2 = new Vector(0, 1, 0);
-    const crossAxis = vector1.cross(vector2);
-    this.worldRotateByVector(deltaLatRadian, crossAxis);
-
-    if (deltaHeight > 0 || deltaHeight < 0) {
-      const vectorFromOrigin2Position = Vector.fromVertice(this.getPosition());
-      const newLength = vectorFromOrigin2Position.getLength() + deltaHeight;
-      vectorFromOrigin2Position.setLength(newLength);
-      const newPosition = vectorFromOrigin2Position.getVertice();
-      this.setPosition(newPosition);
-    }
-  }
-
-  _setPositionByDistanceFromOrigin2Camera(newLengthFromOrigin2Positon: number) {
-    const vectorFromOrigin2Position = Vector.fromVertice(this.getPosition());
-    vectorFromOrigin2Position.setLength(newLengthFromOrigin2Positon);
-    const newPosition = vectorFromOrigin2Position.getVertice();
-    this.setPosition(newPosition);
-  }
-
-  // centerToVertice(newVertice: Vertice){
-  //   const startVector = Vector.fromVertice(this.getPosition());
-  //   const endVector = Vector.fromVertice(newVertice);
-  //   const axis = startVector.cross(endVector);
-  //   const radian = Vector.getRadianOfTwoVectors(startVector, endVector);
-  //   this.worldRotateByVector(radian, axis);
-  // }
 
   animateToLevel(newLevel: number, cb?: () => void): void {
     if (this.isAnimating()) {
@@ -920,6 +868,50 @@ class Camera extends Object3D {
   animateToExtent(extent: Extent, duration: number = 1000){
     const [lon, lat, level] = this._calculateLonLatLevelByExtent(extent);
     return this.animateTo(lon, lat, level, duration);
+  }
+
+  private _safelyGetNewPositonByLevel(newLevel: number) {
+    const newCameraMatrix = this.matrix.clone();
+    this._updatePositionByLevel(newLevel, newCameraMatrix);
+    const newPosition = newCameraMatrix.getPosition();
+    return newPosition;
+  }
+
+  private _setPositionByLonLatDistance(newLon: number, newLat: number, newLengthFromOrigin2Positon?: number) {
+    const [lon, lat] = this.getLonlat();
+    const deltaLon = newLon - lon;
+    const deltaLat = newLat - lat;
+
+    this._setPositionByDeltaLonLatDistance(deltaLon, deltaLat);
+
+    if (newLengthFromOrigin2Positon > 0) {
+      this._setPositionByDistanceFromOrigin2Camera(newLengthFromOrigin2Positon);
+    }
+  }
+
+  private _setPositionByDeltaLonLatDistance(deltaLon: number, deltaLat: number, deltaHeight?: number) {
+    const deltaLonRadian = MathUtils.degreeToRadian(deltaLon);
+    const deltaLatRadian = MathUtils.degreeToRadian(deltaLat);
+    this.worldRotateY(deltaLonRadian);
+    const vector1 = Vector.fromVertice(this.getPosition());
+    const vector2 = new Vector(0, 1, 0);
+    const crossAxis = vector1.cross(vector2);
+    this.worldRotateByVector(deltaLatRadian, crossAxis);
+
+    if (deltaHeight > 0 || deltaHeight < 0) {
+      const vectorFromOrigin2Position = Vector.fromVertice(this.getPosition());
+      const newLength = vectorFromOrigin2Position.getLength() + deltaHeight;
+      vectorFromOrigin2Position.setLength(newLength);
+      const newPosition = vectorFromOrigin2Position.getVertice();
+      this.setPosition(newPosition);
+    }
+  }
+
+  private _setPositionByDistanceFromOrigin2Camera(newLengthFromOrigin2Positon: number) {
+    const vectorFromOrigin2Position = Vector.fromVertice(this.getPosition());
+    vectorFromOrigin2Position.setLength(newLengthFromOrigin2Positon);
+    const newPosition = vectorFromOrigin2Position.getVertice();
+    this.setPosition(newPosition);
   }
 
   private _safelyGetValidLevel(level: number){

@@ -65,7 +65,11 @@ export default class Result extends RouteComponent {
 
     search(pageIndex) {
         const distance = this.distance;
-        const keyword = this.props.location.query.keyword;
+        const {
+            query: {
+                keyword
+            }
+        } = this.props.location;
         if (this.hasBeenMounted() && this.location && keyword) {
             const promise = globe.searchNearby(keyword, distance, this.pageCapacity, pageIndex);
             this.wrapPromise(promise).then((response) => {
@@ -88,19 +92,26 @@ export default class Result extends RouteComponent {
             pois
         } = this.state;
 
+        let {
+            query: {
+                keyword
+            }
+        } = this.props.location;
+        keyword = keyword || "";
+
         const totalPageCount = Math.ceil(total / this.pageCapacity);
         const showPrevPage = pageIndex > 0;
         const showNextPage = pageIndex < totalPageCount - 1;
 
         return (
             <div>
-                <Search readOnly={true} placeholder={this.props.location.query.keyword || ""} showMapList={true} showCancel={true} onMap={() => this.onMap()} onList={() => this.onList()} onCancel={() => this.onCancel()} onFocus={() => this.onCancel()} />
+                <Search readOnly={true} placeholder={keyword} showMapList={true} showCancel={true} onMap={() => this.onMap()} onList={() => this.onList()} onCancel={() => this.onCancel()} onFocus={() => this.onCancel()} />
                 {
                     this.state.list ? (
                         <div className={styles.list}>
                             {
                                 !loading && total === 0 && (
-                                    <div className={styles["not-found"]}>{`未在附近找到与${this.props.location.query.keyword}相关的地点`}</div>
+                                    <div className={styles["not-found"]}>{keyword ? `未在附近找到与${keyword}相关的地点` : `请输入要搜索的兴趣点`}</div>
                                 )
                             }
                             {

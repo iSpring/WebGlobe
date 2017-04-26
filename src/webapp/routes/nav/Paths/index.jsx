@@ -1,5 +1,6 @@
 ﻿import React from 'react';
 import classNames from 'classnames';
+import TrafficTypes from 'webapp/components/TrafficTypes';
 import RouteComponent from 'webapp/components/RouteComponent';
 import MapComponent, { globe } from 'webapp/components/Map';
 import styles from './index.scss';
@@ -8,8 +9,13 @@ export default class Paths extends RouteComponent {
     constructor(props) {
         super(props);
         this.state = {
-            selectedPathIndex: 0
+            selectedPathIndex: 0,
+            type: 'driving'
         };
+        const route = this.props.location.state && this.props.location.state.route;
+        if(route && route.type){
+            this.state.type = route.type;
+        }
     }
 
     onSelectPath(pathIndex) {
@@ -31,7 +37,7 @@ export default class Paths extends RouteComponent {
                 return this.renderWalking(route, selectedPathIndex);
             }
         }
-        return this.onlyRenderMap();
+        return this.renderNoRoute();
     }
 
     renderDriving(route, selectedPathIndex) {
@@ -40,9 +46,7 @@ export default class Paths extends RouteComponent {
                 const path = route.paths[0];
                 return (
                     <div className={styles["single-path"]}>
-                        <div className={styles["map-container"]}>
-                            <MapComponent />
-                        </div>
+                        {this.renderHeaderMap()}
                         <div className={styles.footer}>
                             <div className={styles["path-details"]}>{this.getPathDetail(route, path, 0, true, true)}</div>
                         </div>
@@ -51,9 +55,7 @@ export default class Paths extends RouteComponent {
             } else {
                 return (
                     <div className={styles["multiple-path"]}>
-                        <div className={styles["map-container"]}>
-                            <MapComponent />
-                        </div>
+                        {this.renderHeaderMap()}
                         <div className={styles.footer}>
                             <div className={styles.tabs}>
                                 {
@@ -81,7 +83,7 @@ export default class Paths extends RouteComponent {
                 );
             }
         } else {
-            return this.onlyRenderMap();
+            return this.renderNoRoute();
         }
     }
 
@@ -89,9 +91,7 @@ export default class Paths extends RouteComponent {
         if (route && route.transits && route.transits.length > 0) {
             return (
                 <div className={styles["multiple-path"]}>
-                    <div className={styles["map-container"]}>
-                        <MapComponent />
-                    </div>
+                    {this.renderHeaderMap()}
                     <div className={styles.footer}>
                         <div className={styles.tabs}>
                             {
@@ -118,7 +118,7 @@ export default class Paths extends RouteComponent {
                 </div>
             );
         } else {
-            return this.onlyRenderMap();
+            return this.renderNoRoute();
         }
     }
 
@@ -127,27 +127,32 @@ export default class Paths extends RouteComponent {
             const path = route.paths[0];
             return (
                 <div className={styles["single-path"]}>
-                    <div className={styles["map-container"]}>
-                        <MapComponent />
-                    </div>
+                    {this.renderHeaderMap()}
                     <div className={styles.footer}>
                         <div className={styles["path-details"]}>{this.getPathDetail(route, path, 0, true, false)}</div>
                     </div>
                 </div>
             );
         } else {
-            return this.onlyRenderMap();
+            return this.renderNoRoute();
         }
     }
 
-    onlyRenderMap() {
+    renderNoRoute() {
         return (
             <div className={styles["no-path"]}>
-                <div className={styles["map-container"]}>
-                    <MapComponent />
-                </div>
+                {this.renderHeaderMap()}
             </div>
         );
+    }
+
+    renderHeaderMap() {
+        return [
+            <TrafficTypes key="traffic-types" type={this.state.type} />,
+            <div key={"map-container"} className={styles["map-container"]}>
+                <MapComponent />
+            </div>
+        ];
     }
 
     getPathDetail(route, path, pathIndex, selected, showSummary1) {

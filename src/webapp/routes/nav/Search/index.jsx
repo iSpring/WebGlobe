@@ -1,4 +1,5 @@
 ﻿import React from 'react';
+import TrafficTypes from 'webapp/components/TrafficTypes';
 import RouteComponent from 'webapp/components/RouteComponent';
 import classNames from 'classnames';
 import styles from './index.scss';
@@ -20,12 +21,6 @@ export default class Nav extends RouteComponent{
             toPois: [],
             routes: []
         };
-    }
-
-    onClickTrafficType(trafficType){
-        this.setState({
-            type: trafficType
-        });
     }
 
     onCancel(){
@@ -99,6 +94,15 @@ export default class Nav extends RouteComponent{
         }
     }
 
+    onChangeTrafficType(trafficType){
+        this.setState({
+            type: trafficType
+        });
+        if(this.fromPoi && this.toPoi){
+            this.route(this.fromPoi, this.toPoi);
+        }
+    }
+
     route(fromPoi, toPoi){
         console.log(fromPoi, toPoi);
         let promise = null;
@@ -113,7 +117,7 @@ export default class Nav extends RouteComponent{
         }
 
         if(promise){
-            promise.then((response) => {
+            this.wrapPromise(promise).then((response) => {
                 console.log(response);
                 if(response.route){
                     this.props.router.push({
@@ -123,20 +127,11 @@ export default class Nav extends RouteComponent{
                         }
                     });
                 }
-            });
+            }, (err) => console.error(err));
         }
     }
 
     render(){
-        const busClassName = classNames(fontStyles.fa, fontStyles["fa-bus"], styles["traffic-type"], {
-            selected: this.state.type === 'bus'
-        });
-        const driveClassName = classNames(fontStyles.fa, fontStyles["fa-car"], styles["traffic-type"], {
-            selected: this.state.type === 'driving'
-        });
-        const walkClassName = classNames(fontStyles.fa, fontStyles["fa-male"], styles["traffic-type"], {
-            selected: this.state.type === 'walking'
-        });
         const fromClassName = classNames(fontStyles.fa, fontStyles["fa-map-marker"], styles["from-icon"]);
         const toClassName = classNames(fontStyles.fa, fontStyles["fa-circle-o"], styles["to-icon"]);
         const exchangeArrowClassName = classNames(fontStyles.fa, fontStyles["fa-arrows-v"]);
@@ -145,14 +140,7 @@ export default class Nav extends RouteComponent{
 
         return (
             <div>
-                <header>
-                    <div className={styles["traffic-types"]}>
-                        <i className={busClassName} onClick={()=>this.onClickTrafficType('bus')}></i>
-                        <i className={driveClassName} onClick={()=>this.onClickTrafficType('driving')}></i>
-                        <i className={walkClassName} onClick={()=>this.onClickTrafficType('walking')}></i>
-                    </div>
-                    <div className={styles.cancel} onClick={()=>{this.onCancel();}}>取消</div>
-                </header>
+                <TrafficTypes type={this.state.type} ref={input => this.trafficTypes = input} onChangeTrafficType={(e)=>this.onChangeTrafficType(e)} />
                 <div className={styles["search-section"]}>
                     <div className={styles["inputs-container"]}>
                         <div className={classNames(styles["input-container"], styles.from)}>
