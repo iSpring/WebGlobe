@@ -10,14 +10,19 @@ export default class TrafficTypes extends Component{
         this.state = {
             type: 'driving'//bus,walking
         };
+        if(this.props.type){
+            this.state.type = this.props.type;
+        }
     }
 
     onClickTrafficType(trafficType){
-        this.setState({
-            type: trafficType
-        });
-        if(this.props.onChangeTrafficType){
-            this.props.onChangeTrafficType(trafficType);
+        if(trafficType !== this.state.trafficType){
+            this.setState({
+                type: trafficType
+            });
+            if(this.props.onChangeTrafficType){
+                this.props.onChangeTrafficType(trafficType);
+            }
         }
     }
 

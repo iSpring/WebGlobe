@@ -6,6 +6,7 @@ import MultiPointsGraphic from '../graphics/MultiPointsGraphic';
 import MarkerTextureMaterial from '../materials/MarkerTextureMaterial';
 import Service, { Location } from '../Service';
 import Globe from '../Globe';
+import Extent from '../Extent';
 const poiImgUrl = require("../images/red.png");
 
 class Poi {
@@ -65,13 +66,22 @@ export default class PoiLayer extends MultiPointsGraphic {
   private _showPois(searchResponse: any) {
     console.log('response:', searchResponse);
     var data = searchResponse.detail.pois || [];
-    var lonlats: number[][] = data.map((item: any) => {
-      var lon = parseFloat(item.pointx);
-      var lat = parseFloat(item.pointy);
-      this._addPoi(lon, lat, item.uid, item.name, item.addr, item.phone);
-      return [lon, lat];
-    });
-    this.setLonlats(lonlats);
+    if(data.length > 0){
+      var lonlats: number[][] = data.map((item: any) => {
+        var lon = parseFloat(item.pointx);
+        var lat = parseFloat(item.pointy);
+        this._addPoi(lon, lat, item.uid, item.name, item.addr, item.phone);
+        return [lon, lat];
+      });
+      this.setLonlats(lonlats);
+      if(lonlats.length > 1){
+        const extent = Extent.fromLonlats(lonlats);
+        this.globe.setExtent(extent);
+      }else{
+        const lonlat = lonlats[0];
+        this.globe.centerTo(lonlat[0], lonlat[1]);
+      }
+    }
   }
 
   search(keyword: string) {

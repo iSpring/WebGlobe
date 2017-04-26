@@ -23,12 +23,6 @@ export default class Nav extends RouteComponent{
         };
     }
 
-    onClickTrafficType(trafficType){
-        this.setState({
-            type: trafficType
-        });
-    }
-
     onCancel(){
         this.goBack();
     }
@@ -100,7 +94,10 @@ export default class Nav extends RouteComponent{
         }
     }
 
-    onChangeTrafficType(){
+    onChangeTrafficType(trafficType){
+        this.setState({
+            type: trafficType
+        });
         if(this.fromPoi && this.toPoi){
             this.route(this.fromPoi, this.toPoi);
         }
@@ -143,7 +140,7 @@ export default class Nav extends RouteComponent{
 
         return (
             <div>
-                <TrafficTypes onChangeTrafficType={()=>this.onChangeTrafficType()} />
+                <TrafficTypes type={this.state.type} ref={input => this.trafficTypes = input} onChangeTrafficType={(e)=>this.onChangeTrafficType(e)} />
                 <div className={styles["search-section"]}>
                     <div className={styles["inputs-container"]}>
                         <div className={classNames(styles["input-container"], styles.from)}>
