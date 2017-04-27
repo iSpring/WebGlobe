@@ -231,3 +231,5 @@
 - 0.4.27 Camera中添加setExtent和animateToExtent方法
 
 - 0.4.28 通过判断道路拐点解决"箭头道路"的问题
+
+- 0.4.29 可以在nav/Paths页面中直接切换出行方式重新进行路线规划
