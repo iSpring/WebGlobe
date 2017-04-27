@@ -27,6 +27,11 @@ export default class Paths extends RouteComponent {
         });
     }
 
+    onCancel(){
+        globe.routeLayer.clear();
+        this.goBack();
+    }
+
     route(type) {
         if (type) {
             const {
@@ -207,7 +212,7 @@ export default class Paths extends RouteComponent {
 
     renderHeaderMap() {
         return [
-            <TrafficTypes key="traffic-types" type={this.state.type} onTrafficTypeChange={e => this.onTrafficTypeChange(e)} onCancel={() => this.goBack()} />,
+            <TrafficTypes key="traffic-types" type={this.state.type} onTrafficTypeChange={e => this.onTrafficTypeChange(e)} onCancel={() => this.onCancel()} />,
             <div key={"map-container"} className={styles["map-container"]}>
                 <MapComponent ref={input => this.mapComponent = input} />
             </div>
