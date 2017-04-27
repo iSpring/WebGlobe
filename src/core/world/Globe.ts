@@ -79,12 +79,6 @@ export default class Globe {
     if(!this.options){
       this.options = new GlobeOptions();
     }
-    // if(!(options.level >= Kernel.MIN_LEVEL && options.level <= Kernel.MAX_LEVEL)){
-    //   options.level = initLevel;
-    // }
-    // if(!options.lonlat){
-    //   options.lonlat = initLonlat;
-    // }
     this.renderer = new Renderer(canvas, this._onBeforeRender.bind(this), this._onAfterRender.bind(this));
     this.gl = this.renderer.gl;
     this.scene = new Scene();
@@ -163,7 +157,7 @@ export default class Globe {
       lat = location.lat;
     }
 
-    let level:number = this.getLevel();
+    let level = this.getLevel();
 
     if(this.options.level === 'auto'){
       level = 8;

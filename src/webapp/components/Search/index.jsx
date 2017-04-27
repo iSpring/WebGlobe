@@ -80,7 +80,7 @@ export default class Search extends Component {
                     this.props.showMapList ? <div className={styles["left-action"]} onClick={()=>this.onLeftAction()}>{this.state.showMap ? "地图" : "列表"}</div> : false
                 }
                 <div className={styles["input-container"]}>
-                    <input className={styles.keyword} readOnly={this.props.readonly} placeholder={this.props.placeholder} onFocus={(e)=>this.onFocus(e)} onKeyPress={(e)=>{this.onKeyPress(e)}} ref={(input)=>{this.keywordInput=input;}} />
+                    <input type="text" className={styles.keyword} readOnly={this.props.readonly} placeholder={this.props.placeholder} onFocus={(e)=>this.onFocus(e)} onKeyPress={(e)=>{this.onKeyPress(e)}} ref={(input)=>{this.keywordInput=input;}} />
                     {
                         this.props.showVoice && <i className="fa fa-microphone" aria-hidden="true"></i>
                     }

@@ -1,10 +1,12 @@
 ﻿import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import styles from './index.scss';
-import Globe,{GlobeOptions} from 'world/Globe';
+import Globe from 'world/Globe';
 
 export const globe = Globe.getInstance({
     satellite: false,
+    lonlat: "auto",
+    level: "auto",
     key: "db146b37ef8d9f34473828f12e1e85ad"
 });
 
@@ -24,9 +26,6 @@ function safelyResizeByParent(){
 window.addEventListener("resize", safelyResizeByParent, false);
 
 export default class Map extends Component{
-
-    static defaultProps = {
-    };
 
     constructor(props){
         super(props);
