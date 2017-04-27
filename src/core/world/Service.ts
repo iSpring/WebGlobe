@@ -241,12 +241,19 @@ class Service {
       response.route.type = 'bus';
       if (response.route.transits && response.route.transits.length > 0) {
         response.route.transits.forEach((transit: any) => {
+          let walking_distance:number = 0;
           transit.segments.forEach((segment: any) => {
             if (segment.walking && segment.walking.steps && segment.walking.steps.length > 0) {
               segment.walking.lonlats = [];
               segment.walking.steps.forEach((step: any) => {
                 this._parseStepPolyline(step);
                 segment.walking.lonlats.push(...step.lonlats);
+                if(step.distance){
+                  const stepDistance = parseFloat(step.distance);
+                  if(!isNaN(stepDistance)){
+                    walking_distance += stepDistance;
+                  }
+                }
               });
               segment.walking.firstLonlat = segment.walking.lonlats[0];
               segment.walking.lastLonlat = segment.walking.lonlats[segment.walking.lonlats.length - 1];
@@ -268,6 +275,12 @@ class Service {
               }
             }
           });
+          const originalWalkingDistance = parseFloat(transit.walking_distance);
+          if(isNaN(originalWalkingDistance)){
+            transit.walking_distance = walking_distance;
+          }else{
+            transit.walking_distance = originalWalkingDistance;
+          }
         });
       }
     }
