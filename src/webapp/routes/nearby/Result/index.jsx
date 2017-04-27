@@ -63,6 +63,15 @@ export default class Result extends RouteComponent {
         this.search(this.state.pageIndex + 1);
     }
 
+    isFromMapBaseRoute(){
+        let fromMapBase = false;
+        const prevLocation = this.getPreviousLocation();
+        if(prevLocation && prevLocation.pathname === "/map/base"){
+            fromMapBase = true;
+        }
+        return fromMapBase;
+    }
+
     search(pageIndex) {
         const distance = this.distance;
         const {
@@ -71,7 +80,9 @@ export default class Result extends RouteComponent {
             }
         } = this.props.location;
         if (this.hasBeenMounted() && this.location && keyword) {
-            const promise = globe.searchNearby(keyword, distance, this.pageCapacity, pageIndex);
+            const fromMapBase = this.isFromMapBaseRoute();
+            // console.log(`fromMapBase: ${fromMapBase}`);
+            const promise = fromMapBase ? globe.searchByCurrentCity(keyword, this.pageCapacity, pageIndex) : globe.searchNearby(keyword, distance, this.pageCapacity, pageIndex);
             this.wrapPromise(promise).then((response) => {
                 if (response) {
                     this.setState({

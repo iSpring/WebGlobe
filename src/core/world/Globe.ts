@@ -190,6 +190,10 @@ export default class Globe {
     return this.poiLayer.searchNearby(keyword, radius, pageCapacity, pageIndex);
   }
 
+  public searchByCurrentCity(keyword: string, pageCapacity: number = 50, pageIndex: number = 0){
+    return this.poiLayer.searchByCurrentCity(keyword, pageCapacity, pageIndex);
+  }
+
   private setTiledLayer(tiledLayer: TiledLayer) {
     //在更换切片图层的类型时清空缓存的图片
     ImageUtils.clear();

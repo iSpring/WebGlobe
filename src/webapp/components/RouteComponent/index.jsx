@@ -1,7 +1,20 @@
 ﻿import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
+import {hashHistory} from 'react-router';
 import loading from 'webapp/common/loading';
 import styles from './index.scss';
+
+let currentLocation = null;
+let previousLocation = null;
+
+hashHistory.listen((location) => {
+    //action: REPLACE or PUSH => init new route component => componentDidMount() =>  async POP
+    //router.goBack() => POP
+    if(location.action === "POP"){
+        previousLocation = currentLocation;
+        currentLocation = location;
+    }
+});
 
 export default class RouteComponent extends Component {
     static contextTypes = {
@@ -10,6 +23,18 @@ export default class RouteComponent extends Component {
 
     goBack(){
         this.context.router.goBack();
+    }
+
+    getPreviousLocation(){
+        const realLocation = this.context.router.getCurrentLocation();
+        if(realLocation && realLocation.action === 'POP' && realLocation.pathname !== currentLocation.pathname){
+            // In this case, location is changed, but hashHistory doesn't emit event now because it emit event async.
+            // Don't change previousLocation and currentLocation here because we can do it in next hashHistory event.
+            // previousLocation = currentLocation;
+            // currentLocation = realLocation;
+            return currentLocation;
+        }
+        return previousLocation;
     }
 
     componentDidMount(){

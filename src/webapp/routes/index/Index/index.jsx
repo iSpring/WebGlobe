@@ -10,10 +10,7 @@ export default class App extends RouteComponent{
 
     constructor(props){
         super(props);
-        this.state = {
-            page: "app",//search,map,nearby,nav
-            loading: false
-        };
+        this.state = {};
     }
 
     onSearchFocus(){
