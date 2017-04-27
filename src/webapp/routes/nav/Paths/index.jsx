@@ -13,10 +13,6 @@ export default class Paths extends RouteComponent {
             route: null,
             selectedPathIndex: 0
         };
-        // const route = this.props.location.state && this.props.location.state.route;
-        // if (this.route && this.route.type) {
-        //     this.state.type = this.route.type;
-        // }
         if (this.props.location.state) {
             if (this.props.location.state.type) {
                 this.state.type = this.props.location.state.type;
@@ -31,50 +27,53 @@ export default class Paths extends RouteComponent {
         });
     }
 
+    onCancel(){
+        globe.routeLayer.clear();
+        this.goBack();
+    }
+
     route(type) {
-        if (type) {
-            const {
-                state: {
-                    fromPoi,
-                    toPoi
-                }
-            } = this.props.location;
-            if (fromPoi && toPoi) {
-                const fromLon = fromPoi.pointx;
-                const fromLat = fromPoi.pointy;
-                const toLon = toPoi.pointx;
-                const toLat = toPoi.pointy;
+        if (!type) {
+            return;
+        }
+        const {
+            state: {
+                fromPoi,
+                toPoi
+            }
+        } = this.props.location;
+        
+        if (fromPoi && toPoi) {
+            const fromLon = fromPoi.pointx;
+            const fromLat = fromPoi.pointy;
+            const toLon = toPoi.pointx;
+            const toLat = toPoi.pointy;
 
-                let promise = null;
+            let promise = null;
 
-                if (type === 'driving') {
-                    promise = globe.routeLayer.routeByDriving(fromLon, fromLat, toLon, toLat, 10);
-                } else if (type === 'bus') {
-                    const startCity = fromPoi.POI_PATH[0].cname;
-                    const endCity = toPoi.POI_PATH[0].cname;
-                    promise = globe.routeLayer.routeByBus(fromLon, fromLat, toLon, toLat, startCity, endCity, 0);
-                } else if (type === 'walking') {
-                    promise = globe.routeLayer.routeByWalking(fromLon, fromLat, toLon, toLat);
-                }
+            if (type === 'driving') {
+                promise = globe.routeLayer.routeByDriving(fromLon, fromLat, toLon, toLat, 10);
+            } else if (type === 'bus') {
+                const startCity = fromPoi.POI_PATH[0].cname;
+                const endCity = toPoi.POI_PATH[0].cname;
+                promise = globe.routeLayer.routeByBus(fromLon, fromLat, toLon, toLat, startCity, endCity, 0);
+            } else if (type === 'walking') {
+                promise = globe.routeLayer.routeByWalking(fromLon, fromLat, toLon, toLat);
+            }
 
-                if (promise) {
-                    this.wrapPromise(promise).then((response) => {
-                        console.log(response);
-                        if (response.route) {
-                            this.setState({
-                                type: type,
-                                route: response.route,
-                                selectedPathIndex: 0
-                            }, () => {
-                                this.mapComponent.resizeGlobe();
-                            });
-                        }
-                    }, (err) => console.error(err));
-                }
-            }else{
-                this.setState({
-                    type: type
-                });
+            if (promise) {
+                this.wrapPromise(promise).then((response) => {
+                    console.log(response);
+                    if (response.route) {
+                        this.setState({
+                            type: type,
+                            route: response.route,
+                            selectedPathIndex: 0
+                        }, () => {
+                            this.mapComponent.resizeGlobe();
+                        });
+                    }
+                }, (err) => console.error(err));
             }
         }
     }
@@ -85,7 +84,13 @@ export default class Paths extends RouteComponent {
     }
 
     onTrafficTypeChange(trafficType) {
-        this.route(trafficType);
+        this.setState({
+            type: trafficType,
+            route: null,
+            selectedPathIndex: 0
+        }, () => {
+            this.route(trafficType);
+        });
     }
 
     render() {
@@ -211,7 +216,7 @@ export default class Paths extends RouteComponent {
 
     renderHeaderMap() {
         return [
-            <TrafficTypes key="traffic-types" type={this.state.type} onTrafficTypeChange={e => this.onTrafficTypeChange(e)} onCancel={() => this.goBack()} />,
+            <TrafficTypes key="traffic-types" type={this.state.type} onTrafficTypeChange={e => this.onTrafficTypeChange(e)} onCancel={() => this.onCancel()} />,
             <div key={"map-container"} className={styles["map-container"]}>
                 <MapComponent ref={input => this.mapComponent = input} />
             </div>

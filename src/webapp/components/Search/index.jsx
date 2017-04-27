@@ -46,15 +46,23 @@ export default class Search extends Component {
 
     onRightAction(){
         if(this.props.onCancel){
-            this.props.onCancel();
+            setTimeout(() => {
+                this.props.onCancel();
+            }, 0);
         }
     }
 
-    onFocus(e){
-        if(this.props.readOnly){
-            // e.preventDefault();
-            this.keywordInput.blur();
+    onKeywordClick(){
+        if(this.props.onFocus){
+            this.props.onFocus();
         }
+    }
+
+    onKeywordFocus(e){
+        // if(this.props.readOnly){
+        //     // e.preventDefault();
+        //     this.keywordInput.blur();
+        // }
         if(this.props.onFocus){
             this.props.onFocus();
         }
@@ -80,11 +88,17 @@ export default class Search extends Component {
                     this.props.showMapList ? <div className={styles["left-action"]} onClick={()=>this.onLeftAction()}>{this.state.showMap ? "地图" : "列表"}</div> : false
                 }
                 <div className={styles["input-container"]}>
-                    <input type="text" className={styles.keyword} readOnly={this.props.readonly} placeholder={this.props.placeholder} onFocus={(e)=>this.onFocus(e)} onKeyPress={(e)=>{this.onKeyPress(e)}} ref={(input)=>{this.keywordInput=input;}} />
                     {
+                        this.props.readOnly ? (
+                            <div className={styles.keyword} ref={(input)=>{this.keywordInput=input}} onClick={() => this.onKeywordClick()}>{this.props.placeholder}</div>
+                        ) : (
+                            <input type="text" className={styles.keyword} readOnly={this.props.readOnly} placeholder={this.props.placeholder} onFocus={(e) => this.onKeywordFocus(e)} onKeyPress={(e)=>{this.onKeyPress(e)}} ref={(input)=>{this.keywordInput=input}} />
+                        )
+                    }
+                    {/*{
                         this.props.showVoice && <i className="fa fa-microphone" aria-hidden="true"></i>
                     }
-                    <i className="fa fa-times hidden" aria-hidden="true"></i>
+                    <i className="fa fa-times hidden" aria-hidden="true"></i>*/}
                 </div>
                 {
                     this.props.showCancel && <div className={styles["right-action"]} onClick={()=>this.onRightAction()}>取消</div>

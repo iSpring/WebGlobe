@@ -1,8 +1,10 @@
 ﻿
 .map-container{
+    box-sizing: border-box;
     position: absolute;
     left: 0;
     width: 100%;
     top: 46px;
     bottom: 0;
+    border-top: 1px solid #ededed;
 }

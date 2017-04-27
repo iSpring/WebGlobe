@@ -133,6 +133,9 @@ class Service {
       //http://apis.map.qq.com/jsapi?qt=rn&wd=酒店&pn=0&rn=5&px=116.397128&py=39.916527&r=2000&output=jsonp&cb=webglobe_jsonp_1
       const url = `//apis.map.qq.com/jsapi?qt=rn&wd=${keyword}&pn=${pageIndex}&rn=${pageCapacity}&px=${lon}&py=${lat}&r=${radius}&output=jsonp`;
       Service.jsonp(url, function (response: any) {
+        if(response){
+          response.location = [lon, lat];
+        }
         resolve(response);
       });
     });
@@ -143,7 +146,16 @@ class Service {
     //http://apis.map.qq.com/jsapi?qt=poi&wd=杨村一中&pn=0&rn=5&c=北京&output=json&cb=callbackname
     const promise = new Promise((resolve) => {
       const url = `//apis.map.qq.com/jsapi?qt=poi&wd=${keyword}&pn=${pageIndex}&rn=${pageCapacity}&c=${city}&output=jsonp`;
-      Service.jsonp(url, function (response: any) {
+      Service.jsonp(url, (response: any) => {
+        if(response){
+          if(this.location){
+            response.location = [this.location.lon, this.location.lat];
+          }else if(this.cityLocation){
+            response.location = [this.cityLocation.lon, this.cityLocation.lat];
+          }else{
+            response.location = null;
+          }
+        }
         resolve(response);
       });
     });
@@ -229,12 +241,19 @@ class Service {
       response.route.type = 'bus';
       if (response.route.transits && response.route.transits.length > 0) {
         response.route.transits.forEach((transit: any) => {
+          let walking_distance:number = 0;
           transit.segments.forEach((segment: any) => {
             if (segment.walking && segment.walking.steps && segment.walking.steps.length > 0) {
               segment.walking.lonlats = [];
               segment.walking.steps.forEach((step: any) => {
                 this._parseStepPolyline(step);
                 segment.walking.lonlats.push(...step.lonlats);
+                if(step.distance){
+                  const stepDistance = parseFloat(step.distance);
+                  if(!isNaN(stepDistance)){
+                    walking_distance += stepDistance;
+                  }
+                }
               });
               segment.walking.firstLonlat = segment.walking.lonlats[0];
               segment.walking.lastLonlat = segment.walking.lonlats[segment.walking.lonlats.length - 1];
@@ -256,6 +275,12 @@ class Service {
               }
             }
           });
+          const originalWalkingDistance = parseFloat(transit.walking_distance);
+          if(isNaN(originalWalkingDistance)){
+            transit.walking_distance = walking_distance;
+          }else{
+            transit.walking_distance = originalWalkingDistance;
+          }
         });
       }
     }

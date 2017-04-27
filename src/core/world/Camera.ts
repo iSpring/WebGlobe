@@ -861,8 +861,10 @@ class Camera extends Object3D {
   }
 
   setExtent(extent: Extent){
-    const [lon, lat, level] = this._calculateLonLatLevelByExtent(extent);
-    this.centerTo(lon, lat, level);
+    if(extent){
+      const [lon, lat, level] = this._calculateLonLatLevelByExtent(extent);
+      this.centerTo(lon, lat, level); 
+    }
   }
 
   animateToExtent(extent: Extent, duration: number = 1000){

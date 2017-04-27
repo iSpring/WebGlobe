@@ -1,30 +1,29 @@
 ﻿import React, { Component } from 'react';
-import classNames from "classnames";
+import ReactDOM from 'react-dom';
+import classNames from 'classnames';
 import styles from './index.scss';
 import fontStyles from 'webapp/fonts/font-awesome.scss';
 import RouteComponent from 'webapp/components/RouteComponent';
 import Search from 'webapp/components/Search';
 import Map, { globe } from 'webapp/components/Map';
-import Service from 'world/Service';
 import MathUtils from 'world/math/Utils';
 
 export default class Result extends RouteComponent {
-    static contextTypes = {
-        router: React.PropTypes.object
-    };
 
     constructor(props) {
         super(props);
         this.pageCapacity = 10;
-        this.distance = 1000;
+        this.distance = 3000;
         this.nameClassNames = classNames(styles.name, "ellipsis");
         this.addressClassNames = classNames(styles.address, "ellipsis");
         this.roadIcon = classNames(fontStyles.fa, fontStyles["fa-road"]);
         this.leftIcon = classNames(fontStyles.fa, fontStyles["fa-angle-left"]);
         this.rightIcon = classNames(fontStyles.fa, fontStyles["fa-angle-right"]);
         this.state = {
+            loading: false,
             total: 0,
             pageIndex: 0,
+            location: null,
             pois: [],
             list: true
         };
@@ -32,11 +31,8 @@ export default class Result extends RouteComponent {
 
     componentDidMount() {
         super.componentDidMount();
-        Service.getCurrentPosition().then((location) => {
-            this.location = location;
-        }).then(() => {
-            this.search(0);
-        });
+        this.domNode.style.opacity = 1;
+        this.search(0);
     }
 
     onMap() {
@@ -51,8 +47,22 @@ export default class Result extends RouteComponent {
         });
     }
 
+    onFocus(){
+        this.onCancel();
+    }
+
     onCancel() {
-        this.context.router.goBack();
+        // normal code
+        // globe.poiLayer.clear();
+        // this.goBack();
+
+        //fix for Xiaomi browser
+        this.domNode.style.opacity = 0;
+        console.log(this.domNode.clientWidth);
+        setTimeout(() => {
+            globe.poiLayer.clear();
+            this.goBack();
+        }, 0);
     }
 
     onPrevPage() {
@@ -63,6 +73,15 @@ export default class Result extends RouteComponent {
         this.search(this.state.pageIndex + 1);
     }
 
+    isFromMapBaseRoute(){
+        let fromMapBase = false;
+        const prevLocation = this.getPreviousLocation();
+        if(prevLocation && prevLocation.pathname === "/map/base"){
+            fromMapBase = true;
+        }
+        return fromMapBase;
+    }
+
     search(pageIndex) {
         const distance = this.distance;
         const {
@@ -70,13 +89,16 @@ export default class Result extends RouteComponent {
                 keyword
             }
         } = this.props.location;
-        if (this.hasBeenMounted() && this.location && keyword) {
-            const promise = globe.searchNearby(keyword, distance, this.pageCapacity, pageIndex);
+        if (this.hasBeenMounted() && keyword) {
+            const fromMapBase = this.isFromMapBaseRoute();
+            // console.log(`fromMapBase: ${fromMapBase}`);
+            const promise = fromMapBase ? globe.searchByCurrentCity(keyword, this.pageCapacity, pageIndex) : globe.searchNearby(keyword, distance, this.pageCapacity, pageIndex);
             this.wrapPromise(promise).then((response) => {
                 if (response) {
                     this.setState({
                         total: response.info.total,
                         pageIndex: pageIndex,
+                        location: response.location,
                         pois: response.detail.pois
                     });
                 }
@@ -89,6 +111,7 @@ export default class Result extends RouteComponent {
             loading,
             total,
             pageIndex,
+            location,
             pois
         } = this.state;
 
@@ -104,8 +127,8 @@ export default class Result extends RouteComponent {
         const showNextPage = pageIndex < totalPageCount - 1;
 
         return (
-            <div>
-                <Search readOnly={true} placeholder={keyword} showMapList={true} showCancel={true} onMap={() => this.onMap()} onList={() => this.onList()} onCancel={() => this.onCancel()} onFocus={() => this.onCancel()} />
+            <div ref={input => this.domNode = input}>
+                <Search readOnly={true} placeholder={keyword} showMapList={true} showCancel={true} onMap={() => this.onMap()} onList={() => this.onList()} onCancel={() => this.onCancel()} onFocus={() => this.onFocus()} />
                 {
                     this.state.list ? (
                         <div className={styles.list}>
@@ -119,8 +142,14 @@ export default class Result extends RouteComponent {
                                     <div className={styles.pois}>
                                         {
                                             this.state.pois.map((poi, index) => {
-                                                var distance = MathUtils.getRealArcDistanceBetweenLonLats(this.location.lon, this.location.lat, poi.pointx, poi.pointy);
-                                                distance = Math.floor(distance);
+                                                let distanceLabel = false;
+
+                                                if(location && location.length === 2){
+                                                    const [lon, lat] = location;
+                                                    let distance = MathUtils.getRealArcDistanceBetweenLonLats(lon, lat, poi.pointx, poi.pointy);
+                                                    distanceLabel = distance > 1000 ? `${(distance/1000).toFixed(1)}公里` : `${Math.floor(distance)}米`;
+                                                }
+                                                
                                                 return (
                                                     <div className={styles.poi} key={poi.uid}>
                                                         <div className={styles.index}>{index + 1}</div>
@@ -128,10 +157,14 @@ export default class Result extends RouteComponent {
                                                             <div className={this.nameClassNames}>{poi.name}</div>
                                                             <div className={this.addressClassNames}>{poi.addr}</div>
                                                         </div>
-                                                        <div className={styles.distance}>
-                                                            <i className={this.roadIcon}></i>
-                                                            <div>{distance}米</div>
-                                                        </div>
+                                                        {
+                                                            distanceLabel && (
+                                                                <div className={styles.distance}>
+                                                                    <i className={this.roadIcon}></i>
+                                                                    <div>{distanceLabel}</div>
+                                                                </div>
+                                                            )
+                                                        }
                                                     </div>
                                                 );
                                             })

@@ -300,19 +300,34 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
             if (path && path.steps && path.steps.length > 0) {
                 this.clear();
                 const lonlats: number[][] = [];
-                const resolution = this._getResolution();
+                const lonlatsSegments:number[][][] = [];
+                
                 path.steps.forEach((step: any, index: number, steps: any[]) => {
                     if (index !== 0) {
                         let prevStep = steps[index - 1];
                         const joinLonlats: number[][] = [prevStep.lastLonlat, step.firstLonlat];
-                        this._addRouteByLonlats(joinLonlats, resolution, this.pixelWidth, this.greenColor);
+                        // this._addRouteByLonlats(joinLonlats, resolution, this.pixelWidth, this.greenColor);
+                        lonlatsSegments.push(joinLonlats);
                         lonlats.push(...joinLonlats);
                     }
-                    this._addRouteByLonlats(step.lonlats, resolution, this.pixelWidth, this.greenColor);
+                    // this._addRouteByLonlats(step.lonlats, resolution, this.pixelWidth, this.greenColor);
+                    lonlatsSegments.push(step.lonlats);
                     lonlats.push(...step.lonlats);
                 });
+
                 const extent = Extent.fromLonlats(lonlats);
-                this.camera.setExtent(extent);
+
+                if(extent){
+                    this.camera.setExtent(extent);
+                
+                    setTimeout(() => {
+                        //It's better to show path after extent changed because we can use the new resolution.
+                        const resolution = this._getResolution();
+                        lonlatsSegments.forEach((lonlats:number[][]) => {
+                            this._addRouteByLonlats(lonlats, resolution, this.pixelWidth, this.greenColor);
+                        });
+                    }, 0);
+                }
             }
         }
     }
@@ -334,19 +349,35 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
             if (transit && transit.segments && transit.segments.length > 0) {
                 this.clear();
                 const lonlats: number[][] = [];
-                const resolution = this._getResolution();
+                const lonlatsSegments:number[][][] = [];
+
                 transit.segments.forEach((segment: any) => {
                     if (segment.walking && segment.walking.lonlats && segment.walking.lonlats.length > 0) {
-                        this._addRouteByLonlats(segment.walking.lonlats, resolution, this.pixelWidth, this.greenColor);
+                        // this._addRouteByLonlats(segment.walking.lonlats, resolution, this.pixelWidth, this.greenColor);
+                        segment.walking.lonlats.color = this.greenColor;
+                        lonlatsSegments.push(segment.walking.lonlats);
                         lonlats.push(...segment.walking.lonlats);
                     }
                     if (segment.bus && segment.bus.lonlats && segment.bus.lonlats.length > 0) {
-                        this._addRouteByLonlats(segment.bus.lonlats, resolution, this.pixelWidth, this.blueColor);
+                        // this._addRouteByLonlats(segment.bus.lonlats, resolution, this.pixelWidth, this.blueColor);
+                        segment.bus.lonlats.color = this.blueColor;
+                        lonlatsSegments.push(segment.bus.lonlats);
                         lonlats.push(...segment.bus.lonlats);
                     }
                 });
+
                 const extent = Extent.fromLonlats(lonlats);
-                this.camera.setExtent(extent);
+
+                if(extent){
+                    this.camera.setExtent(extent);
+
+                    setTimeout(() => {
+                        const resolution = this._getResolution();
+                        lonlatsSegments.forEach((lonlats: number[][]) => {
+                            this._addRouteByLonlats(lonlats, resolution, this.pixelWidth, (lonlats as any).color);
+                        });
+                    }, 0);
+                }
             }
         }
     }
@@ -368,13 +399,21 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
             if(path && path.steps && path.steps.length > 0){
                 this.clear();
                 const lonlats: number[][] = [];
-                const resolution = this._getResolution();
+                
                 path.steps.forEach((step: any) => {
                     lonlats.push(...step.lonlats);
                 });
-                this._addRouteByLonlats(lonlats, resolution, this.pixelWidth, this.blueColor);
+
                 const extent = Extent.fromLonlats(lonlats);
-                this.camera.setExtent(extent);
+
+                if(extent){
+                    this.camera.setExtent(extent);
+
+                    setTimeout(() => {
+                        const resolution = this._getResolution();
+                        this._addRouteByLonlats(lonlats, resolution, this.pixelWidth, this.blueColor);
+                    }, 0);
+                }
             }
         }
     }

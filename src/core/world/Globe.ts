@@ -173,21 +173,29 @@ export default class Globe {
     this.centerTo(lon, lat, level);
   }
 
-  public isRenderingPaused(){
+  getLonlat(){
+    return this.camera.getLonlat();
+  }
+
+  isRenderingPaused(){
     return this.renderer.isRenderingPaused();
   }
 
-  public pauseRendering(){
+  pauseRendering(){
     this.renderer.pauseRendering();
   }
 
-  public resumeRendering(){
+  resumeRendering(){
     this.renderer.resumeRendering();
     this.refresh(true);
   }
 
-  public searchNearby(keyword: string, radius: number, pageCapacity: number, pageIndex: number){
+  searchNearby(keyword: string, radius: number, pageCapacity: number, pageIndex: number){
     return this.poiLayer.searchNearby(keyword, radius, pageCapacity, pageIndex);
+  }
+
+  searchByCurrentCity(keyword: string, pageCapacity: number = 50, pageIndex: number = 0){
+    return this.poiLayer.searchByCurrentCity(keyword, pageCapacity, pageIndex);
   }
 
   private setTiledLayer(tiledLayer: TiledLayer) {

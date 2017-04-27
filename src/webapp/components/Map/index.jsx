@@ -13,13 +13,17 @@ export const globe = Globe.getInstance({
 window.globe = globe;
 
 function safelyResizeByParent(){
-    const parent = globe.canvas.parentNode;
-    if(parent){
-        const w = parent.clientWidth;
-        const h = parent.clientHeight;
-        if(w > 0 && h > 0){
-            globe.resize(w, h);
+    try{
+        const parent = globe.canvas.parentNode;
+        if(parent){
+            const w = parent.clientWidth;
+            const h = parent.clientHeight;
+            if(w > 0 && h > 0){
+                globe.resize(w, h);
+            }
         }
+    }catch(e){
+        console.error(e);
     }
 }
 
