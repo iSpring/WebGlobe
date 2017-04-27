@@ -109,6 +109,11 @@ export default class PoiLayer extends MultiPointsGraphic {
 
   searchByCurrentCity(keyword: string, pageCapacity: number = 50, pageIndex: number = 0){
     return Service.searchByCurrentCity(keyword, pageCapacity, pageIndex).then((response: any) => {
+      if(response){
+        if(!response.location){
+          response.location = this.globe.getLonlat();
+        }
+      }
       this._showPois(response);
       return response;
     });

@@ -13,10 +13,6 @@ export default class Paths extends RouteComponent {
             route: null,
             selectedPathIndex: 0
         };
-        // const route = this.props.location.state && this.props.location.state.route;
-        // if (this.route && this.route.type) {
-        //     this.state.type = this.route.type;
-        // }
         if (this.props.location.state) {
             if (this.props.location.state.type) {
                 this.state.type = this.props.location.state.type;
