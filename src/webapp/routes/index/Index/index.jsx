@@ -16,6 +16,11 @@ export default class App extends RouteComponent{
         };
     }
 
+    onSearchFocus(){
+        const path = `/map/base`;
+        this.context.router.push(path);
+    }
+
     render(){
         const faMapTo = classNames(fontStyles.fa, fontStyles["fa-map-o"]);
         const faMapMarker = classNames(fontStyles.fa, fontStyles["fa-map-marker"]);
@@ -29,7 +34,7 @@ export default class App extends RouteComponent{
         return(
             <div className={styles.root}>
                 <div className={styles.title}>WebGlobe</div>
-                <Search className={styles.search} placeholder="搜索地点、公交、城市" />
+                <Search className={styles.search} onFocus={() => this.onSearchFocus()} placeholder="搜索地点、公交、城市" />
                 <div className={styles["link1-container"]}>
                     <Link to="/map/base" className={styles.link1}>
                         <i className={faMapTo}></i>

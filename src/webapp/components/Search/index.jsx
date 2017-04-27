@@ -62,7 +62,7 @@ export default class Search extends Component {
 
     onKeyPress(e){
         if(e.key === "Enter"){
-            if(this.props.onSearch){
+            if(this.props.onSearch && this.keywordInput.value){
                 this.props.onSearch(this.keywordInput.value);
             }
         }
