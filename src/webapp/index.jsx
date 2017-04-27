@@ -3,7 +3,8 @@ import ReactDOM from 'react-dom';
 import {Router, Route, Link, Redirect, hashHistory} from 'react-router';
 
 import IndexIndex from './routes/index/Index';
-import IndexMap from './routes/index/Map';
+
+import MapBase from './routes/map/Base';
 
 import NearbySearch from './routes/nearby/Search';
 import NearbyResult from './routes/nearby/Result';
@@ -24,7 +25,9 @@ ReactDOM.render((
         <Route path="/">
             <Route path="index">
                 <Route path="index" component={IndexIndex}></Route>
-                <Route path="map" component={IndexMap}></Route>
+            </Route>
+            <Route path="map">
+                <Route path="base" component={MapBase}></Route>
             </Route>
             <Route path="nearby">
                 <Route path="search" component={NearbySearch}></Route>

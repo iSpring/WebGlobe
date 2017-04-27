@@ -31,7 +31,7 @@ export default class App extends RouteComponent{
                 <div className={styles.title}>WebGlobe</div>
                 <Search className={styles.search} placeholder="搜索地点、公交、城市" />
                 <div className={styles["link1-container"]}>
-                    <Link to="/index/map" className={styles.link1}>
+                    <Link to="/map/base" className={styles.link1}>
                         <i className={faMapTo}></i>
                         <span>地图</span>
                     </Link>
