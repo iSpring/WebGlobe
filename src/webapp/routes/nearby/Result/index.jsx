@@ -130,8 +130,8 @@ export default class Result extends RouteComponent {
                                     <div className={styles.pois}>
                                         {
                                             this.state.pois.map((poi, index) => {
-                                                var distance = MathUtils.getRealArcDistanceBetweenLonLats(this.location.lon, this.location.lat, poi.pointx, poi.pointy);
-                                                distance = Math.floor(distance);
+                                                let distance = MathUtils.getRealArcDistanceBetweenLonLats(this.location.lon, this.location.lat, poi.pointx, poi.pointy);
+                                                let distanceLabel = distance > 1000 ? `${(distance/1000).toFixed(1)}公里` : `${Math.floor(distance)}米`;
                                                 return (
                                                     <div className={styles.poi} key={poi.uid}>
                                                         <div className={styles.index}>{index + 1}</div>
@@ -141,7 +141,7 @@ export default class Result extends RouteComponent {
                                                         </div>
                                                         <div className={styles.distance}>
                                                             <i className={this.roadIcon}></i>
-                                                            <div>{distance}米</div>
+                                                            <div>{distanceLabel}</div>
                                                         </div>
                                                     </div>
                                                 );
