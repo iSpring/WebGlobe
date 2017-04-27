@@ -1,5 +1,6 @@
 ﻿import React, { Component } from 'react';
-import classNames from "classnames";
+import ReactDOM from 'react-dom';
+import classNames from 'classnames';
 import styles from './index.scss';
 import fontStyles from 'webapp/fonts/font-awesome.scss';
 import RouteComponent from 'webapp/components/RouteComponent';
@@ -30,6 +31,7 @@ export default class Result extends RouteComponent {
 
     componentDidMount() {
         super.componentDidMount();
+        this.domNode.style.opacity = 1;
         this.search(0);
     }
 
@@ -45,9 +47,22 @@ export default class Result extends RouteComponent {
         });
     }
 
+    onFocus(){
+        this.onCancel();
+    }
+
     onCancel() {
-        globe.poiLayer.clear();
-        this.context.router.goBack();
+        // normal code
+        // globe.poiLayer.clear();
+        // this.goBack();
+
+        //fix for Xiaomi browser
+        this.domNode.style.opacity = 0;
+        console.log(this.domNode.clientWidth);
+        setTimeout(() => {
+            globe.poiLayer.clear();
+            this.goBack();
+        }, 0);
     }
 
     onPrevPage() {
@@ -112,8 +127,8 @@ export default class Result extends RouteComponent {
         const showNextPage = pageIndex < totalPageCount - 1;
 
         return (
-            <div>
-                <Search readOnly={true} placeholder={keyword} showMapList={true} showCancel={true} onMap={() => this.onMap()} onList={() => this.onList()} onCancel={() => this.onCancel()} onFocus={() => this.onCancel()} />
+            <div ref={input => this.domNode = input}>
+                <Search readOnly={true} placeholder={keyword} showMapList={true} showCancel={true} onMap={() => this.onMap()} onList={() => this.onList()} onCancel={() => this.onCancel()} onFocus={() => this.onFocus()} />
                 {
                     this.state.list ? (
                         <div className={styles.list}>
