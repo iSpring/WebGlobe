@@ -16,16 +16,19 @@ export default class MapBase extends RouteComponent{
     }
 
     onCancel(){
-        // this.goBack();
-        const path = '/index/index';
-        this.context.router.push(path);
+        //basiclly fix flash issue for Xiaomi browser
+        this.mapContainer.style.display = 'none';
+        setTimeout(() => {
+            const path = '/index/index';
+            this.context.router.push(path);
+        }, 50);
     }
 
     render(){
         return (
             <div>
                 <Search placeholder="搜索地点、公交、城市" showCancel={true} onSearch={(keyword) => this.onSearch(keyword)} onCancel={() => this.onCancel()} />
-                <div className={styles["map-container"]}>
+                <div ref={input => this.mapContainer = input} className={styles["map-container"]}>
                     <MapComponent />
                 </div>
             </div>

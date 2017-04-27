@@ -1,5 +1,7 @@
 ﻿.root{
+    box-shadow: border-box;
     padding: 0 30px;
+    overflow: hidden;
 }
 
 .title{
@@ -94,5 +96,3 @@
         background: #0079ff;
     }
 }
-
-.active{}

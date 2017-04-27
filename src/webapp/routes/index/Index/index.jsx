@@ -31,7 +31,7 @@ export default class App extends RouteComponent{
         return(
             <div className={styles.root}>
                 <div className={styles.title}>WebGlobe</div>
-                <Search className={styles.search} onFocus={() => this.onSearchFocus()} placeholder="搜索地点、公交、城市" />
+                <Search readOnly={true} className={styles.search} onFocus={() => this.onSearchFocus()} placeholder="搜索地点、公交、城市" />
                 <div className={styles["link1-container"]}>
                     <Link to="/map/base" className={styles.link1}>
                         <i className={faMapTo}></i>
