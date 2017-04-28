@@ -284,7 +284,7 @@ export default class Paths extends RouteComponent {
                             const [timeSummary, distanceSummary] = this.getTimeDistanceSummary(path);
                             return [
                                 <div key="summary1" className={classNames(styles.summary1, "ellipsis")}>{`${timeSummary} ${distanceSummary}`}</div>,
-                                <div key="summary2" className={classNames(styles.summary2, "ellipsis")}>{path.steps.map((step) => step.road).filter((road) => !!road).join(" -> ")}</div>,
+                                <div key="summary2" className={classNames(styles.summary2, "ellipsis")}>{path.steps.map((step) => step.road).filter((road) => typeof road === 'string' && !!road).join(" -> ")}</div>,
                                 <div key="summary3" className={classNames(styles.summary3, "ellipsis")}><span className={classNames(styles["detail-btn"])}>详情</span></div>
                             ];
                         }
