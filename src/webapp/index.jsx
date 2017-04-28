@@ -1,35 +1,20 @@
 ﻿import React from 'react';
 import ReactDOM from 'react-dom';
 import {Router, Route, Link, Redirect, hashHistory} from 'react-router';
-
-// import IndexIndex from './routes/index/Index';
-
-// import MapBase from './routes/map/Base';
-
-// import NearbySearch from './routes/nearby/Search';
-// import NearbyResult from './routes/nearby/Result';
-
-// import NavSearch from './routes/nav/Search';
-// import NavPaths from './routes/nav/Paths';
-
-// import NotFound from './routes/404';
-
 import './css/common.scss';
 import './fonts/font-awesome.scss';
 
-import rootRoute from './routes/route';
-
-console.log(rootRoute);
+/*import IndexIndex from './routes/index/Index';
+import MapBase from './routes/map/Base';
+import NearbySearch from './routes/nearby/Search';
+import NearbyResult from './routes/nearby/Result';
+import NavSearch from './routes/nav/Search';
+import NavPaths from './routes/nav/Paths';
+import NotFound from './routes/404';
 
 const rootDiv = document.getElementById("root");
 
 ReactDOM.render((
-    <Router history={hashHistory} routes={rootRoute}>
-        <Redirect from="/" to="/index/index" />
-    </Router>
-), rootDiv);
-
-/*ReactDOM.render((
     <Router history={hashHistory}>
         <Redirect from="/" to="/index/index" />
         <Route path="/">
@@ -47,7 +32,16 @@ ReactDOM.render((
                 <Route path="search" component={NavSearch}></Route>
                 <Route path="paths" component={NavPaths}></Route>
             </Route>
+            <Route path="*" component={NotFound} />
         </Route>
-        <Route path="*" component={NotFound} />
     </Router>
 ), rootDiv);*/
+
+import rootRoute from './routes/route';
+
+const rootDiv = document.getElementById("root");
+
+ReactDOM.render((
+    <Router history={hashHistory} routes={rootRoute}>
+    </Router>
+), rootDiv);
