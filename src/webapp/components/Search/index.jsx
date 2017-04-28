@@ -49,16 +49,17 @@ export default class Search extends Component {
             setTimeout(() => {
                 this.props.onCancel();
             }, 0);
+            // this.props.onCancel();
         }
     }
 
-    onKeywordClick(){
+    onKeywordDivClick(){
         if(this.props.onFocus){
             this.props.onFocus();
         }
     }
 
-    onKeywordFocus(e){
+    onKeywordInputFocus(e){
         // if(this.props.readOnly){
         //     // e.preventDefault();
         //     this.keywordInput.blur();
@@ -68,9 +69,16 @@ export default class Search extends Component {
         }
     }
 
-    onKeyPress(e){
+    onKeywordInputBlur(){
+    }
+
+    isFocused(){
+        return !!(this.keywordInput && this.keywordInput === document.activeElement);
+    }
+
+    onKeywordInputPress(e){
         if(e.key === "Enter"){
-            if(this.props.onSearch && this.keywordInput.value){
+            if(this.props.onSearch && this.keywordInput && this.keywordInput.value){
                 this.props.onSearch(this.keywordInput.value);
             }
         }
@@ -90,9 +98,9 @@ export default class Search extends Component {
                 <div className={styles["input-container"]}>
                     {
                         this.props.readOnly ? (
-                            <div className={styles.keyword} ref={(input)=>{this.keywordInput=input}} onClick={() => this.onKeywordClick()}>{this.props.placeholder}</div>
+                            <div ref={(input)=>{this.keywordDiv=input}} className={styles.keyword} onClick={() => this.onKeywordDivClick()}>{this.props.placeholder}</div>
                         ) : (
-                            <input type="text" className={styles.keyword} readOnly={this.props.readOnly} placeholder={this.props.placeholder} onFocus={(e) => this.onKeywordFocus(e)} onKeyPress={(e)=>{this.onKeyPress(e)}} ref={(input)=>{this.keywordInput=input}} />
+                            <input ref={(input)=>{this.keywordInput=input}} type="text" className={styles.keyword} readOnly={this.props.readOnly} placeholder={this.props.placeholder} onFocus={(e) => this.onKeywordInputFocus(e)} onBlur={() => this.onKeywordInputBlur()} onKeyPress={(e)=>{this.onKeywordInputPress(e)}} />
                         )
                     }
                     {/*{

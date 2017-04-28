@@ -36,12 +36,9 @@ export default class Paths extends RouteComponent {
         if (!type) {
             return;
         }
-        const {
-            state: {
-                fromPoi,
-                toPoi
-            }
-        } = this.props.location;
+        const state = this.props.location.state || {};
+        const fromPoi = state.fromPoi;
+        const toPoi = state.toPoi;
         
         if (fromPoi && toPoi) {
             const fromLon = fromPoi.pointx;
