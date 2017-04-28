@@ -1,5 +1,4 @@
 ﻿import React, {Component} from 'react';
-import {Link} from 'react-router';
 import styles from './index.scss';
 
 export default class App extends Component{

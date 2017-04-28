@@ -64,6 +64,7 @@
   "dependencies": {
     "babel-polyfill": "^6.23.0",
     "es6-promise": "^4.0.5",
+    "prop-types": "^15.5.8",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "react-router": "^3.0.3"
