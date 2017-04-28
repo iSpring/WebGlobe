@@ -58,11 +58,11 @@ export default class Result extends RouteComponent {
 
         //fix for Xiaomi browser
         this.domNode.style.opacity = 0;
-        console.log(this.domNode.clientWidth);
+        // console.log(this.domNode.clientWidth);
         setTimeout(() => {
             globe.poiLayer.clear();
             this.goBack();
-        }, 0);
+        }, 50);
     }
 
     onPrevPage() {
