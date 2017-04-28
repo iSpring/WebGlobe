@@ -105,7 +105,6 @@ export default class Nav extends RouteComponent {
 
     route(fromPoi, toPoi) {
         if (fromPoi && toPoi) {
-            console.log(fromPoi, toPoi);
             this.props.router.push({
                 pathname: '/nav/paths',
                 state: {
@@ -138,9 +137,9 @@ export default class Nav extends RouteComponent {
                             <input type="text" placeholder="请输入目的地" ref={(input) => { this.toInput = input; }} onFocus={(e) => this.onToFocus(e)} onKeyPress={(e) => this.onKeyPress(e)} />
                         </div>
                     </div>
-                    <div className={styles.exchange}>
+                    {/*<div className={styles.exchange}>
                         <i className={exchangeArrowClassName}></i>
-                    </div>
+                    </div>*/}
                 </div>
                 <div className={styles.pois}>
                     {

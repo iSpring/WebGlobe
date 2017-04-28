@@ -358,11 +358,18 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
                         lonlatsSegments.push(segment.walking.lonlats);
                         lonlats.push(...segment.walking.lonlats);
                     }
+
                     if (segment.bus && segment.bus.lonlats && segment.bus.lonlats.length > 0) {
                         // this._addRouteByLonlats(segment.bus.lonlats, resolution, this.pixelWidth, this.blueColor);
                         segment.bus.lonlats.color = this.blueColor;
                         lonlatsSegments.push(segment.bus.lonlats);
                         lonlats.push(...segment.bus.lonlats);
+                    }
+
+                    if(segment.railway && segment.railway.lonlats && segment.railway.lonlats.length > 0){
+                        segment.railway.lonlats.color = this.blueColor;
+                        lonlatsSegments.push(segment.railway.lonlats);
+                        lonlats.push(...segment.railway.lonlats);
                     }
                 });
 

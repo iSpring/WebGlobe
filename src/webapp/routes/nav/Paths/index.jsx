@@ -243,20 +243,42 @@ export default class Paths extends RouteComponent {
                             const transit = path;
                             if (transit.segments && transit.segments.length > 0) {
                                 transit.segments.forEach((segment) => {
-                                    if (segment && segment.bus && segment.bus.buslines && segment.bus.buslines.length > 0) {
-                                        segment.bus.buslines.forEach((busline) => {
-                                            if (busline && busline.busName) {
-                                                if (busNames.indexOf(busline.busName) < 0) {
-                                                    busNames.push(busline.busName);
+                                    if(segment){
+                                        if (segment.bus && segment.bus.buslines && segment.bus.buslines.length > 0) {
+                                            segment.bus.buslines.forEach((busline) => {
+                                                if (busline && busline.busName) {
+                                                    if (busNames.indexOf(busline.busName) < 0) {
+                                                        busNames.push(busline.busName);
+                                                    }
+                                                }
+                                            });
+                                        }
+                                        if(segment.railway){
+                                            let {
+                                                departure_stop,
+                                                arrival_stop
+                                            } = segment.railway;
+                                            if(departure_stop && departure_stop.name){
+                                                if(departure_stop.name.slice(-1) === '站'){
+                                                    busNames.push(departure_stop.name);
+                                                }else{
+                                                    busNames.push(`${departure_stop.name}站`);
                                                 }
                                             }
-                                        });
+                                            if(arrival_stop && arrival_stop.name){
+                                                if(arrival_stop.name.slice(-1) === '站'){
+                                                    busNames.push(arrival_stop.name);
+                                                }else{
+                                                    busNames.push(`${arrival_stop.name}站`);
+                                                }
+                                            }
+                                        }
                                     }
                                 });
                             }
                             return [
                                 <div key="summary2" className={classNames(styles.summary2, "ellipsis")}>{busNames.join(" -> ")}</div>,
-                                <div key="summary3" className={classNames(styles.summary3, "ellipsis")}>步行{this.getDistanceSummary(transit.walking_distance)}</div>
+                                <div key="summary3" className={classNames(styles.summary3, "ellipsis")}>花费{parseFloat(transit.cost).toFixed(1)}元  步行{this.getDistanceSummary(transit.walking_distance)}</div>
                             ];
                         } else if (route.type === 'walking') {
                             const [timeSummary, distanceSummary] = this.getTimeDistanceSummary(path);
@@ -282,9 +304,20 @@ export default class Paths extends RouteComponent {
         return [this.getTimeSummary(duration), this.getDistanceSummary(distance)];
     }
 
-    getTimeSummary(duration) {
-        duration = parseFloat(duration);
-        return `${Math.round(duration / 60)}分钟`;
+    getTimeSummary(seconds) {
+        seconds = parseFloat(seconds);
+        let allMinutes = Math.round(seconds / 60);
+        if(allMinutes < 60){
+            return `${allMinutes}分钟`;
+        }else{
+            let hours = Math.floor(allMinutes / 60);
+            let minutes = allMinutes - hours * 60;
+            if(minutes > 0){
+                return `${hours}小时${minutes}分钟`;
+            }else{
+                return `${hours}小时`;
+            }
+        }
     }
 
     getDistanceSummary(distance) {

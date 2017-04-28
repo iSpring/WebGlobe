@@ -274,6 +274,22 @@ class Service {
                 segment.bus.lastLonlat = segment.bus.lonlats[segment.bus.lonlats.length - 1];
               }
             }
+            if(segment.railway && segment.railway.departure_stop && segment.railway.arrival_stop){
+              let location1 = segment.railway.departure_stop.location;
+              let location2 = segment.railway.arrival_stop.location;
+              segment.railway.lonlats = [];
+              if(location1 && location2){
+                let splits1 = location1.split(" ");
+                let lon1 = parseFloat(splits1[0]);
+                let lat1 = parseFloat(splits1[1]);
+                let splits2 = location2.split(" ");
+                let lon2 = parseFloat(splits2[0]);
+                let lat2 = parseFloat(splits2[1]);
+                if(!isNaN(lon1) && !isNaN(lat1) && !isNaN(lon2) && !isNaN(lat2)){
+                  segment.railway.lonlats = [[lon1, lat1], [lon2, lat2]];
+                }
+              }
+            }
           });
           const originalWalkingDistance = parseFloat(transit.walking_distance);
           if(isNaN(originalWalkingDistance)){
