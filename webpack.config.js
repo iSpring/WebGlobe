@@ -18,7 +18,8 @@ var indexHtmlWebpackPlugin = new HtmlWebpackPlugin({
     template: '!!html!./src/core/template.html',
     hash: false,
     inject: 'body',
-    chunks: ["runtime", "globe", "index"]
+    // chunks: ["runtime", "globe", "index"]
+    chunks: ["index"]
 });
 
 var webappHtmlWebpackPlugin = new HtmlWebpackPlugin({
@@ -26,14 +27,15 @@ var webappHtmlWebpackPlugin = new HtmlWebpackPlugin({
     template: '!!ejs!./src/webapp/template.html',
     hash: false,
     inject: 'body',
-    chunks: ["runtime", "webapp", "globe"]
+    // chunks: ["runtime", "webapp", "globe"]
+    chunks: ["webapp"]
 });
 
-var commonsChunkPlugin = new webpack.optimize.CommonsChunkPlugin({
-    // name: "globe",
-    // chunks: ["globe"]
-    names: ["globe", "runtime"]
-});
+// var commonsChunkPlugin = new webpack.optimize.CommonsChunkPlugin({
+//     // name: "globe",
+//     // chunks: ["globe"]
+//     names: ["globe", "runtime"]
+// });
 
 var buildFolder = "buildOutput";
 
@@ -99,7 +101,7 @@ module.exports = {
     },
 
     plugins: [
-        commonsChunkPlugin,
+        // commonsChunkPlugin,
         extractPlugin,
         webpackMd5HashPlugin,
         indexHtmlWebpackPlugin,
