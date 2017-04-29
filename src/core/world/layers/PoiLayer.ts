@@ -4,7 +4,7 @@ import Utils from '../Utils';
 import MathUtils from '../math/Utils';
 import MultiPointsGraphic from '../graphics/MultiPointsGraphic';
 import MarkerTextureMaterial from '../materials/MarkerTextureMaterial';
-import Service, { Location } from '../Service';
+import Service, { Location, SearchType } from '../Service';
 import Globe from '../Globe';
 import Extent from '../Extent';
 const poiImgUrl = require("../images/red.png");
@@ -64,7 +64,6 @@ export default class PoiLayer extends MultiPointsGraphic {
   }
 
   private _showPois(searchResponse: any) {
-    console.log('response:', searchResponse);
     var data = searchResponse.detail.pois || [];
     if(data.length > 0){
       var lonlats: number[][] = data.map((item: any) => {
@@ -99,16 +98,16 @@ export default class PoiLayer extends MultiPointsGraphic {
     }
   }
 
-  searchNearby(keyword: string, radius: number = 1000, pageCapacity: number = 50, pageIndex: number = 0) {
+  searchNearby(keyword: string, radius: number, searchType: SearchType = 'Auto', pageCapacity: number = 50, pageIndex: number = 0) {
     this.searchExtentMode = false;
-    return Service.searchNearby(keyword, radius, false, pageCapacity, pageIndex).then((response: any) => {
+    return Service.searchNearby(keyword, radius, searchType, false, pageCapacity, pageIndex).then((response: any) => {
       this._showPois(response);
       return response;
     });
   }
 
-  searchByCurrentCity(keyword: string, pageCapacity: number = 50, pageIndex: number = 0){
-    return Service.searchByCurrentCity(keyword, pageCapacity, pageIndex).then((response: any) => {
+  searchByCurrentCity(keyword: string, searchType: SearchType = 'Auto', pageCapacity: number = 50, pageIndex: number = 0){
+    return Service.searchByCurrentCity(keyword, searchType, pageCapacity, pageIndex).then((response: any) => {
       if(response){
         if(!response.location){
           response.location = this.globe.getLonlat();

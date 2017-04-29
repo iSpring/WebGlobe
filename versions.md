@@ -241,3 +241,5 @@
 - 0.4.32 通过http://fontello.com/ 自定义FontAwesome
 
 - 0.4.33 Globe构造函数支持pauseRendering参数，可以实现切片延迟加载
+
+- 0.4.34 searchByBuffer和searchByCity支持SearchType参数，可以智能判断类型，并且可以在查询无结果的情况下改变SearchType再次查询，优化查询体验

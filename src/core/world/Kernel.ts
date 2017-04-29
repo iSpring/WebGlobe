@@ -1,6 +1,6 @@
 import {WebGLRenderingContextExtension} from './Definitions';
 
-const REAL_EARTH_RADIUS = 6378137;
+const REAL_EARTH_RADIUS = 6378137;//meters
 const EARTH_RADIUS = 500;
 const SCALE_FACTOR = EARTH_RADIUS / REAL_EARTH_RADIUS;
 const MAX_PROJECTED_COORD = Math.PI * EARTH_RADIUS;
@@ -10,7 +10,7 @@ const MAX_RESOLUTION = MAX_REAL_RESOLUTION * SCALE_FACTOR;
 export default class Kernel{
     static gl: WebGLRenderingContextExtension = null;
     static idCounter: number = 0;
-    static readonly version: string = "0.4.33";
+    static readonly version: string = "0.4.34";
     static readonly SCALE_FACTOR: number = SCALE_FACTOR;
     static readonly REAL_EARTH_RADIUS: number = REAL_EARTH_RADIUS;
     static readonly EARTH_RADIUS: number = EARTH_RADIUS;

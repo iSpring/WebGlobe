@@ -3,6 +3,7 @@ import TrafficTypes from 'webapp/components/TrafficTypes';
 import RouteComponent from 'webapp/components/RouteComponent';
 import classNames from 'classnames';
 import styles from './index.scss';
+import Kernel from 'world/Kernel';
 import Service from 'world/Service';
 import { globe } from 'webapp/components/Map';
 
@@ -13,6 +14,7 @@ export default class Nav extends RouteComponent {
         this.fromPoi = null;
         this.toPoi = null;
         this.pageCapacity = 10;
+        this.searchDistance = Kernel.REAL_EARTH_RADIUS;
         this.isFromLastFocused = true;
         this.state = {
             type: 'driving',//bus,walking
@@ -31,7 +33,9 @@ export default class Nav extends RouteComponent {
         const keyword = e.target.value;
         if (e.key === "Enter") {
             if (keyword) {
-                Service.searchByCurrentCity(keyword, this.pageCapacity).then((response) => {
+                // const promise = Service.searchByCurrentCity(keyword, 'Auto', this.pageCapacity);
+                const promise = Service.searchNearby(keyword, this.searchDistance, 'Auto', this.pageCapacity);
+                promise.then((response) => {
                     let pois = null;
                     if (response.detail) {
                         pois = response.detail.pois;
