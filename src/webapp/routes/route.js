@@ -9,6 +9,17 @@ const route = {
             require('./nearby/route'),
             require('./404/route')
         ]
+        // getChildRoutes(partialNextState, callback){
+        //     require.ensure([], function(){
+        //         callback(null, [
+        //             require('./index/route'),
+        //             require('./map/route'),
+        //             require('./nav/route'),
+        //             require('./nearby/route'),
+        //             require('./404/route')
+        //         ])
+        //     }, 'root-childroutes')
+        // }
     }]
 };
 
