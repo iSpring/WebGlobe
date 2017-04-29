@@ -4,11 +4,25 @@ import styles from './index.scss';
 import Globe from 'world/Globe';
 
 export const globe = Globe.getInstance({
+    pauseRendering: true,
     satellite: false,
     lonlat: "auto",
     level: "auto",
     key: "db146b37ef8d9f34473828f12e1e85ad"
 });
+
+//延迟一秒加载globe中的切片
+setTimeout(function(){
+    globe.resumeRendering();
+    let __mounted = false;
+    const parent = globe.canvas.parentNode;
+    if(parent){
+        __mounted = !!parent.__mounted;
+    }
+    if(!__mounted){
+        globe.pauseRendering();
+    }
+}, 1000);
 
 window.globe = globe;
 
@@ -46,6 +60,7 @@ export default class Map extends Component{
 
     componentDidMount(){
         const domNode = ReactDOM.findDOMNode(this);
+        domNode.__mounted = true;
         globe.placeAt(domNode);
         this.resizeGlobe();
         globe.resumeRendering();
@@ -53,6 +68,7 @@ export default class Map extends Component{
 
     componentWillUnmount(){
         const domNode = ReactDOM.findDOMNode(this);
+        domNode.__mounted = false;
         const canvas = globe && globe.canvas;
         if(canvas && canvas.parentNode === domNode){
             domNode.removeChild(canvas);

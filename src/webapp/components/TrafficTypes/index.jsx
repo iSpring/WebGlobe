@@ -2,7 +2,6 @@
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import styles from './index.scss';
-import fontStyles from 'webapp/fonts/font-awesome.scss';
 
 export default class TrafficTypes extends Component {
 
@@ -41,13 +40,13 @@ export default class TrafficTypes extends Component {
     }
 
     render() {
-        const busClassName = classNames(fontStyles.fa, fontStyles["fa-bus"], styles["traffic-type"], {
+        const busClassName = classNames("icon-bus", styles["traffic-type"], {
             selected: this.props.type === 'bus'
         });
-        const driveClassName = classNames(fontStyles.fa, fontStyles["fa-car"], styles["traffic-type"], {
+        const driveClassName = classNames("icon-cab", styles["traffic-type"], {
             selected: this.props.type === 'driving'
         });
-        const walkClassName = classNames(fontStyles.fa, fontStyles["fa-male"], styles["traffic-type"], {
+        const walkClassName = classNames("icon-male", styles["traffic-type"], {
             selected: this.props.type === 'walking'
         });
 

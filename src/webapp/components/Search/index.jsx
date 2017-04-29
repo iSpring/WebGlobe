@@ -104,10 +104,6 @@ export default class Search extends Component {
                             <input ref={(input)=>{this.keywordInput=input}} type="text" className={styles.keyword} readOnly={this.props.readOnly} placeholder={this.props.placeholder} onFocus={(e) => this.onKeywordInputFocus(e)} onBlur={() => this.onKeywordInputBlur()} onKeyPress={(e)=>{this.onKeywordInputPress(e)}} />
                         )
                     }
-                    {/*{
-                        this.props.showVoice && <i className="fa fa-microphone" aria-hidden="true"></i>
-                    }
-                    <i className="fa fa-times hidden" aria-hidden="true"></i>*/}
                 </div>
                 {
                     this.props.showCancel && <div className={styles["right-action"]} onClick={()=>this.onRightAction()}>取消</div>
