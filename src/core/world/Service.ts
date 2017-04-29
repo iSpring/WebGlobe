@@ -10,71 +10,15 @@ export interface Location {
 
 type RouteType = "bus" | "snsnav";
 
+//Type: 表示按类型查询，qt=rn
+//POI: 表示按兴趣点的名称查询，qt=poi
+//Auto: 通过检索poiTypes自动判断类型
+type StrictSearchType = 'Type' | 'POI';
+export type SearchType = StrictSearchType | 'Auto';
+
+//http://apis.map.qq.com/jsapi?qt=rn&wd=北京南站&pn=0&rn=10&px=117.200983&py=39.084158&r=3000&output=json
+
 class Service {
-  //http://lbs.qq.com/webservice_v1/guide-appendix.html
-  private static poiClasses: any = {
-    '美食': [
-      '西餐', '烧烤', '火锅', '海鲜', '素食', '清真', '自助餐', '面包甜点', '冷饮店', '小吃快餐', {
-        '中餐厅': ['鲁菜', '粤菜', '湘菜', '川菜', '浙江菜', '安徽菜', '东北菜', '北京菜'],
-        '日韩菜': ['日本料理', '韩国料理'],
-        '东南亚菜': ['泰国菜']
-      }
-    ],
-    '购物': ['综合商场', '便利店', '超市', '数码家电', '花鸟鱼虫', '家具家居建材', '农贸市场', '小商品市场', '旧货市场', '体育户外', '服饰鞋包', '图书音像', '眼镜店', '母婴儿童', '珠宝饰品', '化妆品', '礼品', '摄影器材', '拍卖典当行', '古玩字画', '自行车专卖', '烟酒专卖', '文化用品'],
-    '生活服务': ['旅行社', '报刊亭', '自来水营业厅', '电力营业厅', '摄影冲印', '洗衣店', '招聘求职', '彩票', '中介机构', '宠物服务', '废品收购站', '福利院养老院', '美容美发', {
-      '票务代售': ['飞机票代售', '火车票代售', '汽车票代售', '公交及IC卡'],
-      '邮局速递': ['邮局', '速递'],
-      '通讯服务': ['中国电信营业厅', '中国网通营业厅', '中国移动营业厅', '中国联通营业厅', '中国铁通营业厅'],
-      '家政': ['月嫂保姆', '保洁钟点工', '开锁', '送水', '家电维修', '搬家']
-    }],
-    '娱乐休闲': ['洗浴推拿足疗', 'KTV', '酒吧', '咖啡厅', '夜总会', '电影院', '剧场音乐厅', '度假疗养', '网吧', {
-      '户外活动': ['游乐场', '垂钓园', '采摘园'],
-      '游戏棋牌': ['游戏厅', '棋牌室']
-    }],
-    '汽车': ['停车场', '汽车销售', '汽车维修', '汽车养护', '洗车场', {
-      '加油站': ['中石化', '中石油', '其它加油加气站'],
-      '摩托车': ['摩托车服务相关', '销售', '维修', '其它摩托车']
-    }],
-    '医疗保健': ['综合医院', '诊所', '急救中心', '药房药店'],
-    '酒店宾馆': ['酒店宾馆', '星级酒店', '经济型酒店', '旅馆招待所', '青年旅社'],
-    '旅游景点': [],
-    '文化场馆': ['博物馆', '展览馆', '科技馆', '图书馆', '美术馆', '会展中心'],
-    '教育学校': ['大学', '中学', '小学', '幼儿园', '培训', '职业技术学校', '成人教育'],
-    '银行金融': ['银行', '自动提款机', '保险公司', '证券公司'],
-    '基础设施': ['其它基础设施',{
-      '交通设施': ['公交车站', '地铁站', '火车站', '长途汽车站', '公交线路', '地铁线路'],
-      '公共设施': ['公共厕所', '公用电话', '紧急避难场所'],
-      '道路附属': ['收费站', '服务区']
-    }],
-    '房产小区': ['商务楼宇', {
-      '住宅区': ['住宅小区', '别墅' ,'宿舍', '社区中心']
-    }]
-  };
-
-  private static poiTypes: string[] = [];
-
-  private static createPoiTypes(){
-    this._createPoiTypes(this.poiClasses, this.poiTypes);
-    return this.poiTypes;
-  }
-
-  public static _createPoiTypes(obj: any, types: string[]){
-    for(let key in obj){
-      if(obj.hasOwnProperty(key)){
-        types.push(key);
-        let values = obj[key];
-        if(values && values.length > 0){
-          values.forEach((value: any) => {
-            if(typeof value === 'string'){
-              types.push(value);
-            }else if(typeof value === 'object'){
-              this._createPoiTypes(value, types);
-            }
-          });
-        }
-      }
-    }
-  }
 
   private static jsonp(url: string, callback: (response: any) => void, charset: string = "", callbackParameterName: string = "cb", callbackPrefix: string = "QQ"): () => void {
     //callback名称要以大写的QQ开头，否则容易挂掉
@@ -116,6 +60,8 @@ class Service {
       clear();
     };
   }
+
+  //--------------------------------------------------location-------------------------------------------------------
 
   private static cityLocation: Location = null;
 
@@ -182,6 +128,93 @@ class Service {
     return promise;
   }
 
+  //--------------------------------------------------search-------------------------------------------------------
+  //http://lbs.qq.com/webservice_v1/guide-appendix.html
+  private static poiClasses: any = {
+    '美食': [
+      '西餐', '烧烤', '火锅', '海鲜', '素食', '清真', '自助餐', '面包甜点', '冷饮店', '小吃快餐', {
+        '中餐厅': ['鲁菜', '粤菜', '湘菜', '川菜', '浙江菜', '安徽菜', '东北菜', '北京菜'],
+        '日韩菜': ['日本料理', '韩国料理'],
+        '东南亚菜': ['泰国菜']
+      }
+    ],
+    '购物': ['综合商场', '便利店', '超市', '数码家电', '花鸟鱼虫', '家具家居建材', '农贸市场', '小商品市场', '旧货市场', '体育户外', '服饰鞋包', '图书音像', '眼镜店', '母婴儿童', '珠宝饰品', '化妆品', '礼品', '摄影器材', '拍卖典当行', '古玩字画', '自行车专卖', '烟酒专卖', '文化用品'],
+    '生活服务': ['旅行社', '报刊亭', '自来水营业厅', '电力营业厅', '摄影冲印', '洗衣店', '招聘求职', '彩票', '中介机构', '宠物服务', '废品收购站', '福利院养老院', '美容美发', {
+      '票务代售': ['飞机票代售', '火车票代售', '汽车票代售', '公交及IC卡'],
+      '邮局速递': ['邮局', '速递'],
+      '通讯服务': ['中国电信营业厅', '中国网通营业厅', '中国移动营业厅', '中国联通营业厅', '中国铁通营业厅'],
+      '家政': ['月嫂保姆', '保洁钟点工', '开锁', '送水', '家电维修', '搬家']
+    }],
+    '娱乐休闲': ['洗浴推拿足疗', 'KTV', '酒吧', '咖啡厅', '夜总会', '电影院', '剧场音乐厅', '度假疗养', '网吧', {
+      '户外活动': ['游乐场', '垂钓园', '采摘园'],
+      '游戏棋牌': ['游戏厅', '棋牌室']
+    }],
+    '汽车': ['停车场', '汽车销售', '汽车维修', '汽车养护', '洗车场', {
+      '加油站': ['中石化', '中石油', '其它加油加气站'],
+      '摩托车': ['摩托车服务相关', '销售', '维修', '其它摩托车']
+    }],
+    '医疗保健': ['综合医院', '诊所', '急救中心', '药房药店'],
+    '酒店宾馆': ['酒店宾馆', '星级酒店', '经济型酒店', '旅馆招待所', '青年旅社'],
+    '旅游景点': [],
+    '文化场馆': ['博物馆', '展览馆', '科技馆', '图书馆', '美术馆', '会展中心'],
+    '教育学校': ['大学', '中学', '小学', '幼儿园', '培训', '职业技术学校', '成人教育'],
+    '银行金融': ['银行', '自动提款机', '保险公司', '证券公司'],
+    '基础设施': ['其它基础设施',{
+      '交通设施': ['公交车站', '地铁站', '火车站', '长途汽车站', '公交线路', '地铁线路'],
+      '公共设施': ['公共厕所', '公用电话', '紧急避难场所'],
+      '道路附属': ['收费站', '服务区']
+    }],
+    '房产小区': ['商务楼宇', {
+      '住宅区': ['住宅小区', '别墅' ,'宿舍', '社区中心']
+    }]
+  };
+
+  private static poiTypes: string[] = [];
+
+  private static createPoiTypes(){
+    this._createPoiTypes(this.poiClasses, this.poiTypes);
+    return this.poiTypes;
+  }
+
+  public static _createPoiTypes(obj: any, types: string[]){
+    for(let key in obj){
+      if(obj.hasOwnProperty(key)){
+        types.push(key);
+        let values = obj[key];
+        if(values && values.length > 0){
+          values.forEach((value: any) => {
+            if(typeof value === 'string'){
+              types.push(value);
+            }else if(typeof value === 'object'){
+              this._createPoiTypes(value, types);
+            }
+          });
+        }
+      }
+    }
+  }
+
+  private static _getStrictSearchType(keyword: string): StrictSearchType{
+    let searchType: StrictSearchType = 'POI';
+    for(let i = 0; i < this.poiTypes.length; i++){
+      let poiType = this.poiTypes[i];
+      if(poiType.indexOf(keyword) >= 0){
+        searchType = 'Type';
+        return searchType;
+      }
+    }
+    return searchType;
+  }
+
+  private static _getUrlBySearchType(url: string, searchType: StrictSearchType){
+    if(searchType === 'Type'){
+      url += '&qt=rn';
+    }else if(searchType === 'POI'){
+      url += '&qt=poi';
+    }
+    return url;
+  }
+
   //http://lbs.qq.com/javascript_v2/case-run.html#service-searchservice
   static searchByExtent(keyword: string, level: number, { minLon, minLat, maxLon, maxLat }: Extent, pageCapacity: number = 50, pageIndex: number = 0) {
     const promise = new Promise((resolve) => {
@@ -193,10 +226,34 @@ class Service {
     return promise;
   }
 
-  static searchByBuffer(keyword: string, lon: number, lat: number, radius: number, pageCapacity: number = 50, pageIndex: number = 0) {
+  static searchByBuffer(keyword: string, lon: number, lat: number, radius: number, searchType: SearchType = 'Auto', pageCapacity: number = 50, pageIndex: number = 0) {
+    if(searchType === 'Auto'){
+      searchType = this._getStrictSearchType(keyword);
+      return this._rawSearchByBuffer(searchType, keyword, lon, lat, radius, pageCapacity, pageIndex).then((response: any) => {
+        let poiCount = 0;
+        if(response && response.detail && response.detail.pois && response.detail.pois.length > 0){
+          poiCount = response.detail.pois.length;
+        }
+        if(poiCount === 0){
+          if(searchType === 'Type'){
+            return this._rawSearchByBuffer('POI', keyword, lon, lat, radius, pageCapacity, pageIndex);
+          }else if(searchType === 'POI'){
+            return this._rawSearchByBuffer('Type', keyword, lon, lat, radius, pageCapacity, pageIndex);
+          }
+        }
+        return response;
+      });
+    }else{
+      return this._rawSearchByBuffer(searchType, keyword, lon, lat, radius, pageCapacity, pageIndex);
+    }
+  }
+
+  private static _rawSearchByBuffer(searchType: StrictSearchType, keyword: string, lon: number, lat: number, radius: number, pageCapacity: number = 50, pageIndex: number = 0) {
     const promise = new Promise((resolve) => {
       //http://apis.map.qq.com/jsapi?qt=rn&wd=酒店&pn=0&rn=5&px=116.397128&py=39.916527&r=2000&output=jsonp&cb=webglobe_jsonp_1
-      const url = `//apis.map.qq.com/jsapi?qt=rn&wd=${keyword}&pn=${pageIndex}&rn=${pageCapacity}&px=${lon}&py=${lat}&r=${radius}&output=jsonp`;
+      //http://apis.map.qq.com/jsapi?qt=poi&wd=杨村一中&pn=0&rn=5&px=116.397128&py=39.916527&r=2000&output=jsonp&cb=webglobe_jsonp_1
+      let url = `//apis.map.qq.com/jsapi?wd=${keyword}&pn=${pageIndex}&rn=${pageCapacity}&px=${lon}&py=${lat}&r=${radius}&output=jsonp`;
+      url = this._getUrlBySearchType(url, searchType);
       Service.jsonp(url, function (response: any) {
         if(response){
           response.location = [lon, lat];
@@ -207,10 +264,33 @@ class Service {
     return promise;
   }
 
-  static searchByCity(keyword: string, city: string, pageCapacity: number = 50, pageIndex: number = 0) {
+  static searchByCity(keyword: string, city: string, searchType: SearchType = 'Auto', pageCapacity: number = 50, pageIndex: number = 0) {
+    if(searchType === 'Auto'){
+      searchType = this._getStrictSearchType(keyword);
+      return this._rawSearchByCity(searchType, keyword, city, pageCapacity, pageIndex).then((response: any) => {
+        let poiCount = 0;
+        if(response && response.detail && response.detail.pois && response.detail.pois.length > 0){
+          poiCount = response.detail.pois.length;
+        }
+        if(poiCount === 0){
+          if(searchType === 'Type'){
+            return this._rawSearchByCity('POI', keyword, city, pageCapacity, pageIndex);
+          }else if(searchType === 'POI'){
+            return this._rawSearchByCity('Type', keyword, city, pageCapacity, pageIndex);
+          }
+        }
+        return response;
+      });
+    }else{
+      return this._rawSearchByCity(searchType, keyword, city, pageCapacity, pageIndex);
+    }
+  }
+
+  private static _rawSearchByCity(searchType: StrictSearchType, keyword: string, city: string, pageCapacity: number = 50, pageIndex: number = 0) {
     //http://apis.map.qq.com/jsapi?qt=poi&wd=杨村一中&pn=0&rn=5&c=北京&output=json&cb=callbackname
     const promise = new Promise((resolve) => {
-      const url = `//apis.map.qq.com/jsapi?qt=poi&wd=${keyword}&pn=${pageIndex}&rn=${pageCapacity}&c=${city}&output=jsonp`;
+      let url = `//apis.map.qq.com/jsapi?wd=${keyword}&pn=${pageIndex}&rn=${pageCapacity}&c=${city}&output=jsonp`;
+      url = this._getUrlBySearchType(url, searchType);
       Service.jsonp(url, (response: any) => {
         if(response){
           if(this.location){
@@ -227,17 +307,19 @@ class Service {
     return promise;
   }
 
-  static searchNearby(keyword: string, radius: number = 1000, highAccuracy: boolean = false, pageCapacity: number = 50, pageIndex: number = 0) {
+  static searchNearby(keyword: string, radius: number, searchType: SearchType = 'Auto', highAccuracy: boolean = false, pageCapacity: number = 50, pageIndex: number = 0) {
     return this.getCurrentPosition(highAccuracy).then((location: Location) => {
-      return this.searchByBuffer(keyword, location.lon, location.lat, radius, pageCapacity, pageIndex);
+      return this.searchByBuffer(keyword, location.lon, location.lat, radius, searchType, pageCapacity, pageIndex);
     });
   }
 
-  static searchByCurrentCity(keyword: string, pageCapacity: number = 50, pageIndex: number = 0) {
+  static searchByCurrentCity(keyword: string, searchType: SearchType = 'Auto', pageCapacity: number = 50, pageIndex: number = 0) {
     return this.getCityLocation().then((cityLocation: Location) => {
-      return this.searchByCity(keyword, cityLocation.city, pageCapacity, pageIndex);
+      return this.searchByCity(keyword, cityLocation.city, searchType, pageCapacity, pageIndex);
     });
   }
+
+  //--------------------------------------------------routing-------------------------------------------------------
 
   static routeByDriving(fromLon: number, fromLat: number, toLon: number, toLat: number, key: string, strategy: number = 5) {
     //http://lbs.gaode.com/api/webservice/guide/api/direction/#driving

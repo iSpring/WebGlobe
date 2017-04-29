@@ -5,6 +5,7 @@ import styles from './index.scss';
 import RouteComponent from 'webapp/components/RouteComponent';
 import Search from 'webapp/components/Search';
 import Map, { globe } from 'webapp/components/Map';
+import Kernel from 'world/Kernel';
 import MathUtils from 'world/math/Utils';
 
 export default class Result extends RouteComponent {
@@ -12,7 +13,7 @@ export default class Result extends RouteComponent {
     constructor(props) {
         super(props);
         this.pageCapacity = 10;
-        this.distance = 3000;
+        this.distance = Kernel.REAL_EARTH_RADIUS;
         this.nameClassNames = classNames(styles.name, "ellipsis");
         this.addressClassNames = classNames(styles.address, "ellipsis");
         this.roadIcon = "icon-road";
@@ -43,6 +44,15 @@ export default class Result extends RouteComponent {
     onList() {
         this.setState({
             list: true
+        });
+    }
+
+    onClickPoi(poi){
+        if(typeof poi.pointx === 'number' && typeof poi.pointy === 'number'){
+            globe.centerTo(poi.pointx, poi.pointy);
+        }
+        this.setState({
+            list: false
         });
     }
 
@@ -89,9 +99,10 @@ export default class Result extends RouteComponent {
             }
         } = this.props.location;
         if (this.hasBeenMounted() && keyword) {
-            const fromMapBase = this.isFromMapBaseRoute();
+            // const fromMapBase = this.isFromMapBaseRoute();
             // console.log(`fromMapBase: ${fromMapBase}`);
-            const promise = fromMapBase ? globe.searchByCurrentCity(keyword, this.pageCapacity, pageIndex) : globe.searchNearby(keyword, distance, this.pageCapacity, pageIndex);
+            // const promise = fromMapBase ? globe.poiLayer.searchByCurrentCity(keyword, 'Auto', this.pageCapacity, pageIndex) : globe.poiLayer.searchNearby(keyword, distance, 'Auto', this.pageCapacity, pageIndex);
+            const promise = globe.poiLayer.searchNearby(keyword, distance, 'Auto', this.pageCapacity, pageIndex);
             this.wrapPromise(promise).then((response) => {
                 if (response) {
                     this.setState({
@@ -150,7 +161,7 @@ export default class Result extends RouteComponent {
                                                 }
                                                 
                                                 return (
-                                                    <div className={styles.poi} key={poi.uid}>
+                                                    <div className={styles.poi} key={poi.uid} onClick={() => this.onClickPoi(poi)}>
                                                         <div className={styles.index}>{index + 1}</div>
                                                         <div className={styles.info}>
                                                             <div className={this.nameClassNames}>{poi.name}</div>

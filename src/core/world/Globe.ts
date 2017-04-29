@@ -183,14 +183,6 @@ export default class Globe {
     this.refresh(true);
   }
 
-  searchNearby(keyword: string, radius: number, pageCapacity: number, pageIndex: number){
-    return this.poiLayer.searchNearby(keyword, radius, pageCapacity, pageIndex);
-  }
-
-  searchByCurrentCity(keyword: string, pageCapacity: number = 50, pageIndex: number = 0){
-    return this.poiLayer.searchByCurrentCity(keyword, pageCapacity, pageIndex);
-  }
-
   private _setTiledLayer(tiledLayer: TiledLayer, dontRefresh: boolean = false) {
     //在更换切片图层的类型时清空缓存的图片
     ImageUtils.clear();
