@@ -26,10 +26,11 @@ const initLonlat:number[] = [116.3975, 39.9085];
 type RenderCallback = () => void;
 
 export class GlobeOptions{
+  pauseRendering: boolean = false;
   satellite: boolean = true;
   level: number | 'auto' = 'auto';
   lonlat: number[] | 'auto' = 'auto';
-  key: string = ""
+  key: string = "";
 }
 
 export default class Globe {
@@ -51,7 +52,6 @@ export default class Globe {
   private realRefreshCount: number = 0;
   // private beforeRenderCallbacks: RenderCallback[] = [];
   private afterRenderCallbacks: RenderCallback[] = [];
-  private renderingPaused: boolean = false;
   public gl: WebGLRenderingContextExtension = null;
   private static globe: Globe = null;
 
@@ -63,16 +63,6 @@ export default class Globe {
       this.globe = new Globe(canvas, options);
     }
     return this.globe;
-  }
-
-  placeAt(container: HTMLElement){
-    if(this.canvas.parentNode){
-      if(this.canvas.parentNode !== container){
-        container.appendChild(this.canvas);
-      }
-    }else{
-      container.appendChild(this.canvas);
-    }
   }
 
   private constructor(public canvas: HTMLCanvasElement, private options?: GlobeOptions) {
@@ -91,12 +81,12 @@ export default class Globe {
 
     if(this.options.satellite){
       //not display well for level 10,11 when style is Default
-      this.setTiledLayer(new GoogleTiledLayer("Default"));//"Default" | "Satellite" | "Road" | "RoadOnly" | "Terrain" | "TerrainOnly";
+      this._setTiledLayer(new GoogleTiledLayer("Default"), this.options.pauseRendering);//"Default" | "Satellite" | "Road" | "RoadOnly" | "Terrain" | "TerrainOnly";
       // this.labelLayer = new AutonaviLabelLayer();
       // this.labelLayer = new SosoLabelLayer();
       // this.scene.add(this.labelLayer);
     }else{
-      this.setTiledLayer(new AutonaviTiledLayer());
+      this._setTiledLayer(new AutonaviTiledLayer(), this.options.pauseRendering);
     }
 
     // this.trafficLayer = new QihuTrafficLayer();
@@ -112,24 +102,17 @@ export default class Globe {
     this.locationGraphic = LocationGraphic.getInstance(this);
     this.scene.add(this.locationGraphic);
 
-    this.renderer.start();
     this.eventHandler = new EventHandler(this);
 
-    /*Utils.subscribe('location', (data: LocationData) => {
-      console.timeEnd("location");
-      console.info(data);
-      this.afterRenderCallbacks.push(() => {
-        this.showLocation(data);
-      });
-    });
-    console.time("location");
-    Locator.getRobustLocation();
-    Locator.getLocation();
-    // LocationService.watchPosition();*/
+    if(this.options.pauseRendering !== true){
+      this.renderer.resumeRendering();
+    }
 
     const locationCallback = (location: any) => {
       if(location){
-        this.updateUserLocation(location);
+        this.afterRenderCallbacks.push(() => {
+          this.updateUserLocation(location);
+        });
       }
     };
 
@@ -138,6 +121,16 @@ export default class Globe {
         Service.getCurrentPosition(true).then(locationCallback);
       }
     });
+  }
+
+  placeAt(container: HTMLElement){
+    if(this.canvas.parentNode){
+      if(this.canvas.parentNode !== container){
+        container.appendChild(this.canvas);
+      }
+    }else{
+      container.appendChild(this.canvas);
+    }
   }
   
   public resize(width: number, height: number){
@@ -198,7 +191,7 @@ export default class Globe {
     return this.poiLayer.searchByCurrentCity(keyword, pageCapacity, pageIndex);
   }
 
-  private setTiledLayer(tiledLayer: TiledLayer) {
+  private _setTiledLayer(tiledLayer: TiledLayer, dontRefresh: boolean = false) {
     //在更换切片图层的类型时清空缓存的图片
     ImageUtils.clear();
     if (this.tiledLayer) {
@@ -211,7 +204,9 @@ export default class Globe {
     tiledLayer.globe = this;
     this.tiledLayer = tiledLayer;
     this.scene.add(this.tiledLayer, true);
-    this.refresh(true);
+    if(!dontRefresh){
+      this.refresh(true);
+    }
   }
 
   showLabelLayer() {

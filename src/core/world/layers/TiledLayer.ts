@@ -14,26 +14,12 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
     super();
 
     //添加第0级的子图层
-    var subLayer0 = new SubTiledLayer(0);
+    const subLayer0 = new SubTiledLayer(0);
     this.add(subLayer0);
 
-    //要对level为1的图层进行特殊处理，在创建level为1时就创建其中的全部的四个tile
-    var subLayer1 = new SubTiledLayer(1);
+    //添加第1级的子图层要
+    const subLayer1 = new SubTiledLayer(1);
     this.add(subLayer1);
-
-    for (var m = 0; m <= 1; m++) {
-      for (var n = 0; n <= 1; n++) {
-        var args = {
-          level: 1,
-          row: m,
-          column: n,
-          url: ""
-        };
-        args.url = this.getTileUrl(args.level, args.row, args.column);
-        var tile = Tile.getInstance(args.level, args.row, args.column, args.url);
-        subLayer1.add(tile);
-      }
-    }
   }
 
   destroy(){
@@ -41,10 +27,34 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
     super.destroy();
   }
 
+  private _checkSubLayer1(){
+    const subLayer1 = this.children[1];
+    if(subLayer1 && subLayer1.getLevel() === 1){
+      if(subLayer1.children.length !== 4){
+        //对level为1的图层进行特殊处理，创建其中的全部的四个tile
+        subLayer1.children = [];
+        for (let m = 0; m <= 1; m++) {
+          for (let n = 0; n <= 1; n++) {
+            let args = {
+              level: 1,
+              row: m,
+              column: n,
+              url: ""
+            };
+            args.url = this.getTileUrl(args.level, args.row, args.column);
+            let tile = Tile.getInstance(args.level, args.row, args.column, args.url);
+            subLayer1.add(tile);
+          }
+        }
+      }
+    }
+  }
+
   refresh() {
     if(!this.globe){
       return;
     }
+    this._checkSubLayer1();
     var camera = this.globe.camera;
     var level = this.globe.getLevel();
     var options = {

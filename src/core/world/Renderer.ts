@@ -65,15 +65,35 @@ export default class Renderer {
     // gl.enable(gl.DEPTH_TEST);
     // gl.depthFunc(gl.LEQUAL);
     // gl.depthMask(true);
-    camera.update();
-    if (this.onBeforeRender) {
-      this.onBeforeRender(this);
+    
+    try{
+      camera.update();
+    }catch(e){
+      console.error(e);
     }
-    if(!this.renderingPaused){
-      scene.draw(camera);
+
+    try{
+      if (this.onBeforeRender) {
+        this.onBeforeRender(this);
+      }
+    }catch(e){
+      console.error(e);
     }
-    if (this.onAfterRender) {
-      this.onAfterRender(this);
+
+    try{
+      if(!this.renderingPaused){
+        scene.draw(camera);
+      }
+    }catch(e){
+      console.error(e);
+    }
+
+    try{
+      if (this.onAfterRender) {
+        this.onAfterRender(this);
+      }
+    }catch(e){
+      console.error(e);
     }
   }
 
@@ -93,11 +113,6 @@ export default class Renderer {
     window.requestAnimationFrame(this._tick.bind(this));
   }
 
-  start(){
-    this.resumeRendering();
-    this._tick();
-  }
-
   isRenderingPaused(){
     return this.renderingPaused;
   }
@@ -108,5 +123,6 @@ export default class Renderer {
 
   resumeRendering(){
     this.renderingPaused = false;
+    this._tick();
   }
 };

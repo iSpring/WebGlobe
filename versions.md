@@ -239,3 +239,5 @@
 - 0.4.31 在公交导航中支持火车出行
 
 - 0.4.32 通过http://fontello.com/ 自定义FontAwesome
+
+- 0.4.33 Globe构造函数支持pauseRendering参数，可以实现切片延迟加载
