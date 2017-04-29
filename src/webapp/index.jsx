@@ -1,10 +1,11 @@
 ﻿import React from 'react';
 import ReactDOM from 'react-dom';
-import {Router, Route, Link, Redirect, hashHistory} from 'react-router';
+import {Router, hashHistory} from 'react-router';
 import './css/common.scss';
 import './fonts/font-awesome.scss';
 
-/*import IndexIndex from './routes/index/Index';
+/*import {Router, Route, Link, Redirect, hashHistory} from 'react-router';
+import IndexIndex from './routes/index/Index';
 import MapBase from './routes/map/Base';
 import NearbySearch from './routes/nearby/Search';
 import NearbyResult from './routes/nearby/Result';

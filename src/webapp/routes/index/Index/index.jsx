@@ -5,6 +5,8 @@ import styles from './index.scss';
 import fontStyles from 'webapp/fonts/font-awesome.scss';
 import RouteComponent from 'webapp/components/RouteComponent';
 import Search from 'webapp/components/Search';
+// import {handleStyles} from 'webapp/common/Utils';
+// handleStyles(styles);
 
 export default class App extends RouteComponent{
 
@@ -30,7 +32,7 @@ export default class App extends RouteComponent{
 
         return(
             <div className={styles.root}>
-                <div className={styles.title}>WebGlobe移动版</div>
+                <div className={styles.title}>WebGlobe</div>
                 <Search readOnly={true} className={styles.search} onFocus={() => this.onSearchFocus()} placeholder="搜索地点、公交、城市" />
                 <div className={styles["link1-container"]}>
                     <Link to="/map/base" className={styles.link1}>

@@ -18,7 +18,7 @@ var coreHtmlWebpackPlugin = new HtmlWebpackPlugin({
     template: '!!html!./src/core/template.html',
     hash: false,
     inject: 'body',
-    chunks: ["core"]
+    chunks: ["index"]
 });
 
 var webappHtmlWebpackPlugin = new HtmlWebpackPlugin({
@@ -37,7 +37,8 @@ var es6Promise = "./node_modules/es6-promise/dist/es6-promise.auto.min.js";
 
 module.exports = {
     entry: {
-        core: [es6Promise, "./src/core/index.ts"],
+        // globe: "./src/core/world/Globe.ts",
+        index: [es6Promise, "./src/core/index.ts"],
         webapp: [es6Promise, "./src/webapp/index.jsx"]
     },
 
