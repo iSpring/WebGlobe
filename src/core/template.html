@@ -13,7 +13,14 @@
     <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
     <meta http-equiv="pragma" content="no-cache" />
     <link rel="shortcut icon" href="images/logo.png" />
-
+    <script type="text/javascript">
+        (function(){
+            var isMobile = window.navigator.userAgent.match(/Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone|IEMobile|Opera Mini/i);
+            if(isMobile){
+                window.location.href = "webapp.html";
+            }
+        })();
+    </script>
     <script id="statistics" type="text/javascript"></script>
     <script type="text/javascript">
         (function() {
