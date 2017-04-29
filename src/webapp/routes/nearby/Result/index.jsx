@@ -2,7 +2,7 @@
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import styles from './index.scss';
-import fontStyles from 'webapp/fonts/font-awesome.scss';
+// import fontStyles from 'webapp/fonts/font-awesome.scss';
 import RouteComponent from 'webapp/components/RouteComponent';
 import Search from 'webapp/components/Search';
 import Map, { globe } from 'webapp/components/Map';
@@ -16,9 +16,9 @@ export default class Result extends RouteComponent {
         this.distance = 3000;
         this.nameClassNames = classNames(styles.name, "ellipsis");
         this.addressClassNames = classNames(styles.address, "ellipsis");
-        this.roadIcon = classNames(fontStyles.fa, fontStyles["fa-road"]);
-        this.leftIcon = classNames(fontStyles.fa, fontStyles["fa-angle-left"]);
-        this.rightIcon = classNames(fontStyles.fa, fontStyles["fa-angle-right"]);
+        this.roadIcon = "icon-road";// classNames(fontStyles.fa, fontStyles["fa-road"]);
+        this.leftIcon = "icon-angle-left";// classNames(fontStyles.fa, fontStyles["fa-angle-left"]);
+        this.rightIcon = "icon-angle-right";//classNames(fontStyles.fa, fontStyles["fa-angle-right"]);
         this.state = {
             loading: false,
             total: 0,

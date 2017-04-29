@@ -1,8 +1,8 @@
 ﻿import React from 'react';
 import ReactDOM from 'react-dom';
-import {Router, hashHistory} from 'react-router';
+import { Router, hashHistory } from 'react-router';
 import './css/common.scss';
-import './fonts/font-awesome.scss';
+import './fonts/fontello.scss';
 
 /*import {Router, Route, Link, Redirect, hashHistory} from 'react-router';
 import IndexIndex from './routes/index/Index';

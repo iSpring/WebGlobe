@@ -2,15 +2,11 @@
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import styles from './index.scss';
-import fontStyles from 'webapp/fonts/font-awesome.scss';
+// import fontStyles from 'webapp/fonts/font-awesome.scss';
 import RouteComponent from 'webapp/components/RouteComponent';
 import Search from 'webapp/components/Search';
 
 export default class Nearby extends RouteComponent{
-
-    static contextTypes = {
-        router: PropTypes.object
-    }
 
     constructor(props){
         super(props);
@@ -21,7 +17,7 @@ export default class Nearby extends RouteComponent{
                     type: "big",
                     value: "美食畅饮",
                     className: styles.food,
-                    fontIcon: classNames(fontStyles.fa, fontStyles["fa-cutlery"])
+                    fontIcon: "icon-food" //classNames(fontStyles.fa, fontStyles["fa-cutlery"])
                 }, "甜点饮品"],
                 [
                     "快餐", "火锅", "茶餐厅"
@@ -35,7 +31,7 @@ export default class Nearby extends RouteComponent{
                     type: "big",
                     value: "酒店住宿",
                     className: styles.hotel,
-                    fontIcon: classNames(fontStyles.fa, fontStyles["fa-bed"])
+                    fontIcon: "icon-bed" //classNames(fontStyles.fa, fontStyles["fa-bed"])
                 }],
                 [
                     "快捷酒店", "星级酒店"
@@ -49,7 +45,7 @@ export default class Nearby extends RouteComponent{
                     type: "big",
                     value: "娱乐休闲",
                     className: styles.recreation,
-                    fontIcon: classNames(fontStyles.fa, fontStyles["fa-glass"])
+                    fontIcon: "icon-glass" //classNames(fontStyles.fa, fontStyles["fa-glass"])
                 }, "酒吧"],
                 [
                     "电影院", "景点", "KTV"
@@ -63,7 +59,7 @@ export default class Nearby extends RouteComponent{
                     type: "big",
                     value: "交通出行",
                     className: styles.traffic,
-                    fontIcon: classNames(fontStyles.fa, fontStyles["fa-bus"])
+                    fontIcon: "icon-bus" //classNames(fontStyles.fa, fontStyles["fa-bus"])
                 }],
                 [
                     "加油站", "地铁站"
@@ -77,7 +73,7 @@ export default class Nearby extends RouteComponent{
                     type: "big",
                     value: "生活服务",
                     className: styles.life,
-                    fontIcon: classNames(fontStyles.fa, fontStyles["fa-shopping-cart"])
+                    fontIcon: "icon-basket" //classNames(fontStyles.fa, fontStyles["fa-shopping-cart"])
                 }, "美容美发"],
                 [
                     "ATM", "公厕", "药店"

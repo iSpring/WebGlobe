@@ -2,7 +2,7 @@
 import {Link} from 'react-router';
 import classNames from 'classnames';
 import styles from './index.scss';
-import fontStyles from 'webapp/fonts/font-awesome.scss';
+// import fontStyles from 'webapp/fonts/font-awesome.scss';
 import RouteComponent from 'webapp/components/RouteComponent';
 import Search from 'webapp/components/Search';
 // import {handleStyles} from 'webapp/common/Utils';
@@ -21,14 +21,14 @@ export default class App extends RouteComponent{
     }
 
     render(){
-        const faMapTo = classNames(fontStyles.fa, fontStyles["fa-map-o"]);
-        const faMapMarker = classNames(fontStyles.fa, fontStyles["fa-map-marker"]);
-        const faRoad = classNames(fontStyles.fa, fontStyles["fa-road"]);
+        const faMapTo = "icon-map-o";//classNames(fontStyles.fa, fontStyles["fa-map-o"]);
+        const faMapMarker = "icon-location";//classNames(fontStyles.fa, fontStyles["fa-map-marker"]);
+        const faRoad = "icon-road";//classNames(fontStyles.fa, fontStyles["fa-road"]);
 
-        const faCutlery = classNames(fontStyles.fa, fontStyles["fa-cutlery"]);
-        const faBed = classNames(fontStyles.fa, fontStyles["fa-bed"]);
-        const faBus = classNames(fontStyles.fa, fontStyles["fa-bus"]);
-        const faSubway = classNames(fontStyles.fa, fontStyles["fa-subway"]);
+        const faCutlery = "icon-food";//classNames(fontStyles.fa, fontStyles["fa-cutlery"]);
+        const faBed = "icon-bed";//classNames(fontStyles.fa, fontStyles["fa-bed"]);
+        const faBus = "icon-bus";//classNames(fontStyles.fa, fontStyles["fa-bus"]);
+        const faSubway = "icon-subway";//classNames(fontStyles.fa, fontStyles["fa-subway"]);
 
         return(
             <div className={styles.root}>

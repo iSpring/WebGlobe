@@ -87,7 +87,7 @@ module.exports = {
                 loader: "file-loader"
             },
             {
-                test: /\.(otf|ttf|eot|woff|woff2)\?v=.*/,
+                test: /\.(otf|ttf|eot|woff|woff2).*/,
                 loader: "file-loader"
             },
             {
