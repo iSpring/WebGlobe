@@ -1,15 +1,11 @@
-:global {
-  @font-face {
-    font-family: 'fontello';
-    src: url('fontello.ttf'); // src: url('./fontello.eot?99341201#iefix') format('embedded-opentype'), 
-    //      url('./fontello.woff2?99341201') format('woff2'),
-    //      url('./fontello.woff?99341201') format('woff'),
-    //      url('./fontello.ttf?99341201') format('truetype'),
-    //      url('./fontello.svg?99341201#fontello') format('svg');
-    font-weight: normal;
-    font-style: normal;
-  }
+@font-face {
+  font-family: 'fontello';
+  src: url('../fonts/fontello.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
 
+:global {
   [class^="icon-"]:before,
   [class*=" icon-"]:before {
     font-family: "fontello";
