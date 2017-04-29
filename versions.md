@@ -237,3 +237,5 @@
 - 0.4.30 在RouteComponent中添加getPreviousLocation()方法，并在nearyby/Result中使用
 
 - 0.4.31 在公交导航中支持火车出行
+
+- 0.4.32 通过http://fontello.com/ 自定义FontAwesome

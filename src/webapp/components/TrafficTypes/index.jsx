@@ -2,7 +2,6 @@
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import styles from './index.scss';
-// import fontStyles from 'webapp/fonts/font-awesome.scss';
 
 export default class TrafficTypes extends Component {
 

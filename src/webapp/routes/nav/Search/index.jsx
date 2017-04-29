@@ -3,7 +3,6 @@ import TrafficTypes from 'webapp/components/TrafficTypes';
 import RouteComponent from 'webapp/components/RouteComponent';
 import classNames from 'classnames';
 import styles from './index.scss';
-// import fontStyles from 'webapp/fonts/font-awesome.scss';
 import Service from 'world/Service';
 import { globe } from 'webapp/components/Map';
 
@@ -117,10 +116,8 @@ export default class Nav extends RouteComponent {
     }
 
     render() {
-        const fromClassName = "icon-location";
-        const toClassName = "icon-circle-empty";
-        // const fromClassName = classNames(fontStyles.fa, fontStyles["fa-map-marker"], styles["from-icon"]);
-        // const toClassName = classNames(fontStyles.fa, fontStyles["fa-circle-o"], styles["to-icon"]);
+        const fromClassName = classNames("icon-location", styles["from-icon"]);
+        const toClassName = classNames("icon-circle-empty", styles["to-icon"]);
         // const exchangeArrowClassName = classNames(fontStyles.fa, fontStyles["fa-arrows-v"]);
         const addressClassName = classNames(styles.address, "ellipsis");
         const pois = this.isFromLastFocused ? this.state.fromPois : this.state.toPois;

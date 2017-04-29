@@ -2,7 +2,6 @@
 import {Link} from 'react-router';
 import classNames from 'classnames';
 import styles from './index.scss';
-// import fontStyles from 'webapp/fonts/font-awesome.scss';
 import RouteComponent from 'webapp/components/RouteComponent';
 import Search from 'webapp/components/Search';
 // import {handleStyles} from 'webapp/common/Utils';
@@ -21,15 +20,14 @@ export default class App extends RouteComponent{
     }
 
     render(){
-        const faMapTo = "icon-map-o";//classNames(fontStyles.fa, fontStyles["fa-map-o"]);
-        const faMapMarker = "icon-location";//classNames(fontStyles.fa, fontStyles["fa-map-marker"]);
-        const faRoad = "icon-road";//classNames(fontStyles.fa, fontStyles["fa-road"]);
-
-        const faCutlery = "icon-food";//classNames(fontStyles.fa, fontStyles["fa-cutlery"]);
-        const faBed = "icon-bed";//classNames(fontStyles.fa, fontStyles["fa-bed"]);
-        const faBus = "icon-bus";//classNames(fontStyles.fa, fontStyles["fa-bus"]);
-        const faSubway = "icon-subway";//classNames(fontStyles.fa, fontStyles["fa-subway"]);
-
+        const faMapTo = "icon-map-o";
+        const faMapMarker = "icon-location";
+        const faRoad = "icon-road";
+        const faCutlery = "icon-food";
+        const faBed = "icon-bed";
+        const faBus = "icon-bus";
+        const faSubway = "icon-subway";
+        
         return(
             <div className={styles.root}>
                 <div className={styles.title}>WebGlobe</div>
