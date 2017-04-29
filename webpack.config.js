@@ -13,12 +13,12 @@ var webpackMd5HashPlugin = new WebpackMd5Hash();
 
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 //https://github.com/jantimon/html-webpack-plugin/issues/133
-var coreHtmlWebpackPlugin = new HtmlWebpackPlugin({
+var indexHtmlWebpackPlugin = new HtmlWebpackPlugin({
     filename: './index.html',
     template: '!!html!./src/core/template.html',
     hash: false,
     inject: 'body',
-    chunks: ["index"]
+    chunks: ["runtime", "globe", "index"]
 });
 
 var webappHtmlWebpackPlugin = new HtmlWebpackPlugin({
@@ -26,7 +26,13 @@ var webappHtmlWebpackPlugin = new HtmlWebpackPlugin({
     template: '!!ejs!./src/webapp/template.html',
     hash: false,
     inject: 'body',
-    chunks: ["webapp"]
+    chunks: ["runtime", "webapp", "globe"]
+});
+
+var commonsChunkPlugin = new webpack.optimize.CommonsChunkPlugin({
+    // name: "globe",
+    // chunks: ["globe"]
+    names: ["globe", "runtime"]
 });
 
 var buildFolder = "buildOutput";
@@ -48,6 +54,9 @@ module.exports = {
         // publicPath: buildFolder + "/",
         devtoolModuleFilenameTemplate: 'webpack:///[absolute-resource-path]'
     },
+
+    // devtool: PRODUCTION ? 'hidden-source-map' : 'cheap-module-eval-source-map'
+    devtool: PRODUCTION ? false : 'source-map',
 
     resolve: {
         extensions: ["", ".webpack.js", ".web.js", ".ts", ".tsx", ".js", ".jsx", ".scss", ".png"],
@@ -90,14 +99,12 @@ module.exports = {
     },
 
     plugins: [
+        commonsChunkPlugin,
         extractPlugin,
         webpackMd5HashPlugin,
-        coreHtmlWebpackPlugin,
+        indexHtmlWebpackPlugin,
         webappHtmlWebpackPlugin
-    ],
-
-    // devtool: PRODUCTION ? 'hidden-source-map' : 'cheap-module-eval-source-map'
-    devtool: PRODUCTION ? false : 'source-map'
+    ]
 };
 
 if (process.argv.indexOf("--ci") >= 0) {
