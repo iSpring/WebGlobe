@@ -11,6 +11,7 @@ export default class Search extends Component {
         showVoice: PropTypes.bool,
         showMapList: PropTypes.bool,
         showCancel: PropTypes.bool,
+        // showMap: PropTypes.bool,
         onMap: PropTypes.func,
         onList: PropTypes.func,
         onCancel: PropTypes.func,
@@ -24,25 +25,31 @@ export default class Search extends Component {
         showVoice: false,
         showMapList: false,
         showCancel: false
+        // showMap: false
     };
 
     constructor(props) {
         super(props);
         this.state = {
             keyword: "",
-            showMap: true
+            showMap: false//当前显示地图内容还是列表内容，false表示显示列表内容，但是label是"地图"，表示可以切换到地图页面
         };
     }
 
     onLeftAction(){
-        if(this.state.showMap && this.props.onMap){
-            this.props.onMap();
-        }else if(!this.state.showMap && this.props.onList){
-            this.props.onList();
-        }
         this.setState((prevState, props) => ({
             showMap: !prevState.showMap
-        }));
+        }), () => {
+            if(this.state.showMap){
+                if(this.props.onMap){
+                    this.props.onMap();
+                }
+            }else{
+                if(this.props.onList){
+                    this.props.onList();
+                }
+            }
+        });
     }
 
     onRightAction(){
@@ -94,7 +101,7 @@ export default class Search extends Component {
         return (
             <div className={a}>
                 {
-                    this.props.showMapList ? <div className={styles["left-action"]} onClick={()=>this.onLeftAction()}>{this.state.showMap ? "地图" : "列表"}</div> : false
+                    this.props.showMapList ? <div className={styles["left-action"]} onClick={()=>this.onLeftAction()}>{this.state.showMap ? "列表" : "地图" }</div> : false
                 }
                 <div className={styles["input-container"]}>
                     {

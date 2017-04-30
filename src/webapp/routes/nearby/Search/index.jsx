@@ -19,7 +19,7 @@ export default class Nearby extends RouteComponent{
                     fontIcon: "icon-food"
                 }, "甜点饮品"],
                 [
-                    "快餐", "火锅", "茶餐厅"
+                    "快餐", "火锅", "咖啡厅"
                 ],
                 [
                     "中餐", "川菜", "西餐"
@@ -28,7 +28,7 @@ export default class Nearby extends RouteComponent{
             [
                 [{
                     type: "big",
-                    value: "酒店住宿",
+                    value: "酒店宾馆",
                     className: styles.hotel,
                     fontIcon: "icon-bed"
                 }],
@@ -56,7 +56,7 @@ export default class Nearby extends RouteComponent{
             [
                 [{
                     type: "big",
-                    value: "交通出行",
+                    value: "交通设施",
                     className: styles.traffic,
                     fontIcon: "icon-bus"
                 }],
