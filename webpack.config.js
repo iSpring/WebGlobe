@@ -112,13 +112,13 @@ module.exports = {
 if (process.argv.indexOf("--ci") >= 0) {
     //https://github.com/webpack/webpack/issues/708
     module.exports.plugins.push(
-        function () {
-            this.plugin("done", function (stats) {
+        function() {
+            this.plugin("done", function(stats) {
                 var errors = stats.compilation.errors;
                 if (errors && errors.length > 0) {
                     console.log("");
                     console.log(chalk.red("----------------------------------------------------------------"));
-                    errors.forEach(function (err) {
+                    errors.forEach(function(err) {
                         var msg = chalk.red(`ERROR in ${err.module.userRequest},`);
                         // msg += chalk.blue(`(${err.location.line},${err.location.character}),`);
                         msg += chalk.red(err.message);
@@ -134,7 +134,14 @@ if (process.argv.indexOf("--ci") >= 0) {
 }
 
 if (PRODUCTION) {
-    module.exports.plugins.push(new webpack.optimize.UglifyJsPlugin({
-        sourceMap: false
-    }));
+    module.exports.plugins.push(
+        new webpack.DefinePlugin({
+            'process.env': {
+                NODE_ENV: JSON.stringify('production')
+            }
+        }),
+        new webpack.optimize.UglifyJsPlugin({
+            sourceMap: false
+        })
+    );
 }
