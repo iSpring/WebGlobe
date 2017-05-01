@@ -25,10 +25,10 @@ export default class Atmosphere extends MeshTextureGraphic {
 
     onDraw(camera: Camera){
         var gl = Kernel.gl;
-        gl.disable(WebGLRenderingContext.DEPTH_TEST);
+        gl.disable(Kernel.gl.DEPTH_TEST);
         gl.depthMask(false);
-        gl.enable(WebGLRenderingContext.BLEND);
-        gl.blendFunc(WebGLRenderingContext.SRC_ALPHA, WebGLRenderingContext.ONE_MINUS_SRC_ALPHA);
+        gl.enable(Kernel.gl.BLEND);
+        gl.blendFunc(Kernel.gl.SRC_ALPHA, Kernel.gl.ONE_MINUS_SRC_ALPHA);
 
         this.geometry.getMatrix().setUnitMatrix();
 
@@ -51,8 +51,8 @@ export default class Atmosphere extends MeshTextureGraphic {
 
         super.onDraw(camera);
 
-        gl.enable(WebGLRenderingContext.DEPTH_TEST);
+        gl.enable(Kernel.gl.DEPTH_TEST);
         gl.depthMask(true);
-        gl.disable(WebGLRenderingContext.BLEND);
+        gl.disable(Kernel.gl.BLEND);
     }
 };

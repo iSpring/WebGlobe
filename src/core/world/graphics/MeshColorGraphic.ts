@@ -81,20 +81,20 @@ export default class MeshColorGraphic extends Graphic {
         var locPosition = this.program.getAttribLocation('aPosition');
         this.program.enableVertexAttribArray('aPosition');
         this.geometry.vbo.bind();
-        gl.vertexAttribPointer(locPosition, 3, WebGLRenderingContext.FLOAT, false, 0, 0);
+        gl.vertexAttribPointer(locPosition, 3, Kernel.gl.FLOAT, false, 0, 0);
 
         //aColor
         var locColor = this.program.getAttribLocation('aColor');
         this.program.enableVertexAttribArray('aColor');
         this.geometry.cbo.bind();
-        gl.vertexAttribPointer(locColor, 3, WebGLRenderingContext.FLOAT, false, 0, 0);
+        gl.vertexAttribPointer(locColor, 3, Kernel.gl.FLOAT, false, 0, 0);
 
         //设置索引，但不用往shader中赋值
         this.geometry.ibo.bind();
 
         //绘图
         var count = this.geometry.triangles.length * 3;
-        gl.drawElements(WebGLRenderingContext.TRIANGLES, count, WebGLRenderingContext.UNSIGNED_SHORT, 0);
+        gl.drawElements(Kernel.gl.TRIANGLES, count, Kernel.gl.UNSIGNED_SHORT, 0);
 
         //释放当前绑定对象
         // gl.bindBuffer(gl.ARRAY_BUFFER, null);

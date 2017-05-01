@@ -31,10 +31,10 @@ export default class VertexBufferObject{
 
 		var gl = Kernel.gl;
 
-		if(this.target === WebGLRenderingContext.ARRAY_BUFFER){
-			gl.bufferData(WebGLRenderingContext.ARRAY_BUFFER, new Float32Array(data), usage);
-		}else if(this.target === WebGLRenderingContext.ELEMENT_ARRAY_BUFFER){
-			gl.bufferData(WebGLRenderingContext.ELEMENT_ARRAY_BUFFER, new Uint16Array(data), usage);
+		if(this.target === Kernel.gl.ARRAY_BUFFER){
+			gl.bufferData(Kernel.gl.ARRAY_BUFFER, new Float32Array(data), usage);
+		}else if(this.target === Kernel.gl.ELEMENT_ARRAY_BUFFER){
+			gl.bufferData(Kernel.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(data), usage);
 		}
 	}
 

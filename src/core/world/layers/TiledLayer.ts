@@ -1,3 +1,4 @@
+import Kernel from '../Kernel';
 import Camera from '../Camera';
 import Globe from '../Globe';
 import Utils from '../Utils';
@@ -183,15 +184,15 @@ abstract class TiledLayer extends GraphicGroup<SubTiledLayer> {
     gl.uniformMatrix4fv(locPMVMatrix, false, pmvMatrix.getFloat32Array());
 
     //uSampler
-    gl.activeTexture(WebGLRenderingContext.TEXTURE0);
+    gl.activeTexture(Kernel.gl.TEXTURE0);
     var locSampler = program.getUniformLocation('uSampler');
     gl.uniform1i(locSampler, 0);
 
     //此处将深度测试设置为ALWAYS是为了解决两个不同层级的切片在拖动时一起渲染会导致屏闪的问题
-    gl.depthFunc(WebGLRenderingContext.ALWAYS);
+    gl.depthFunc(Kernel.gl.ALWAYS);
     super.onDraw(camera);
     //将深度测试恢复成LEQUAL
-    gl.depthFunc(WebGLRenderingContext.LEQUAL);
+    gl.depthFunc(Kernel.gl.LEQUAL);
   }
 
   getExtent() {

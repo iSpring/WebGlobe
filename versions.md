@@ -243,3 +243,5 @@
 - 0.4.33 Globe构造函数支持pauseRendering参数，可以实现切片延迟加载
 
 - 0.4.34 searchByBuffer和searchByCity支持SearchType参数，可以智能判断类型，并且可以在查询无结果的情况下改变SearchType再次查询，优化查询体验
+
+- 0.4.35 iOS系统中的浏览器不能访问类WebGLRenderingContext的静态常量，将所有用到WebGLRenderingContext的地方重新改成Kernel.gl的形式，用实例常量访问即可修复iOS中无法渲染的严重bug
