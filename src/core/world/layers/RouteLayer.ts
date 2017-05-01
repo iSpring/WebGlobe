@@ -433,12 +433,12 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
     protected onDraw(camera: Camera) {
         const gl = Kernel.gl;
 
-        gl.disable(WebGLRenderingContext.DEPTH_TEST);
+        gl.disable(Kernel.gl.DEPTH_TEST);
         gl.depthMask(false);
 
         super.onDraw(camera);
 
-        gl.enable(WebGLRenderingContext.DEPTH_TEST);
+        gl.enable(Kernel.gl.DEPTH_TEST);
         gl.depthMask(true);
     }
 

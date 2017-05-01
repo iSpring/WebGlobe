@@ -48,7 +48,7 @@ export default class Program{
 	}
 
 	updateActiveAttribInfos(){
-		var count = Kernel.gl.getProgramParameter(this.program, WebGLRenderingContext.ACTIVE_ATTRIBUTES);
+		var count = Kernel.gl.getProgramParameter(this.program, Kernel.gl.ACTIVE_ATTRIBUTES);
 
 		for(var i = 0, activeInfo: any; i < count; i++){
 			activeInfo = Kernel.gl.getActiveAttrib(this.program, i);
@@ -59,7 +59,7 @@ export default class Program{
 	}
 
 	updateActiveUniformInfos(){
-		var count = Kernel.gl.getProgramParameter(this.program, WebGLRenderingContext.ACTIVE_UNIFORMS);
+		var count = Kernel.gl.getProgramParameter(this.program, Kernel.gl.ACTIVE_UNIFORMS);
 
 		for(var i = 0, activeInfo: any; i < count; i++){
 			activeInfo = Kernel.gl.getActiveUniform(this.program, i);
@@ -140,12 +140,12 @@ export default class Program{
 	}
 
 	_init(){
-		var vs = this._getShader(WebGLRenderingContext.VERTEX_SHADER, this.vs);
+		var vs = this._getShader(Kernel.gl.VERTEX_SHADER, this.vs);
 		if(!vs){
 			return;
 		}
 
-		var fs = this._getShader(WebGLRenderingContext.FRAGMENT_SHADER, this.fs);
+		var fs = this._getShader(Kernel.gl.FRAGMENT_SHADER, this.fs);
 		if(!fs){
 			return;
 		}
@@ -155,7 +155,7 @@ export default class Program{
 		Kernel.gl.attachShader(this.program, fs);
 		Kernel.gl.linkProgram(this.program);
 
-		if (!Kernel.gl.getProgramParameter(this.program, WebGLRenderingContext.LINK_STATUS)) {
+		if (!Kernel.gl.getProgramParameter(this.program, Kernel.gl.LINK_STATUS)) {
 			console.error("Could not link program!");
 			Kernel.gl.deleteProgram(this.program);
 			Kernel.gl.deleteShader(vs);
@@ -174,7 +174,7 @@ export default class Program{
 		Kernel.gl.shaderSource(shader, shaderText);
 		Kernel.gl.compileShader(shader);
 
-		if(!Kernel.gl.getShaderParameter(shader, WebGLRenderingContext.COMPILE_STATUS)){
+		if(!Kernel.gl.getShaderParameter(shader, Kernel.gl.COMPILE_STATUS)){
             console.error("create shader failed", Kernel.gl.getShaderInfoLog(shader));
             Kernel.gl.deleteShader(shader);
             return null;

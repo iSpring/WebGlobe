@@ -46,7 +46,7 @@ export default class MultiPointsGraphic extends Graphic {
 
   protected constructor(public material: MarkerTextureMaterial) {
     super(null, material);
-    this.vbo = new VertexBufferObject(WebGLRenderingContext.ARRAY_BUFFER);
+    this.vbo = new VertexBufferObject(Kernel.gl.ARRAY_BUFFER);
     this.vertices = [];
     // this._addPoi(116.408540, 39.902350, "3161565500563468633", "首都大酒店", "北京市东城区前门东大街3号", "");
   }
@@ -67,10 +67,10 @@ export default class MultiPointsGraphic extends Graphic {
   onDraw(camera: Camera) {
     var gl = Kernel.gl;
 
-    gl.disable(WebGLRenderingContext.DEPTH_TEST);
+    gl.disable(Kernel.gl.DEPTH_TEST);
     gl.depthMask(false);
-    gl.enable(WebGLRenderingContext.BLEND);
-    gl.blendFunc(WebGLRenderingContext.SRC_ALPHA, WebGLRenderingContext.ONE_MINUS_SRC_ALPHA);
+    gl.enable(Kernel.gl.BLEND);
+    gl.blendFunc(Kernel.gl.SRC_ALPHA, Kernel.gl.ONE_MINUS_SRC_ALPHA);
 
     //aPosition
     var locPosition = this.program.getAttribLocation('aPosition');
@@ -80,8 +80,8 @@ export default class MultiPointsGraphic extends Graphic {
     this.vertices.map(function (vertice) {
       vertices.push(vertice.x, vertice.y, vertice.z);
     });
-    this.vbo.bufferData(vertices, WebGLRenderingContext.DYNAMIC_DRAW, true);
-    gl.vertexAttribPointer(locPosition, 3, WebGLRenderingContext.FLOAT, false, 0, 0);
+    this.vbo.bufferData(vertices, Kernel.gl.DYNAMIC_DRAW, true);
+    gl.vertexAttribPointer(locPosition, 3, Kernel.gl.FLOAT, false, 0, 0);
 
     //uPMVMatrix
     var pmvMatrix = camera.getProjViewMatrixForDraw();
@@ -94,20 +94,20 @@ export default class MultiPointsGraphic extends Graphic {
 
     //set uSampler
     var locSampler = this.program.getUniformLocation('uSampler');
-    gl.activeTexture(WebGLRenderingContext.TEXTURE0);
-    gl.bindTexture(WebGLRenderingContext.TEXTURE_2D, this.material.texture);
+    gl.activeTexture(Kernel.gl.TEXTURE0);
+    gl.bindTexture(Kernel.gl.TEXTURE_2D, this.material.texture);
     gl.uniform1i(locSampler, 0);
 
     //绘图,vertices.length / 3表示所绘点的个数
-    gl.drawArrays(WebGLRenderingContext.POINTS, 0, vertices.length / 3);
+    gl.drawArrays(Kernel.gl.POINTS, 0, vertices.length / 3);
 
     //释放当前绑定对象
-    gl.enable(WebGLRenderingContext.DEPTH_TEST);
+    gl.enable(Kernel.gl.DEPTH_TEST);
     gl.depthMask(true);
-    gl.disable(WebGLRenderingContext.BLEND);
-    // gl.bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, null);
-    // gl.bindBuffer(WebGLRenderingContext.ELEMENT_ARRAY_BUFFER, null);
-    // gl.bindTexture(WebGLRenderingContext.TEXTURE_2D, null);
+    gl.disable(Kernel.gl.BLEND);
+    // gl.bindBuffer(Kernel.gl.ARRAY_BUFFER, null);
+    // gl.bindBuffer(Kernel.gl.ELEMENT_ARRAY_BUFFER, null);
+    // gl.bindTexture(Kernel.gl.TEXTURE_2D, null);
   }
 
   setLonlats(lonlats:number[][]){

@@ -66,6 +66,8 @@ export default class Renderer {
     // gl.depthFunc(gl.LEQUAL);
     // gl.depthMask(true);
     
+    //如果refresh方法出现异常而且没有捕捉，那么就会导致无法继续设置setTimeout，从而无法进一步更新切片
+
     try{
       camera.update();
     }catch(e){

@@ -291,18 +291,6 @@ export default class Globe {
     this.afterRenderCallbacks = [];
   }
 
-  // private _tick() {
-  //   try {
-  //     //如果refresh方法出现异常而且没有捕捉，那么就会导致无法继续设置setTimeout，从而无法进一步更新切片
-  //     this.refresh();
-  //   } catch (e) {
-  //     console.error(e);
-  //   }
-  //   setTimeout(() => {
-  //     this._tick();
-  //   }, this.REFRESH_INTERVAL);
-  // }
-
   logRefreshInfo() {
     console.log(this.realRefreshCount, this.allRefreshCount, this.realRefreshCount / this.allRefreshCount);
   }
