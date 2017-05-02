@@ -1,0 +1,147 @@
+﻿@import "../../../css/variables";
+$index-size: 16px;
+$info-left: 40px;
+$distance-width: 60px;
+$index-left: ($info-left - $index-size) / 2;
+$main-color: gray;
+$header-height: 0;
+$footer-height: 48px;
+$line: 1px solid #d3d3d3;
+
+.map, .list{
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 45px;
+    bottom: 0;
+}
+
+.list {
+    .header{
+
+    }
+
+    .not-found, .pois{
+        position: absolute;
+        left: 0;
+        right: 0;
+    }
+
+    .not-found{
+        top: 50%;
+        margin-top: -16px;
+        padding: 0 30px;
+        text-align: center;
+        color: $main-color;
+        font-size: 12px;
+    }
+
+    .pois {
+        top: $header-height;
+        bottom: $footer-height;
+        overflow-y: auto;
+        .poi {
+            position: relative;
+            height: 64px;
+            box-sizing: border-box;
+            >* {
+                position: absolute;
+            }
+            .index {
+                left: $index-left;
+                top: 10px;
+                width: $index-size;
+                height: $index-size;
+                border-radius: 50%;
+                background: red;
+                color: white;
+                text-align: center;
+                line-height: 16px;
+                font-size: 12px;
+            }
+            .info,
+            .distance {
+                top: 0;
+                height: 100%;
+                box-sizing: border-box;
+                border-bottom: $line;
+                >* {
+                    margin-top: 8px;
+                }
+            }
+            &:last-child {
+                .info,
+                .distance {
+                    border-bottom: 0;
+                }
+            }
+            .info {
+                left: $info-left;
+                right: $distance-width;
+                .name {
+                    font-size: 15px;
+                    color: #333;
+                }
+                .address {
+                    font-size: 12px;
+                    color: $main-color;
+                }
+            }
+            .distance {
+                right: 0;
+                width: $distance-width;
+                text-align: center;
+                box-sizing: border-box;
+                padding-top: 3px;
+                i {
+                    color: $blue-color;
+                }
+                div {
+                    color: $main-color;
+                    font-size: 12px;
+                    text-align: center;
+                }
+            }
+        }
+    }
+
+    .footer {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: $footer-height;
+        border-top: $line;
+        >* {
+            line-height: $footer-height;
+        }
+        .prev-page,
+        .next-page {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            color: $blue-color;
+            font-size: 14px;
+            i {
+                font-size: 14px;
+            }
+        }
+        .prev-page {
+            left: 12px;
+            span {
+                margin-left: 5px;
+            }
+        }
+        .next-page {
+            right: 12px;
+            span {
+                margin-right: 5px;
+            }
+        }
+        .current-page {
+            text-align: center;
+            color: $main-color;
+            font-size: 12px;
+        }
+    }
+}

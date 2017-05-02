@@ -1,0 +1,102 @@
+﻿@import "../../../css/variables";
+$header-height: 46px;
+$input-container-height: $header-height;
+$input-height: 26px;
+// $exchange-size: 60px;
+$exchange-size: 0;
+
+.search-section{
+    position: relative;
+    box-sizing: border-box;
+    height: $input-container-height * 2;
+    padding-left: 15px;
+    border-bottom: 1px solid #d3d3d3;
+    overflow: hidden;
+
+    .inputs-container{
+        position: absolute;
+        left: 15px;
+        right: $exchange-size;
+        top: 0;
+        height: 100%;
+
+        .input-container{
+            position: relative;
+            box-sizing: border-box;
+            height: 50%;
+            padding: 0 16px;
+
+            .from-icon,.to-icon{
+                position: absolute;
+                left: 0;
+                top: 0;
+                height: $input-container-height;
+                line-height: $input-container-height;
+            }
+            .from-icon{
+                color: $blue-color;
+                font-size: 16px;
+            }
+            .to-icon{
+                color: #fe5f5f;
+                font-size: 13px;
+            }
+            input{
+                width: 100%;
+                height: $input-height;
+                line-height: $input-height;
+                color: #333;
+                font-size: 15px;
+                margin-top: ($input-container-height - $input-height) / 2;
+            }
+            :global(.icon-search){
+                position: absolute;
+                font-size: 16px;
+                right: 15px;
+                top: 15px;
+                color: #888;
+            }
+            &.from{
+                border-bottom: 1px solid #d3d3d3;
+            }
+        }
+    }
+
+    .exchange{
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: $exchange-size;
+        height: 100%;
+        text-align: center;
+
+        i{
+            color: gray;
+            font-size: 24px;
+            line-height: $input-container-height * 2;
+        }
+    }
+}
+
+.pois{
+    position: absolute;
+    left: 0;
+    width: 100%;
+    top: $header-height * 3;
+    bottom: 0;
+    overflow-y: auto;
+
+    .poi{
+        padding: 15px;
+        .name{
+            color: #333;
+            font-size: 15px;
+        }
+        .address{
+            color: gray;
+            font-size: 12px;
+            margin-top: 12px;
+        }
+        border-bottom: 1px solid #d3d3d3;
+    }
+}

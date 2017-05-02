@@ -1,0 +1,74 @@
+﻿$small-item-height: 36px;
+$item-spacing: 2px;
+$big-item-height: $small-item-height * 2 + $item-spacing;
+
+.root{
+    position: relative;
+    height: 100%;
+}
+
+.cards{
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 40px;
+    bottom: 0;
+    overflow-y: auto;
+    text-align: center;
+    margin: 0 15px;
+
+    .card{
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        margin-top: 18px;
+
+        .column{
+            flex: 1 1 33.333333%;
+            padding: 0 $item-spacing/2;
+
+            .big-item, .small-item{
+                font-size: 12px;
+                border-radius: 2px;
+                margin-bottom: $item-spacing;
+            }
+
+            .big-item{
+                height: $big-item-height;
+                color: white;
+
+                &.food{
+                    background: #f73838;
+                }
+
+                &.hotel{
+                    background: #f3a61f;
+                }
+
+                &.recreation{
+                    background: #61b51d;
+                }
+
+                &.traffic{
+                    background: #0079ff;
+                }
+                
+                &.life{
+                    background: #9584dd;
+                }
+
+                .icon{
+                    font-size: 24px;
+                    margin: 13px;
+                }
+            }
+
+            .small-item{
+                height: $small-item-height;
+                line-height: $small-item-height;
+                background: #ebebeb;
+                color: #333;
+            }
+        }
+    }
+}

@@ -1,0 +1,31 @@
+﻿$icon-size: 36px;
+
+@keyframes loading-keyframes{
+    from{
+        transform: rotate(0deg);
+    }
+    to{
+        transform: rotate(360deg);
+    }
+}
+
+#loading{
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+
+    .icon{
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: $icon-size;
+        height: $icon-size;
+        margin-left: -$icon-size/2;
+        margin-top: -$icon-size/2;
+        background-position: center;
+        background-repeat: no-repeat;
+        animation: loading-keyframes 0.9s linear infinite;
+    }
+}
