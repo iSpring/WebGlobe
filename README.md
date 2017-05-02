@@ -1,6 +1,6 @@
 <div align="center">
   <a target="_blank" href="https://ispring.github.io/WebGlobe/index.html">
-    <img src="https://github.com/iSpring/WebGlobe/blob/develop/images/webglobe.png">
+    <img src="https://cdn.rawgit.com/iSpring/WebGlobe/develop/images/webglobe.png">
   </a>
   <p align="center">A WebGL virtual globe and map engine</p>
 </div>
@@ -30,7 +30,7 @@ WebGlobe是基于HTML5原生WebGL实现的轻量级Google Earth三维地图引�
 
 移动版二维码访问(小米系统中的微信、小米默认浏览器在某些情况下存在已知bug): 
 <div align="center">
-  <img src="https://github.com/iSpring/WebGlobe/blob/develop/images/qrcode.png">
+  <img src="https://cdn.rawgit.com/iSpring/WebGlobe/develop/images/qrcode.png">
 </div>
 
 **如果觉得不错，欢迎Star和Fork！**
@@ -69,7 +69,7 @@ WebGlobe是基于HTML5原生WebGL实现的轻量级Google Earth三维地图引�
 **1. WebGlobe移动端主界面**
   <div align="left">
     <a target="_blank" href="#">
-      <img src="https://github.com/iSpring/WebGlobe/blob/develop/images/1.png">
+      <img src="https://cdn.rawgit.com/iSpring/WebGlobe/develop/images/1.png">
     </a>
   </div>
 
@@ -77,7 +77,7 @@ WebGlobe是基于HTML5原生WebGL实现的轻量级Google Earth三维地图引�
 **2. 附近搜索**
   <div align="left">
     <a target="_blank" href="#">
-      <img src="https://github.com/iSpring/WebGlobe/blob/develop/images/2.png">
+      <img src="https://cdn.rawgit.com/iSpring/WebGlobe/develop/images/2.png">
     </a>
   </div>
 
@@ -85,7 +85,7 @@ WebGlobe是基于HTML5原生WebGL实现的轻量级Google Earth三维地图引�
 **3. 搜索结果列表展示**
   <div align="left">
     <a target="_blank" href="#">
-      <img src="https://github.com/iSpring/WebGlobe/blob/develop/images/3.png">
+      <img src="https://cdn.rawgit.com/iSpring/WebGlobe/develop/images/3.png">
     </a>
   </div>
 
@@ -93,7 +93,7 @@ WebGlobe是基于HTML5原生WebGL实现的轻量级Google Earth三维地图引�
 **4. 搜索结果地图展示**
   <div align="left">
     <a target="_blank" href="#">
-      <img src="https://github.com/iSpring/WebGlobe/blob/develop/images/4.png">
+      <img src="https://cdn.rawgit.com/iSpring/WebGlobe/develop/images/4.png">
     </a>
   </div>
 
@@ -101,7 +101,7 @@ WebGlobe是基于HTML5原生WebGL实现的轻量级Google Earth三维地图引�
 **5. 路线规划**
   <div align="left">
     <a target="_blank" href="#">
-      <img src="https://github.com/iSpring/WebGlobe/blob/develop/images/5.png">
+      <img src="https://cdn.rawgit.com/iSpring/WebGlobe/develop/images/5.png">
     </a>
   </div>
 
@@ -109,7 +109,7 @@ WebGlobe是基于HTML5原生WebGL实现的轻量级Google Earth三维地图引�
 **6. 驾车出行路线**
   <div align="left">
     <a target="_blank" href="#">
-      <img src="https://github.com/iSpring/WebGlobe/blob/develop/images/6.png">
+      <img src="https://cdn.rawgit.com/iSpring/WebGlobe/develop/images/6.png">
     </a>
   </div>
 
@@ -117,7 +117,7 @@ WebGlobe是基于HTML5原生WebGL实现的轻量级Google Earth三维地图引�
 **7. 公交出行路线**
   <div align="left">
     <a target="_blank" href="#">
-      <img src="https://github.com/iSpring/WebGlobe/blob/develop/images/7.png">
+      <img src="https://cdn.rawgit.com/iSpring/WebGlobe/develop/images/7.png">
     </a>
   </div>
 
@@ -125,6 +125,6 @@ WebGlobe是基于HTML5原生WebGL实现的轻量级Google Earth三维地图引�
 **8. 步行出行路线**
   <div align="left">
     <a target="_blank" href="#">
-      <img src="https://github.com/iSpring/WebGlobe/blob/develop/images/8.png">
+      <img src="https://cdn.rawgit.com/iSpring/WebGlobe/develop/images/8.png">
     </a>
   </div>
