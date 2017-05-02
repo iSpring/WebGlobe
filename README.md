@@ -28,8 +28,7 @@ WebGlobe是基于HTML5原生WebGL实现的轻量级Google Earth三维地图引�
 
 桌面版在线访问地址: https://ispring.github.io/WebGlobe/index.html
 
-移动版二维码访问: 
-
+移动版二维码访问(小米系统中的微信、小米默认浏览器在某些情况下存在已知bug): 
 <div align="center">
   <img src="https://github.com/iSpring/WebGlobe/blob/develop/qrcode.png">
 </div>
