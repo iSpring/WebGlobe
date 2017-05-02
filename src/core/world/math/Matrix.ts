@@ -354,7 +354,8 @@ export default class Matrix{
       scaleX = (scaleX !== undefined) ? scaleX : 1;
       scaleY = (scaleY !== undefined) ? scaleY : 1;
       scaleZ = (scaleZ !== undefined) ? scaleZ : 1;
-      var m = new Matrix(scaleX, 0, 0, 0,
+      var m = new Matrix(
+        scaleX, 0, 0, 0,
         0, scaleY, 0, 0,
         0, 0, scaleZ, 0,
         0, 0, 0, 1);
@@ -372,7 +373,8 @@ export default class Matrix{
     worldRotateX(radian: number): void {
       var c = Math.cos(radian);
       var s = Math.sin(radian);
-      var m = new Matrix(1, 0, 0, 0,
+      var m = new Matrix(
+        1, 0, 0, 0,
         0, c, -s, 0,
         0, s, c, 0,
         0, 0, 0, 1);
@@ -383,8 +385,10 @@ export default class Matrix{
     worldRotateY(radian: number): void {
       var c = Math.cos(radian);
       var s = Math.sin(radian);
-      var m = new Matrix(c, 0, s, 0,
-        0, 1, 0, 0, -s, 0, c, 0,
+      var m = new Matrix(
+        c, 0, s, 0,
+        0, 1, 0, 0,
+        -s, 0, c, 0,
         0, 0, 0, 1);
       var result = m.multiplyMatrix(this);
       this.setMatrixByOther(result);
@@ -393,7 +397,8 @@ export default class Matrix{
     worldRotateZ(radian: number) {
       var c = Math.cos(radian);
       var s = Math.sin(radian);
-      var m = new Matrix(c, -s, 0, 0,
+      var m = new Matrix(
+        c, -s, 0, 0,
         s, c, 0, 0,
         0, 0, 1, 0,
         0, 0, 0, 1);
@@ -450,7 +455,8 @@ export default class Matrix{
       var m43 = 0.0; //M(3,2)
       var m44 = 1.0; //M(3,3)
 
-      var mat = new Matrix(m11, m12, m13, m14,
+      var mat = new Matrix(
+        m11, m12, m13, m14,
         m21, m22, m23, m24,
         m31, m32, m33, m34,
         m41, m42, m43, m44);
