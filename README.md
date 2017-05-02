@@ -1,6 +1,6 @@
 <div align="center">
   <a target="_blank" href="https://ispring.github.io/WebGlobe/index.html">
-    <img src="https://github.com/iSpring/WebGlobe/blob/develop/webglobe.png">
+    <img src="https://github.com/iSpring/WebGlobe/blob/develop/images/webglobe.png">
   </a>
   <p align="center">A WebGL virtual globe and map engine</p>
 </div>
@@ -30,7 +30,7 @@ WebGlobe是基于HTML5原生WebGL实现的轻量级Google Earth三维地图引�
 
 移动版二维码访问(小米系统中的微信、小米默认浏览器在某些情况下存在已知bug): 
 <div align="center">
-  <img src="https://github.com/iSpring/WebGlobe/blob/develop/qrcode.png">
+  <img src="https://github.com/iSpring/WebGlobe/blob/develop/images/qrcode.png">
 </div>
 
 **如果觉得不错，欢迎Star和Fork！**
