@@ -64,7 +64,7 @@ WebGlobe是基于HTML5原生WebGL实现的轻量级Google Earth三维地图引�
  6. 有问题的话欢迎大家提issue或者到[Gitter](https://gitter.im/iSpring/WebGlobe)中进行讨论。
 
  ## Screenshots
-  1. WebGlobe移动端主界面
+1. WebGlobe移动端主界面
   <div align="left">
     <a target="_blank" href="#">
       <img src="https://github.com/iSpring/WebGlobe/blob/webapp/images/1.png">
@@ -72,7 +72,7 @@ WebGlobe是基于HTML5原生WebGL实现的轻量级Google Earth三维地图引�
   </div>
 
 
-  2. 附近搜索
+2. 附近搜索
   <div align="left">
     <a target="_blank" href="#">
       <img src="https://github.com/iSpring/WebGlobe/blob/webapp/images/2.png">
@@ -80,7 +80,7 @@ WebGlobe是基于HTML5原生WebGL实现的轻量级Google Earth三维地图引�
   </div>
 
 
-  3. 搜索结果列表展示
+3. 搜索结果列表展示
   <div align="left">
     <a target="_blank" href="#">
       <img src="https://github.com/iSpring/WebGlobe/blob/webapp/images/3.png">
@@ -88,7 +88,7 @@ WebGlobe是基于HTML5原生WebGL实现的轻量级Google Earth三维地图引�
   </div>
 
 
-  4. 搜索结果地图展示
+4. 搜索结果地图展示
   <div align="left">
     <a target="_blank" href="#">
       <img src="https://github.com/iSpring/WebGlobe/blob/webapp/images/4.png">
@@ -96,7 +96,7 @@ WebGlobe是基于HTML5原生WebGL实现的轻量级Google Earth三维地图引�
   </div>
 
 
-  5. 路线规划
+5. 路线规划
   <div align="left">
     <a target="_blank" href="#">
       <img src="https://github.com/iSpring/WebGlobe/blob/webapp/images/5.png">
@@ -104,7 +104,7 @@ WebGlobe是基于HTML5原生WebGL实现的轻量级Google Earth三维地图引�
   </div>
 
 
-  6. 驾车出行路线
+6. 驾车出行路线
   <div align="left">
     <a target="_blank" href="#">
       <img src="https://github.com/iSpring/WebGlobe/blob/webapp/images/6.png">
@@ -112,7 +112,7 @@ WebGlobe是基于HTML5原生WebGL实现的轻量级Google Earth三维地图引�
   </div>
 
 
-  7. 公交出行路线
+7. 公交出行路线
   <div align="left">
     <a target="_blank" href="#">
       <img src="https://github.com/iSpring/WebGlobe/blob/webapp/images/7.png">
@@ -120,7 +120,7 @@ WebGlobe是基于HTML5原生WebGL实现的轻量级Google Earth三维地图引�
   </div>
 
 
-  8. 步行出行路线
+8. 步行出行路线
   <div align="left">
     <a target="_blank" href="#">
       <img src="https://github.com/iSpring/WebGlobe/blob/webapp/images/8.png">
