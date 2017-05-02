@@ -49,6 +49,13 @@ $exchange-size: 0;
                 font-size: 15px;
                 margin-top: ($input-container-height - $input-height) / 2;
             }
+            :global(.icon-search){
+                position: absolute;
+                font-size: 16px;
+                right: 15px;
+                top: 15px;
+                color: #888;
+            }
             &.from{
                 border-bottom: 1px solid #d3d3d3;
             }

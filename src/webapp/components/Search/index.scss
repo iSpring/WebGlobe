@@ -17,6 +17,7 @@ $padding-offset: 15px;
     }
 
     .input-container{
+        position: relative;
         width: 100%;
         height: 100%;
         background-color: #ededed;
@@ -42,6 +43,14 @@ $padding-offset: 15px;
 
         div.keyword{
             color: #888 !important;
+        }
+
+        i{
+            position: absolute;
+            right: 11px;
+            top: 7px;
+            color: #888;
+            font-size: 16px;
         }
     }
 
