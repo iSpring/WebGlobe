@@ -26,7 +26,13 @@
 
 WebGlobe是基于HTML5原生WebGL实现的轻量级Google Earth三维地图引擎。
 
-Demo: https://ispring.github.io/WebGlobe/index.html
+桌面版在线访问地址: https://ispring.github.io/WebGlobe/index.html
+
+移动版二维码访问: 
+
+<div align="center">
+  <img src="https://github.com/iSpring/WebGlobe/blob/develop/qrcode.png">
+</div>
 
 **如果觉得不错，欢迎Star和Fork！**
 
@@ -37,9 +43,9 @@ Demo: https://ispring.github.io/WebGlobe/index.html
 
  3. 支持影像图、行政图以及实施交通图。
 
- 4. 支持移动浏览器并对移动浏览器做了优化。
+ 4. 支持搜索服务以及路线规划服务。
 
- 5. 轻量级，编译压缩后不足100KB。
+ 5. 支持移动浏览器并对移动浏览器做了优化，并针对移动端做了一个WebApp，能够实现常用的地图功能，具有实用性。
 
 ## Getting Started
  1. 在项目的根目录下执行`npm install`，安装所需模块。执行`npm start`即可进行打包编译，在浏览器中打开生成的`index.html`即可。
