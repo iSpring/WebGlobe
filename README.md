@@ -65,4 +65,4 @@ WebGlobe是基于HTML5原生WebGL实现的轻量级Google Earth三维地图引�
 
  ## Screenshots
   1. WebGlobe移动端主界面
-     <img src="https://github.com/iSpring/WebGlobe/blob/develop/images/1.png">
+     <img src="https://github.com/iSpring/WebGlobe/blob/webapp/images/1.png">
