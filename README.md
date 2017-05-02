@@ -47,7 +47,7 @@ WebGlobe是基于HTML5原生WebGL实现的轻量级Google Earth三维地图引�
  5. 支持移动浏览器并对移动浏览器做了优化，并针对移动端做了一个WebApp，能够实现常用的地图功能，具有实用性。
 
 ## Getting Started
- 1. 在项目的根目录下执行`npm install`，安装所需模块。执行`npm start`即可进行打包编译，在浏览器中打开生成的`index.html`即可。
+ 1. 在项目的根目录下执行`npm install`，安装所需模块。执行`npm start`即可进行打包编译，在`buildOutput`目录中，在浏览器中打开`index.html`可访问WebGlobe桌面版，打开`webapp.html`可访问WebGlobe移动版。
 
  2. 项目有两个主要的分支：develop分支和master分支，develop是主分支，开发代码提交到该分支，master分支用于发布新版本。
 
