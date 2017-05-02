@@ -8,7 +8,7 @@
 
 ## WebGlobe
 [![Build Status](https://travis-ci.org/iSpring/WebGlobe.svg?branch=develop)](https://travis-ci.org/iSpring/WebGlobe)
-[![Release](https://img.shields.io/badge/release-0.4.4-blue.svg)](https://github.com/iSpring/WebGlobe/releases)
+[![Release](https://img.shields.io/badge/release-0.5.1-blue.svg)](https://github.com/iSpring/WebGlobe/releases)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/iSpring/WebGlobe)
 
 [![Chrome 8+](https://img.shields.io/badge/Chrome-8+-1DA362.svg)](http://caniuse.com/#search=WebGL)
@@ -49,9 +49,9 @@ WebGlobe是基于HTML5原生WebGL实现的轻量级Google Earth三维地图引�
 ## Getting Started
  1. 在项目的根目录下执行`npm install`，安装所需模块。执行`npm start`即可进行打包编译，在浏览器中打开生成的`index.html`即可。
 
- 2. 项目有两个主要的分支：develop分支和master分支，develop是主分支，开发的代码都提交到该分支，master分支用于发布新版本。
+ 2. 项目有两个主要的分支：develop分支和master分支，develop是主分支，开发代码提交到该分支，master分支用于发布新版本。
 
- 3. 项目采用TypeScript编写，使用Webpack进行编译打包，编译成JavaScript运行，推荐使用最新的[Visual Studio Code](http://code.visualstudio.com/)作为编辑器。
+ 3. 项目的核心渲染引擎部分使用TypeScript进行开发，移动端WebApp界面采用Babel + React + react-router进行开发，使用Webpack进行构建，推荐使用最新的[Visual Studio Code](http://code.visualstudio.com/)作为编辑器。
 
  4. package.json中定义了`npm scripts`：
     - npm run clean 用于清除编译打包的结果
