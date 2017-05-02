@@ -249,3 +249,5 @@
 - 0.4.36 更新webpack.config.js文件，在生产环境中配置new webpack.DefinePlugin，将NODE_ENV配置为production，使得压缩打包后的React体积减小88KB，参见https://facebook.github.io/react/docs/optimizing-performance.html#use-the-production-build
 
 - 0.5.0 为搜索框添加搜索图标，方便搜索
+
+- 0.5.1 更新README.md，发布新版本
