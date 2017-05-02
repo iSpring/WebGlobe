@@ -7,7 +7,7 @@
 
 :global {
   [class^="icon-"],
-  [class*=" icon-"]{
+  [class*=" icon-"] {
     display: inline-block;
     line-height: 1em;
   }
@@ -26,20 +26,25 @@
     /* Uncomment for 3D effect */
     /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */
   }
-  .icon-location:before {
+  
+  .icon-search:before {
     content: '\e800';
   }
 
-  .icon-road:before {
+  .icon-location:before {
     content: '\e801';
   }
 
-  .icon-glass:before {
+  .icon-road:before {
     content: '\e802';
   }
 
-  .icon-basket:before {
+  .icon-glass:before {
     content: '\e803';
+  }
+
+  .icon-basket:before {
+    content: '\e804';
   }
 
   .icon-food:before {
@@ -81,5 +86,4 @@
   .icon-map-o:before {
     content: '\f278';
   }
-
 }

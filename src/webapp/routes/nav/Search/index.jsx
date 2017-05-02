@@ -32,27 +32,8 @@ export default class Nav extends RouteComponent {
         const isFrom = e.target === this.fromInput;
         const keyword = e.target.value;
         if (e.key === "Enter") {
-            if (keyword) {
-                // const promise = Service.searchByCurrentCity(keyword, 'Auto', this.pageCapacity);
-                const promise = Service.searchNearby(keyword, this.searchDistance, 'Auto', this.pageCapacity);
-                promise.then((response) => {
-                    let pois = null;
-                    if (response.detail) {
-                        pois = response.detail.pois;
-                    }
-                    if (!pois) {
-                        pois = [];
-                    }
-                    if (isFrom) {
-                        this.setState({
-                            fromPois: pois
-                        });
-                    } else {
-                        this.setState({
-                            toPois: pois
-                        });
-                    }
-                });
+            if(keyword){
+                this.searchPois(isFrom, keyword);
             }
         }
     }
@@ -68,6 +49,53 @@ export default class Nav extends RouteComponent {
         this.isFromLastFocused = false;
         this.setState({
             fromPois: []
+        });
+    }
+
+    onClickFromSearchIcon(){
+        this.fromInput.focus();
+        const keyword = this.fromInput.value;
+        if(keyword){
+            this.searchPois(true, keyword);
+        }
+    }
+
+    onClickToSearchIcon(){
+        this.toInput.focus();
+        const keyword = this.toInput.value;
+        if(keyword){
+            this.searchPois(false, keyword);
+        }
+    }
+
+    onClickSearchIcon(isFrom, keyword) {
+        if(keyword){
+            this.searchPois(isFrom, keyword);
+        }
+    }
+
+    searchPois(isFrom, keyword) {
+        if (!keyword) {
+            return;
+        }
+        const promise = Service.searchNearby(keyword, this.searchDistance, 'Auto', this.pageCapacity);
+        this.wrapPromise(promise).then((response) => {
+            let pois = null;
+            if (response.detail) {
+                pois = response.detail.pois;
+            }
+            if (!pois) {
+                pois = [];
+            }
+            if (isFrom) {
+                this.setState({
+                    fromPois: pois
+                });
+            } else {
+                this.setState({
+                    toPois: pois
+                });
+            }
         });
     }
 
@@ -134,10 +162,12 @@ export default class Nav extends RouteComponent {
                         <div className={classNames(styles["input-container"], styles.from)}>
                             <i className={fromClassName}></i>
                             <input type="text" placeholder="请输入出发地" ref={(input) => { this.fromInput = input; }} onFocus={(e) => this.onFromFocus(e)} onKeyPress={(e) => this.onKeyPress(e)} />
+                            <i className="icon-search" onClick={() => this.onClickFromSearchIcon()}></i>
                         </div>
                         <div className={styles["input-container"]}>
                             <i className={toClassName}></i>
                             <input type="text" placeholder="请输入目的地" ref={(input) => { this.toInput = input; }} onFocus={(e) => this.onToFocus(e)} onKeyPress={(e) => this.onKeyPress(e)} />
+                            <i className="icon-search" onClick={() => this.onClickToSearchIcon()}></i>
                         </div>
                     </div>
                     {/*<div className={styles.exchange}>

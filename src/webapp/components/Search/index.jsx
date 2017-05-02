@@ -92,6 +92,16 @@ export default class Search extends Component {
         }
     }
 
+    onClickSearchIcon(){
+        if(this.props.onSearch){
+            if(this.keywordInput && this.keywordInput.value){
+                this.props.onSearch(this.keywordInput.value);
+            }else if(this.keywordDiv && this.keywordDiv.textContent){
+                this.props.onSearch(this.keywordDiv.textContent);
+            }
+        }
+    }
+
     render() {
         const a = classNames(styles["search-section"], this.props.className, {
             [styles["hide-left-action"]]: !this.props.showMapList,
@@ -111,6 +121,7 @@ export default class Search extends Component {
                             <input ref={(input)=>{this.keywordInput=input}} type="text" className={styles.keyword} readOnly={this.props.readOnly} placeholder={this.props.placeholder} onFocus={(e) => this.onKeywordInputFocus(e)} onBlur={() => this.onKeywordInputBlur()} onKeyPress={(e)=>{this.onKeywordInputPress(e)}} />
                         )
                     }
+                    <i className="icon-search" onClick={() => this.onClickSearchIcon()}></i>
                 </div>
                 {
                     this.props.showCancel && <div className={styles["right-action"]} onClick={()=>this.onRightAction()}>取消</div>
