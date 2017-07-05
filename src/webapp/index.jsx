@@ -1,10 +1,8 @@
-﻿import React from 'react';
+﻿
+/*
+import React from 'react';
 import ReactDOM from 'react-dom';
-import { Router, hashHistory } from 'react-router';
-import './css/common.scss';
-import './fonts/fontello.scss';
-
-/*import {Router, Route, Link, Redirect, hashHistory} from 'react-router';
+import {Router, Route, Link, Redirect, hashHistory} from 'react-router';
 import IndexIndex from './routes/index/Index';
 import MapBase from './routes/map/Base';
 import NearbySearch from './routes/nearby/Search';
@@ -12,6 +10,8 @@ import NearbyResult from './routes/nearby/Result';
 import NavSearch from './routes/nav/Search';
 import NavPaths from './routes/nav/Paths';
 import NotFound from './routes/404';
+import './css/common.scss';
+import './fonts/fontello.scss';
 
 const rootDiv = document.getElementById("root");
 
@@ -36,8 +36,15 @@ ReactDOM.render((
             <Route path="*" component={NotFound} />
         </Route>
     </Router>
-), rootDiv);*/
+), rootDiv);
+*/
 
+
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { Router, hashHistory } from 'react-router';
+import './css/common.scss';
+import './fonts/fontello.scss';
 import rootRoute from './routes/route';
 
 const rootDiv = document.getElementById("root");

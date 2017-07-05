@@ -10,6 +10,7 @@ import Search from 'webapp/components/Search';
 export default class App extends RouteComponent{
 
     constructor(props){
+        debugger;
         super(props);
         this.state = {};
     }
