@@ -107,6 +107,11 @@ export default class Utils {
         return !!window.navigator.userAgent.match(/Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone|IEMobile|Opera Mini/i);
     }
 
+    static isWindows(): boolean {
+        const platform = window.navigator.platform;
+        return platform.toLowerCase().indexOf('win') === 0;
+    }
+
     static wrapUrlWithProxy(url: string): string{
         if (Kernel.proxy) {
             return Kernel.proxy + "?" + url;

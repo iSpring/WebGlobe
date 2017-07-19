@@ -47,7 +47,7 @@
 //     }
 // };
 
-export default class MeshColorMaterial extends Material{
+export default class ColorMaterial extends Material{
     public color: number[] = null;//rgb,0-1
 
     constructor(rgb255: number[]){

@@ -135,6 +135,7 @@ if (process.argv.indexOf("--ci") >= 0) {
 
 if (PRODUCTION) {
     module.exports.plugins.push(
+        //add DefinePlugin for production to save 88KB for React build
         new webpack.DefinePlugin({
             'process.env': {
                 NODE_ENV: JSON.stringify('production')

@@ -7,12 +7,16 @@ import MeshVertice from '../geometries/MeshVertice';
 import Triangle from '../geometries/Triangle';
 import Mesh from '../geometries/Mesh';
 import MeshColorGraphic from '../graphics/MeshColorGraphic';
-import MeshColorMaterial from '../materials/MeshColorMaterial';
+import ColorMaterial from '../materials/ColorMaterial';
+import Graphic from '../graphics/Graphic';
+import Line from '../geometries/Line';
+import LineGraphic from '../graphics/LineGraphic';
 import GraphicGroup from '../GraphicGroup';
 import { Drawable } from '../Definitions.d';
 import Camera from '../Camera';
 import Service from '../Service';
 import Extent from '../Extent';
+import Program from '../Program';
 
 interface RoutePoint {
     lonlat: number[];
@@ -24,10 +28,14 @@ interface RoutePoint {
     B34: boolean;
 }
 
-class RouteGraphic extends MeshColorGraphic {
+type RouteType = 'driving' | 'bus' | 'walking';
+
+const isWindows = Utils.isWindows();
+
+class MeshRouteGraphic extends MeshColorGraphic {
     private readonly inflexionPointAngle = 70;//认为两条道路出现近乎垂直情况时候的夹角
 
-    constructor(private lonlats: number[][], private pixelWidth: number, resolution: number, material: MeshColorMaterial) {
+    constructor(private lonlats: number[][], private pixelWidth: number, resolution: number, material: ColorMaterial) {
         super(null, material);
         this.updateGeometry(resolution);
     }
@@ -179,8 +187,6 @@ class RouteGraphic extends MeshColorGraphic {
     }
 }
 
-type RouteType = 'driving' | 'bus' | 'walking';
-
 export default class RouteLayer extends GraphicGroup<Drawable>{
     private pixelWidth: number = 5;
     private greenColor: number[] = [7, 215, 108];
@@ -192,16 +198,18 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
     private constructor(private camera: Camera, private key: string) {
         super();
         // this.test();
-        Utils.subscribe('level-change', () => {
+        if(isWindows){
+            Utils.subscribe('level-change', () => {
             if (this.children.length > 0) {
                 const resolution = this._getResolution();
-                this.children.forEach((graphic: Drawable) => {
-                    if (graphic instanceof RouteGraphic) {
-                        graphic.updateGeometry(resolution);
-                    }
-                });
-            }
-        });
+                    this.children.forEach((graphic: Drawable) => {
+                        if (graphic instanceof MeshRouteGraphic) {
+                            graphic.updateGeometry(resolution);
+                        }
+                    });
+                }
+            });
+        }
     }
 
     test(pixelWidth: number = 5, segments: number = 100, rgb: number[] = [0, 255, 0]) {
@@ -243,7 +251,16 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
             // });
 
             if (validLonlats.length >= 2) {
-                const graphic = new RouteGraphic(validLonlats, pixelWidth, resolution, new MeshColorMaterial(rgb));
+                var graphic: Graphic = null;
+                if(isWindows){
+                    graphic = new MeshRouteGraphic(validLonlats, pixelWidth, resolution, new ColorMaterial(rgb));
+                }else{
+                    const vertices = validLonlats.map((lonlat) => {
+                        return MathUtils.geographicToCartesianCoord(lonlat[0], lonlat[1]);
+                    });
+                    const line = new Line(vertices);
+                    graphic = new LineGraphic(line, new ColorMaterial(rgb), pixelWidth);
+                }
                 this.add(graphic);
                 return graphic;
             }
