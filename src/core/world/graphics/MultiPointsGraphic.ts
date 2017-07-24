@@ -44,7 +44,7 @@ export default class MultiPointsGraphic extends Graphic {
   private vbo: VertexBufferObject = null;
   private vertices: Vertice[] = null;
 
-  protected constructor(public material: MarkerTextureMaterial) {
+  constructor(public material: MarkerTextureMaterial) {
     super(null, material);
     this.vbo = new VertexBufferObject(Kernel.gl.ARRAY_BUFFER);
     this.vertices = [];

@@ -1,3 +1,4 @@
+declare function require(name: string): any;
 import Kernel from '../Kernel';
 import Utils from '../Utils';
 import MathUtils from '../math/Utils';
@@ -8,15 +9,23 @@ import Triangle from '../geometries/Triangle';
 import Mesh from '../geometries/Mesh';
 import MeshColorGraphic from '../graphics/MeshColorGraphic';
 import ColorMaterial from '../materials/ColorMaterial';
+import MarkerTextureMaterial from '../materials/MarkerTextureMaterial';
 import Graphic from '../graphics/Graphic';
-import Line from '../geometries/Line';
-import LineGraphic from '../graphics/LineGraphic';
+import MultiPointsGraphic from '../graphics/MultiPointsGraphic';
+// import Line from '../geometries/Line';
+// import LineGraphic from '../graphics/LineGraphic';
 import GraphicGroup from '../GraphicGroup';
 import { Drawable } from '../Definitions.d';
 import Camera from '../Camera';
 import Service from '../Service';
 import Extent from '../Extent';
 import Program from '../Program';
+
+const startPointImageUrl = require('../images/start.png');
+const startPointImageSize = 80;
+
+const endPointImageUrl = require('../images/end.png');
+const endPointImageSize = 80;
 
 interface RoutePoint {
     lonlat: number[];
@@ -275,7 +284,9 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
     private busColor: number[] = [82, 153, 255];
     private drivingColor: number[] = [0, 189, 0];
     private walkingColor: number[] = [76, 221, 38];
-    private route: any = null;
+    private startLonlat: number[] = null;//起点
+    private endLonlat: number[] = null;//终点
+    private route: any = null;//路径查询结果
     //将1米的作为连接两个经纬度点的最小阈值的平方
     private deltaLonlatSquareThreshold: number = Math.pow(1 / (2 * Math.PI * Kernel.REAL_EARTH_RADIUS) * 360, 2);
 
@@ -390,6 +401,8 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
         return Service.routeByDriving(fromLon, fromLat, toLon, toLat, this.key, strategy).then((response: any) => {
             this._clearAll();
             if (response.route && response.route.paths && response.route.paths.length > 0) {
+                this.startLonlat = [fromLon, fromLat];
+                this.endLonlat = [toLon, toLat];
                 this.route = response.route;
                 this.showPath(0);
             }
@@ -432,6 +445,7 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
                             this._addRouteByLonlats(lonlats, resolution, this.pixelWidth, this.drivingColor);
                         });*/
                         this._addRouteByLonlats(lonlats, resolution, this.pixelWidth, this.drivingColor);
+                        this._showStartEndPoints();
                     }, 0);
                 }
             }
@@ -442,6 +456,8 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
         return Service.routeByBus(fromLon, fromLat, toLon, toLat, startCity, endCity, this.key, strategy).then((response: any) => {
             this._clearAll();
             if (response.route && response.route.transits && response.route.transits.length > 0) {
+                this.startLonlat = [fromLon, fromLat];
+                this.endLonlat = [toLon, toLat];
                 this.route = response.route;
                 this.showPath(0);
             }
@@ -489,6 +505,7 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
                         lonlatsSegments.forEach((lonlats: number[][]) => {
                             this._addRouteByLonlats(lonlats, resolution, this.pixelWidth, (lonlats as any).color);
                         });
+                        this._showStartEndPoints();
                     }, 0);
                 }
             }
@@ -499,6 +516,8 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
         return Service.routeByWalking(fromLon, fromLat, toLon, toLat, this.key).then((response: any) => {
             this._clearAll();
             if (response.route && response.route.paths && response.route.paths.length > 0) {
+                this.startLonlat = [fromLon, fromLat];
+                this.endLonlat = [toLon, toLat];
                 this.route = response.route;
                 this._showWalkingPath(0);
             }
@@ -525,13 +544,32 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
                     setTimeout(() => {
                         const resolution = this._getResolution();
                         this._addRouteByLonlats(lonlats, resolution, this.pixelWidth, this.walkingColor);
+                        this._showStartEndPoints();
                     }, 0);
                 }
             }
         }
     }
 
+    private _showStartEndPoints(){
+        if(this.startLonlat){
+            let material = new MarkerTextureMaterial(startPointImageUrl, startPointImageSize);
+            let startPointGraphic = new MultiPointsGraphic(material);
+            startPointGraphic.setLonlats([this.startLonlat]);
+            this.add(startPointGraphic);
+        }
+
+        if(this.endLonlat){
+            let material = new MarkerTextureMaterial(endPointImageUrl, endPointImageSize);
+            let endPointGraphic = new MultiPointsGraphic(material);
+            endPointGraphic.setLonlats([this.endLonlat]);
+            this.add(endPointGraphic);
+        }
+    }
+
     private _clearAll() {
+        this.startLonlat = null;
+        this.endLonlat = null;
         this.route = null;
         this.clear();
     }
