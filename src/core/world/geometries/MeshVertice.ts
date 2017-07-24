@@ -13,4 +13,14 @@
 		this.n = args.n;//[x,y,z]
 		this.c = args.c;//[r,g,b]
 	}
+
+	clone(){
+		var args: any = {};
+		args.i = this.i;
+		args.p = [...this.p];
+		args.uv = [...this.uv];
+		args.n = [...this.n];
+		args.c = [...this.c];
+		return new MeshVertice(args);
+	}
 };

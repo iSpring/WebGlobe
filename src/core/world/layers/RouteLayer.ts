@@ -24,25 +24,108 @@ interface RoutePoint {
     start2EndVector: Vector;
     v1: MeshVertice;
     v3: MeshVertice;
-    B12: boolean;
-    B34: boolean;
+    // B12: boolean;
+    // B34: boolean;
 }
 
 type RouteType = 'driving' | 'bus' | 'walking';
 
-const isWindows = Utils.isWindows();
+// const isWindows = Utils.isWindows();
 
 class MeshRouteGraphic extends MeshColorGraphic {
-    private readonly inflexionPointAngle = 70;//认为两条道路出现近乎垂直情况时候的夹角
+    private readonly inflexionPointAngle = 30;//认为两条道路出现近乎垂直情况时候的夹角
 
-    constructor(private lonlats: number[][], private pixelWidth: number, resolution: number, material: ColorMaterial) {
+    constructor(private originalLonlats: number[][], private pixelWidth: number, resolution: number, material: ColorMaterial) {
         super(null, material);
+        this._removeDuplicatePoints(this.originalLonlats);
         this.updateGeometry(resolution);
     }
 
     updateGeometry(resolution: number) {
-        const geometry = this._getRouteGeometryByLonlats(this.lonlats, resolution, this.pixelWidth);
+        var lonlats = this._handleCurveJoin(this.originalLonlats, resolution, this.pixelWidth);
+        const geometry = this._getRouteGeometryByLonlats(lonlats, resolution, this.pixelWidth);
         this.setGeometry(geometry);
+    }
+
+    private _removeDuplicatePoints(lonlats: number[][]){
+        let cursor: number = 0;
+        while(cursor <= (lonlats.length - 2)){
+            let currentLonlat = lonlats[cursor];
+            let nextLonlat = lonlats[cursor + 1];
+            if(currentLonlat[0] === nextLonlat[0] && currentLonlat[1] === nextLonlat[1]){
+                //删除重复点，不移动游标
+                lonlats.splice(cursor + 1, 1);
+            }else{
+                //移动游标
+                cursor += 1;
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param _lonlats 传入经纬度坐标数组，如果两条线段之间夹角大于一定角度，就认为是拐点，针对拐点生成贝塞尔曲线点，该方法不会修原数组
+     */
+    private _handleCurveJoin(_lonlats: number[][], resolution: number, pixelWidth: number){
+        //把所有的经纬度转换为WebMercator坐标，方便进行对拐点进行曲线拟合
+        // var xyArr = lonlats.map((lonlat: number[]) => {
+        //     MathUtils.degreeGeographicToWebMercator(lonlat[0], lonlat[1]);
+        // });
+
+        var lonlats = [].concat(_lonlats);
+
+        var cursor: number = 1;
+
+        //在用p0、p1、p2生成贝塞尔曲线点的时候，offsetLonlat是理想的p0p1(p1p2)的距离，单位是角度
+        const offsetLonlat = MathUtils.radianToDegree(resolution * pixelWidth / Kernel.EARTH_RADIUS);
+
+        //每次都要动态判断lonlats.length，因为lonlats的内容可能是在不断增加的
+        while(cursor <= (lonlats.length - 2)){
+            const currentLonlat = lonlats[cursor];
+            const prevLonlat = lonlats[cursor - 1];
+            const nextLonlat = lonlats[cursor + 1];
+            const currentPoint = new Vertice(currentLonlat[0], currentLonlat[1], 0);
+            const prevPoint = new Vertice(prevLonlat[0], prevLonlat[1], 0);
+            const nextPoint = new Vertice(nextLonlat[0], nextLonlat[1], 0);
+            //prevPoint -> currentPoint
+            const vector1 = Vector.verticeMinusVertice(currentPoint, prevPoint);
+            //currentPoint -> nextPoint
+            const vector2 = Vector.verticeMinusVertice(nextPoint, currentPoint);
+            //有可能nextPoint和currentPoint是相同的点，这样计算出的vector2长度为0，计算出的夹角为0
+            const radian = Vector.getRadianOfTwoVectors(vector1, vector2);
+            const angle = MathUtils.radianToDegree(radian);
+            if(angle > this.inflexionPointAngle){
+                //currentLonlat是拐点，需要对拐点进行处理
+                let p0: number[] = null;//经纬度
+                let p1: number[] = currentLonlat;//经纬度
+                let p2: number[] = null;//经纬度
+                //保证p0到p1的距离与p1到p2的距离相等，都只占Math.min(length1, length2)的N分之一
+                let length1 = vector1.getLength();
+                let length2 = vector2.getLength();
+                //length1和length2都是以米为单位的
+                // let length1 = MathUtils.getRealArcDistanceBetweenLonLats(currentLonlat[0], currentLonlat[1], prevLonlat[0], prevLonlat[1]);
+                // let length2 = MathUtils.getRealArcDistanceBetweenLonLats(currentLonlat[0], currentLonlat[1], nextLonlat[0], nextLonlat[1]);
+                let minLength = Math.min(length1, length2);
+                //deltaLength单位是角度
+                let deltaLength = Math.min(offsetLonlat, minLength / 2);
+                //计算p0
+                let p0Vertice = Vector.verticePlusVector(currentPoint, vector1.getOpposite().setLength(deltaLength));
+                p0 = [p0Vertice.x, p0Vertice.y];
+                //计算p2
+                let p2Vertice = Vector.verticePlusVector(currentPoint, vector2.clone().setLength(deltaLength));
+                p2 = [p2Vertice.x, p2Vertice.y];
+                //curveLonlats包含了p0和p2
+                const curveLonlats = MathUtils.quad(p0, p1, p2, 10);
+                //删除拐点currentLonlat，加入数组curveLonlats
+                lonlats.splice(cursor, 1, ...curveLonlats);
+                //让游标指向下一个点
+                cursor += curveLonlats.length;
+            }else{
+                //让游标指向下一个点
+                cursor++;
+            }
+        }
+        return lonlats;
     }
 
     private _getRouteGeometryByLonlats(lonlats: number[][], resolution: number, pixelWidth: number) {
@@ -54,16 +137,16 @@ class MeshRouteGraphic extends MeshColorGraphic {
                 vertice: MathUtils.geographicToCartesianCoord(lonlat[0], lonlat[1]),
                 start2EndVector: null,
                 v1: null,
-                v3: null,
-                B12: false,//起始拐点
-                B34: false//终止拐点，需要额外插入
+                v3: null
+                // B12: false,//起始拐点
+                // B34: false//终止拐点，需要额外插入
             } as RoutePoint;
         });
 
         //检查路口拐点的情况，如果不做处理，那么就会形成箭头形状的道路，
         //比如道路AB和道路BC是垂直的，AB方向在B点生成的是B1和B2，BC在B点生成的是B3和B4，对于这种情况，我们人为再插入一个B点
         //这样就相当于绘制了AB12、B12B34、B34C
-        const B12Indexes: number[] = [];//所有起始拐点的索引
+        /*const B12Indexes: number[] = [];//所有起始拐点的索引
         points.forEach((point: RoutePoint, index) => {
             if (index > 0 && index < points.length - 1) {
                 const prevPoint = points[index - 1];
@@ -77,13 +160,13 @@ class MeshRouteGraphic extends MeshColorGraphic {
                     point.B12 = true;
                     point.B34 = false;
                     B12Indexes.push(index);
-                    // console.log("拐点:", point);
+                    console.log("拐点:", point);
                 }
             }
-        });
+        });*/
 
         //逆向遍历B12Indexes，在所有起始拐点B12后面插入额外的终止拐点B34
-        for (let i = B12Indexes.length - 1; i >= 0; i--) {
+        /*for (let i = B12Indexes.length - 1; i >= 0; i--) {
             const B12Index = B12Indexes[i];
             const B12 = points[B12Index];
             const B34 = {
@@ -92,18 +175,18 @@ class MeshRouteGraphic extends MeshColorGraphic {
                 B34: true
             } as RoutePoint;
             points.splice(B12Index + 1, 0, B34);
-        }
+        }*/
 
         points.forEach((startPoint: RoutePoint, index: number) => {
             if (index !== points.length - 1) {
-                if (startPoint.B12) {
-                    //B12为true时，B12向量与AB相同
-                    const prevPoint = points[index - 1];
-                    startPoint.start2EndVector = prevPoint.start2EndVector;
-                } else {
+                // if (startPoint.B12) {
+                //     //B12为true时，B12向量与AB相同
+                //     const prevPoint = points[index - 1];
+                //     startPoint.start2EndVector = prevPoint.start2EndVector;
+                // } else {
                     const endPoint = points[index + 1];
                     startPoint.start2EndVector = Vector.verticeMinusVertice(endPoint.vertice, startPoint.vertice);
-                }
+                // }
             } else {
                 const prevPoint = points[index - 1];
                 startPoint.start2EndVector = prevPoint.start2EndVector;
@@ -189,8 +272,9 @@ class MeshRouteGraphic extends MeshColorGraphic {
 
 export default class RouteLayer extends GraphicGroup<Drawable>{
     private pixelWidth: number = 5;
-    private greenColor: number[] = [7, 215, 108];
-    private blueColor: number[] = [67, 140, 237];
+    private busColor: number[] = [82, 153, 255];
+    private drivingColor: number[] = [0, 189, 0];
+    private walkingColor: number[] = [76, 221, 38];
     private route: any = null;
     //将1米的作为连接两个经纬度点的最小阈值的平方
     private deltaLonlatSquareThreshold: number = Math.pow(1 / (2 * Math.PI * Kernel.REAL_EARTH_RADIUS) * 360, 2);
@@ -198,18 +282,16 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
     private constructor(private camera: Camera, private key: string) {
         super();
         // this.test();
-        if(isWindows){
-            Utils.subscribe('level-change', () => {
+        Utils.subscribe('level-change', () => {
             if (this.children.length > 0) {
                 const resolution = this._getResolution();
-                    this.children.forEach((graphic: Drawable) => {
-                        if (graphic instanceof MeshRouteGraphic) {
-                            graphic.updateGeometry(resolution);
-                        }
-                    });
-                }
-            });
-        }
+                this.children.forEach((graphic: Drawable) => {
+                    if (graphic instanceof MeshRouteGraphic) {
+                        graphic.updateGeometry(resolution);
+                    }
+                });
+            }
+        });
     }
 
     test(pixelWidth: number = 5, segments: number = 100, rgb: number[] = [0, 255, 0]) {
@@ -227,6 +309,7 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
     }
 
     private _addRouteByLonlats(lonlats: number[][], resolution: number, pixelWidth: number, rgb: number[]) {
+        var graphic: Graphic = null;
         if (lonlats.length >= 2) {
             let validLonlats: number[][] = lonlats;
 
@@ -251,21 +334,22 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
             // });
 
             if (validLonlats.length >= 2) {
-                var graphic: Graphic = null;
-                if(isWindows){
-                    graphic = new MeshRouteGraphic(validLonlats, pixelWidth, resolution, new ColorMaterial(rgb));
-                }else{
-                    const vertices = validLonlats.map((lonlat) => {
-                        return MathUtils.geographicToCartesianCoord(lonlat[0], lonlat[1]);
-                    });
-                    const line = new Line(vertices);
-                    graphic = new LineGraphic(line, new ColorMaterial(rgb), pixelWidth);
-                }
+                // if(isWindows){
+                //     graphic = new MeshRouteGraphic(validLonlats, pixelWidth, resolution, new ColorMaterial(rgb));
+                // }else{
+                //     const vertices = validLonlats.map((lonlat) => {
+                //         return MathUtils.geographicToCartesianCoord(lonlat[0], lonlat[1]);
+                //     });
+                //     const line = new Line(vertices);
+                //     graphic = new LineGraphic(line, new ColorMaterial(rgb), pixelWidth);
+                // }
+                // this.add(graphic);
+                // return graphic;
+                graphic = new MeshRouteGraphic(validLonlats, pixelWidth, resolution, new ColorMaterial(rgb));
                 this.add(graphic);
-                return graphic;
             }
         }
-        return null;
+        return graphic;
     }
 
     private _getResolution() {
@@ -296,6 +380,8 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
                 this._showDrivingPath(pathIndex);
             } else if (this.route.type === 'bus') {
                 this._showBusPath(pathIndex);
+            } else if( this.route.type === 'walking'){
+                this._showWalkingPath(pathIndex);
             }
         }
     }
@@ -317,32 +403,35 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
             if (path && path.steps && path.steps.length > 0) {
                 this.clear();
                 const lonlats: number[][] = [];
-                const lonlatsSegments:number[][][] = [];
-                
+                // const lonlatsSegments: number[][][] = [];
+
                 path.steps.forEach((step: any, index: number, steps: any[]) => {
+                    /*
                     if (index !== 0) {
                         let prevStep = steps[index - 1];
                         const joinLonlats: number[][] = [prevStep.lastLonlat, step.firstLonlat];
-                        // this._addRouteByLonlats(joinLonlats, resolution, this.pixelWidth, this.greenColor);
+                        // this._addRouteByLonlats(joinLonlats, resolution, this.pixelWidth, this.drivingColor);
                         lonlatsSegments.push(joinLonlats);
                         lonlats.push(...joinLonlats);
                     }
-                    // this._addRouteByLonlats(step.lonlats, resolution, this.pixelWidth, this.greenColor);
+                    // this._addRouteByLonlats(step.lonlats, resolution, this.pixelWidth, this.drivingColor);
                     lonlatsSegments.push(step.lonlats);
+                    */
                     lonlats.push(...step.lonlats);
                 });
 
                 const extent = Extent.fromLonlats(lonlats);
 
-                if(extent){
+                if (extent) {
                     this.camera.setExtent(extent);
-                
+
                     setTimeout(() => {
                         //It's better to show path after extent changed because we can use the new resolution.
                         const resolution = this._getResolution();
-                        lonlatsSegments.forEach((lonlats:number[][]) => {
-                            this._addRouteByLonlats(lonlats, resolution, this.pixelWidth, this.greenColor);
-                        });
+                        /*lonlatsSegments.forEach((lonlats: number[][]) => {
+                            this._addRouteByLonlats(lonlats, resolution, this.pixelWidth, this.drivingColor);
+                        });*/
+                        this._addRouteByLonlats(lonlats, resolution, this.pixelWidth, this.drivingColor);
                     }, 0);
                 }
             }
@@ -366,25 +455,25 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
             if (transit && transit.segments && transit.segments.length > 0) {
                 this.clear();
                 const lonlats: number[][] = [];
-                const lonlatsSegments:number[][][] = [];
+                const lonlatsSegments: number[][][] = [];
 
                 transit.segments.forEach((segment: any) => {
                     if (segment.walking && segment.walking.lonlats && segment.walking.lonlats.length > 0) {
-                        // this._addRouteByLonlats(segment.walking.lonlats, resolution, this.pixelWidth, this.greenColor);
-                        segment.walking.lonlats.color = this.greenColor;
+                        // this._addRouteByLonlats(segment.walking.lonlats, resolution, this.pixelWidth, this.walkingColor);
+                        segment.walking.lonlats.color = this.walkingColor;
                         lonlatsSegments.push(segment.walking.lonlats);
                         lonlats.push(...segment.walking.lonlats);
                     }
 
                     if (segment.bus && segment.bus.lonlats && segment.bus.lonlats.length > 0) {
-                        // this._addRouteByLonlats(segment.bus.lonlats, resolution, this.pixelWidth, this.blueColor);
-                        segment.bus.lonlats.color = this.blueColor;
+                        // this._addRouteByLonlats(segment.bus.lonlats, resolution, this.pixelWidth, this.busColor);
+                        segment.bus.lonlats.color = this.busColor;
                         lonlatsSegments.push(segment.bus.lonlats);
                         lonlats.push(...segment.bus.lonlats);
                     }
 
-                    if(segment.railway && segment.railway.lonlats && segment.railway.lonlats.length > 0){
-                        segment.railway.lonlats.color = this.blueColor;
+                    if (segment.railway && segment.railway.lonlats && segment.railway.lonlats.length > 0) {
+                        segment.railway.lonlats.color = this.busColor;
                         lonlatsSegments.push(segment.railway.lonlats);
                         lonlats.push(...segment.railway.lonlats);
                     }
@@ -392,7 +481,7 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
 
                 const extent = Extent.fromLonlats(lonlats);
 
-                if(extent){
+                if (extent) {
                     this.camera.setExtent(extent);
 
                     setTimeout(() => {
@@ -406,10 +495,10 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
         }
     }
 
-    routeByWalking(fromLon: number, fromLat: number, toLon: number, toLat: number){
+    routeByWalking(fromLon: number, fromLat: number, toLon: number, toLat: number) {
         return Service.routeByWalking(fromLon, fromLat, toLon, toLat, this.key).then((response: any) => {
             this._clearAll();
-            if(response.route && response.route.paths && response.route.paths.length > 0){
+            if (response.route && response.route.paths && response.route.paths.length > 0) {
                 this.route = response.route;
                 this._showWalkingPath(0);
             }
@@ -417,25 +506,25 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
         });
     }
 
-    private _showWalkingPath(pathIndex: number){
-        if(this.route && this.route.paths && this.route.paths.length > 0){
+    private _showWalkingPath(pathIndex: number) {
+        if (this.route && this.route.paths && this.route.paths.length > 0) {
             const path = this.route.paths[pathIndex];
-            if(path && path.steps && path.steps.length > 0){
+            if (path && path.steps && path.steps.length > 0) {
                 this.clear();
                 const lonlats: number[][] = [];
-                
+
                 path.steps.forEach((step: any) => {
                     lonlats.push(...step.lonlats);
                 });
 
                 const extent = Extent.fromLonlats(lonlats);
 
-                if(extent){
+                if (extent) {
                     this.camera.setExtent(extent);
 
                     setTimeout(() => {
                         const resolution = this._getResolution();
-                        this._addRouteByLonlats(lonlats, resolution, this.pixelWidth, this.blueColor);
+                        this._addRouteByLonlats(lonlats, resolution, this.pixelWidth, this.walkingColor);
                     }, 0);
                 }
             }

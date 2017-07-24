@@ -710,6 +710,34 @@ export default class MathUtils {
     }
 
     /**
+     * http://www.cnblogs.com/jay-dong/archive/2012/09/26/2704188.html
+     * 根据二阶贝塞尔曲线生成指定数量的曲线上的点，返回结果包含p0和p2
+     * @param p0 长度为2，x和y，贝塞尔曲线的起点
+     * @param p1 长度为2，x和y，贝塞尔曲线的控制点
+     * @param p2 长度为2，x和y，贝塞尔曲线的终点
+     * @param count 生成的点的数量
+     */
+    static quad(p0: number[], p1: number[], p2: number[], count: number){
+        const points: number[][] = [];
+        for(var i = 0; i < count; i++){
+            if(i === 0){
+                points.push(p0);
+            }else if(i === count - 1){
+                points.push(p2)
+            }else{
+                const t = i / count;
+                const a = (1 - t) * (1 - t);
+                const b = 2 * t * (1 - t);
+                const c = t * t;
+                const x = a * p0[0] + b * p1[0] + c * p2[0];
+                const y = a * p0[1] + b * p1[1] + c * p2[1];
+                points.push([x, y]);
+            }
+        }
+        return points;
+    }
+
+    /**
      * 计算TRIANGLES的平均法向量
      * @param vs 传入的顶点坐标数组 array
      * @param ind 传入的顶点的索引数组 array
