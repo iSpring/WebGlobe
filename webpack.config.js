@@ -83,7 +83,7 @@ module.exports = {
                 loader: extractPlugin.extract("css?modules&localIdentName=[name]__[local]___[hash:base64:5]!sass")
             },
             {
-                test: /\.(png|jpeg|jpg)$/,
+                test: /\.(png|jpeg|jpg|gif)$/,
                 loader: "file-loader"
             },
             {
