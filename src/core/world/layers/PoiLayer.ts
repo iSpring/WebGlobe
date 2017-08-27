@@ -119,6 +119,7 @@ export default class PoiLayer extends PickableGraphicGroup<MeshTextureGraphic>{
     this.unHighlightPoi();
     this.currentHighLightPoi = target;
     this._updateMaterial(this.currentHighLightPoi, this.highLightMaterialRow);
+    this.moveChildToLastPosition(this.currentHighLightPoi);
     if(this.highlightListener){
       this.highlightListener(this.currentHighLightPoi);
     }
