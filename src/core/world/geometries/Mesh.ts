@@ -1,19 +1,29 @@
 ﻿import Kernel from '../Kernel';
-import Vertice from './MeshVertice';
+import MeshVertice from './MeshVertice';
 import Triangle from './Triangle';
 import Object3D from '../Object3D';
 import VertexBufferObject from '../VertexBufferObject';
+import Vertice from '../math/Vertice';
+import Ray from '../math/Ray';
+import Line from '../math/Line';
+import MathUtils from '../math/Utils';
+
+interface Box{
+	center: Vertice;//中心点，模型坐标系中的中心点
+	radius: number;//半径，模型坐标系中的半径
+}
 
 export default class Mesh extends Object3D {
-	vertices: Vertice[] = null;
+	vertices: MeshVertice[] = null;
 	triangles: Triangle[] = null;
 	vbo: VertexBufferObject = null;
 	ibo: VertexBufferObject = null;
 	nbo: VertexBufferObject = null;
 	uvbo: VertexBufferObject = null;
 	cbo: VertexBufferObject = null;
+	box: Box = null;//local box
 
-	static buildPlane(vLeftTop: Vertice, vLeftBottom: Vertice, vRightTop: Vertice, vRightBottom: Vertice) {
+	static buildPlane(vLeftTop: MeshVertice, vLeftBottom: MeshVertice, vRightTop: MeshVertice, vRightBottom: MeshVertice) {
 		/*对于一个面从外面向里面看的绘制顺序
 		 * 0      2
 		 *
@@ -29,10 +39,109 @@ export default class Mesh extends Object3D {
 		return [tri0, tri1];
 	}
 
+	static buildMesh(vLeftTop: MeshVertice, vLeftBottom: MeshVertice, vRightTop: MeshVertice, vRightBottom: MeshVertice){
+		const mesh = new Mesh();
+		mesh.vertices = [vLeftTop, vLeftBottom, vRightTop, vRightBottom];
+		mesh.triangles = this.buildPlane(vLeftTop, vLeftBottom, vRightTop, vRightBottom);
+		return mesh;
+	}
+
 	constructor(){
 		super();
 		this.vertices = [];
 		this.triangles = [];
+	}
+
+	updateBox(force: boolean = false){
+		const triCount = this.triangles.length;
+		const verCount = this.vertices.length;
+		if(triCount === 0 || verCount <= 3){
+			this.box = null;
+			return;
+		}
+		if(!this.box || force){
+			let maxX = -Infinity;
+			let maxY = -Infinity;
+			let maxZ = -Infinity;
+			let minX = Infinity;
+			let minY = Infinity;
+			let minZ = Infinity;
+			for(let i = 0; i < verCount; i++){
+				const vertice = this.vertices[i];
+				const [x, y, z] = vertice.p;
+				if(x > maxX){
+					maxX = x;
+				}
+				if(y > maxY){
+					maxY = y;
+				}
+				if(z > maxZ){
+					maxZ = z;
+				}
+				if(x < minX){
+					minX = x;
+				}
+				if(y < minY){
+					minY = y;
+				}
+				if(z < minZ){
+					minZ = z;
+				}
+			}
+			const deltaX = maxX - minX;
+			const deltaY = maxY - minY;
+			const deltaZ = maxZ - minZ;
+			const radius = Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
+			const center = new Vertice(
+				(maxX + minX) / 2,
+				(maxY + minY) / 2,
+				(maxZ + minZ) / 2
+			);
+			this.box = {
+				center: center,
+				radius: radius
+			};
+		}
+	}
+
+	/**
+	 * 判断mesh是否与直线相交，其中直线为世界坐标系中的坐标
+	 * @param worldLine 
+	 */
+	ifIntersectWorldLine(worldLine: Line){
+		const localLine = MathUtils.convertWorldLineToLocalLine(worldLine, this.matrix);
+		return this.ifIntersectLocalLine(localLine);
+	}
+
+	/**
+	 * 判断mesh是否与直线相交，其中直线为模型坐标系中的坐标
+	 * @param localLine 
+	 */
+	ifIntersectLocalLine(localLine: Line){
+		this.updateBox(false);
+		if(!this.box){
+			return false;
+		}
+
+		//首先判断射线是否与box相交，如果与box不想交，则肯定不想交
+		const distance = MathUtils.getLengthFromVerticeToLine(this.box.center, localLine);
+		if(distance > this.box.radius){
+			return false;
+		}
+
+		//在射线与box相交的前提下再判断射线是否与Mesh具体相交
+		const count = this.triangles.length;
+		for(let i = 0; i < count; i++){
+			const tri = this.triangles[i];
+			const v1 = new Vertice(tri.v1.p[0], tri.v1.p[1], tri.v1.p[2]);
+			const v2 = new Vertice(tri.v2.p[0], tri.v2.p[1], tri.v2.p[2]);
+			const v3 = new Vertice(tri.v3.p[0], tri.v3.p[1], tri.v3.p[2]);
+			const isIntersected = MathUtils.intersectTriangle(localLine.vertice, localLine.vector, v1, v2, v3);
+			if(isIntersected){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	//set vertices and triangles
@@ -43,7 +152,7 @@ export default class Mesh extends Object3D {
 
 	calculateVBO(force:boolean = false) {
 		if (!this.vbo || force) {
-			var vboData:number[] = [], vertex:Vertice;
+			var vboData:number[] = [], vertex:MeshVertice;
 
 			for (var i = 0, length = this.vertices.length; i < length; i++) {
 				vertex = this.vertices[i];
@@ -85,7 +194,7 @@ export default class Mesh extends Object3D {
 
 	calculateNBO(force:boolean = false) {
 		if (!this.nbo || force) {
-			var nboData:number[] = [], vertex:Vertice;
+			var nboData:number[] = [], vertex:MeshVertice;
 
 			for (var i = 0, length = this.vertices.length; i < length; i++) {
 				vertex = this.vertices[i];
@@ -106,7 +215,7 @@ export default class Mesh extends Object3D {
 
 	calculateUVBO(force:boolean = false) {
 		if (!this.uvbo || force) {
-			var uvboData:number[] = [], vertex:Vertice;
+			var uvboData:number[] = [], vertex:MeshVertice;
 
 			for (var i = 0, length = this.vertices.length; i < length; i++) {
 				vertex = this.vertices[i];
@@ -126,7 +235,7 @@ export default class Mesh extends Object3D {
 
 	calculateCBO(force:boolean = false) {
 		if (!this.cbo || force) {
-			var cboData:number[] = [], vertex:Vertice;
+			var cboData:number[] = [], vertex:MeshVertice;
 
 			for (var i = 0, length = this.vertices.length; i < length; i++) {
 				vertex = this.vertices[i];

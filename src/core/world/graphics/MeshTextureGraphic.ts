@@ -3,7 +3,9 @@ import Program from '../Program';
 import Graphic from './Graphic';
 import Mesh from '../geometries/Mesh';
 import MeshTextureMaterial from '../materials/MeshTextureMaterial';
-import Camera from "../Camera";
+import Camera from '../Camera';
+import Line from '../math/Line';
+import {Drawable, Pickable} from '../Definitions.d';
 
 const vs =
 `
@@ -31,7 +33,7 @@ void main()
 }
 `;
 
-export default class MeshTextureGraphic extends Graphic {
+export default class MeshTextureGraphic extends Graphic implements Pickable {
     constructor(public geometry: Mesh, public material: MeshTextureMaterial){
         super(geometry, material);
         this.geometry.calculateVBO();
@@ -99,5 +101,19 @@ export default class MeshTextureGraphic extends Graphic {
         // gl.bindBuffer(gl.ARRAY_BUFFER, null);
         // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
         // gl.bindTexture(gl.TEXTURE_2D, null);
+    }
+
+    ifIntersectLocalLine(localLine: Line):boolean {
+        if(this.geometry){
+            return this.geometry.ifIntersectLocalLine(localLine);
+        }
+        return false;
+    }
+
+    ifIntersectWorldLine(worldLine: Line): boolean{
+        if(this.geometry){
+            return this.geometry.ifIntersectWorldLine(worldLine);
+        }
+        return false;
     }
 };

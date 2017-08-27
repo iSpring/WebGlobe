@@ -1,3 +1,4 @@
+import Line from './math/Line';
 import Matrix from './math/Matrix';
 import Camera from './Camera';
 import GraphicGroup from './GraphicGroup';
@@ -32,6 +33,13 @@ export interface Drawable{
     shouldDraw(camera: Camera): boolean;
     destroy(): void;
 }
+
+export interface Pickable{
+    ifIntersectLocalLine(localLine: Line): boolean;
+    ifIntersectWorldLine(worldLine: Line): boolean;
+}
+
+export type PickListener = (target: Pickable) => void;
 
 export interface CancelablePromise extends Promise<any>{
     cancel: () => void;

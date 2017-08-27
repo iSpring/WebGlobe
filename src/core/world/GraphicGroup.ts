@@ -1,8 +1,9 @@
 ﻿import Kernel from './Kernel';
-import {Drawable} from './Definitions.d';
-import Camera from "./Camera";
+import {Drawable, Pickable, PickListener} from './Definitions.d';
+import Camera from './Camera';
+import Line from './math/Line';
 
-export default class GraphicGroup<T extends Drawable> implements Drawable {
+class GraphicGroup<T extends Drawable> implements Drawable {
     id: number;
     parent: GraphicGroup<T>;
     children: T[];
@@ -68,8 +69,14 @@ export default class GraphicGroup<T extends Drawable> implements Drawable {
 
     draw(camera: Camera) {
         if (this.shouldDraw()) {
+            this.onBeforeDraw();
             this.onDraw(camera);
+            this.onAfterDraw();
         }
+    }
+
+    protected onBeforeDraw(){
+
     }
 
     protected onDraw(camera: Camera) {
@@ -79,4 +86,58 @@ export default class GraphicGroup<T extends Drawable> implements Drawable {
             }
         });
     }
+
+    protected onAfterDraw(){
+
+    }
 };
+
+
+//通过T extends Drawable & Pickable让T同时继承自多个接口
+export class PickableGraphicGroup<T extends Drawable & Pickable> extends GraphicGroup<T>{
+    private pickListener: PickListener = null;
+
+    pickByLocalLine(localLine: Line, emitListener: boolean = false): T{
+        const count = this.children.length;
+        for(let i = count - 1; i >= 0; i--){
+            const child = this.children[i];
+            if(child.ifIntersectLocalLine(localLine)){
+                if(emitListener){
+                    this.onPick(child);
+                }
+                return child;
+            }
+        }
+        return null;
+    }
+
+    pickByWorldLine(worldLine: Line, emitListener: boolean = false): T{
+        const count = this.children.length;
+        for(let i = count - 1; i >= 0; i--){
+            const child = this.children[i];
+            if(child.ifIntersectWorldLine(worldLine)){
+                if(emitListener){
+                    this.onPick(child);
+                }
+                return child;
+            }
+        }
+        return null;
+    }
+
+    private onPick(target: T){
+        if(this.pickListener){
+            this.pickListener(target);
+        }
+    }
+
+    hasPickListener(){
+        return !!this.pickListener;
+    }
+
+    setPickListener(listener: PickListener){
+        this.pickListener = listener;
+    }
+}
+
+export default GraphicGroup;

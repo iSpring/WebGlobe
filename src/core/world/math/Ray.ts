@@ -6,8 +6,8 @@ export default class Ray{
     public vector: Vector;
     /**
      * 射线
-     * @param position 射线起点 World.Vertice类型
-     * @param direction 射线方向 World.Vector类型
+     * @param position 射线起点
+     * @param direction 射线方向
      * @constructor
      */
     constructor(position: Vertice, direction: Vector){
