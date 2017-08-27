@@ -1,3 +1,4 @@
+declare const Promise: any;
 import Line from './math/Line';
 import Matrix from './math/Matrix';
 import Camera from './Camera';
