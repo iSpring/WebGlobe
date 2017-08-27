@@ -1,3 +1,4 @@
+declare const Promise: any;
 import Kernel from './Kernel';
 import Utils from './Utils';
 import { EventEmitter } from './Events';
@@ -831,7 +832,7 @@ class Camera extends Object3D {
   }
 
   animateTo(newLon: number, newLat: number, newLevel: number = this.getLevel(), duration: number = 1000) {
-    const promise = new Promise((resolve, reject) => {
+    const promise = new Promise((resolve:any, reject:any) => {
       if (this.isAnimating()) {
         reject("be animating");
         return;
