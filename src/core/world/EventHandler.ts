@@ -10,7 +10,7 @@ type DomEventListener = () => any;
 export default class EventHandler implements Destroyable {
   private down: boolean = false;
   private dragGeo: any = null;
-  private previousX: number = -1;
+  private previousX: number = -1;//对于PC浏览器存储offsetX，对于移动浏览器存储pageX
   private previousY: number = -1;
   private twoTouchDistance: number = -1;
   private oldTime: number = -1;
@@ -46,6 +46,7 @@ export default class EventHandler implements Destroyable {
       this.globe.canvas.addEventListener("mousedown", this._onMouseDown.bind(this), false);
       this.globe.canvas.addEventListener("mouseup", this._onMouseUp.bind(this), false);
       this.globe.canvas.addEventListener("mousemove", this._onMouseMove.bind(this), false);
+      this.globe.canvas.addEventListener("click", this._onClick.bind(this), false);
       this.globe.canvas.addEventListener("dblclick", this._onDbClick.bind(this), false);
       this.globe.canvas.addEventListener("mousewheel", this._onMouseWheel.bind(this), false);
       this.globe.canvas.addEventListener("DOMMouseScroll", this._onMouseWheel.bind(this), false);
@@ -75,6 +76,11 @@ export default class EventHandler implements Destroyable {
     var rotateVector = v1.cross(v2);
     var rotateRadian = -Vector.getRadianOfTwoVectors(v1, v2);
     this.globe.camera.worldRotateByVector(rotateRadian, rotateVector);
+  }
+
+  //单击时进行拾取
+  private _handleSingleClick(canvasX: number, canvasY: number){
+    this.globe.pick(canvasX, canvasY);
   }
 
   private _handleMouseDownOrTouchStart(offsetX: number, offsetY: number) {
@@ -151,6 +157,12 @@ export default class EventHandler implements Destroyable {
     this._handleMouseUpOrTouchEnd();
   }
 
+  private _onClick(event: MouseEvent){
+    var absoluteX = event.layerX || event.offsetX;
+    var absoluteY = event.layerY || event.offsetY;
+    this._handleSingleClick(absoluteX, absoluteY);
+  }
+
   private _onDbClick(event: MouseEvent) {
     var globe = this.globe;
     if (!globe || globe.isAnimating()) {
@@ -219,18 +231,27 @@ export default class EventHandler implements Destroyable {
 
   //--------------------------------------------------------------------------------------
 
-  private _onTouchZero(){
+  private _onTouchZero(event: TouchEvent){
     this.twoTouchDistance = -1;
+    const previousX = this.previousX;
+    const previousY = this.previousY;
     this._handleMouseUpOrTouchEnd();
     this.endTime = Date.now();
     var time = this.endTime - this.startTime;
     if (time <= 200) {
       var time2 = this.endTime - this.lastTime;
       if (time2 < 300) {
+        //相当于双击
         this.lastTime = this.oldTime;
         this.globe.zoomIn();
       }else {
+        //相当于单击
         this.lastTime = this.endTime;
+        //此时event.targetTouches为空数组
+        const {left, top} = this.globe.canvas.getBoundingClientRect();
+        const canvasX = previousX - left;
+        const canvasY = previousY - top;
+        this._handleSingleClick(canvasX, canvasY);
       }
     }
   }
@@ -274,7 +295,7 @@ export default class EventHandler implements Destroyable {
 
     var touchCount = event.targetTouches.length;
     if (touchCount === 0) {
-      this._onTouchZero();
+      this._onTouchZero(event);
     }else if(touchCount === 1){
       this._onTouchOne(event);
     }else if(touchCount === 2){
@@ -330,7 +351,7 @@ export default class EventHandler implements Destroyable {
   private _onTouchEnd(event: TouchEvent) {
     var touchCount = event.targetTouches.length;
     if (touchCount === 0) {
-      this._onTouchZero();
+      this._onTouchZero(event);
     }else if(touchCount === 1){
       this._onTouchOne(event);
     }else if(touchCount === 2){

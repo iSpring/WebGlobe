@@ -9,6 +9,10 @@ export default class Object3D {
       this.matrix = new Matrix();
     }
 
+    setMatrix(matrix: Matrix){
+      this.matrix = matrix;
+    }
+
     getMatrix(): Matrix{
       return this.matrix;
     }

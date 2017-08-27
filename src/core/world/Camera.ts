@@ -446,7 +446,7 @@ class Camera extends Object3D {
     return newFov;
   }
 
-  getResolutionInWorld(): number{
+  getResolutionInWorld(): number {
     return this.measureResolution() / Kernel.SCALE_FACTOR;
   }
 
@@ -460,7 +460,7 @@ class Camera extends Object3D {
   }
 
   //返回x和y综合的平均分辨率
-  measureResolution(): number{
+  measureResolution(): number {
     const {
       resolutionX,
       bestDisplayLevelFloatX,
@@ -599,7 +599,7 @@ class Camera extends Object3D {
       this.level = level;
       this.floatLevel = level;
     }
-    if(levelChanged){
+    if (levelChanged) {
       Utils.publish('level-change', {
         oldLevel: oldLevel,
         newLevel: this.level
@@ -717,9 +717,48 @@ class Camera extends Object3D {
     return pitch;
   }
 
-  //计算拾取射线与地球的交点，以笛卡尔空间直角坐标系坐标数组的形式返回
-  //该方法需要projViewMatrixForDraw系列矩阵进行计算
-  getPickCartesianCoordInEarthByCanvas(canvasX: number, canvasY: number): Vertice[] {
+  // _doWorkByMatrixForDraw(cb: any) {
+  //   this._updateCore();
+
+  //   //暂存projViewMatrix系列矩阵
+  //   var matrix = this.matrix;
+  //   var viewMatrix = this.viewMatrix;
+  //   var projMatrix = this.projMatrix;
+  //   var projViewMatrix = this.projViewMatrix;
+
+  //   //将projViewMatrix系列矩阵赋值为projViewMatrixForDraw系列矩阵
+  //   this.matrix = this.matrixForDraw;
+  //   this.viewMatrix = this.viewMatrixForDraw;
+  //   this.projMatrix = this.projMatrixForDraw;
+  //   this.projViewMatrix = this.projViewMatrixForDraw;
+
+  //   //基于projViewMatrixForDraw系列矩阵进行计算，应该没有误差
+  //   // var pickDirection = this._getPickDirectionByCanvas(canvasX, canvasY);
+  //   // var p = this.getPosition();
+  //   // var line = new Line(p, pickDirection);
+  //   // var result = this._getPickCartesianCoordInEarthByLine(line);
+  //   cb();
+
+  //   //还原projViewMatrix系列矩阵
+  //   this.matrix = matrix;
+  //   this.viewMatrix = viewMatrix;
+  //   this.projMatrix = projMatrix;
+  //   this.projViewMatrix = projViewMatrix;
+  // }
+
+  /**
+   * 该方法需要projViewMatrixForDraw系列矩阵进行计算
+   * 返回拾取的射线相关信息，result.line表示拾取的直线，result.vertices表示拾取的点，即射线与地球的交点
+   * @param canvasX 
+   * @param canvasY 
+   * @param verticesResult 如果为true，那么会计算result.vertices
+   * return {line, vertices}
+   */
+  getPickInfoByCanvas(canvasX: number, canvasY: number, verticesResult: boolean = false):any {
+    const result: any = {
+      line: null,
+      vertices: []
+    };
     this._updateCore();
 
     //暂存projViewMatrix系列矩阵
@@ -737,8 +776,10 @@ class Camera extends Object3D {
     //基于projViewMatrixForDraw系列矩阵进行计算，应该没有误差
     var pickDirection = this._getPickDirectionByCanvas(canvasX, canvasY);
     var p = this.getPosition();
-    var line = new Line(p, pickDirection);
-    var result = this._getPickCartesianCoordInEarthByLine(line);
+    result.line = new Line(p, pickDirection);
+    if(verticesResult){
+      result.vertices = this._getPickCartesianCoordInEarthByLine(result.line);
+    }
 
     //还原projViewMatrix系列矩阵
     this.matrix = matrix;
@@ -747,6 +788,13 @@ class Camera extends Object3D {
     this.projViewMatrix = projViewMatrix;
 
     return result;
+  }
+
+  //计算拾取射线与地球的交点，以笛卡尔空间直角坐标系坐标数组的形式返回
+  //该方法需要projViewMatrixForDraw系列矩阵进行计算
+  getPickCartesianCoordInEarthByCanvas(canvasX: number, canvasY: number): Vertice[] {
+    const pickInfo = this.getPickInfoByCanvas(canvasX, canvasY, true);
+    return pickInfo.vertices;
   }
 
   getLightDirection(): Vector {
@@ -875,14 +923,14 @@ class Camera extends Object3D {
     requestAnimationFrame(callback);
   }
 
-  setExtent(extent: Extent){
-    if(extent){
+  setExtent(extent: Extent) {
+    if (extent) {
       const [lon, lat, level] = this._calculateLonLatLevelByExtent(extent);
-      this.centerTo(lon, lat, level); 
+      this.centerTo(lon, lat, level);
     }
   }
 
-  animateToExtent(extent: Extent, duration: number = 1000){
+  animateToExtent(extent: Extent, duration: number = 1000) {
     const [lon, lat, level] = this._calculateLonLatLevelByExtent(extent);
     return this.animateTo(lon, lat, level, duration);
   }
@@ -931,16 +979,16 @@ class Camera extends Object3D {
     this.setPosition(newPosition);
   }
 
-  private _safelyGetValidLevel(level: number){
-    if(level > Kernel.MAX_LEVEL){
+  private _safelyGetValidLevel(level: number) {
+    if (level > Kernel.MAX_LEVEL) {
       level = Kernel.MAX_LEVEL;
-    }else if(level < Kernel.MIN_LEVEL){
+    } else if (level < Kernel.MIN_LEVEL) {
       level = Kernel.MIN_LEVEL;
     }
     return level;
   }
 
-  private _calculateLonLatLevelByExtent(extent: Extent){
+  private _calculateLonLatLevelByExtent(extent: Extent) {
     const centerLon = (extent.getMinLon() + extent.getMaxLon()) / 2;
     const centerLat = (extent.getMinLat() + extent.getMaxLat()) / 2;
     const deltaLon = extent.getMaxLon() - extent.getMinLon();

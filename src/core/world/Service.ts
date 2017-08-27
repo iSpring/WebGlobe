@@ -1,3 +1,4 @@
+declare const Promise: any;
 import Extent from './Extent';
 import MathUtils from './math/Utils';
 

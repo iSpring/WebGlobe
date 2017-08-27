@@ -24,7 +24,9 @@ export default class Result extends RouteComponent {
             total: 0,
             pageIndex: 0,
             location: null,
-            pois: [],
+            // pois: [],
+            graphics: [],
+            highlightPoi: null,
             list: true
         };
     }
@@ -33,6 +35,22 @@ export default class Result extends RouteComponent {
         super.componentDidMount();
         this.domNode.style.opacity = 1;
         this.search(0);
+        globe.poiLayer.setHighlightListener((graphic) => {
+            this.setState({
+                highlightPoi: graphic
+            });
+        });
+        globe.poiLayer.setUnHighlightListener(() => {
+            this.setState({
+                highlightPoi: null
+            });
+        });
+    }
+
+    componentWillUnmount(){
+        super.componentWillUnmount();
+        globe.poiLayer.setHighlightListener(null);
+        globe.poiLayer.setUnHighlightListener(null);
     }
 
     onMap() {
@@ -47,9 +65,13 @@ export default class Result extends RouteComponent {
         });
     }
 
-    onClickPoi(poi){
-        if(typeof poi.pointx === 'number' && typeof poi.pointy === 'number'){
-            globe.centerTo(poi.pointx, poi.pointy);
+    onClickPoi(graphic, index){
+        // const graphic = globe.poiLayer.children[index];
+        if(graphic){
+            globe.poiLayer.highlightPoi(graphic);
+        }
+        if(typeof graphic.attributes.pointx === 'number' && typeof graphic.attributes.pointy === 'number'){
+            globe.centerTo(graphic.attributes.pointx, graphic.attributes.pointy);
         }
         this.setState({
             list: false
@@ -109,7 +131,8 @@ export default class Result extends RouteComponent {
                         total: response.info.total,
                         pageIndex: pageIndex,
                         location: response.location,
-                        pois: response.detail.pois
+                        // pois: response.detail.pois
+                        graphics: response.detail.graphics
                     });
                 }
             });
@@ -122,7 +145,9 @@ export default class Result extends RouteComponent {
             total,
             pageIndex,
             location,
-            pois
+            // pois
+            graphics,
+            highlightPoi
         } = this.state;
 
         let {
@@ -151,21 +176,21 @@ export default class Result extends RouteComponent {
                                 total > 0 && (
                                     <div className={styles.pois}>
                                         {
-                                            this.state.pois.map((poi, index) => {
+                                            graphics.map((poi, index) => {
                                                 let distanceLabel = false;
 
                                                 if(location && location.length === 2){
                                                     const [lon, lat] = location;
-                                                    let distance = MathUtils.getRealArcDistanceBetweenLonLats(lon, lat, poi.pointx, poi.pointy);
+                                                    let distance = MathUtils.getRealArcDistanceBetweenLonLats(lon, lat, poi.attributes.pointx, poi.attributes.pointy);
                                                     distanceLabel = distance > 1000 ? `${(distance/1000).toFixed(1)}公里` : `${Math.floor(distance)}米`;
                                                 }
                                                 
                                                 return (
-                                                    <div className={styles.poi} key={poi.uid} onClick={() => this.onClickPoi(poi)}>
+                                                    <div className={styles.poi} key={poi.attributes.uid} onClick={() => this.onClickPoi(poi, index)}>
                                                         <div className={styles.index}>{index + 1}</div>
                                                         <div className={styles.info}>
-                                                            <div className={this.nameClassNames}>{poi.name}</div>
-                                                            <div className={this.addressClassNames}>{poi.addr}</div>
+                                                            <div className={this.nameClassNames}>{poi.attributes.name}</div>
+                                                            <div className={this.addressClassNames}>{poi.attributes.addr}</div>
                                                         </div>
                                                         {
                                                             distanceLabel && (
@@ -211,6 +236,14 @@ export default class Result extends RouteComponent {
                     ) : (
                             <div className={styles.map}>
                                 <Map />
+                                {
+                                    highlightPoi && (
+                                        <div className={styles.infowindow}>
+                                            <div className={this.nameClassNames}>{highlightPoi.attributes.name}</div>
+                                            <div className={this.addressClassNames}>{highlightPoi.attributes.addr}</div>
+                                        </div>
+                                    )
+                                }
                             </div>
                         )
                 }

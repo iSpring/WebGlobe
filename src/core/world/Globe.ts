@@ -376,6 +376,12 @@ export default class Globe {
     }
   }
 
+  pick(canvasX: number, canvasY: number){
+    const pickInfo = this.camera.getPickInfoByCanvas(canvasX, canvasY, false);
+    const line = pickInfo.line;
+    this.scene.pickByWorldLine(line);
+  }
+
   test(){
     this.debugStopRefreshTiles = true;
     this.labelLayer.hideAllTiles();

@@ -295,7 +295,7 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
         // this.test();
         Utils.subscribe('level-change', () => {
             if (this.children.length > 0) {
-                const resolution = this._getResolution();
+                const resolution = this.camera.measureResolution();
                 this.children.forEach((graphic: Drawable) => {
                     if (graphic instanceof MeshRouteGraphic) {
                         graphic.updateGeometry(resolution);
@@ -309,7 +309,7 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
         // this.clear();
         // const startLonLat: number[] = [116, 40];//[116, -40];
         // const endLonLat: number[] = [116, 25];// [116, 40];
-        const resolution = this._getResolution();
+        const resolution = this.camera.measureResolution();
         // this._addRouteByLonlat(startLonLat, endLonLat, resolution, pixelWidth, segments, rgb);
         this._addRouteByLonlats([[90, 0], [120, 0], [120, 40]], resolution, this.pixelWidth, rgb);
     }
@@ -361,16 +361,6 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
             }
         }
         return graphic;
-    }
-
-    private _getResolution() {
-        const {
-            resolutionX,
-            bestDisplayLevelFloatX,
-            resolutionY,
-            bestDisplayLevelFloatY
-        } = this.camera.measureXYResolutionAndBestDisplayLevel();
-        return (resolutionX + resolutionY) / 2;
     }
 
     private _getLonlatsBySegments(startLonLat: number[], endLonLat: number[], segments: number) {
@@ -440,7 +430,7 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
 
                     setTimeout(() => {
                         //It's better to show path after extent changed because we can use the new resolution.
-                        const resolution = this._getResolution();
+                        const resolution = this.camera.measureResolution();
                         /*lonlatsSegments.forEach((lonlats: number[][]) => {
                             this._addRouteByLonlats(lonlats, resolution, this.pixelWidth, this.drivingColor);
                         });*/
@@ -501,7 +491,7 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
                     this.camera.setExtent(extent);
 
                     setTimeout(() => {
-                        const resolution = this._getResolution();
+                        const resolution = this.camera.measureResolution();
                         lonlatsSegments.forEach((lonlats: number[][]) => {
                             this._addRouteByLonlats(lonlats, resolution, this.pixelWidth, (lonlats as any).color);
                         });
@@ -542,7 +532,7 @@ export default class RouteLayer extends GraphicGroup<Drawable>{
                     this.camera.setExtent(extent);
 
                     setTimeout(() => {
-                        const resolution = this._getResolution();
+                        const resolution = this.camera.measureResolution();
                         this._addRouteByLonlats(lonlats, resolution, this.pixelWidth, this.walkingColor);
                         this._showStartEndPoints();
                     }, 0);
