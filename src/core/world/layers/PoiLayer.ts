@@ -8,22 +8,23 @@ import Mesh from '../geometries/Mesh';
 import Graphic from '../graphics/Graphic';
 import MeshTextureGraphic from '../graphics/MeshTextureGraphic';
 import GraphicGroup,{PickableGraphicGroup} from '../GraphicGroup';
-// import MultiPointsGraphic from '../graphics/MultiPointsGraphic';
-// import MarkerTextureMaterial from '../materials/MarkerTextureMaterial';
 import MeshTextureMaterial from '../materials/MeshTextureMaterial';
 import Service, { Location, SearchType } from '../Service';
 import Globe from '../Globe';
 import Extent from '../Extent';
 const poiImgUrl = require('../images/icons.png');
 
+type HighlightListener = (graphic: MeshTextureGraphic) => void;
+type UnHighlightListener = () => void;
 
 export default class PoiLayer extends PickableGraphicGroup<MeshTextureGraphic>{
   private keyword: string = null;
   private searchExtentMode: boolean = false;
   public globe: Globe = null;
-  private highLightPoi: MeshTextureGraphic = null;
-  private readonly MAX_POI_COUNT = 10;//一次最多显示10个poi
-
+  private currentHighLightPoi: MeshTextureGraphic = null;
+  private highlightListener: HighlightListener = null;
+  private unHighlightListener: UnHighlightListener = null;
+  
   //icons.png的尺寸是874X524
   private readonly iconsWidth = 874;
   private readonly iconsHeight = 524;
@@ -31,6 +32,7 @@ export default class PoiLayer extends PickableGraphicGroup<MeshTextureGraphic>{
   //icons划分为6行10列
   private readonly iconsRow = 6;
   private readonly iconsColumn = 10;
+  private readonly MAX_POI_COUNT = this.iconsColumn;//一次最多显示10个poi
 
   //每个小图标有效范围大小为50X70
   private readonly validPinIconWidth = 50;
@@ -78,16 +80,14 @@ export default class PoiLayer extends PickableGraphicGroup<MeshTextureGraphic>{
       }
     });
     this.setPickListener((target: MeshTextureGraphic) => {
-      if(this.highLightPoi){
-        this._unHighLightPoi(this.highLightPoi);
+      if(this.currentHighLightPoi !== target){
+        this.unHighlightPoi();
+        this.highlightPoi(target);
       }
-      this.highLightPoi = target;
-      this._highLightPoi(this.highLightPoi);
     });
   }
 
   static getInstance(): PoiLayer {
-    // var material = new MarkerTextureMaterial(poiImgUrl, 16);
     return new PoiLayer();
   }
 
@@ -108,12 +108,38 @@ export default class PoiLayer extends PickableGraphicGroup<MeshTextureGraphic>{
     return [v0, v1, v2, v3];
   }
 
-  private _highLightPoi(target: MeshTextureGraphic){
-    this._updateMaterial(target, this.highLightMaterialRow);
+  getHighlightPoi(){
+    return this.currentHighLightPoi;
   }
 
-  private _unHighLightPoi(target: MeshTextureGraphic){
-    this._updateMaterial(target, this.normalMaterialRow);
+  highlightPoi(target: MeshTextureGraphic){
+    if(this.currentHighLightPoi === target){
+      return;
+    }
+    this.unHighlightPoi();
+    this.currentHighLightPoi = target;
+    this._updateMaterial(this.currentHighLightPoi, this.highLightMaterialRow);
+    if(this.highlightListener){
+      this.highlightListener(this.currentHighLightPoi);
+    }
+  }
+
+  unHighlightPoi(){
+    if(this.currentHighLightPoi){
+      this._updateMaterial(this.currentHighLightPoi, this.normalMaterialRow);
+      this.currentHighLightPoi = null;
+      if(this.unHighlightListener){
+        this.unHighlightListener();
+      }
+    }
+  }
+
+  setHighlightListener(listener: HighlightListener){
+    this.highlightListener = listener;
+  }
+
+  setUnHighlightListener(listener: UnHighlightListener){
+    this.unHighlightListener = listener;
   }
 
   private _updateMaterial(target: MeshTextureGraphic, row: number){
@@ -152,7 +178,7 @@ export default class PoiLayer extends PickableGraphicGroup<MeshTextureGraphic>{
   }
 
   clear(){
-    this.highLightPoi = null;
+    this.currentHighLightPoi = null;
     super.clear();
   }
 
@@ -178,47 +204,42 @@ export default class PoiLayer extends PickableGraphicGroup<MeshTextureGraphic>{
     const v0 = Vector.verticePlusVector(v1, localUp);
     const v2 = Vector.verticePlusVector(v3, localUp);
 
-    // const uv_u1 = index / this.MAX_POI_COUNT;
-    // const uv_u2 = (index + 1) / this.MAX_POI_COUNT;
     const uv = this._getUV(this.normalMaterialRow, index);
 
     //左上角
     const meshV0 = new MeshVertice({
       i: 0,
       p: v0.getArray(),
-      // uv: [uv_u1, this.UV_V1]
       uv: uv[0]
     });
     //左下角
     const meshV1 = new MeshVertice({
       i: 1,
       p: v1.getArray(),
-      // uv: [uv_u1, this.UV_V2]
       uv: uv[1]
     });
     //右上角
     const meshV2 = new MeshVertice({
       i: 2,
       p: v2.getArray(),
-      // uv: [uv_u2, this.UV_V1]
       uv: uv[2]
     });
     //右下角
     const meshV3 = new MeshVertice({
       i: 3,
       p: v3.getArray(),
-      // uv: [uv_u2, this.UV_V2]
       uv: uv[3]
     });
 
     const mesh = Mesh.buildMesh(meshV0, meshV1, meshV2, meshV3);
     mesh.setMatrix(localMatrix);
     const material = new MeshTextureMaterial(poiImgUrl);
-    const graphic = new MeshTextureGraphic(mesh, material);
+    const graphic = new MeshTextureGraphic(mesh, material, item);
     (graphic.geometry as any).resolution = resolution;
     (graphic as any).columnIndex = index;
 
     this.add(graphic);
+    return graphic;
   }
 
   private _showPois(searchResponse: any) {
@@ -248,10 +269,11 @@ export default class PoiLayer extends PickableGraphicGroup<MeshTextureGraphic>{
 
     const resolution = this.globe.camera.measureResolution();
 
-    pois.forEach((item: any, index: number) => {
+    //添加graphics
+    searchResponse.detail.graphics = pois.map((item: any, index: number) => {
       var lon = parseFloat(item.pointx);
       var lat = parseFloat(item.pointy);
-      this._addPoi(lon, lat, resolution, item, index);
+      return this._addPoi(lon, lat, resolution, item, index);
     });
   }
 

@@ -255,3 +255,5 @@
 - 0.5.5 修复了Camera中计算出的实际分辨率总是真实值的1.3倍的bug
 
 - 0.5.6 可以点击拾取PoiLayer
+
+- 0.5.7 Graphic支持attributes属性，优化PoiLayer拾取逻辑，修复Service.ts中Promise导致TypeScript报错的问题

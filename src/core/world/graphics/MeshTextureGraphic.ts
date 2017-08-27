@@ -5,7 +5,7 @@ import Mesh from '../geometries/Mesh';
 import MeshTextureMaterial from '../materials/MeshTextureMaterial';
 import Camera from '../Camera';
 import Line from '../math/Line';
-import {Drawable, Pickable} from '../Definitions.d';
+import {Drawable, Pickable, Attributes} from '../Definitions.d';
 
 const vs =
 `
@@ -34,8 +34,8 @@ void main()
 `;
 
 export default class MeshTextureGraphic extends Graphic implements Pickable {
-    constructor(public geometry: Mesh, public material: MeshTextureMaterial){
-        super(geometry, material);
+    constructor(public geometry: Mesh, public material: MeshTextureMaterial, public attributes: Attributes = null){
+        super(geometry, material, attributes);
         this.geometry.calculateVBO();
         this.geometry.calculateIBO();
         this.geometry.calculateUVBO();

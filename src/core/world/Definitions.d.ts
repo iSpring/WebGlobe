@@ -49,6 +49,10 @@ export interface Destroyable{
     destroy: () => void;
 }
 
+export interface Attributes{
+    [key: string]: any
+}
+
 // declare module "*.png" {
 //   const content: any;
 //   export default content;

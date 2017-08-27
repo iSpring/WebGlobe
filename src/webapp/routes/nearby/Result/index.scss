@@ -145,3 +145,26 @@ $line: 1px solid #d3d3d3;
         }
     }
 }
+
+.map{
+    .infowindow{
+        position: absolute;
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        height: auto;
+        background: white;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        padding: 8px;
+        .name {
+            font-size: 15px;
+            color: #333;
+        }
+        .address {
+            font-size: 12px;
+            color: $main-color;
+            margin-top: 8px;
+        }
+    }
+}
