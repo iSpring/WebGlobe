@@ -66,8 +66,11 @@ class Camera extends Object3D {
   private readonly animationDuration: number = 200;//层级变化的动画周期，毫秒
   private readonly nearFactor: number = 0.6;
   private readonly maxPitch: number = 40;
-  private readonly resolutionFactor1: number = 1;//resolutionFactor1的值必须为1，否则会影响量算分辨率的实际结果
-  private readonly resolutionFactor2: number = 2;//resolutionFactor2用于矫正计算出的分辨率与实际分辨率之间的差别
+  //resolutionFactor1的值为1时量算出的分辨率就是实际分辨率，但是图片不是256大小显示
+  //为了确保图片以256显示，需要将resolutionFactor1设置为Math.pow(2, 0.3752950)
+  //getResolution()和getResolutionInWorld()方法用于让其他类调用获取实际的分辨率，需要除以resolutionFactor1以便获取真实值
+  private readonly resolutionFactor1: number = Math.pow(2, 0.3752950);
+  private readonly resolutionFactor2: number = this.resolutionFactor1 * 2;//resolutionFactor2用于矫正计算出的分辨率与实际分辨率之间的差别
 
   //旋转的时候，绕着视线与地球交点进行旋转
   //定义抬头时，旋转角为正值
@@ -447,28 +450,30 @@ class Camera extends Object3D {
     return newFov;
   }
 
-  getResolutionInWorld(): number {
-    return this.measureResolution() / Kernel.SCALE_FACTOR;
-  }
-
-  //屏幕1px在实际世界中的距离
-  getResolutionInWorld2(): number {
-    if (realResolutionCache.hasOwnProperty(this.level)) {
-      return realResolutionCache[this.level];
-    } else {
-      return Kernel.MAX_REAL_RESOLUTION / Math.pow(2, this.level);
-    }
-  }
-
   //返回x和y综合的平均分辨率
-  measureResolution(): number {
+  //for public use
+  getResolution(): number {
     const {
       resolutionX,
       bestDisplayLevelFloatX,
       resolutionY,
       bestDisplayLevelFloatY
     } = this.measureXYResolutionAndBestDisplayLevel();
-    return (resolutionX + resolutionY) / 2;
+    return (resolutionX + resolutionY) / 2 / this.resolutionFactor1;
+  }
+
+  //for public use
+  getResolutionInWorld(): number {
+    return this.getResolution() / Kernel.SCALE_FACTOR;
+  }
+
+  //屏幕1px在实际世界中的距离,for test
+  private getResolutionInWorld2(): number {
+    if (realResolutionCache.hasOwnProperty(this.level)) {
+      return realResolutionCache[this.level];
+    } else {
+      return Kernel.MAX_REAL_RESOLUTION / Math.pow(2, this.level);
+    }
   }
 
   //resolution,level

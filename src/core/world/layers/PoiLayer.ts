@@ -71,7 +71,7 @@ export default class PoiLayer extends PickableGraphicGroup<MeshTextureGraphic>{
 
     Utils.subscribe('level-change', () => {
       if (this.children.length > 0) {
-        const resolution = this.globe.camera.measureResolution();
+        const resolution = this.globe.camera.getResolution();
         this.children.forEach((graphic: MeshTextureGraphic) => {
           const scale = resolution / (graphic.geometry as any).resolution;
           graphic.geometry.localScale(scale, scale, scale);
@@ -268,7 +268,7 @@ export default class PoiLayer extends PickableGraphicGroup<MeshTextureGraphic>{
       this.globe.centerTo(lonlat[0], lonlat[1]);
     }
 
-    const resolution = this.globe.camera.measureResolution();
+    const resolution = this.globe.camera.getResolution();
 
     //添加graphics
     searchResponse.detail.graphics = pois.map((item: any, index: number) => {

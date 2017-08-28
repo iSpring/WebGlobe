@@ -257,3 +257,5 @@
 - 0.5.6 可以点击拾取PoiLayer
 
 - 0.5.7 Graphic支持attributes属性，优化PoiLayer拾取逻辑，修复Service.ts中Promise导致TypeScript报错的问题
+
+- 0.5.8 重新修改了resolutionFactor1和resolutionFactor2的值，确保图片是256大小显示，并且确保getResolution()和getResolutionInWorld()方法用于让其他类调用获取实际的分辨率
