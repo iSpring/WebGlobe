@@ -8,7 +8,7 @@
 
 ## WebGlobe
 [![Build Status](https://travis-ci.org/iSpring/WebGlobe.svg?branch=develop)](https://travis-ci.org/iSpring/WebGlobe)
-[![Release](https://img.shields.io/badge/release-0.5.1-blue.svg)](https://github.com/iSpring/WebGlobe/releases)
+[![Release](https://img.shields.io/badge/release-0.6.0-blue.svg)](https://github.com/iSpring/WebGlobe/releases)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/iSpring/WebGlobe)
 
 [![Chrome 8+](https://img.shields.io/badge/Chrome-8+-1DA362.svg)](http://caniuse.com/#search=WebGL)

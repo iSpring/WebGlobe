@@ -261,5 +261,7 @@
  - 0.5.8 重新修改了resolutionFactor1和resolutionFactor2的值，确保图片是256大小显示，并且确保getResolution()和getResolutionInWorld()方法用于让其他类调用获取实际的分辨率
 
  - 0.5.9
-   - 使得Glboe支持resolutionFactor参数，并且在webapp.html中设置值为1.2
+   - 使得Globe支持resolutionFactor参数，并且在webapp.html中设置值为1.2
    - 优化了webapp.html搜索体验，支持“当前位置”
+
+ - 0.6.0 更新README.md和图片，发布新版本
