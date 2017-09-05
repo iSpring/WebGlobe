@@ -55,14 +55,18 @@ export default class RouteComponent extends Component {
         return this._isMounted;
     }
 
-    wrapPromise(promise){
-        loading.show();
+    wrapPromise(promise, disableLoading){
+        if(!disableLoading){
+            loading.show();
+        }
         this.setState({
             loading: true
         });
         const p = new Promise((resolve, reject) => {
             promise.then((response) => {
-                loading.hide();
+                if(!disableLoading){
+                    loading.hide();
+                }
                 if(this.hasBeenMounted()){
                     this.setState({
                         loading: false
@@ -70,7 +74,9 @@ export default class RouteComponent extends Component {
                     resolve(response);
                 }
             }, (err) => {
-                loading.hide();
+                if(!disableLoading){
+                    loading.hide();
+                }
                 if(this.hasBeenMounted()){
                     this.setState({
                         loading: false
