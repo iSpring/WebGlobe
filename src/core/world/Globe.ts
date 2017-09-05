@@ -31,6 +31,7 @@ export class GlobeOptions{
   level: number | 'auto' = 'auto';
   lonlat: number[] | 'auto' = 'auto';
   key: string = "";
+  resolutionFactor: number;
 }
 
 export default class Globe {
@@ -75,7 +76,7 @@ export default class Globe {
     var radio = canvas.width / canvas.height;
     let level = this.options.level >= 0 ? (this.options.level as number) : initLevel;
     let lonlat = (this.options.lonlat && this.options.lonlat.length === 2) ? (this.options.lonlat as number[]) : initLonlat;
-    this.camera = new Camera(canvas, 30, radio, 1, Kernel.EARTH_RADIUS * 2, level, lonlat);
+    this.camera = new Camera(canvas, 30, radio, 1, Kernel.EARTH_RADIUS * 2, level, lonlat, options.resolutionFactor);
     this.renderer.setScene(this.scene);
     this.renderer.setCamera(this.camera);
 

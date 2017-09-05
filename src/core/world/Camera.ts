@@ -69,8 +69,11 @@ class Camera extends Object3D {
   //resolutionFactor1的值为1时量算出的分辨率就是实际分辨率，但是图片不是256大小显示
   //为了确保图片以256显示，需要将resolutionFactor1设置为Math.pow(2, 0.3752950)
   //getResolution()和getResolutionInWorld()方法用于让其他类调用获取实际的分辨率，需要除以resolutionFactor1以便获取真实值
-  private readonly resolutionFactor1: number = Math.pow(2, 0.3752950);
-  private readonly resolutionFactor2: number = this.resolutionFactor1 * 2;//resolutionFactor2用于矫正计算出的分辨率与实际分辨率之间的差别
+  // private resolutionFactor1: number = Math.pow(2, 0.3752950);
+  private resolutionFactor1: number;
+  //resolutionFactor2用于矫正计算出的分辨率与实际分辨率之间的差别
+  // private resolutionFactor2: number = this.resolutionFactor1 * 2;
+  private resolutionFactor2: number;
 
   //旋转的时候，绕着视线与地球交点进行旋转
   //定义抬头时，旋转角为正值
@@ -110,8 +113,22 @@ class Camera extends Object3D {
   //this.far可以动态计算
   //this.aspect在Viewport改变后重新计算
   //this.fov可以调整以实现缩放效果
-  constructor(private canvas: HTMLCanvasElement, private fov: number = 45, private aspect: number = 1, private near: number = 1, private far: number = 100, level: number = 3, lonlat: number[] = [0, 0]) {
+  constructor(
+    private canvas: HTMLCanvasElement, 
+    private fov: number = 45, 
+    private aspect: number = 1, 
+    private near: number = 1, 
+    private far: number = 100, 
+    level: number = 3, 
+    lonlat: number[] = [0, 0],
+    resolutionFactor: number = Math.pow(2, 0.3752950)) {
+    
     super();
+    if(!(resolutionFactor > 0)){
+      resolutionFactor = Math.pow(2, 0.3752950);
+    }
+    this.resolutionFactor1 = resolutionFactor;
+    this.resolutionFactor2 = this.resolutionFactor1 * 2;
     this.eventEmitter = new EventEmitter();
     this.lonlatsOfBoundary = [];
     this.initFov = this.fov;
