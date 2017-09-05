@@ -1,5 +1,5 @@
 ﻿import Kernel from '../Kernel';
-import {Drawable} from '../Definitions.d';
+import {Drawable, Attributes} from '../Definitions.d';
 import Geometry from '../geometries/Geometry';
 import Material from '../materials/Material';
 import Program from '../Program';
@@ -12,7 +12,7 @@ abstract class Graphic implements Drawable{
     parent: GraphicGroup<Drawable>;
     program: Program;
 
-    constructor(public geometry: Geometry = null, public material: Material = null){
+    constructor(public geometry: Geometry = null, public material: Material = null, public attributes: Attributes = null){
         this.id = ++Kernel.idCounter;
         this.parent = null;
         this.program = this.createProgram();

@@ -16,7 +16,7 @@ $exchange-size: 0;
     .inputs-container{
         position: absolute;
         left: 15px;
-        right: $exchange-size;
+        right: 70px;
         top: 0;
         height: 100%;
 
@@ -75,6 +75,17 @@ $exchange-size: 0;
             font-size: 24px;
             line-height: $input-container-height * 2;
         }
+    }
+
+    .search-btn{
+        position: absolute;
+        top: 29px;
+        right: 8px;
+        border: 1px solid $blue-color;
+        padding: 4px 8px;
+        border-radius: 20px;
+        font-size: 15px;
+        color: $blue-color;
     }
 }
 

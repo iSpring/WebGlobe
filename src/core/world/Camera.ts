@@ -1,3 +1,4 @@
+declare const Promise: any;
 import Kernel from './Kernel';
 import Utils from './Utils';
 import { EventEmitter } from './Events';
@@ -65,8 +66,14 @@ class Camera extends Object3D {
   private readonly animationDuration: number = 200;//层级变化的动画周期，毫秒
   private readonly nearFactor: number = 0.6;
   private readonly maxPitch: number = 40;
-  private readonly resolutionFactor1: number = Math.pow(2, 0.3752950);
-  private readonly resolutionFactor2: number = Math.pow(2, 1.3752950);
+  //resolutionFactor1的值为1时量算出的分辨率就是实际分辨率，但是图片不是256大小显示
+  //为了确保图片以256显示，需要将resolutionFactor1设置为Math.pow(2, 0.3752950)
+  //getResolution()和getResolutionInWorld()方法用于让其他类调用获取实际的分辨率，需要除以resolutionFactor1以便获取真实值
+  // private resolutionFactor1: number = Math.pow(2, 0.3752950);
+  private resolutionFactor1: number;
+  //resolutionFactor2用于矫正计算出的分辨率与实际分辨率之间的差别
+  // private resolutionFactor2: number = this.resolutionFactor1 * 2;
+  private resolutionFactor2: number;
 
   //旋转的时候，绕着视线与地球交点进行旋转
   //定义抬头时，旋转角为正值
@@ -106,8 +113,22 @@ class Camera extends Object3D {
   //this.far可以动态计算
   //this.aspect在Viewport改变后重新计算
   //this.fov可以调整以实现缩放效果
-  constructor(private canvas: HTMLCanvasElement, private fov: number = 45, private aspect: number = 1, private near: number = 1, private far: number = 100, level: number = 3, lonlat: number[] = [0, 0]) {
+  constructor(
+    private canvas: HTMLCanvasElement, 
+    private fov: number = 45, 
+    private aspect: number = 1, 
+    private near: number = 1, 
+    private far: number = 100, 
+    level: number = 3, 
+    lonlat: number[] = [0, 0],
+    resolutionFactor: number = Math.pow(2, 0.3752950)) {
+    
     super();
+    if(!(resolutionFactor > 0)){
+      resolutionFactor = Math.pow(2, 0.3752950);
+    }
+    this.resolutionFactor1 = resolutionFactor;
+    this.resolutionFactor2 = this.resolutionFactor1 * 2;
     this.eventEmitter = new EventEmitter();
     this.lonlatsOfBoundary = [];
     this.initFov = this.fov;
@@ -446,8 +467,34 @@ class Camera extends Object3D {
     return newFov;
   }
 
+  //返回x和y综合的平均分辨率
+  //for public use
+  getResolution(): number {
+    const {
+      resolutionX,
+      bestDisplayLevelFloatX,
+      resolutionY,
+      bestDisplayLevelFloatY
+    } = this.measureXYResolutionAndBestDisplayLevel();
+    return (resolutionX + resolutionY) / 2 / this.resolutionFactor1;
+  }
+
+  //for public use
+  getResolutionInWorld(): number {
+    return this.getResolution() / Kernel.SCALE_FACTOR;
+  }
+
+  //屏幕1px在实际世界中的距离,for test
+  private getResolutionInWorld2(): number {
+    if (realResolutionCache.hasOwnProperty(this.level)) {
+      return realResolutionCache[this.level];
+    } else {
+      return Kernel.MAX_REAL_RESOLUTION / Math.pow(2, this.level);
+    }
+  }
+
   //resolution,level
-  measureXYResolutionAndBestDisplayLevel(): any {
+  private measureXYResolutionAndBestDisplayLevel(): any {
     //计算resolution
     var p = this.matrix.getPosition();
     var dir = Vector.fromVertice(p);
@@ -486,7 +533,7 @@ class Camera extends Object3D {
   }
 
   //[resolution,level]
-  calculateCurrentResolutionAndBestDisplayLevel() {
+  private calculateCurrentResolutionAndBestDisplayLevel() {
     var distance2EarthOrigin = this.getDistance2EarthOrigin();
     return this._calculateResolutionAndBestDisplayLevelByDistance2EarthOrigin(distance2EarthOrigin);
   }
@@ -540,15 +587,6 @@ class Camera extends Object3D {
     return Kernel.MAX_RESOLUTION / Math.pow(2, level);
   }
 
-  //屏幕1px在实际世界中的距离
-  getResolutionInWorld(): number {
-    if (realResolutionCache.hasOwnProperty(this.level)) {
-      return realResolutionCache[this.level];
-    } else {
-      return Kernel.MAX_REAL_RESOLUTION / Math.pow(2, this.level);
-    }
-  }
-
   getVertice() {
     const origin2PositionVector = Vector.fromVertice(this.getPosition());
     origin2PositionVector.setLength(Kernel.EARTH_RADIUS);
@@ -584,7 +622,7 @@ class Camera extends Object3D {
       this.level = level;
       this.floatLevel = level;
     }
-    if(levelChanged){
+    if (levelChanged) {
       Utils.publish('level-change', {
         oldLevel: oldLevel,
         newLevel: this.level
@@ -702,9 +740,48 @@ class Camera extends Object3D {
     return pitch;
   }
 
-  //计算拾取射线与地球的交点，以笛卡尔空间直角坐标系坐标数组的形式返回
-  //该方法需要projViewMatrixForDraw系列矩阵进行计算
-  getPickCartesianCoordInEarthByCanvas(canvasX: number, canvasY: number): Vertice[] {
+  // _doWorkByMatrixForDraw(cb: any) {
+  //   this._updateCore();
+
+  //   //暂存projViewMatrix系列矩阵
+  //   var matrix = this.matrix;
+  //   var viewMatrix = this.viewMatrix;
+  //   var projMatrix = this.projMatrix;
+  //   var projViewMatrix = this.projViewMatrix;
+
+  //   //将projViewMatrix系列矩阵赋值为projViewMatrixForDraw系列矩阵
+  //   this.matrix = this.matrixForDraw;
+  //   this.viewMatrix = this.viewMatrixForDraw;
+  //   this.projMatrix = this.projMatrixForDraw;
+  //   this.projViewMatrix = this.projViewMatrixForDraw;
+
+  //   //基于projViewMatrixForDraw系列矩阵进行计算，应该没有误差
+  //   // var pickDirection = this._getPickDirectionByCanvas(canvasX, canvasY);
+  //   // var p = this.getPosition();
+  //   // var line = new Line(p, pickDirection);
+  //   // var result = this._getPickCartesianCoordInEarthByLine(line);
+  //   cb();
+
+  //   //还原projViewMatrix系列矩阵
+  //   this.matrix = matrix;
+  //   this.viewMatrix = viewMatrix;
+  //   this.projMatrix = projMatrix;
+  //   this.projViewMatrix = projViewMatrix;
+  // }
+
+  /**
+   * 该方法需要projViewMatrixForDraw系列矩阵进行计算
+   * 返回拾取的射线相关信息，result.line表示拾取的直线，result.vertices表示拾取的点，即射线与地球的交点
+   * @param canvasX 
+   * @param canvasY 
+   * @param verticesResult 如果为true，那么会计算result.vertices
+   * return {line, vertices}
+   */
+  getPickInfoByCanvas(canvasX: number, canvasY: number, verticesResult: boolean = false):any {
+    const result: any = {
+      line: null,
+      vertices: []
+    };
     this._updateCore();
 
     //暂存projViewMatrix系列矩阵
@@ -722,8 +799,10 @@ class Camera extends Object3D {
     //基于projViewMatrixForDraw系列矩阵进行计算，应该没有误差
     var pickDirection = this._getPickDirectionByCanvas(canvasX, canvasY);
     var p = this.getPosition();
-    var line = new Line(p, pickDirection);
-    var result = this._getPickCartesianCoordInEarthByLine(line);
+    result.line = new Line(p, pickDirection);
+    if(verticesResult){
+      result.vertices = this._getPickCartesianCoordInEarthByLine(result.line);
+    }
 
     //还原projViewMatrix系列矩阵
     this.matrix = matrix;
@@ -732,6 +811,13 @@ class Camera extends Object3D {
     this.projViewMatrix = projViewMatrix;
 
     return result;
+  }
+
+  //计算拾取射线与地球的交点，以笛卡尔空间直角坐标系坐标数组的形式返回
+  //该方法需要projViewMatrixForDraw系列矩阵进行计算
+  getPickCartesianCoordInEarthByCanvas(canvasX: number, canvasY: number): Vertice[] {
+    const pickInfo = this.getPickInfoByCanvas(canvasX, canvasY, true);
+    return pickInfo.vertices;
   }
 
   getLightDirection(): Vector {
@@ -768,7 +854,7 @@ class Camera extends Object3D {
   }
 
   animateTo(newLon: number, newLat: number, newLevel: number = this.getLevel(), duration: number = 1000) {
-    const promise = new Promise((resolve, reject) => {
+    const promise = new Promise((resolve:any, reject:any) => {
       if (this.isAnimating()) {
         reject("be animating");
         return;
@@ -860,14 +946,14 @@ class Camera extends Object3D {
     requestAnimationFrame(callback);
   }
 
-  setExtent(extent: Extent){
-    if(extent){
+  setExtent(extent: Extent) {
+    if (extent) {
       const [lon, lat, level] = this._calculateLonLatLevelByExtent(extent);
-      this.centerTo(lon, lat, level); 
+      this.centerTo(lon, lat, level);
     }
   }
 
-  animateToExtent(extent: Extent, duration: number = 1000){
+  animateToExtent(extent: Extent, duration: number = 1000) {
     const [lon, lat, level] = this._calculateLonLatLevelByExtent(extent);
     return this.animateTo(lon, lat, level, duration);
   }
@@ -916,16 +1002,16 @@ class Camera extends Object3D {
     this.setPosition(newPosition);
   }
 
-  private _safelyGetValidLevel(level: number){
-    if(level > Kernel.MAX_LEVEL){
+  private _safelyGetValidLevel(level: number) {
+    if (level > Kernel.MAX_LEVEL) {
       level = Kernel.MAX_LEVEL;
-    }else if(level < Kernel.MIN_LEVEL){
+    } else if (level < Kernel.MIN_LEVEL) {
       level = Kernel.MIN_LEVEL;
     }
     return level;
   }
 
-  private _calculateLonLatLevelByExtent(extent: Extent){
+  private _calculateLonLatLevelByExtent(extent: Extent) {
     const centerLon = (extent.getMinLon() + extent.getMaxLon()) / 2;
     const centerLat = (extent.getMinLat() + extent.getMaxLat()) / 2;
     const deltaLon = extent.getMaxLon() - extent.getMinLon();

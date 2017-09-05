@@ -3,7 +3,7 @@ import Program from '../Program';
 import Graphic from './Graphic';
 import Mesh from '../geometries/Mesh';
 import MeshVertice from '../geometries/MeshVertice';
-import MeshColorMaterial from '../materials/MeshColorMaterial';
+import ColorMaterial from '../materials/ColorMaterial';
 import Camera from '../Camera';
 
 const vs =
@@ -32,7 +32,7 @@ void main()
 `;
 
 export default class MeshColorGraphic extends Graphic {
-    constructor(public geometry: Mesh, public material: MeshColorMaterial){
+    constructor(public geometry: Mesh, public material: ColorMaterial){
         super(geometry, material);
         this.setGeometry(geometry);
     }

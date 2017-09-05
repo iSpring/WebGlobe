@@ -6,7 +6,7 @@
 
  - 0.0.4.7 新增了World.TiledLayer类型，取消掉了World.NokiaTile等类型，图层都继承自World.TiledLayer，并重写其中的getImageUrl方法，所有的切片都放到World.TiledLayer中进行管理，结构化明确，更加面向对象，因此将版本升级到0.0.4.7
 
-- 0.0.5.0 从0.0.4.7直接升级到0.0.5.0,在TiledLayer的基础上又增加了SubTiledLayer类，并在此基础上优化了诸多算法，包括通过添加isvisible判断是否渲染，完善了camera的getCurrentGeoExtent算法，结构更合理，访问速度更快，故升级到0.0.5.0
+ - 0.0.5.0 从0.0.4.7直接升级到0.0.5.0,在TiledLayer的基础上又增加了SubTiledLayer类，并在此基础上优化了诸多算法，包括通过添加isvisible判断是否渲染，完善了camera的getCurrentGeoExtent算法，结构更合理，访问速度更快，故升级到0.0.5.0
 
  - 0.0.5.1 优化了各种TiledLayer的getImageUrl的算法
 
@@ -222,32 +222,46 @@
    - MeshGraphic => MeshTextureGraphic
    - 添加MeshColorGraphic
 
-- 0.4.24 RouteLayer基本可以实现固定宽度的Polyline
+ - 0.4.24 RouteLayer基本可以实现固定宽度的Polyline
 
-- 0.4.25 更新webpack.config.js
+ - 0.4.25 更新webpack.config.js
 
-- 0.4.26 Camera中添加centerTo和animateTo方法
+ - 0.4.26 Camera中添加centerTo和animateTo方法
 
-- 0.4.27 Camera中添加setExtent和animateToExtent方法
+ - 0.4.27 Camera中添加setExtent和animateToExtent方法
 
-- 0.4.28 通过判断道路拐点解决"箭头道路"的问题
+ - 0.4.28 通过判断道路拐点解决"箭头道路"的问题
 
-- 0.4.29 可以在nav/Paths页面中直接切换出行方式重新进行路线规划
+ - 0.4.29 可以在nav/Paths页面中直接切换出行方式重新进行路线规划
 
-- 0.4.30 在RouteComponent中添加getPreviousLocation()方法，并在nearyby/Result中使用
+ - 0.4.30 在RouteComponent中添加getPreviousLocation()方法，并在nearyby/Result中使用
 
-- 0.4.31 在公交导航中支持火车出行
+ - 0.4.31 在公交导航中支持火车出行
 
-- 0.4.32 通过http://fontello.com/ 自定义FontAwesome
+ - 0.4.32 通过http://fontello.com/ 自定义FontAwesome
 
-- 0.4.33 Globe构造函数支持pauseRendering参数，可以实现切片延迟加载
+ - 0.4.33 Globe构造函数支持pauseRendering参数，可以实现切片延迟加载
 
-- 0.4.34 searchByBuffer和searchByCity支持SearchType参数，可以智能判断类型，并且可以在查询无结果的情况下改变SearchType再次查询，优化查询体验
+ - 0.4.34 searchByBuffer和searchByCity支持SearchType参数，可以智能判断类型，并且可以在查询无结果的情况下改变SearchType再次查询，优化查询体验
 
-- 0.4.35 iOS系统中的浏览器不能访问类WebGLRenderingContext的静态常量，将所有用到WebGLRenderingContext的地方重新改成Kernel.gl的形式，用实例常量访问即可修复iOS中无法渲染的严重bug
+ - 0.4.35 iOS系统中的浏览器不能访问类WebGLRenderingContext的静态常量，将所有用到WebGLRenderingContext的地方重新改成Kernel.gl的形式，用实例常量访问即可修复iOS中无法渲染的严重bug
 
-- 0.4.36 更新webpack.config.js文件，在生产环境中配置new webpack.DefinePlugin，将NODE_ENV配置为production，使得压缩打包后的React体积减小88KB，参见https://facebook.github.io/react/docs/optimizing-performance.html#use-the-production-build
+ - 0.4.36 更新webpack.config.js文件，在生产环境中配置new webpack.DefinePlugin，将NODE_ENV配置为production，使得压缩打包后的React体积减小88KB，参见https://facebook.github.io/react/docs/optimizing-performance.html#use-the-production-build
 
-- 0.5.0 为搜索框添加搜索图标，方便搜索
+ - 0.5.0 为搜索框添加搜索图标，方便搜索
 
-- 0.5.1 更新README.md，发布新版本
+ - 0.5.1 更新README.md，发布新版本
+
+ - 0.5.5 修复了Camera中计算出的实际分辨率总是真实值的1.3倍的bug
+
+ - 0.5.6 可以点击拾取PoiLayer
+
+ - 0.5.7 Graphic支持attributes属性，优化PoiLayer拾取逻辑，修复Service.ts中Promise导致TypeScript报错的问题
+
+ - 0.5.8 重新修改了resolutionFactor1和resolutionFactor2的值，确保图片是256大小显示，并且确保getResolution()和getResolutionInWorld()方法用于让其他类调用获取实际的分辨率
+
+ - 0.5.9
+   - 使得Globe支持resolutionFactor参数，并且在webapp.html中设置值为1.2
+   - 优化了webapp.html搜索体验，支持“当前位置”
+
+ - 0.6.0 更新README.md和图片，发布新版本

@@ -1,4 +1,8 @@
-﻿$icon-size: 36px;
+﻿$content-width: 156px;
+$content-height: 70px;
+$icon-size: 32px;
+$icon-left: 20px;
+$text-left: 20px;
 
 @keyframes loading-keyframes{
     from{
@@ -16,16 +20,34 @@
     top: 0;
     bottom: 0;
 
-    .icon{
+    .content{
         position: absolute;
+        width: $content-width;
+        height: $content-height;
         left: 50%;
         top: 50%;
-        width: $icon-size;
-        height: $icon-size;
-        margin-left: -$icon-size/2;
-        margin-top: -$icon-size/2;
-        background-position: center;
-        background-repeat: no-repeat;
-        animation: loading-keyframes 0.9s linear infinite;
+        margin-left: -$content-width / 2;
+        margin-top: -$content-height / 2;
+        background: #000;
+        opacity: 0.4;
+        color: white;
+        border-radius: 5px;
+
+        .icon{
+            position: absolute;
+            width: $icon-size;
+            height: $icon-size;
+            top: ($content-height - $icon-size) / 2;
+            left: $icon-left;
+            background-position: center;
+            background-repeat: no-repeat;
+            animation: loading-keyframes 0.9s linear infinite;
+        }
+
+        .text{
+            display: inline-block;
+            line-height: $content-height;
+            margin-left: $icon-left + $icon-size + $text-left;
+        }
     }
 }

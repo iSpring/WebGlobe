@@ -16,6 +16,9 @@ export default class Vector{
     }
 
     static getRadianOfTwoVectors(vector1: Vector, vector2: Vector): number{
+      if(vector1.isZeroLength() || vector2.isZeroLength()){
+        return 0;
+      }
       var v1 = vector1.clone().normalize();
       var v2 = vector2.clone().normalize();
       var dotValue = v1.dot(v2);
@@ -48,6 +51,10 @@ export default class Vector{
 
     getLength(): number {
       return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+    }
+
+    isZeroLength(){
+      return this.x === 0 && this.y === 0 && this.z === 0;
     }
 
     normalize(): Vector {

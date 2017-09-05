@@ -83,7 +83,7 @@ module.exports = {
                 loader: extractPlugin.extract("css?modules&localIdentName=[name]__[local]___[hash:base64:5]!sass")
             },
             {
-                test: /\.(png|jpeg|jpg)$/,
+                test: /\.(png|jpeg|jpg|gif)$/,
                 loader: "file-loader"
             },
             {
@@ -119,7 +119,8 @@ if (process.argv.indexOf("--ci") >= 0) {
                     console.log("");
                     console.log(chalk.red("----------------------------------------------------------------"));
                     errors.forEach(function(err) {
-                        var msg = chalk.red(`ERROR in ${err.module.userRequest},`);
+                        var msg = '';
+                        // var msg = chalk.red(`ERROR in ${err.module.userRequest},`);
                         // msg += chalk.blue(`(${err.location.line},${err.location.character}),`);
                         msg += chalk.red(err.message);
                         console.log(msg);
@@ -135,6 +136,7 @@ if (process.argv.indexOf("--ci") >= 0) {
 
 if (PRODUCTION) {
     module.exports.plugins.push(
+        //add DefinePlugin for production to save 88KB for React build
         new webpack.DefinePlugin({
             'process.env': {
                 NODE_ENV: JSON.stringify('production')

@@ -33,10 +33,10 @@ uniform sampler2D uSampler;
 void main()
 {
 	vec4 color = texture2D(uSampler, vec2(gl_PointCoord.x, gl_PointCoord.y));
-    if(color.a == 0.0){
-        discard;
-    }
-    gl_FragColor = color;
+  if(color.a == 0.0){
+    discard;
+  }
+  gl_FragColor = color;
 }
 `;
 
@@ -44,17 +44,11 @@ export default class MultiPointsGraphic extends Graphic {
   private vbo: VertexBufferObject = null;
   private vertices: Vertice[] = null;
 
-  protected constructor(public material: MarkerTextureMaterial) {
+  constructor(public material: MarkerTextureMaterial) {
     super(null, material);
     this.vbo = new VertexBufferObject(Kernel.gl.ARRAY_BUFFER);
     this.vertices = [];
-    // this._addPoi(116.408540, 39.902350, "3161565500563468633", "首都大酒店", "北京市东城区前门东大街3号", "");
   }
-
-  // static getInstance(iconUrl: string, iconSize: number = 16) {
-  //   var material = new MarkerTextureMaterial(iconUrl, iconSize);
-  //   return new MultiPointsGraphic(material);
-  // }
 
   createProgram() {
     return Program.getProgram(vs, fs);
@@ -65,7 +59,7 @@ export default class MultiPointsGraphic extends Graphic {
   }
 
   onDraw(camera: Camera) {
-    var gl = Kernel.gl;
+    const gl = Kernel.gl;
 
     gl.disable(Kernel.gl.DEPTH_TEST);
     gl.depthMask(false);
@@ -94,20 +88,20 @@ export default class MultiPointsGraphic extends Graphic {
 
     //set uSampler
     var locSampler = this.program.getUniformLocation('uSampler');
-    gl.activeTexture(Kernel.gl.TEXTURE0);
-    gl.bindTexture(Kernel.gl.TEXTURE_2D, this.material.texture);
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, this.material.texture);
     gl.uniform1i(locSampler, 0);
 
     //绘图,vertices.length / 3表示所绘点的个数
-    gl.drawArrays(Kernel.gl.POINTS, 0, vertices.length / 3);
+    gl.drawArrays(gl.POINTS, 0, vertices.length / 3);
 
     //释放当前绑定对象
-    gl.enable(Kernel.gl.DEPTH_TEST);
+    gl.enable(gl.DEPTH_TEST);
     gl.depthMask(true);
-    gl.disable(Kernel.gl.BLEND);
-    // gl.bindBuffer(Kernel.gl.ARRAY_BUFFER, null);
-    // gl.bindBuffer(Kernel.gl.ELEMENT_ARRAY_BUFFER, null);
-    // gl.bindTexture(Kernel.gl.TEXTURE_2D, null);
+    gl.disable(gl.BLEND);
+    // gl.bindBuffer(gl.ARRAY_BUFFER, null);
+    // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+    // gl.bindTexture(gl.TEXTURE_2D, null);
   }
 
   setLonlats(lonlats:number[][]){

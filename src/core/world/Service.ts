@@ -1,3 +1,4 @@
+declare const Promise: any;
 import Extent from './Extent';
 import MathUtils from './math/Utils';
 
@@ -15,6 +16,8 @@ type RouteType = "bus" | "snsnav";
 //Auto: 通过检索poiTypes自动判断类型
 type StrictSearchType = 'Type' | 'POI';
 export type SearchType = StrictSearchType | 'Auto';
+
+type AnyCallbackType = (v: any) => any;
 
 //http://apis.map.qq.com/jsapi?qt=rn&wd=北京南站&pn=0&rn=10&px=117.200983&py=39.084158&r=3000&output=json
 
@@ -68,7 +71,7 @@ class Service {
   private static location: Location = null;
 
   private static getCityLocation() {
-    const promise = new Promise((resolve) => {
+    const p = new Promise((resolve: AnyCallbackType) => {
       if (this.cityLocation) {
         resolve(this.cityLocation);
       } else {
@@ -90,11 +93,11 @@ class Service {
         });
       }
     });
-    return promise;
+    return p;
   }
 
   static getCurrentPosition(highAccuracy: boolean = false) {
-    const promise = new Promise((resolve) => {
+    const p = new Promise((resolve: AnyCallbackType) => {
       this.getCityLocation().then((cityLocation: Location) => {
         if (highAccuracy) {
           navigator.geolocation.getCurrentPosition((response: Position) => {
@@ -125,7 +128,7 @@ class Service {
         }
       });
     });
-    return promise;
+    return p;
   }
 
   //--------------------------------------------------search-------------------------------------------------------
@@ -231,13 +234,13 @@ class Service {
 
   //http://lbs.qq.com/javascript_v2/case-run.html#service-searchservice
   static searchByExtent(keyword: string, level: number, { minLon, minLat, maxLon, maxLat }: Extent, pageCapacity: number = 50, pageIndex: number = 0) {
-    const promise = new Promise((resolve) => {
+    const p = new Promise((resolve: AnyCallbackType) => {
       const url = `//apis.map.qq.com/jsapi?qt=syn&wd=${keyword}&pn=${pageIndex}&rn=${pageCapacity}&output=jsonp&b=${minLon},${minLat},${maxLon},${maxLat}&l=${level}&c=000000`;
       Service.jsonp(url, function (response: any) {
         resolve(response);
       });
     });
-    return promise;
+    return p;
   }
 
   static searchByBuffer(keyword: string, lon: number, lat: number, radius: number, searchType: SearchType = 'Auto', pageCapacity: number = 50, pageIndex: number = 0) {
@@ -263,7 +266,7 @@ class Service {
   }
 
   private static _rawSearchByBuffer(searchType: StrictSearchType, keyword: string, lon: number, lat: number, radius: number, pageCapacity: number = 50, pageIndex: number = 0) {
-    const promise = new Promise((resolve) => {
+    const p = new Promise((resolve: AnyCallbackType) => {
       //http://apis.map.qq.com/jsapi?qt=rn&wd=酒店&pn=0&rn=5&px=116.397128&py=39.916527&r=2000&output=jsonp&cb=webglobe_jsonp_1
       //http://apis.map.qq.com/jsapi?qt=poi&wd=杨村一中&pn=0&rn=5&px=116.397128&py=39.916527&r=2000&output=jsonp&cb=webglobe_jsonp_1
       let url = `//apis.map.qq.com/jsapi?wd=${keyword}&pn=${pageIndex}&rn=${pageCapacity}&px=${lon}&py=${lat}&r=${radius}&output=jsonp`;
@@ -275,7 +278,7 @@ class Service {
         resolve(response);
       });
     });
-    return promise;
+    return p;
   }
 
   static searchByCity(keyword: string, city: string, searchType: SearchType = 'Auto', pageCapacity: number = 50, pageIndex: number = 0) {
@@ -302,7 +305,7 @@ class Service {
 
   private static _rawSearchByCity(searchType: StrictSearchType, keyword: string, city: string, pageCapacity: number = 50, pageIndex: number = 0) {
     //http://apis.map.qq.com/jsapi?qt=poi&wd=杨村一中&pn=0&rn=5&c=北京&output=json&cb=callbackname
-    const promise = new Promise((resolve) => {
+    const p = new Promise((resolve: AnyCallbackType) => {
       let url = `//apis.map.qq.com/jsapi?wd=${keyword}&pn=${pageIndex}&rn=${pageCapacity}&c=${city}&output=jsonp`;
       url = this._getUrlBySearchType(url, searchType);
       Service.jsonp(url, (response: any) => {
@@ -318,7 +321,7 @@ class Service {
         resolve(response);
       });
     });
-    return promise;
+    return p;
   }
 
   static searchNearby(keyword: string, radius: number, searchType: SearchType = 'Auto', highAccuracy: boolean = false, pageCapacity: number = 50, pageIndex: number = 0) {
@@ -338,7 +341,7 @@ class Service {
   static routeByDriving(fromLon: number, fromLat: number, toLon: number, toLat: number, key: string, strategy: number = 5) {
     //http://lbs.gaode.com/api/webservice/guide/api/direction/#driving
     //http://restapi.amap.com/v3/direction/driving?origin=117.00216,39.40365&destination=117.01633,39.37265&extensions=all&output=json&key=db146b37ef8d9f34473828f12e1e85ad&strategy=10
-    const promise = new Promise((resolve, reject) => {
+    const p = new Promise((resolve: AnyCallbackType, reject: AnyCallbackType) => {
       const url = `//restapi.amap.com/v3/direction/driving?origin=${fromLon},${fromLat}&destination=${toLon},${toLat}&extensions=all&output=json&key=${key}&strategy=${strategy}`;
       const xhr = new XMLHttpRequest();
       //IE12+
@@ -357,7 +360,7 @@ class Service {
       };
       xhr.send();
     });
-    return promise;
+    return p;
   }
 
   private static _handleDrivingResult(responseText: string) {
@@ -376,7 +379,7 @@ class Service {
   }
 
   static routeByBus(fromLon: number, fromLat: number, toLon: number, toLat: number, startCity: string, endCity: string, key: string, strategy: number = 0) {
-    const promise = new Promise((resolve, reject) => {
+    const p = new Promise((resolve: AnyCallbackType, reject: AnyCallbackType) => {
       //http://restapi.amap.com/v3/direction/transit/integrated?origin=117.00216,39.40365&destination=117.01633,39.37265&city=武清区&cityd=武清区&output=json&key=db146b37ef8d9f34473828f12e1e85ad
       const url = `//restapi.amap.com/v3/direction/transit/integrated?origin=${fromLon},${fromLat}&destination=${toLon},${toLat}&city=${startCity}&cityd=${endCity}&output=json&key=${key}`;
       const xhr = new XMLHttpRequest();
@@ -393,7 +396,7 @@ class Service {
       };
       xhr.send();
     });
-    return promise;
+    return p;
   }
 
   private static _handleBusResult(responseText: string) {
@@ -465,7 +468,7 @@ class Service {
   }
 
   static routeByWalking(fromLon: number, fromLat: number, toLon: number, toLat: number, key: string) {
-    const promise = new Promise((resolve, reject) => {
+    const p = new Promise((resolve: AnyCallbackType, reject: AnyCallbackType) => {
       //http://restapi.amap.com/v3/direction/walking?origin=116.434307,39.90909&destination=116.434446,39.90816&key=db146b37ef8d9f34473828f12e1e85ad
       const url = `//restapi.amap.com/v3/direction/walking?origin=${fromLon},${fromLat}&destination=${toLon},${toLat}&key=${key}`;
       const xhr = new XMLHttpRequest();
@@ -482,7 +485,7 @@ class Service {
       };
       xhr.send();
     });
-    return promise;
+    return p;
   }
 
   private static _handleWalkingResult(responseText: string) {
@@ -530,7 +533,7 @@ class Service {
     if (policy) {
       url += `&policy=${policy}`;
     }
-    const promise = new Promise((resolve) => {
+    const p = new Promise((resolve: AnyCallbackType) => {
       Service.jsonp(url, (response: any) => {
         response.result.routes.forEach((route: any) => {
           Service.decodeQQPolyline(route.polyline);
@@ -538,7 +541,7 @@ class Service {
         resolve(response);
       });
     });
-    return promise;
+    return p;
   }
 
 
@@ -552,13 +555,13 @@ class Service {
     const toX: number = MathUtils.degreeLonToWebMercatorX(toLon, true);
     const toY: number = MathUtils.degreeLatToWebMercatorY(toLat, true);
     const url = `//apis.map.qq.com/jsapi?qt=${routeType}&start=1$$$$${fromX}, ${fromY}$$&dest=1$$$$${toX}, ${toY}$$&cond=3&mt=2&s=2&fm=0&output=jsonp&pf=jsapi&ref=jsapi`;
-    const promise = new Promise((resolve) => {
+    const p = new Promise((resolve: AnyCallbackType) => {
       Service.jsonp(url, (response: any) => {
         console.log(response);
         resolve(response);
       }, "GBK");
     });
-    return promise;
+    return p;
   }
 
 };

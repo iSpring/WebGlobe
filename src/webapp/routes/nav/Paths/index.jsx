@@ -231,7 +231,7 @@ export default class Paths extends RouteComponent {
                             let drivingChildren = [];
                             if (showSummary1) {
                                 const [timeSummary, distanceSummary] = this.getTimeDistanceSummary(path);
-                                drivingChildren.push(<div className={styles.summary1}>{`${timeSummary} ${distanceSummary}`}</div>);
+                                drivingChildren.push(<div key="summary1" className={styles.summary1}>{`${timeSummary} ${distanceSummary}`}</div>);
                             }
                             drivingChildren = drivingChildren.concat([
                                 <div key="summary2" className={classNames(styles.summary2, "ellipsis")}>{path.steps.map((step) => step.road).filter((road) => !!road).join(" -> ")}</div>,

@@ -8,7 +8,8 @@ export const globe = Globe.getInstance({
     satellite: false,
     lonlat: "auto",
     level: "auto",
-    key: "db146b37ef8d9f34473828f12e1e85ad"
+    key: "db146b37ef8d9f34473828f12e1e85ad",
+    resolutionFactor: 1.2
 });
 
 //延迟一秒加载globe中的切片

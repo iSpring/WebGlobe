@@ -1,3 +1,5 @@
+declare const Promise: any;
+import Line from './math/Line';
 import Matrix from './math/Matrix';
 import Camera from './Camera';
 import GraphicGroup from './GraphicGroup';
@@ -33,12 +35,23 @@ export interface Drawable{
     destroy(): void;
 }
 
+export interface Pickable{
+    ifIntersectLocalLine(localLine: Line): boolean;
+    ifIntersectWorldLine(worldLine: Line): boolean;
+}
+
+export type PickListener = (target: Pickable) => void;
+
 export interface CancelablePromise extends Promise<any>{
     cancel: () => void;
 }
 
 export interface Destroyable{
     destroy: () => void;
+}
+
+export interface Attributes{
+    [key: string]: any
 }
 
 // declare module "*.png" {

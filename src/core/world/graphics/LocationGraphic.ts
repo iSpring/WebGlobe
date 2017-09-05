@@ -5,7 +5,7 @@ import MultiPointsGraphic from '../graphics/MultiPointsGraphic';
 import MarkerTextureMaterial from '../materials/MarkerTextureMaterial';
 import Service from '../Service';
 import Globe from '../Globe';
-const locationImageUrl = require("../images/location.png");
+const locationImageUrl = require('../images/location.png');
 
 export default class LocationGraphic extends MultiPointsGraphic {
   private constructor(material: MarkerTextureMaterial, private globe: Globe) {
