@@ -76,7 +76,7 @@ export default class Result extends RouteComponent {
         // this.setState({
         //     list: false
         // });
-        this.search.onLeftAction();
+        this.searchComponent.onLeftAction();
     }
 
     onFocus(){
@@ -164,7 +164,7 @@ export default class Result extends RouteComponent {
 
         return (
             <div ref={input => this.domNode = input}>
-                <Search ref={input => this.search = input}
+                <Search ref={input => this.searchComponent = input}
                     readOnly={true} 
                     placeholder={keyword} 
                     showMapList={true} 
