@@ -73,9 +73,10 @@ export default class Result extends RouteComponent {
         if(typeof graphic.attributes.pointx === 'number' && typeof graphic.attributes.pointy === 'number'){
             globe.centerTo(graphic.attributes.pointx, graphic.attributes.pointy);
         }
-        this.setState({
-            list: false
-        });
+        // this.setState({
+        //     list: false
+        // });
+        this.search.onLeftAction();
     }
 
     onFocus(){
@@ -163,7 +164,15 @@ export default class Result extends RouteComponent {
 
         return (
             <div ref={input => this.domNode = input}>
-                <Search readOnly={true} placeholder={keyword} showMapList={true} showCancel={true} onMap={() => this.onMap()} onList={() => this.onList()} onCancel={() => this.onCancel()} onFocus={() => this.onFocus()} />
+                <Search ref={input => this.search = input}
+                    readOnly={true} 
+                    placeholder={keyword} 
+                    showMapList={true} 
+                    showCancel={true} 
+                    onMap={() => this.onMap()} 
+                    onList={() => this.onList()} 
+                    onCancel={() => this.onCancel()} 
+                    onFocus={() => this.onFocus()} />
                 {
                     this.state.list ? (
                         <div className={styles.list}>
