@@ -7,13 +7,15 @@ export default class VertexBufferObject{
 
 	constructor(public target: number){
 		//target: ARRAY_BUFFER or ELEMENT_ARRAY_BUFFER
+		//ARRAY_BUFFER用于存储实际的顶点数据，使用Float32Array存储数据，例如VBO、CBO、UVBO、NBO分别存储位置、颜色、纹理坐标、向量
+		//ELEMENT_ARRAY_BUFFER用于索引数据，使用Uint16Array存储数据，例如IBO
 		if(buffers.length > 0){
 			// console.info("reuse WebGLBuffer");
 		  	this.buffer = buffers.pop();
 		}else{
 			this.buffer = Kernel.gl.createBuffer();
 		}
-		this.buffer = Kernel.gl.createBuffer();
+		// this.buffer = Kernel.gl.createBuffer();
 	}
 
 	bind(){
@@ -45,7 +47,7 @@ export default class VertexBufferObject{
 			}else{
 				Kernel.gl.deleteBuffer(this.buffer);
 			}
-			Kernel.gl.deleteBuffer(this.buffer);
+			// Kernel.gl.deleteBuffer(this.buffer);
 		}
 		this.buffer = null;
 	}

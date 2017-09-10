@@ -79,12 +79,14 @@ export default class MeshTextureGraphic extends Graphic implements Pickable {
         var locPosition = this.program.getAttribLocation('aPosition');
         this.program.enableVertexAttribArray('aPosition');
         this.geometry.vbo.bind();
+        //一个aPosition由3个Kernel.gl.FLOAT组成
         gl.vertexAttribPointer(locPosition, 3, Kernel.gl.FLOAT, false, 0, 0);
 
         //set aUV
         var locUV = this.program.getAttribLocation('aUV');
         this.program.enableVertexAttribArray('aUV');
         this.geometry.uvbo.bind();
+        //一个aUV由2个Kernel.gl.FLOAT组成
         gl.vertexAttribPointer(locUV, 2, Kernel.gl.FLOAT, false, 0, 0);
 
         //set uSampler
@@ -95,6 +97,7 @@ export default class MeshTextureGraphic extends Graphic implements Pickable {
 
         //绘图
         var count = this.geometry.triangles.length * 3;
+        //count为所绘制的点的数量
         gl.drawElements(Kernel.gl.TRIANGLES, count, Kernel.gl.UNSIGNED_SHORT, 0);
 
         //释放当前绑定对象

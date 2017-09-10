@@ -265,3 +265,5 @@
    - 优化了webapp.html搜索体验，支持“当前位置”
 
  - 0.6.0 更新README.md和图片，发布新版本
+
+ - 0.6.1 修复VertexBufferObject中无法重用Buffer的Bug
