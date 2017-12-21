@@ -1,23 +1,23 @@
-﻿import Kernel from './Kernel';
+import Kernel from './Kernel';
 
-export default class Program{
+export default class Program {
 	ready: boolean = false;
 	activeInfosObject: any;
 	program: WebGLProgram;
 	private static currentProgram: Program;
 	private static readonly programs: Program[] = [];
 
-	private constructor(public vs:string, public fs:string){
+	private constructor(public vs: string, public fs: string) {
 		//{name,type,size,loc,isAttribute, isEnabled} the default value of isEnabled is undefined
 		//Note: if attribute, loc is number; if uniform, loc is WebGLUniformLocation
 		this.activeInfosObject = {};
 		this._init();
 	}
 
-	static getProgram(vs: string, fs: string){
-		var program:Program = Program.findProgram(vs, fs);
+	static getProgram(vs: string, fs: string) {
+		var program: Program = Program.findProgram(vs, fs);
 
-		if(!program){
+		if (!program) {
 			program = new Program(vs, fs);
 			Program.programs.push(program);
 		}
@@ -25,14 +25,14 @@ export default class Program{
 		return program;
 	}
 
-	static findProgram(vs: string, fs: string){
-		var program:Program = null;
+	static findProgram(vs: string, fs: string) {
+		var program: Program = null;
 
-		Program.programs.some(function(item){
-			if(item.vs === vs && item.fs === fs){
+		Program.programs.some(function (item) {
+			if (item.vs === vs && item.fs === fs) {
 				program = item;
 				return true;
-			}else{
+			} else {
 				return false;
 			}
 		});
@@ -40,17 +40,17 @@ export default class Program{
 		return program;
 	}
 
-	use(){
-		if(this.ready && Program.currentProgram !== this){
+	use() {
+		if (this.ready && Program.currentProgram !== this) {
 			Kernel.gl.useProgram(this.program);
 			Program.currentProgram = this;
 		}
 	}
 
-	updateActiveAttribInfos(){
+	updateActiveAttribInfos() {
 		var count = Kernel.gl.getProgramParameter(this.program, Kernel.gl.ACTIVE_ATTRIBUTES);
 
-		for(var i = 0, activeInfo: any; i < count; i++){
+		for (var i = 0, activeInfo: any; i < count; i++) {
 			activeInfo = Kernel.gl.getActiveAttrib(this.program, i);
 			activeInfo.loc = Kernel.gl.getAttribLocation(this.program, activeInfo.name);
 			activeInfo.isAttribute = true;
@@ -58,10 +58,10 @@ export default class Program{
 		}
 	}
 
-	updateActiveUniformInfos(){
+	updateActiveUniformInfos() {
 		var count = Kernel.gl.getProgramParameter(this.program, Kernel.gl.ACTIVE_UNIFORMS);
 
-		for(var i = 0, activeInfo: any; i < count; i++){
+		for (var i = 0, activeInfo: any; i < count; i++) {
 			activeInfo = Kernel.gl.getActiveUniform(this.program, i);
 			activeInfo.loc = Kernel.gl.getUniformLocation(this.program, activeInfo.name);
 			activeInfo.isAttribute = false;
@@ -69,38 +69,38 @@ export default class Program{
 		}
 	}
 
-	getLocation(name: string){
+	getLocation(name: string) {
 		//loc = gl.getAttribLocation(this.program, name);
 		//loc = gl.getUniformLocation(this.program, name);
 		var loc = -1;
 		var activeInfo = this.activeInfosObject[name];
-		if(activeInfo){
+		if (activeInfo) {
 			loc = activeInfo.loc;
 		}
 		return loc;
 	}
 
-	getAttribLocation(name: string){
+	getAttribLocation(name: string) {
 		var loc = -1;
 		var activeInfo = this.activeInfosObject[name];
-		if(activeInfo && activeInfo.isAttribute){
+		if (activeInfo && activeInfo.isAttribute) {
 			loc = activeInfo.loc;
 		}
 		return loc;
 	}
 
 	//return WebGLUniformLocation, not a number
-	getUniformLocation(name: string){
+	getUniformLocation(name: string) {
 		var loc: WebGLUniformLocation;
 		var activeInfo = this.activeInfosObject[name];
-		if(activeInfo && !activeInfo.isAttribute){
+		if (activeInfo && !activeInfo.isAttribute) {
 			loc = activeInfo.loc;
 		}
 		return loc;
 	}
 
 	//VertexAttributeState
-	getVertexAttrib(){
+	getVertexAttrib() {
 		/*VERTEX_ATTRIB_ARRAY_ENABLED
 		VERTEX_ATTRIB_ARRAY_SIZE
 		VERTEX_ATTRIB_ARRAY_STRIDE
@@ -112,41 +112,41 @@ export default class Program{
 
 	//Return the uniform value at the passed location in the passed program.
 	//The type returned is dependent on the uniform type.
-	getUniform(name:string){
+	getUniform(name: string) {
 		var result: any;
 		var loc = this.getUniformLocation(name);
-		if(loc){
+		if (loc) {
 			result = Kernel.gl.getUniform(this.program, loc);
 		}
 		return result;
 	}
 
-	enableVertexAttribArray(name:string){
+	enableVertexAttribArray(name: string) {
 		var activeInfo = this.activeInfosObject[name];
-		if(activeInfo && activeInfo.isAttribute && activeInfo.isEnabled !== true){
+		if (activeInfo && activeInfo.isAttribute && activeInfo.isEnabled !== true) {
 			var loc = activeInfo.loc;
 			Kernel.gl.enableVertexAttribArray(loc);
 			activeInfo.isEnabled = true;
 		}
 	}
 
-	disableVertexAttribArray(name:string){
+	disableVertexAttribArray(name: string) {
 		var activeInfo = this.activeInfosObject[name];
-		if(activeInfo && activeInfo.isAttribute && activeInfo.isEnabled !== false){
+		if (activeInfo && activeInfo.isAttribute && activeInfo.isEnabled !== false) {
 			var loc = activeInfo.loc;
 			Kernel.gl.disableVertexAttribArray(loc);
 			activeInfo.isEnabled = false;
 		}
 	}
 
-	_init(){
+	_init() {
 		var vs = this._getShader(Kernel.gl.VERTEX_SHADER, this.vs);
-		if(!vs){
+		if (!vs) {
 			return;
 		}
 
 		var fs = this._getShader(Kernel.gl.FRAGMENT_SHADER, this.fs);
-		if(!fs){
+		if (!fs) {
 			return;
 		}
 
@@ -169,17 +169,17 @@ export default class Program{
 		this.ready = true;
 	}
 
-	_getShader(shaderType:number, shaderText:string){
+	_getShader(shaderType: number, shaderText: string) {
 		var shader = Kernel.gl.createShader(shaderType);
 		Kernel.gl.shaderSource(shader, shaderText);
 		Kernel.gl.compileShader(shader);
 
-		if(!Kernel.gl.getShaderParameter(shader, Kernel.gl.COMPILE_STATUS)){
-            console.error("create shader failed", Kernel.gl.getShaderInfoLog(shader));
-            Kernel.gl.deleteShader(shader);
-            return null;
-        }
+		if (!Kernel.gl.getShaderParameter(shader, Kernel.gl.COMPILE_STATUS)) {
+			console.error("create shader failed", Kernel.gl.getShaderInfoLog(shader));
+			Kernel.gl.deleteShader(shader);
+			return null;
+		}
 
-        return shader;
+		return shader;
 	}
 };
