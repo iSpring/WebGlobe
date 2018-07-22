@@ -1,5 +1,6 @@
 import TiledLayer from './TiledLayer';
 import LabelLayer from './LabelLayer';
+import { devicePixelRatio } from '../Env';
 
 //http://www.google.cn/maps
 //http://ditu.bigemap.com/
@@ -8,7 +9,7 @@ import LabelLayer from './LabelLayer';
 
 type Style = "Default" | "Satellite" | "Road" | "RoadOnly" | "Terrain" | "TerrainOnly";
 
-const scale: number = window.devicePixelRatio > 1 ? 2 : 1;
+const scale: number = devicePixelRatio > 1 ? 2 : 1;
 
 export class GoogleTiledLayer extends TiledLayer{
 

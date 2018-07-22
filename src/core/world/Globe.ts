@@ -17,7 +17,8 @@ import PoiLayer from './layers/PoiLayer';
 import RouteLayer from './layers/RouteLayer';
 import Extent from './Extent';
 import Service,{Location} from './Service';
-import {WebGLRenderingContextExtension} from './Definitions.d';
+import { WebGLRenderingContextExtension } from './Definitions.d';
+import { devicePixelRatio } from './Env';
 
 const initLevel:number = Utils.isMobile() ? 11 : 3;
 
@@ -51,6 +52,8 @@ export default class Globe {
   private eventHandler: EventHandler = null;
   private allRefreshCount: number = 0;
   private realRefreshCount: number = 0;
+  private width: number = 0;
+  private height: number = 0;
   // private beforeRenderCallbacks: RenderCallback[] = [];
   private afterRenderCallbacks: RenderCallback[] = [];
   public gl: WebGLRenderingContextExtension = null;
@@ -59,24 +62,25 @@ export default class Globe {
   static getInstance(options?: GlobeOptions){
     if(!this.globe){
       const canvas = document.createElement("canvas");
-      canvas.width = document.documentElement.clientWidth;
-      canvas.height = document.documentElement.clientHeight;
-      this.globe = new Globe(canvas, options);
+      const width: number = document.documentElement.clientWidth;
+      const height: number = document.documentElement.clientHeight;
+      this.globe = new Globe(canvas, width, height, options);
     }
     return this.globe;
   }
 
-  private constructor(public canvas: HTMLCanvasElement, private options?: GlobeOptions) {
+  private constructor(public canvas: HTMLCanvasElement, width: number, height: number, private options?: GlobeOptions) {
     if(!this.options){
       this.options = new GlobeOptions();
     }
+    this.resizeCanvas(width, height);
     this.renderer = new Renderer(canvas, this._onBeforeRender.bind(this), this._onAfterRender.bind(this));
     this.gl = this.renderer.gl;
     this.scene = new Scene();
-    var radio = canvas.width / canvas.height;
+    const radio = this.width / this.height;
     let level = this.options.level >= 0 ? (this.options.level as number) : initLevel;
     let lonlat = (this.options.lonlat && this.options.lonlat.length === 2) ? (this.options.lonlat as number[]) : initLonlat;
-    this.camera = new Camera(canvas, 30, radio, 1, Kernel.EARTH_RADIUS * 2, level, lonlat, options.resolutionFactor);
+    this.camera = new Camera(width, height, 30, radio, 1, Kernel.EARTH_RADIUS * 2, level, lonlat, options.resolutionFactor);
     this.renderer.setScene(this.scene);
     this.renderer.setCamera(this.camera);
 
@@ -133,12 +137,30 @@ export default class Globe {
       container.appendChild(this.canvas);
     }
   }
+
+  public getWidth() {
+    return this.width;
+  }
+
+  public getHeight() {
+    return this.height;
+  }
   
   public resize(width: number, height: number){
-    this.canvas.width = width;
-    this.canvas.height = height;
-    this.camera.setAspect(this.canvas.width / this.canvas.height);
+    this.resizeCanvas(width, height);
+    this.renderer.updateViewportSize();
+    // this.camera.setAspect(width / height);
+    this.camera.setSize(width, height);
     Utils.publish("extent-change");
+  }
+
+  private resizeCanvas(width: number, height: number) {
+    this.width = width;
+    this.height = height;
+    this.canvas.width = width * devicePixelRatio;
+    this.canvas.height = height * devicePixelRatio;
+    this.canvas.style.width = `${width}px`;
+    this.canvas.style.height = `${height}px`;
   }
 
   private updateUserLocation(location: Location) {

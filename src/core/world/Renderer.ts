@@ -12,7 +12,8 @@ export default class Renderer {
   constructor(
     private canvas: HTMLCanvasElement,
     private onBeforeRender?: (renderer: Renderer) => void,
-    private onAfterRender?: (renderer: Renderer) => void) {
+    private onAfterRender?: (renderer: Renderer) => void
+  ) {
 
     this.gl = this._getWebGLContext(this.canvas);
 
@@ -23,6 +24,8 @@ export default class Renderer {
     }
 
     const gl = this.gl;
+
+    this.updateViewportSize();
 
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.clearColor(0, 0, 0, 1);
@@ -58,8 +61,7 @@ export default class Renderer {
   }
 
   render(scene: Scene, camera: Camera) {
-    var gl = this.gl;
-    gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+    const gl = this.gl;
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.clearColor(0, 0, 0, 1);
     // gl.enable(gl.DEPTH_TEST);
@@ -97,6 +99,10 @@ export default class Renderer {
     }catch(e){
       console.error(e);
     }
+  }
+
+  updateViewportSize() {
+    this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
   }
 
   setScene(scene: Scene) {

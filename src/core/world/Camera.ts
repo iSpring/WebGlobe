@@ -11,11 +11,17 @@ import TileGrid, { TileGridPosition } from './TileGrid';
 import Matrix from './math/Matrix';
 import Object3D from './Object3D';
 import Extent from './Extent';
+import { devicePixelRatio } from './Env';
 
 export class CameraCore {
-  constructor(private fov: number, private aspect: number, private near: number, private far: number, private floatLevel: number, private matrix: Matrix) {
-
-  }
+  constructor(
+    private fov: number,
+    private aspect: number,
+    private near: number,
+    private far: number,
+    private floatLevel: number,
+    private matrix: Matrix
+  ) {}
 
   getFov() {
     return this.fov;
@@ -114,14 +120,16 @@ class Camera extends Object3D {
   //this.aspect在Viewport改变后重新计算
   //this.fov可以调整以实现缩放效果
   constructor(
-    private canvas: HTMLCanvasElement, 
+    private width: number,
+    private height: number,
     private fov: number = 45, 
     private aspect: number = 1, 
     private near: number = 1, 
     private far: number = 100, 
     level: number = 3, 
     lonlat: number[] = [0, 0],
-    resolutionFactor: number = Math.pow(2, 0.3752950)) {
+    resolutionFactor: number = Math.pow(2, 0.3752950)
+  ) {
     
     super();
     if(!(resolutionFactor > 0)){
@@ -277,7 +285,13 @@ class Camera extends Object3D {
     this._setPerspectiveMatrix(fov, this.aspect, this.near, this.far);
   }
 
-  setAspect(aspect: number): void {
+  setSize(width: number, height: number) {
+    this.width = width;
+    this.height = height;
+    this.setAspect(this.width / this.height);
+  }
+
+  private setAspect(aspect: number): void {
     if (!(aspect > 0)) {
       throw "invalid aspect:" + aspect;
     }
@@ -502,7 +516,7 @@ class Camera extends Object3D {
     var pickResult1 = this._getPickCartesianCoordInEarthByLine(line);
     var p1 = pickResult1[0];
     var ndc1 = this._convertVerticeFromWorldToNDC(p1);
-    var canvasXY1 = MathUtils.convertPointFromNdcToCanvas(this.canvas.width, this.canvas.height, ndc1.x, ndc1.y);
+    var canvasXY1 = MathUtils.convertPointFromNdcToCanvas(this.width, this.height, ndc1.x, ndc1.y);
     var centerX = canvasXY1[0];
     var centerY = canvasXY1[1];
 
@@ -541,7 +555,7 @@ class Camera extends Object3D {
   //distance2EarthOrigin=>[resolution,level]
   private _calculateResolutionAndBestDisplayLevelByDistance2EarthOrigin(distance2EarthOrigin: number) {
     var α2 = MathUtils.degreeToRadian(this.fov / 2);
-    var α1 = Math.atan(2 / this.canvas.height * Math.tan(α2));
+    var α1 = Math.atan(2 / this.height * Math.tan(α2));
     var δ = Math.asin(distance2EarthOrigin * Math.sin(α1) / Kernel.EARTH_RADIUS);
     var β = δ - α1;
     var resolution = β * Kernel.EARTH_RADIUS * this.resolutionFactor2;
@@ -570,7 +584,7 @@ class Camera extends Object3D {
   private _calculateDistance2EarthOriginByResolution(resolution: number) {
     resolution /= this.resolutionFactor2;
     var α2 = MathUtils.degreeToRadian(this.fov / 2);
-    var α1 = Math.atan(2 / this.canvas.height * Math.tan(α2));
+    var α1 = Math.atan(2 / this.height * Math.tan(α2));
     var β = resolution / Kernel.EARTH_RADIUS;
     var δ = α1 + β;
     var distance2EarthOrigin = Kernel.EARTH_RADIUS * Math.sin(δ) / Math.sin(α1);
@@ -1017,7 +1031,7 @@ class Camera extends Object3D {
     const deltaLon = extent.getMaxLon() - extent.getMinLon();
     const deltaLonRadian = MathUtils.degreeToRadian(deltaLon);
     const deltaLength = Kernel.EARTH_RADIUS * deltaLonRadian;
-    const resolution = deltaLength / this.canvas.width;
+    const resolution = deltaLength / this.width;
     const bestFloatLevel = this._calculateLevelByResolution(resolution);
     let level = Math.floor(bestFloatLevel);
     // if(bestFloatLevel - level >= 0.9){
@@ -1058,7 +1072,7 @@ class Camera extends Object3D {
 
   //根据canvasX和canvasY获取拾取向量
   private _getPickDirectionByCanvas(canvasX: number, canvasY: number): Vector {
-    var ndcXY = MathUtils.convertPointFromCanvasToNDC(this.canvas.width, this.canvas.height, canvasX, canvasY);
+    var ndcXY = MathUtils.convertPointFromCanvasToNDC(this.width, this.height, canvasX, canvasY);
     var pickDirection = this._getPickDirectionByNDC(ndcXY[0], ndcXY[1]);
     return pickDirection;
   }
@@ -1460,11 +1474,11 @@ class Camera extends Object3D {
     var cross = vector03.cross(vector01);
     result.clockwise = cross.z > 0;
     //计算面积
-    var topWidth = Math.sqrt(Math.pow(ndcs[1].x - ndcs[2].x, 2) + Math.pow(ndcs[1].y - ndcs[2].y, 2)) * this.canvas.width / 2;
-    var bottomWidth = Math.sqrt(Math.pow(ndcs[0].x - ndcs[3].x, 2) + Math.pow(ndcs[0].y - ndcs[3].y, 2)) * this.canvas.width / 2;
+    var topWidth = Math.sqrt(Math.pow(ndcs[1].x - ndcs[2].x, 2) + Math.pow(ndcs[1].y - ndcs[2].y, 2)) * this.width / 2;
+    var bottomWidth = Math.sqrt(Math.pow(ndcs[0].x - ndcs[3].x, 2) + Math.pow(ndcs[0].y - ndcs[3].y, 2)) * this.width / 2;
     result.width = Math.floor((topWidth + bottomWidth) / 2);
-    var leftHeight = Math.sqrt(Math.pow(ndcs[0].x - ndcs[1].x, 2) + Math.pow(ndcs[0].y - ndcs[1].y, 2)) * this.canvas.height / 2;
-    var rightHeight = Math.sqrt(Math.pow(ndcs[2].x - ndcs[3].x, 2) + Math.pow(ndcs[2].y - ndcs[3].y, 2)) * this.canvas.height / 2;
+    var leftHeight = Math.sqrt(Math.pow(ndcs[0].x - ndcs[1].x, 2) + Math.pow(ndcs[0].y - ndcs[1].y, 2)) * this.height / 2;
+    var rightHeight = Math.sqrt(Math.pow(ndcs[2].x - ndcs[3].x, 2) + Math.pow(ndcs[2].y - ndcs[3].y, 2)) * this.height / 2;
     result.height = Math.floor((leftHeight + rightHeight) / 2);
     result.area = result.width * result.height;
 

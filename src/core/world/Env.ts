@@ -1,0 +1,1 @@
+export const devicePixelRatio: number = window.devicePixelRatio;
