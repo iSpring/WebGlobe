@@ -26,15 +26,15 @@ export default class EventHandler implements Destroyable {
   }
 
   destroy(){
-    this.globe = null;
-    const eventNames = ["touchstart", "touchend", "touchmove", "mousedown", "mouseup", "mousemove", "dblclick", "mousewheel", "DOMMouseScroll"];
-    eventNames.forEach((eventName) => {
-      this.globe.canvas.removeEventListener(eventName);
-    });
+    // const eventNames = ["touchstart", "touchend", "touchmove", "mousedown", "mouseup", "mousemove", "dblclick", "mousewheel", "DOMMouseScroll"];
+    // eventNames.forEach((eventName) => {
+    //   this.globe.canvas.removeEventListener(eventName);
+    // });
     if(this.bodyKeydownListener){
       document.body.removeEventListener("keydown", this.bodyKeydownListener);
     }
     this.bodyKeydownListener = null;
+    this.globe = null;
   }
 
   private _bindEvents() {
