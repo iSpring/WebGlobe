@@ -267,3 +267,7 @@
  - 0.6.0 更新README.md和图片，发布新版本
 
  - 0.6.1 修复VertexBufferObject中无法重用Buffer的Bug
+
+ - 0.6.2 使得地图在高清屏上更清楚
+
+ - 0.6.3 升级webpack到3.x，修复npm test错误

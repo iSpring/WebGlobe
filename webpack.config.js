@@ -15,7 +15,7 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 //https://github.com/jantimon/html-webpack-plugin/issues/133
 var indexHtmlWebpackPlugin = new HtmlWebpackPlugin({
     filename: './index.html',
-    template: '!!html!./src/core/template.html',
+    template: '!!html-loader!./src/core/template.html',
     hash: false,
     inject: 'body',
     // chunks: ["runtime", "globe", "index"]
@@ -24,7 +24,7 @@ var indexHtmlWebpackPlugin = new HtmlWebpackPlugin({
 
 var webappHtmlWebpackPlugin = new HtmlWebpackPlugin({
     filename: './webapp.html',
-    template: '!!ejs!./src/webapp/template.html',
+    template: '!!ejs-loader!./src/webapp/template.html',
     hash: false,
     inject: 'body',
     // chunks: ["runtime", "webapp", "globe"]
@@ -61,7 +61,7 @@ module.exports = {
     devtool: PRODUCTION ? false : 'source-map',
 
     resolve: {
-        extensions: ["", ".webpack.js", ".web.js", ".ts", ".tsx", ".js", ".jsx", ".scss", ".png"],
+        extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js", ".jsx", ".scss", ".png"],
         alias: {
             core: path.resolve(__dirname, "./src/core"),
             world: path.resolve(__dirname, "./src/core/world"),
@@ -70,31 +70,51 @@ module.exports = {
     },
 
     module: {
-        loaders: [{
+        rules: [{
                 test: /\.tsx?$/,
-                loader: "ts-loader"
+                use: {
+                    loader: "ts-loader"
+                }
             },
             {
                 test: /\.jsx?$/,
-                loader: "babel-loader"
+                use: {
+                    loader: "babel-loader"
+                }
             },
             {
                 test: /\.scss$/,
-                loader: extractPlugin.extract("css?modules&localIdentName=[name]__[local]___[hash:base64:5]!sass")
+                use: extractPlugin.extract({
+                    use: [{
+                        loader: "css-loader",
+                        options: {
+                            modules: true,
+                            localIdentName: "[name]__[local]___[hash:base64:5]"
+                        }
+                    }, {
+                        loader: "sass-loader"
+                    }]
+                })
             },
             {
                 test: /\.(png|jpeg|jpg|gif)$/,
-                loader: "file-loader"
+                use: {
+                    loader: "file-loader"
+                }
             },
             {
                 test: /\.(otf|ttf|eot|woff|woff2).*/,
-                loader: "file-loader"
+                use: {
+                    loader: "file-loader"
+                }
             },
             {
                 test: /\.html$/,
-                loader: "html-loader",
-                query: {
-                    attrs: ['img:src']
+                use: {
+                    loader: "html-loader",
+                    options: {
+                        attrs: ['img:src']
+                    }
                 }
             }
         ]
@@ -109,7 +129,19 @@ module.exports = {
     ]
 };
 
-if (process.argv.indexOf("--ci") >= 0) {
+if (PRODUCTION) {
+    module.exports.plugins.push(
+        //add DefinePlugin for production to save 88KB for React build
+        new webpack.DefinePlugin({
+            'process.env': {
+                NODE_ENV: JSON.stringify('production')
+            }
+        }),
+        new webpack.optimize.UglifyJsPlugin({
+            sourceMap: false
+        })
+    );
+} else {
     //https://github.com/webpack/webpack/issues/708
     module.exports.plugins.push(
         function() {
@@ -131,19 +163,5 @@ if (process.argv.indexOf("--ci") >= 0) {
                 }
             });
         }
-    );
-}
-
-if (PRODUCTION) {
-    module.exports.plugins.push(
-        //add DefinePlugin for production to save 88KB for React build
-        new webpack.DefinePlugin({
-            'process.env': {
-                NODE_ENV: JSON.stringify('production')
-            }
-        }),
-        new webpack.optimize.UglifyJsPlugin({
-            sourceMap: false
-        })
     );
 }
